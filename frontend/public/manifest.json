@@ -1,0 +1,16 @@
+{
+  "short_name": "MindFlow",
+  "name": "MindFlow Business",
+  "description": "Capturez vos idées business, estimez le temps, planifiez et validez leur mise en place.",
+  "icons": [
+    { "src": "logo192.png", "type": "image/png", "sizes": "192x192", "purpose": "any maskable" },
+    { "src": "logo512.png", "type": "image/png", "sizes": "512x512", "purpose": "any maskable" }
+  ],
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#080B10",
+  "background_color": "#080B10",
+  "lang": "fr"
+}
