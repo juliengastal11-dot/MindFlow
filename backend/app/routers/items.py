@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from ..db import get_db
 from ..deps import get_current_user
-from ..models import Bucket, Item, User, utcnow
+from ..models import Bucket, Item, ItemEvent, User, utcnow
 from ..schemas import IMPORTANCE_ORDER, ItemCreate, ItemUpdate, PostponeIn, TriageIn
 from ..serializers import item_dict
 from ..services import gcal
@@ -43,10 +43,16 @@ def sort_key(item: Item):
     )
 
 
-def set_status(item: Item, new_status: str) -> None:
+def log_event(db: Session, item: Item, kind: str) -> None:
+    db.add(ItemEvent(user_id=item.user_id, item_id=item.id, kind=kind, title=item.title,
+                     importance=item.importance or "aucune", minutes=item.estimated_minutes or 0))
+
+
+def set_status(db: Session, item: Item, new_status: str) -> None:
     if new_status == "done":
         if item.status != "done":
             item.done_at = utcnow()
+            log_event(db, item, "done")
     else:
         item.done_at = None
     item.status = new_status
@@ -87,7 +93,7 @@ def apply_fields(item: Item, data: dict, db: Session, user: User) -> None:
             item.status = "active"
 
     if data.get("status") is not None:
-        set_status(item, data["status"])
+        set_status(db, item, data["status"])
 
 
 def schedule_sync(background: BackgroundTasks, user: User, item: Item) -> None:
@@ -194,23 +200,23 @@ def triage_item(
 
     if action == "tache":
         item.type = "task"
-        set_status(item, "active")
+        set_status(db, item, "active")
     elif action == "idee":
         item.type = "idea"
-        set_status(item, "active")
+        set_status(db, item, "active")
     elif action == "note":
         item.type = "note"
-        set_status(item, "active")
+        set_status(db, item, "active")
     elif action == "bucket":
         if not body.bucket_id:
             raise HTTPException(status_code=422, detail="Choisissez un bucket")
         item.bucket_id = get_bucket_or_404(db, user, body.bucket_id).id
-        set_status(item, "active")
+        set_status(db, item, "active")
     elif action == "parking":
-        set_status(item, "parked")
+        set_status(db, item, "parked")
     elif action == "planifier":
         # Le créneau est envoyé ensuite via PATCH (planned_at / planned_end)
-        set_status(item, "active")
+        set_status(db, item, "active")
 
     db.commit()
     db.refresh(item)
@@ -238,8 +244,9 @@ def postpone_item(
     item.planned_at = start
     item.planned_end = end
     item.postpone_count = (item.postpone_count or 0) + 1
+    log_event(db, item, "postponed")
     if item.status != "active":
-        set_status(item, "active")
+        set_status(db, item, "active")
     db.commit()
     db.refresh(item)
     schedule_sync(background, user, item)

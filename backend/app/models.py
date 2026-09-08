@@ -77,3 +77,18 @@ class Item(Base):
 
     user: Mapped["User"] = relationship(back_populates="items")
     bucket: Mapped["Bucket | None"] = relationship(back_populates="items")
+
+
+class ItemEvent(Base):
+    """Journal des actions marquantes (reports, tâches terminées) pour les bilans hebdomadaires."""
+
+    __tablename__ = "item_events"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(String(36), ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False)
+    item_id: Mapped[str | None] = mapped_column(String(36), ForeignKey("items.id", ondelete="SET NULL"), index=True, nullable=True)
+    kind: Mapped[str] = mapped_column(String(16), index=True, nullable=False)  # postponed | done
+    title: Mapped[str] = mapped_column(String(300), default="", nullable=False)
+    importance: Mapped[str] = mapped_column(String(16), default="aucune", nullable=False)
+    minutes: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, index=True, nullable=False)

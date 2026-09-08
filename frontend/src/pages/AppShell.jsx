@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
-import { useReminders } from "@/lib/reminders";
+import { useReminders, useWeeklyRecap } from "@/lib/reminders";
 import { CaptureDialog } from "@/components/CaptureDialog";
 import { FocusDialog } from "@/components/FocusDialog";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,8 @@ export default function AppShell() {
   const [focus, setFocus] = useState(false);
 
   useReminders(user);
+  const openRecap = useCallback(() => navigate("/app/apercu"), [navigate]);
+  useWeeklyRecap(user, openRecap);
 
   const { data: overview } = useQuery({ queryKey: ["overview"], queryFn: async () => (await api.get("/overview")).data });
   const inboxCount = overview?.inbox_count || 0;
