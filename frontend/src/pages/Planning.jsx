@@ -3,13 +3,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, apiError } from "@/lib/api";
 import { ItemCard } from "@/components/ItemCard";
 import { ItemDialog } from "@/components/ItemDialog";
-import { IMPORTANCE_MAP, fmtTime } from "@/lib/constants";
+import { DayGrid } from "@/components/DayGrid";
 import { Button } from "@/components/ui/button";
+import { fmtTime } from "@/lib/constants";
+import { SNAP_MIN } from "@/lib/schedule";
 import { ChevronLeft, ChevronRight, Plus, CalendarDays, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 const DAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
-const HOURS = Array.from({ length: 16 }, (_, i) => i + 6); // 6h..21h
 
 function pad(n) { return String(n).padStart(2, "0"); }
 function dstr(d) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
@@ -24,25 +25,60 @@ export default function Planning() {
   const [weekStart, setWeekStart] = useState(startOfWeek(new Date()));
   const [day, setDay] = useState(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; });
   const [dragId, setDragId] = useState(null);
-  const [planCtx, setPlanCtx] = useState(null); // {date, hour}
+  const [planCtx, setPlanCtx] = useState(null); // { date, time? }
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["items", "planned"],
     queryFn: async () => (await api.get("/items?status=active,done&planned=true")).data,
   });
+  const { data: unplanned = [] } = useQuery({
+    queryKey: ["items", "unplanned"],
+    queryFn: async () => (await api.get("/items?status=active&planned=false")).data,
+  });
 
+  const patch = async (id, payload, okMessage) => {
+    try {
+      await api.patch(`/items/${id}`, payload);
+      qc.invalidateQueries();
+      if (okMessage) toast.success(okMessage);
+    } catch (e) { toast.error(apiError(e)); }
+  };
+
+  const durationOf = (it) =>
+    it.planned_at && it.planned_end
+      ? Math.max(SNAP_MIN, Math.round((new Date(it.planned_end) - new Date(it.planned_at)) / 60000))
+      : (it.estimated_minutes || 30);
+
+  // Déplacement vers une date + heure précises (vue jour)
+  const moveToTime = async (id, start) => {
+    const it = items.find((x) => x.id === id);
+    if (!it) return;
+    const end = new Date(start.getTime() + durationOf(it) * 60000);
+    await patch(id, { planned_at: start.toISOString(), planned_end: end.toISOString() });
+  };
+
+  // Déplacement vers un autre jour (vue semaine) : conserve l'heure
   const move = async (id, targetDate, targetHour) => {
     const it = items.find((x) => x.id === id);
     if (!it) return;
     const cur = new Date(it.planned_at);
-    const dur = it.planned_end ? (new Date(it.planned_end) - cur) / 60000 : (it.estimated_minutes || 30);
     const start = new Date(targetDate);
     start.setHours(targetHour != null ? targetHour : cur.getHours(), targetHour != null ? 0 : cur.getMinutes(), 0, 0);
-    const end = new Date(start.getTime() + dur * 60000);
-    try {
-      await api.patch(`/items/${id}`, { planned_at: start.toISOString(), planned_end: end.toISOString() });
-      qc.invalidateQueries();
-    } catch (e) { toast.error(apiError(e)); }
+    await moveToTime(id, start);
+  };
+
+  // Nouvelle heure de fin (poignée du bloc) : met aussi à jour la durée estimée
+  const resizeTo = async (id, end) => {
+    const it = items.find((x) => x.id === id);
+    if (!it) return;
+    const minutes = Math.max(SNAP_MIN, Math.round((end - new Date(it.planned_at)) / 60000));
+    await patch(id, { planned_end: end.toISOString(), estimated_minutes: minutes });
+  };
+
+  // Caser une tâche non planifiée dans un créneau libre
+  const scheduleAt = async (item, start) => {
+    const end = new Date(start.getTime() + (item.estimated_minutes || 30) * 60000);
+    await patch(item.id, { planned_at: start.toISOString(), planned_end: end.toISOString(), status: "active" }, `Planifié à ${fmtTime(start.toISOString())}`);
   };
 
   const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(weekStart); d.setDate(d.getDate() + i); return d; });
@@ -53,6 +89,11 @@ export default function Planning() {
     if (view === "semaine") { const d = new Date(weekStart); d.setDate(d.getDate() + n * 7); setWeekStart(d); }
     else { const d = new Date(day); d.setDate(d.getDate() + n); setDay(d); }
   };
+  const goToday = () => {
+    const d = new Date(); d.setHours(0, 0, 0, 0);
+    setDay(d); setWeekStart(startOfWeek(d));
+  };
+  const openDay = (d) => { setDay(new Date(d)); setView("jour"); };
 
   const rangeLabel = view === "semaine"
     ? `${days[0].toLocaleDateString("fr-FR", { day: "numeric", month: "short" })} – ${days[6].toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}`
@@ -66,6 +107,7 @@ export default function Planning() {
           <p className="text-slate-400 mt-1 text-sm">Glissez-déposez vos tâches pour les replanifier.</p>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={goToday} data-testid="plan-today" className="text-slate-300 hover:bg-white/5">Aujourd'hui</Button>
           <div className="flex rounded-full border border-white/10 p-0.5">
             {["semaine", "jour"].map((v) => (
               <button key={v} onClick={() => setView(v)} data-testid={`view-${v}`}
@@ -92,7 +134,10 @@ export default function Planning() {
               className={`rounded-2xl border p-3 min-h-[140px] ${dstr(d) === todayStr ? "border-primary/40 bg-primary/5" : "border-white/10 bg-white/[0.02]"}`}
               data-testid={`plan-day-${dstr(d)}`}>
               <div className="flex items-center justify-between mb-3 px-1">
-                <div><p className="text-xs text-slate-500">{DAYS[i]}</p><p className={`font-heading font-bold ${dstr(d) === todayStr ? "text-primary" : ""}`}>{d.getDate()}</p></div>
+                <button type="button" onClick={() => openDay(d)} className="text-left" title="Ouvrir la vue jour" data-testid={`plan-open-${dstr(d)}`}>
+                  <p className="text-xs text-slate-500">{DAYS[i]}</p>
+                  <p className={`font-heading font-bold ${dstr(d) === todayStr ? "text-primary" : ""}`}>{d.getDate()}</p>
+                </button>
                 <button onClick={() => setPlanCtx({ date: dstr(d) })} data-testid={`plan-add-${dstr(d)}`} className="text-slate-500 hover:text-white"><Plus className="w-4 h-4" /></button>
               </div>
               <div className="space-y-2">
@@ -105,25 +150,19 @@ export default function Planning() {
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden" data-testid="plan-day-view">
-          {HOURS.map((h) => {
-            const slot = items.filter((it) => dstr(new Date(it.planned_at)) === dstr(day) && new Date(it.planned_at).getHours() === h);
-            return (
-              <div key={h} onDragOver={(e) => e.preventDefault()} onDrop={() => dragId && move(dragId, day, h)}
-                className="flex border-b border-white/5 last:border-0 min-h-[64px]" data-testid={`hour-${h}`}>
-                <div className="w-16 shrink-0 text-right pr-3 pt-2 text-xs font-mono text-slate-500">{pad(h)}:00</div>
-                <div className="flex-1 p-2 space-y-2 border-l border-white/5">
-                  {slot.map((it) => <ItemCard key={it.id} item={it} compact draggable onDragStart={(x) => setDragId(x.id)} />)}
-                  <button onClick={() => setPlanCtx({ date: dstr(day) })} className="text-[11px] text-slate-600 hover:text-slate-400">+ ajouter</button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <DayGrid
+          day={day}
+          items={forDate(day)}
+          unplanned={unplanned}
+          onMove={moveToTime}
+          onResize={resizeTo}
+          onCreate={(time) => setPlanCtx({ date: dstr(day), time })}
+          onSchedule={scheduleAt}
+        />
       )}
 
       {planCtx && (
-        <ItemDialog defaultAction="planifier" defaultDate={planCtx.date} open={!!planCtx} onOpenChange={(v) => !v && setPlanCtx(null)} />
+        <ItemDialog defaultAction="planifier" defaultDate={planCtx.date} defaultTime={planCtx.time} open={!!planCtx} onOpenChange={(v) => !v && setPlanCtx(null)} />
       )}
     </div>
   );

@@ -17,7 +17,7 @@ import { toast } from "sonner";
 function pad(n) { return String(n).padStart(2, "0"); }
 function dstr(d) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 
-export function ItemDialog({ trigger, item, defaultAction, defaultDate, open: openProp, onOpenChange, onSaved }) {
+export function ItemDialog({ trigger, item, defaultAction, defaultDate, defaultTime, open: openProp, onOpenChange, onSaved }) {
   const qc = useQueryClient();
   const [uOpen, setUOpen] = useState(false);
   const open = openProp !== undefined ? openProp : uOpen;
@@ -53,9 +53,9 @@ export function ItemDialog({ trigger, item, defaultAction, defaultDate, open: op
       setScheduled(true); setDate(dstr(d)); setTime(`${pad(d.getHours())}:${pad(d.getMinutes())}`);
     } else {
       setScheduled(defaultAction === "planifier");
-      setDate(defaultDate || dstr(new Date())); setTime("09:00");
+      setDate(defaultDate || dstr(new Date())); setTime(defaultTime || "09:00");
     }
-  }, [open, item, defaultAction, defaultDate]);
+  }, [open, item, defaultAction, defaultDate, defaultTime]);
 
   const runAi = async () => {
     if (!title.trim()) { toast.error("Écrivez d'abord un titre"); return; }
