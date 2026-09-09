@@ -8,23 +8,27 @@ L'application tient dans **une seule image Docker** (le backend sert le front bu
 
 | Variable | Obligatoire | Rôle |
 | --- | --- | --- |
-| `SECRET_KEY` | oui | Signature des sessions et chiffrement des clés IA / Google. Longue chaîne aléatoire : `python -c "import secrets; print(secrets.token_urlsafe(48))"` |
-| `FRONTEND_URL` | oui | URL publique, ex. `https://mindflow.exemple.fr` (retour de connexion Google) |
-| `COOKIE_SECURE` | oui | `true` derrière HTTPS |
-| `SEED_DEMO` | non | `false` en production (sinon le compte démo est créé) |
+| `SECRET_KEY` | recommandée | Signature des sessions et chiffrement des clés IA / Google. Sans elle, une clé est générée dans le dossier de données (elle survit tant que le volume existe). Générer : `python -c "import secrets; print(secrets.token_urlsafe(48))"` |
+| `FRONTEND_URL` | selon l'hébergeur | URL publique, ex. `https://mindflow.exemple.fr`. **Sur Railway, inutile** : le domaine public est détecté automatiquement. |
+| `COOKIE_SECURE` | non | Automatique : `true` dès que l'URL publique est en https |
+| `SEED_DEMO` | non | Compte démo : créé en local seulement, sauf si vous forcez `true` |
 | `PORT` | non | Port d'écoute, imposé par Railway / Render / Fly (`8000` par défaut) |
-| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` | non | Google Calendar. Redirection : `https://VOTRE-DOMAINE/api/oauth/calendar/callback` |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | non | Google Calendar. L'URI de redirection est déduite : `https://VOTRE-DOMAINE/api/oauth/calendar/callback` (surcharge possible avec `GOOGLE_REDIRECT_URI`) |
 | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` | non | Clé IA serveur (sinon chaque utilisateur met la sienne dans Paramètres) |
 | `DATABASE_URL` | non | Vide = SQLite dans `data/`. PostgreSQL possible : `postgresql+psycopg://…` (ajouter `psycopg[binary]` à `backend/requirements.txt`) |
 
 ## Option A — Railway (le plus rapide, ~10 minutes)
 
-1. Poussez le dépôt sur GitHub.
-2. Sur [railway.app](https://railway.app) : **New Project → Deploy from GitHub repo**. Railway détecte le `Dockerfile`.
-3. Onglet **Variables** : `SECRET_KEY`, `COOKIE_SECURE=true`, `SEED_DEMO=false`, `FRONTEND_URL` (l'URL fournie à l'étape 5).
-4. Onglet **Volumes** : ajoutez un volume monté sur `/app/backend/data`.
-5. Onglet **Settings → Networking → Generate Domain** : vous obtenez `https://xxx.up.railway.app`. Un domaine personnalisé se branche au même endroit (un enregistrement CNAME).
-6. Redéployez après avoir renseigné `FRONTEND_URL`. Vérifiez `https://…/api/health`.
+Le fichier `railway.json` indique à Railway d'utiliser le `Dockerfile` et la route de santé `/api/health`.
+
+1. Sur [railway.com](https://railway.com), créez un compte (connexion GitHub conseillée) et un projet : **New Project → Deploy from GitHub repo**. Autorisez l'application GitHub de Railway à accéder au dépôt `MindFlow`, puis sélectionnez-le. Le premier build démarre (2 à 3 minutes).
+2. **Volume** (indispensable, sinon la base est perdue à chaque déploiement) : sur la carte du service → clic droit ou bouton **+ New → Volume** → attachez-le au service avec le chemin de montage `/app/backend/data`.
+3. **Variables** (onglet *Variables* du service) : ajoutez `SECRET_KEY` avec une longue chaîne aléatoire. C'est la seule variable nécessaire ; le domaine public est détecté tout seul.
+4. **Domaine** : onglet *Settings → Networking → Public Networking → Generate Domain* (port `8000` si Railway le demande). Vous obtenez `https://xxx.up.railway.app`.
+5. Attendez la fin du redéploiement puis ouvrez `https://xxx.up.railway.app/api/health` : `{"status":"ok"}`. Créez votre compte via « Créer un compte ».
+6. Domaine personnalisé (optionnel) : *Custom Domain* au même endroit, puis un enregistrement CNAME chez votre registrar.
+
+Coût : offre Hobby à 5 $ par mois (crédit d'essai offert), le volume de 1 Go est compris.
 
 ## Option B — Render
 
