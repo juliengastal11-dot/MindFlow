@@ -17,6 +17,14 @@ export default defineConfig({
     },
   },
   build: { outDir: "dist", sourcemap: false },
+  // Tests (Vitest) : `npm test`
+  test: {
+    environment: "jsdom",
+    globals: true,
+    css: false,
+    setupFiles: ["./src/test/setup.js"],
+    include: ["src/**/*.test.{js,jsx}"],
+  },
   // Pré-optimisation des dépendances : évite un rechargement de page à la première visite de chaque écran
   optimizeDeps: {
     include: [
