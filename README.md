@@ -17,6 +17,8 @@ Cinq écrans : **Aujourd'hui** · **Inbox** · **Planning** · **Buckets** · **
 - **Rappels** : « Avez-vous fini cette tâche ? » après l'heure de fin (délai réglable, notifications navigateur).
 - **Vue d'ensemble** : semaine (terminées, priorités, temps, captures), tâches en retard, ce que vous repoussez souvent.
 - **Google Calendar** : synchronisation des créneaux planifiés (optionnel, voir plus bas).
+- **Planning jour** : blocs proportionnels à la durée, glisser-déposer à 15 min près, poignée pour ajuster la durée, créneaux libres avec « caser une tâche » (jusqu'à 3 tâches qui tiennent dans le trou).
+- **Bilan de fin de semaine** : totaux, priorités, temps, captures, créneaux honorés, reports et détail par jour, rappel le vendredi soir.
 - **PWA** installable, fonctionne hors ligne pour l'interface.
 
 Compte de démonstration : `demo@mindflow.app` / `demo1234`.
@@ -41,6 +43,8 @@ MindFlow/
 │  ├─ app/services/     # ai.py (IA + heuristiques), gcal.py (Google Calendar), buckets.py
 │  ├─ app/models.py     # User, Bucket, Item
 │  └─ data/             # base SQLite (créée au premier lancement)
+├─ backend/tests/       # tests pytest de l'API
+├─ Dockerfile, docker-compose.yml, deploy/, render.yaml, fly.toml   # déploiement (voir DEPLOY.md)
 └─ dev.ps1              # lance back + front en développement
 ```
 
@@ -82,6 +86,18 @@ cd frontend && npm run dev
 - Front : http://localhost:3000 (Vite relaie `/api` vers le backend, pas de CORS à gérer)
 - API : http://127.0.0.1:8000/api · documentation interactive : http://127.0.0.1:8000/api/docs
 
+## Tests
+
+```bash
+cd backend && .venv\Scripts\python -m pytest        # 52 tests API sur une base temporaire
+```
+
+```bash
+cd frontend && npm test                             # 23 tests Vitest (grille horaire, créneaux, bilan)
+```
+
+Le workflow GitHub Actions (`.github/workflows/ci.yml`) lance les deux suites et le build à chaque push.
+
 ## Mettre en production
 
 1. Construire le front : `cd frontend && npm run build` (résultat dans `frontend/dist`).
@@ -99,7 +115,7 @@ Variables à régler dans `backend/.env` pour la production :
 - `CORS_ORIGINS` : inutile si le backend sert le front ; sinon listez les origines du front.
 - `DATABASE_URL` : laissez vide pour SQLite, ou `postgresql+psycopg://…` (installer `psycopg[binary]`).
 
-Le HTTPS est indispensable pour l'installation PWA, les notifications et le service worker (hors localhost). Hébergement simple : un VPS avec un reverse proxy (Caddy ou Nginx) devant uvicorn, ou une plateforme type Railway, Render ou Fly.io avec un volume persistant pour `backend/data`.
+Le HTTPS est indispensable pour l'installation PWA, les notifications et le service worker (hors localhost). Tout est prêt pour un déploiement en conteneur : `Dockerfile`, `docker-compose.yml` + Caddy (certificat automatique sur votre serveur), `render.yaml`, `fly.toml`. Le pas-à-pas Railway / Render / Fly.io / VPS est dans [DEPLOY.md](DEPLOY.md).
 
 ## Google Calendar (optionnel)
 
@@ -126,7 +142,7 @@ Le HTTPS est indispensable pour l'installation PWA, les notifications et le serv
 | POST | `/api/items/{id}/triage` | `{action: planifier|tache|idee|bucket|note|parking|ignorer, bucket_id?}` |
 | POST | `/api/items/{id}/postpone` | Report d'un créneau (compteur de reports) |
 | GET / POST / PATCH / DELETE | `/api/buckets` | Buckets |
-| GET | `/api/today` · `/api/overview` | Vues agrégées (fuseau via l'en-tête `X-Timezone`) |
+| GET | `/api/today` · `/api/overview` · `/api/overview/week?offset=0` | Vues agrégées et bilan hebdo (fuseau via l'en-tête `X-Timezone`) |
 | PATCH | `/api/settings` | Nom, centres d'intérêt, délai de rappel, onboarding |
 | POST / DELETE | `/api/settings/ai-key` | Clé IA de l'utilisateur |
 | POST | `/api/ai/suggest` · `/api/ai/organize` | Suggestions IA |
@@ -138,8 +154,7 @@ Le projet a été démarré sur Emergent (prototype MVP puis refonte « 5 écran
 
 ## Pistes suivantes
 
-- Vue jour : blocs proportionnels à la durée, glisser pour redimensionner.
-- « Combien de temps ça va me prendre ? » : proposer les tâches qui rentrent dans un trou de l'agenda.
-- Bilan de fin de semaine par notification.
 - Revue hebdomadaire du parking (« Tu as 8 éléments dans ton parking »).
-- Tests automatisés (pytest côté API, Playwright côté front).
+- Plage de travail (8h-19h) réglable par utilisateur pour les créneaux libres.
+- Tests de bout en bout dans un vrai navigateur (Playwright).
+- Récurrences (tâches hebdomadaires) et sous-tâches.

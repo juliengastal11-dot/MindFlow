@@ -1,0 +1,17 @@
+**/node_modules
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+frontend/dist
+backend/data
+backend/tests
+backend/.env
+frontend/.env
+.git
+.github
+.claude
+.vscode
+*.md
+DEPLOY.md
+dev.ps1
