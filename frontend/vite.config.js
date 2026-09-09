@@ -9,7 +9,7 @@ export default defineConfig({
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },
   server: {
-    port: 3000,
+    port: Number(process.env.PORT) || 3000, // PORT permet de choisir un autre port si 3000 est pris
     strictPort: false,
     // En dev, /api est relayé vers le backend FastAPI (pas de CORS à gérer)
     proxy: {
