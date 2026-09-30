@@ -100,7 +100,7 @@ export function EtapeContact({ reponses, etat, enCours, formAction, retour }: Pr
                 key={choix}
                 type="button"
                 aria-pressed={actif}
-                className={cn(styleCarte, actif && "border-primary bg-muted")}
+                className={cn(styleCarte, actif && "border-encre bg-muted")}
                 onClick={() => {
                   setMode(valeurMode);
                   setValeur("");

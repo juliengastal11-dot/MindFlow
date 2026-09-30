@@ -170,13 +170,13 @@ export function SceneRecherche() {
       />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-14 pt-24 md:pb-16 md:pt-28">
         <EntreeHero>
-          <p className="eyebrow text-primary">En ce moment, quelque part en France</p>
+          <p className="eyebrow text-encre">En ce moment, quelque part en France</p>
           <h1
             id="recherche-titre"
             className="mt-3 max-w-3xl font-display text-3xl sm:text-4xl md:mt-4 md:text-5xl"
           >
             {"Quelqu'un cherche ce que vous faites."}
-            <span className="block text-primary">Maintenant.</span>
+            <span className="block text-encre">Maintenant.</span>
           </h1>
           <p className="mt-3 max-w-xl text-base md:mt-5 md:text-lg">
             Sur son téléphone, entre deux rues. Ce qu&apos;il trouve en premier décide s&apos;il vous

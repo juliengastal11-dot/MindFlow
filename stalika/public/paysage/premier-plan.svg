@@ -1,23 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMax slice">
-  <path d="M0 820c200-40 420-50 640-30 220 20 420 50 640 20 120-16 220-20 320-10v200H0z" fill="#e9dcc6"/>
-  <path d="M0 900h1600v100H0z" fill="#dccbb0"/>
-  <g stroke="#070f27" stroke-width="6" stroke-linecap="round" fill="none">
+  <path d="M0 820c200-40 420-50 640-30 220 20 420 50 640 20 120-16 220-20 320-10v200H0z" fill="#ebe5d6"/>
+  <path d="M0 900h1600v100H0z" fill="#e2decb"/>
+  <g stroke="#33312e" stroke-width="6" stroke-linecap="round" fill="none">
     <path d="M220 780v120M330 780v120M240 800h80"/>
     <path d="M1180 770v130M1300 770v130M1200 792h80"/>
   </g>
-  <ellipse cx="275" cy="778" rx="80" ry="12" fill="#ffffff" stroke="#070f27" stroke-width="5"/>
-  <ellipse cx="1240" cy="768" rx="80" ry="12" fill="#ffffff" stroke="#070f27" stroke-width="5"/>
-  <g fill="#ff8f03">
+  <ellipse cx="275" cy="778" rx="80" ry="12" fill="#ffffff" stroke="#33312e" stroke-width="5"/>
+  <ellipse cx="1240" cy="768" rx="80" ry="12" fill="#ffffff" stroke="#33312e" stroke-width="5"/>
+  <g fill="#c1a875">
     <path d="M150 640l150 80H0z"/>
     <path d="M1400 630l160 90h-320z"/>
   </g>
-  <rect x="147" y="640" width="6" height="150" fill="#070f27"/>
-  <rect x="1397" y="630" width="6" height="150" fill="#070f27"/>
-  <g fill="#6b8f5a">
+  <rect x="147" y="640" width="6" height="150" fill="#33312e"/>
+  <rect x="1397" y="630" width="6" height="150" fill="#33312e"/>
+  <g fill="#9c9a78">
     <ellipse cx="620" cy="800" rx="120" ry="60"/>
     <ellipse cx="980" cy="810" rx="140" ry="55"/>
   </g>
-  <g fill="#4f7245">
+  <g fill="#7f7d5e">
     <ellipse cx="580" cy="820" rx="70" ry="40"/>
     <ellipse cx="1020" cy="830" rx="80" ry="38"/>
   </g>

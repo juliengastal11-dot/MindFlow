@@ -7,56 +7,76 @@
    Les noms de variables sont ceux qu'attendent tous les composants du socle :
    on remplace les valeurs, jamais les noms.
    =========================================================================== */
-/* Direction « La terrasse, le jour et la nuit » (blueprint §1, version 90°) :
-   le site est clair et chaud, papier crème et marine du logo ; l'orange du
-   logo pour tout ce qui appelle un geste. Les scènes 2 à 4 du film passent
-   « la nuit » : la classe `.nuit` remappe les mêmes variables, et les
-   utilitaires `bg-background`, `text-foreground`… suivent sans rien changer.
-   Contrastes relevés : marine sur crème 17,6:1, marine sur orange 8,3:1,
-   gris sur crème 7:1 ; la nuit : crème sur marine 16,9:1, orange sur marine
-   8,3:1, gris nuit 9:1. L'orange ne porte jamais de texte sur fond clair
-   (2,1:1) : il remplit un bouton ou souligne, le texte reste marine. */
+/* Palette « Camel Linen », fournie par J le 2026-09-30 (capture d'un thème
+   shadcn/ui : Inter, rayon 0,75 rem). Couleurs relevées au pixel sur sa
+   capture ; la version sombre vient des valeurs de son panneau (bordure
+   #2D2B28, anneau #D4BC8B, graphiques #D4BC8B #6D7278 #33312E #A89B7C
+   #1A1A18).
+
+   Contrastes relevés : texte sur fond 16,2:1, gris sur fond 5,5:1, texte
+   sombre sur camel 7,6:1, blanc sur rouge 5:1. Deux écarts à la capture,
+   pour la lisibilité : le texte des boutons camel est sombre et non blanc
+   (blanc sur camel : 2,3:1, illisible) ; et le camel ne porte jamais de
+   texte sur fond clair (2,2:1). Pour un mot ou une étiquette en couleur, on
+   passe par `encre`, un camel foncé de la même teinte (5,2:1 sur le fond). */
 @theme {
-  --color-background: #fbf6ee;
-  --color-foreground: #070f27;
+  --color-background: #f8f7f2;
+  --color-foreground: #1a1a1a;
   --color-card: #ffffff;
-  --color-card-foreground: #070f27;
-  --color-primary: #070f27;
-  --color-on-primary: #f6f1e8;
-  --color-secondary: #dbe8f4;
-  --color-on-secondary: #070f27;
-  --color-accent: #ff8f03;
-  --color-on-accent: #070f27;
-  --color-muted: #f1eadf;
-  --color-muted-foreground: #4b5470;
-  --color-border: #e2d9c9;
-  --color-destructive: #b91c1c;
-  --color-on-destructive: #fbf6ee;
-  --color-ring: #ff8f03;
+  --color-card-foreground: #1a1a1a;
+  --color-primary: #c1a875;
+  --color-on-primary: #1a1a1a;
+  --color-secondary: #e5e1d5;
+  --color-on-secondary: #1a1a1a;
+  --color-accent: #c1a875;
+  --color-on-accent: #1a1a1a;
+  --color-muted: #f1ede1;
+  --color-muted-foreground: #6b6352;
+  --color-border: #e2decb;
+  --color-destructive: #d32f2f;
+  --color-on-destructive: #ffffff;
+  --color-ring: #c1a875;
+  /* Le camel lisible, pour du texte ou un trait fin : même teinte, plus sombre. */
+  --color-encre: #7b6537;
 
-  /* Deux familles, servies par le site via next/font (app/layout.tsx) :
-     Averia Serif Libre pour les titres, au trait un peu irrégulier, comme
-     peint ; Plus Jakarta Sans, variable, pour tout le reste. */
+  /* Inter partout, servie par le site via next/font (app/layout.tsx). Les
+     titres ne changent que de graisse. */
   --font-sans: var(--police-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: var(--police-serif), ui-serif, Georgia, serif;
+  --font-display: var(--police-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Georgia est une police système : rien à charger. JetBrains Mono est
+     servie par next/font, pour le lettrage brouillé du logo. */
+  --font-serif: Georgia, "Times New Roman", serif;
+  --font-mono: var(--police-mono), ui-monospace, "SFMono-Regular", monospace;
 
-  --radius-card: 1rem;
+  /* Interlettrage de la palette : -0,02 em sur tout le texte. */
+  --tracking-normal: -0.02em;
+
+  /* L'ombre de la palette : noir à 40 %, flou 25 px, décalée de 10 px vers le bas. */
+  --shadow-carte: 0 10px 25px 0 rgb(0 0 0 / 0.4);
+
+  --radius-card: 0.75rem;
 }
 
-/* La nuit : même vocabulaire, autres valeurs. Posée sur une scène du film ou
-   sur n'importe quelle section qui doit passer dans le monde du logo. */
+/* La version sombre de la même palette : même vocabulaire, autres valeurs.
+   Posée sur les scènes 2 à 4 et sur l'appel final. Contrastes : texte sur
+   fond 16,3:1, camel sur fond 9,4:1, gris sur fond 6,3:1, gris sur carte
+   4,7:1. Le fond de sourdine est dérivé entre le fond et la bordure. */
 .nuit {
-  --color-background: #070f27;
-  --color-foreground: #f6f1e8;
-  --color-card: #111a3a;
-  --color-card-foreground: #f6f1e8;
-  --color-primary: #16214a;
-  --color-on-primary: #f6f1e8;
-  --color-secondary: #24306a;
-  --color-on-secondary: #f6f1e8;
-  --color-muted: #0c1533;
-  --color-muted-foreground: #aab2c8;
-  --color-border: #1f2a4d;
+  --color-background: #1a1a18;
+  --color-foreground: #f8f7f2;
+  --color-card: #33312e;
+  --color-card-foreground: #f8f7f2;
+  --color-primary: #d4bc8b;
+  --color-on-primary: #1a1a18;
+  --color-secondary: #2d2b28;
+  --color-on-secondary: #f8f7f2;
+  --color-accent: #d4bc8b;
+  --color-on-accent: #1a1a18;
+  --color-muted: #242320;
+  --color-muted-foreground: #a89b7c;
+  --color-border: #2d2b28;
+  --color-ring: #d4bc8b;
+  --color-encre: #d4bc8b;
   color-scheme: dark;
 }
 
@@ -82,6 +102,7 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    letter-spacing: var(--tracking-normal);
     -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3, h4 {
@@ -208,7 +229,7 @@ html.js .logo-anime[data-etat="attente"] img {
   .carte-reactive:hover,
   .group:hover > .carte-reactive {
     transform: translateY(-3px);
-    box-shadow: 0 14px 30px -18px color-mix(in oklab, var(--color-foreground) 45%, transparent);
+    box-shadow: var(--shadow-carte);
   }
 }
 .carte-reactive:active {

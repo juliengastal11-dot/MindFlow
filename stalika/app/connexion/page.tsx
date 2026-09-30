@@ -17,14 +17,14 @@ export default async function Connexion({
       <div className="w-full max-w-sm">
         <Link
           href="/"
-          className="eyebrow text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+          className="eyebrow text-muted-foreground hover:text-encre transition-colors cursor-pointer"
         >
           ← Retour au site
         </Link>
 
         <Card className="mt-4">
           <CardHeader>
-            <p className="eyebrow text-accent">ESPACE PRIVE</p>
+            <p className="eyebrow text-encre">ESPACE PRIVE</p>
             <CardTitle className="font-display">Connexion</CardTitle>
           </CardHeader>
           <CardContent>
