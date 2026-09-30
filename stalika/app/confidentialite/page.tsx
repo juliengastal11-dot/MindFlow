@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { lireReglages } from "@/lib/reglages";
+import { Nav } from "@/components/sections/nav";
+import { PiedDePage } from "@/components/sections/pied-de-page";
+import { Section } from "@/components/ui/section";
 
 /* ---------------------------------------------------------------------------
    Politique de confidentialité : dès qu'une donnée est collectée, même un
@@ -10,7 +13,9 @@ import { lireReglages } from "@/lib/reglages";
 --------------------------------------------------------------------------- */
 
 export const metadata: Metadata = {
-  title: "Politique de confidentialité",
+  title: "Confidentialité",
+  description: "Ce que le site Stalika collecte, pourquoi, et comment exercer vos droits.",
+  alternates: { canonical: "/confidentialite" },
   robots: { index: false },
 };
 
@@ -28,11 +33,11 @@ export default async function Confidentialite() {
   const contact = reglages.email || "[[À CONFIRMER PAR L'UTILISATEUR : adresse e-mail de contact]]";
 
   return (
-    <main
-      data-src="app/confidentialite/page.tsx"
-      className="mx-auto max-w-3xl px-6 py-20 md:py-28"
-    >
-      <p className="eyebrow text-accent">Vos données</p>
+    <>
+    <Nav />
+    <main id="contenu" className="pt-24">
+    <Section largeur="prose" rythme="serre" src="app/confidentialite/page.tsx">
+      <p className="eyebrow text-primary">Vos données</p>
       <h1 className="mt-4 font-display text-3xl sm:text-4xl md:text-5xl">
         Politique de confidentialité
       </h1>
@@ -84,7 +89,7 @@ export default async function Confidentialite() {
             href="https://www.cnil.fr"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-accent hover:underline"
+            className="text-primary underline underline-offset-4 hover:no-underline"
           >
             cnil.fr
           </a>
@@ -99,6 +104,31 @@ export default async function Confidentialite() {
           en soi, et il n&apos;y a alors pas de bandeau à afficher]]
         </p>
       </Bloc>
+
+      <Bloc titre="Le questionnaire de contact">
+        <p>
+          En répondant aux questions du site, vous me confiez votre prénom, votre activité, vos
+          réponses et un moyen de vous joindre. Je m&apos;en sers pour vous répondre, et pour rien
+          d&apos;autre. Base légale : votre consentement, coché avant l&apos;envoi. Ces réponses sont
+          gardées douze mois, puis supprimées, ou plus tôt si vous me le demandez. Personne d&apos;autre
+          que moi ne les lit.
+        </p>
+      </Bloc>
+
+      <div id="cookies" className="scroll-mt-24">
+        <Bloc titre="Cookies et statistiques">
+          <p>
+            Ce site mesure ses visites avec Google Analytics, uniquement si vous avez cliqué sur
+            « D&apos;accord » dans le bandeau. Tant que vous n&apos;avez pas répondu, ou si vous avez
+            refusé, aucun cookie de mesure n&apos;est déposé. Vous pouvez changer d&apos;avis à tout
+            moment : le lien « Cookies » en bas de page rouvre le bandeau. Le seul autre cookie est
+            celui de session de l&apos;espace privé, réservé à l&apos;éditeur.
+          </p>
+        </Bloc>
+      </div>
+    </Section>
     </main>
+    <PiedDePage />
+    </>
   );
 }

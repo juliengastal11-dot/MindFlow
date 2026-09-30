@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { lireReglages } from "@/lib/reglages";
+import { Nav } from "@/components/sections/nav";
+import { PiedDePage } from "@/components/sections/pied-de-page";
+import { Section } from "@/components/ui/section";
 
 /* ---------------------------------------------------------------------------
    Mentions légales, obligatoires pour tout site professionnel.
@@ -11,6 +14,8 @@ import { lireReglages } from "@/lib/reglages";
 
 export const metadata: Metadata = {
   title: "Mentions légales",
+  description: "Les informations légales du site Stalika.",
+  alternates: { canonical: "/mentions-legales" },
   robots: { index: false },
 };
 
@@ -27,11 +32,11 @@ export default async function MentionsLegales() {
   const reglages = await lireReglages();
 
   return (
-    <main
-      data-src="app/mentions-legales/page.tsx"
-      className="mx-auto max-w-3xl px-6 py-20 md:py-28"
-    >
-      <p className="eyebrow text-accent">Informations légales</p>
+    <>
+    <Nav />
+    <main id="contenu" className="pt-24">
+    <Section largeur="prose" rythme="serre" src="app/mentions-legales/page.tsx">
+      <p className="eyebrow text-primary">Informations légales</p>
       <h1 className="mt-4 font-display text-3xl sm:text-4xl md:text-5xl">Mentions légales</h1>
 
       <Bloc titre="Éditeur du site">
@@ -44,7 +49,7 @@ export default async function MentionsLegales() {
         {reglages.email ? (
           <p>
             Contact :{" "}
-            <a href={`mailto:${reglages.email}`} className="text-accent hover:underline">
+            <a href={`mailto:${reglages.email}`} className="text-primary underline underline-offset-4 hover:no-underline">
               {reglages.email}
             </a>
           </p>
@@ -75,12 +80,15 @@ export default async function MentionsLegales() {
       <Bloc titre="Données personnelles">
         <p>
           Le traitement des données collectées sur ce site est décrit dans notre{" "}
-          <a href="/confidentialite" className="text-accent hover:underline">
+          <a href="/confidentialite" className="text-primary underline underline-offset-4 hover:no-underline">
             politique de confidentialité
           </a>
           .
         </p>
       </Bloc>
+    </Section>
     </main>
+    <PiedDePage />
+    </>
   );
 }
