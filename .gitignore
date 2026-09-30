@@ -13,3 +13,7 @@ dist/
 Thumbs.db
 .vscode/
 .idea/
+
+# Sortie du build Netlify local
+.netlify/
+stalika/.netlify/

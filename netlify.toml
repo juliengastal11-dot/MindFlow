@@ -4,6 +4,7 @@
 [build]
   base = "stalika"
   command = "npx prisma generate && npx prisma db push && npm run build"
+  publish = ".next"
 
 # Sans ce greffon, Netlify publie le dossier .next comme des fichiers plats
 # et le site répond 404 : constaté au premier déploiement.
