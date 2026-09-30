@@ -38,6 +38,8 @@
   --color-ring: #c1a875;
   /* Le camel lisible, pour du texte ou un trait fin : même teinte, plus sombre. */
   --color-encre: #7b6537;
+  /* Le lin du fond clair, qui ne change pas la nuit : la page à l'écran de la plongée. */
+  --color-lin: #f8f7f2;
 
   /* Inter partout, servie par le site via next/font (app/layout.tsx). Les
      titres ne changent que de graisse. */

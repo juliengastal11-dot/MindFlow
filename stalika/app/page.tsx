@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/sections/hero";
+import { Plongee } from "@/components/ui/plongee";
 import { SceneRecherche } from "@/components/sections/scene-recherche";
 import { SceneModele } from "@/components/sections/scene-modele";
 import { SceneUtile } from "@/components/sections/scene-utile";
@@ -29,6 +30,14 @@ export default function Accueil() {
     <>
       <main id="contenu">
         <Hero />
+        {/* La plongée dans l'ordinateur (Kling 3.0, du plan large du hero au
+            gros plan sur l'écran), liée au défilement : 61 images. */}
+        <Plongee
+          images={{ dossier: "/hero/plongee", nombre: 61 }}
+          ecran={{ x: 0.3, y: 0.4, l: 0.275, h: 0.32 }}
+          focus={{ debut: { x: 0.29, y: 0.42 }, fin: { x: 0.44, y: 0.55 } }}
+          alt="La caméra s'approche du personnage assis au bord de la falaise, passe derrière son épaule et entre dans l'écran de son ordinateur."
+        />
         <SceneRecherche />
         <SceneModele />
         <SceneUtile />
