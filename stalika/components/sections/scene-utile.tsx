@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { Scene, useScene } from "@/components/ui/scene";
-import { Orbites } from "@/components/ui/orbites";
+import { Decor } from "@/components/ui/decor";
 import { Cascade } from "@/components/ui/cascade";
 import { Trace } from "@/components/ui/trace";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -11,7 +11,7 @@ import { gsap } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
 
 /* ---------------------------------------------------------------------------
-   Scène 3 · Utile (la nuit). Un bento de quatre cartes : les dessins de
+   Scène 3 · Utile (la nuit tombe sur la falaise du hero). Un bento de quatre cartes : les dessins de
    chaque carte se jouent sur la chronologie de la scène (blueprint §6).
    Rien ici n'est cliquable ni ne réagit au curseur.
 --------------------------------------------------------------------------- */
@@ -221,7 +221,16 @@ function Avis() {
 export function SceneUtile() {
   return (
     <Scene id="utile" nuit src="components/sections/scene-utile.tsx" aria-labelledby="utile-titre">
-      <Orbites />
+      {/* La nuit tombe : passage en accéléré du crépuscule à la nuit, joué une fois. */}
+      <Decor
+        image="/decors/crepuscule.webp"
+        fin="/decors/nuit.webp"
+        video={{
+          bureau: { webm: "/decors/nuit-tombe.webm", mp4: "/decors/nuit-tombe.mp4" },
+          mobile: { webm: "/decors/nuit-tombe-mobile.webm", mp4: "/decors/nuit-tombe-mobile.mp4" },
+        }}
+        voile="bg-linear-to-b from-background/85 via-background/35 to-background/70"
+      />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12 md:py-16">
         <div className="mb-8 max-w-2xl md:mb-10">
           <p className="eyebrow text-accent">02 · Utile</p>

@@ -4,12 +4,12 @@ import { useEffect, useRef } from "react";
 import { CarteMetier } from "@/components/sections/carte-metier";
 import { Champ3D } from "@/components/ui/champ3d";
 import { Decode } from "@/components/ui/decode";
-import { Orbites } from "@/components/ui/orbites";
+import { Decor } from "@/components/ui/decor";
 import { Scene, useScene } from "@/components/ui/scene";
 import { gsap } from "@/lib/gsap";
 
 /* ---------------------------------------------------------------------------
-   Scène 2 · Pas un modèle (la nuit).
+   Scène 2 · Pas un modèle (le crépuscule, sur le paysage du hero).
 
    Le champ et le mot qui se décode portent le film ; le paragraphe arrive en
    dernier, de 0,82 à 0,95. L'eyebrow et le titre sont là dès le début.
@@ -55,7 +55,8 @@ function Paragraphe({ children }: { children: React.ReactNode }) {
 export function SceneModele() {
   return (
     <Scene id="sur-mesure" nuit src="components/sections/scene-modele.tsx" aria-labelledby="modele-titre">
-      <Orbites />
+      {/* Le crépuscule : dix minutes après le coucher de soleil du hero. */}
+      <Decor image="/decors/crepuscule.webp" voile="bg-linear-to-b from-background/85 via-background/45 to-background/80 md:bg-linear-to-r md:from-background/90 md:via-background/45 md:to-background/10" />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-16 md:py-20">
         <div className="md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-center md:gap-12">
           <div>
