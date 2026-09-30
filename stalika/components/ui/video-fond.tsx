@@ -87,12 +87,14 @@ export function VideoFond({
         aria-hidden
       >
         {/* Le navigateur prend la première source qu'il sait lire et dont la
-            condition est vraie : la légère sur téléphone, sinon la complète ;
-            le MP4 d'abord (Safari, téléphones), le WebM en secours. */}
-        {srcMobile && <source src={srcMobile} type="video/mp4" media="(max-width: 767px)" />}
+            condition est vraie : la légère sur téléphone, sinon la complète.
+            Le WebM (VP9) d'abord : Chrome, Edge, Firefox et Safari récent le
+            lisent, pour moitié moins de poids ; le MP4 (H.264) en secours
+            pour les appareils plus anciens. */}
         {srcMobileWebm && <source src={srcMobileWebm} type="video/webm" media="(max-width: 767px)" />}
-        <source src={src} type="video/mp4" />
+        {srcMobile && <source src={srcMobile} type="video/mp4" media="(max-width: 767px)" />}
         {srcWebm && <source src={srcWebm} type="video/webm" />}
+        <source src={src} type="video/mp4" />
       </video>
       <div aria-hidden className="absolute inset-0 -z-10 bg-primary" style={{ opacity: voile / 100 }} />
       {children}

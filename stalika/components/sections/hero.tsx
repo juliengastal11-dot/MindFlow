@@ -12,7 +12,9 @@ import { SITE } from "@/lib/site";
    cadre arrondi sur fond sombre, menu en onglet accroché au bord haut, nom
    géant en bas à gauche, texte court et bouton pilule en bas à droite). Rien
    de son code, de son image ni de ses textes : la vidéo est la nôtre
-   (image Flux Pro Ultra, animée par Kling 3.0, générées le 2026-09-30).
+   (image Flux Pro Ultra, animée par Kling 3.0, générées le 2026-09-30),
+   montée en aller-retour adouci : le zoom avance 16 s, ralentit jusqu'à
+   s'arrêter, puis recule 16 s ; aucune reprise au début, donc aucun fondu.
 
    Le cadre vit dans la version sombre de la palette (`.nuit`) : le texte clair
    se lit sur la vidéo grâce à un dégradé sombre vers le bas, dans les jetons
