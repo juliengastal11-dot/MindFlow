@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import { Scene, useScene } from "@/components/ui/scene";
-import { Decor } from "@/components/ui/decor";
 import { Cascade } from "@/components/ui/cascade";
 import { Trace } from "@/components/ui/trace";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -220,17 +219,9 @@ function Avis() {
 
 export function SceneUtile() {
   return (
-    <Scene id="utile" nuit src="components/sections/scene-utile.tsx" aria-labelledby="utile-titre">
-      {/* La nuit tombe : passage en accéléré du crépuscule à la nuit, joué une fois. */}
-      <Decor
-        image="/decors/crepuscule.webp"
-        fin="/decors/nuit.webp"
-        video={{
-          bureau: { webm: "/decors/nuit-tombe.webm", mp4: "/decors/nuit-tombe.mp4" },
-          mobile: { webm: "/decors/nuit-tombe-mobile.webm", mp4: "/decors/nuit-tombe-mobile.mp4" },
-        }}
-        voile="bg-linear-to-b from-background/85 via-background/35 to-background/70"
-      />
+    <Scene id="utile" nuit className="bg-transparent" src="components/sections/scene-utile.tsx" aria-labelledby="utile-titre">
+      {/* Voile sur le ciel commun (composant Ciel, dans la page) : horizontal, pour que deux sections de nuit se raccordent sans couture. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-2 inset-y-0 bg-background/55 sm:inset-x-3 md:bg-transparent md:bg-linear-to-r md:from-background/85 md:via-background/40 md:to-background/15" />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12 md:py-16">
         <div className="mb-8 max-w-2xl md:mb-10">
           <p className="eyebrow text-accent">02 · Utile</p>

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import { Scene, useScene } from "@/components/ui/scene";
-import { Decor } from "@/components/ui/decor";
 import { Frappe } from "@/components/ui/frappe";
 import { Barre } from "@/components/ui/barre";
 import { Card } from "@/components/ui/card";
@@ -134,9 +133,9 @@ function Maquette() {
 
 export function SceneRelecture() {
   return (
-    <Scene id="relecture" nuit src="components/sections/scene-relecture.tsx" aria-labelledby="relecture-titre">
-      {/* Pleine nuit : la cabane éclairée, l'écran allumé. On relit pendant que ça dort. */}
-      <Decor image="/decors/nuit.webp" voile="bg-linear-to-b from-background/80 via-background/55 to-background/85" />
+    <Scene id="relecture" nuit className="bg-transparent" src="components/sections/scene-relecture.tsx" aria-labelledby="relecture-titre">
+      {/* Voile sur le ciel commun (composant Ciel, dans la page) : horizontal, pour que deux sections de nuit se raccordent sans couture. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-2 inset-y-0 bg-background/55 sm:inset-x-3 md:bg-transparent md:bg-linear-to-r md:from-background/85 md:via-background/40 md:to-background/15" />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12 md:py-16">
         <div className="space-y-8 md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-center md:gap-12 md:space-y-0">
           <div>

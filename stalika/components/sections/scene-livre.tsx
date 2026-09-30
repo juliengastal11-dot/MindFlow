@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Scene, useScene } from "@/components/ui/scene";
-import { Decor } from "@/components/ui/decor";
 import { Trace } from "@/components/ui/trace";
 import { Rouleaux } from "@/components/ui/rouleaux";
 import { Card } from "@/components/ui/card";
@@ -70,18 +69,9 @@ function Offre() {
 
 export function SceneLivre() {
   return (
-    <Scene id="livre" src="components/sections/scene-livre.tsx" aria-labelledby="livre-titre">
-      {/* Le jour se lève : passage en accéléré de la nuit à l'aube, joué une
-          fois. La promesse des 72 h : on vous laisse le soir, c'est là au matin. */}
-      <Decor
-        image="/decors/nuit.webp"
-        fin="/decors/aube.webp"
-        video={{
-          bureau: { webm: "/decors/aube.webm", mp4: "/decors/aube.mp4" },
-          mobile: { webm: "/decors/aube-mobile.webm", mp4: "/decors/aube-mobile.mp4" },
-        }}
-        voile="bg-linear-to-b from-background/85 via-background/45 to-background/80 md:bg-linear-to-r md:from-background/90 md:via-background/45 md:to-background/10"
-      />
+    <Scene id="livre" className="bg-transparent" src="components/sections/scene-livre.tsx" aria-labelledby="livre-titre">
+      {/* Voile sur le ciel commun (thème sombre hérité de Ciel), en fondu depuis le haut pour laisser voir le lever du jour. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-2 inset-y-0 bg-background/70 sm:inset-x-3 md:bg-transparent md:bg-linear-to-r md:from-background/90 md:via-background/55 md:to-background/5 [mask-image:linear-gradient(to_bottom,transparent,black_30%)]" />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12 md:py-16">
         <div className="space-y-8 md:grid md:grid-cols-2 md:items-center md:gap-12 md:space-y-0">
           <div>
