@@ -27,7 +27,7 @@ se posent tels quels.
 | Ce qui se tait | Les photos : il n'y en a aucune. Une seule image, l'illustration de l'ouverture, à nous. Le reste vit de ses composants dessinés, du logo et de la typographie. L'orange est rare : il remplit un bouton, souligne un mot, ne porte jamais de texte sur fond clair |
 | Décor | Le jour : le papier crème, nu, et l'illustration en ouverture. La nuit : les **orbites**, deux grands arcs fins qui tournent lentement avec la page, seul décor des trois scènes sombres. Un fond SVG de plus au maximum (séparateur avant la fin calme) |
 
-## §2 · Relevé de design
+## Relevé de design (§2)
 
 **Requêtes** (moteur Pro Max, `search.py`, rendu le 2026-09-30) :
 
@@ -87,7 +87,7 @@ aux droits, au prix et au délai ; « payable en plusieurs fois, sans frais » r
 FAQ reprend les six objections, une par question. Aucun témoignage inventé : la section « preuve
 chiffrée » de la vidéo de référence n'existe pas ici, faute de chiffre mesuré.
 
-## §4 · Relevé d'inspiration
+## Relevé d'inspiration (§4)
 
 Bibliothèque : le connecteur 21st (recherche par besoin, images de rendu regardées sur une
 planche-contact, aucun code récupéré). Le skill `bibliotheques-ui` n'est pas dans cette session,

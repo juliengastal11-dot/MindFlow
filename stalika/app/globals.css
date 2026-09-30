@@ -122,6 +122,44 @@ html.js [data-mouvement="hero"] > * {
   visibility: hidden;
 }
 
+/* --- Le film ---------------------------------------------------------------
+   components/ui/scene, frappe, decode, barre, trace, champ3d, rouleaux, paysage.
+
+   Ce qu'une scène va rejouer depuis son état de départ est masqué tant que sa
+   chronologie n'est pas construite : sinon le texte complet s'afficherait un
+   instant avant de s'effacer pour se retaper. `Scene` lève le masque une fois
+   la chronologie posée. Sans JavaScript, rien n'est masqué. */
+html.js [data-film-cache] {
+  visibility: hidden;
+}
+
+/* Le curseur de la frappe : un trait qui clignote, période réglée en ligne
+   par la primitive depuis lib/mouvement.ts. */
+.frappe-curseur {
+  display: inline-block;
+  width: 0.08em;
+  height: 0.95em;
+  margin-left: 0.06em;
+  vertical-align: -0.12em;
+  background: currentColor;
+  animation: frappe-clignote var(--film-curseur, 0.53s) steps(2, start) infinite;
+}
+@keyframes frappe-clignote {
+  to {
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-film-cache] {
+    visibility: visible;
+  }
+  .frappe-curseur {
+    animation: none;
+    visibility: hidden;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   /* Les composants affichent alors sans animer ; la feuille ne masque rien
      non plus, par sécurité. */

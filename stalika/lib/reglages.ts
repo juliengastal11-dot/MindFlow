@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { SITE } from "@/lib/site";
 
 /* ---------------------------------------------------------------------------
    Réglages éditables par le propriétaire du site, depuis le back-office.
@@ -24,9 +25,11 @@ import { db } from "@/lib/db";
    est versionné avec le projet, donc relisible dans une revue de code.
 --------------------------------------------------------------------------- */
 
+/* Stalika : le téléphone affiché est le WhatsApp de lib/site.ts ; l'e-mail
+   viendra plus tard (blueprint H9), il reste vide et facultatif. */
 export const REGLAGES_DEFAUT = {
   email: "",
-  telephone: "",
+  telephone: SITE.whatsappAffiche,
 };
 
 export type CleReglage = keyof typeof REGLAGES_DEFAUT;
@@ -46,7 +49,7 @@ export const LIBELLES_REGLAGES: Record<CleReglage, string> = {
 export const CLES_REGLAGES = Object.keys(REGLAGES_DEFAUT) as CleReglage[];
 
 /** Réglages qu'on peut légitimement laisser vides. */
-export const CLES_OPTIONNELLES: readonly CleReglage[] = [];
+export const CLES_OPTIONNELLES: readonly CleReglage[] = ["email"];
 
 /** Lit les réglages en base, complétés par les valeurs par défaut. */
 export async function lireReglages(): Promise<Reglages> {
