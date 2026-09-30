@@ -78,9 +78,19 @@ export const MOUVEMENT = {
     /** Position de la scène dans l'écran qui lance son animation. */
     declencheur: "top 65%",
 
-    /** Le mot qui se compose lettre par lettre (STALIKA, en ouverture) : caractères de
-        brouillage, temps de brouillage d'une lettre, écart entre deux lettres. */
-    brouille: { glyphes: "_!X$0-+*#/<>", parLettre: 0.55, decalage: 0.14 },
+    /** Le mot qui se compose lettre par lettre (STALIKA, en ouverture), puis scintille. */
+    brouille: {
+      /* Symboles pas plus larges qu'une lettre moyenne : chaque lettre a une
+         boîte de largeur fixe, un « % » ou un « & » débordaient sur la voisine. */
+      glyphes: "_!X$0-+*/<>?=",
+      /** Entrée : temps de brouillage d'une lettre, et nombre de symboles qu'elle fait défiler. */
+      parLettre: 1.4,
+      changements: 22,
+      /** Écart entre le départ de deux lettres. */
+      decalage: 0.32,
+      /** Après l'entrée : une lettre au hasard se rebrouille, puis une pause avant la suivante. */
+      scintille: { duree: 0.45, changements: 7, pauseMin: 1.2, pauseMax: 2.6 },
+    },
 
     /** Le texte qui se tape : période du clignotement du curseur, en secondes. */
     frappe: { curseur: 0.53 },

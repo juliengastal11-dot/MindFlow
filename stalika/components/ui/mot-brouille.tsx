@@ -10,8 +10,10 @@ import { MOUVEMENT } from "@/lib/mouvement";
 
    Même mécanique que le logo qui s'ouvre (le composant « special text » que
    J a apporté), mais lettre par lettre et en grand : chaque lettre apparaît
-   à son tour, fait défiler quelques caractères au hasard, puis se fige sur la
-   bonne ; la suivante part un peu après. Joué une fois, au montage.
+   à son tour, fait tourner une série de symboles au hasard, puis se fige sur
+   la bonne ; la suivante part un peu après. Une fois le mot complet, il
+   scintille sans fin : une lettre au hasard se rebrouille un instant et
+   retombe juste, puis une autre, une seule à la fois.
 
    Pas de tremblement : chaque lettre est une boîte dont la largeur est
    mesurée sur la lettre finale avant que le brouillage ne commence. Un « W »
@@ -43,41 +45,67 @@ export function MotBrouille({ mot, delai = 0, className, ...props }: MotBrouille
       gsap.set(lettres, { autoAlpha: 1 });
       return;
     }
-    const { glyphes, parLettre, decalage } = MOUVEMENT.film.brouille;
+    const { glyphes, parLettre, changements, decalage, scintille } = MOUVEMENT.film.brouille;
+    const auHasard = (sauf?: string) => {
+      let g = glyphes[Math.floor(Math.random() * glyphes.length)];
+      if (g === sauf) g = glyphes[(glyphes.indexOf(g) + 1) % glyphes.length];
+      return g;
+    };
 
-    // Largeur figée sur la lettre finale, avant tout brouillage.
+    // Largeur figée sur la lettre finale, pour tout le temps de vie du mot :
+    // le scintillement continue après l'entrée, le mot ne doit jamais bouger.
     lettres.forEach((l) => {
       l.style.width = `${l.getBoundingClientRect().width}px`;
     });
 
+    /* Brouille une lettre : `n` glyphes au hasard sur `duree` secondes, puis
+       la bonne lettre. Renvoie le tween, pour l'enchaîner. */
+    const brouiller = (l: HTMLElement, duree: number, n: number) => {
+      const finale = l.dataset.lettre ?? "";
+      const etat = { p: 0 };
+      let dernier = -1;
+      return gsap.to(etat, {
+        p: 1,
+        duration: duree,
+        ease: "none",
+        onUpdate: () => {
+          const pas = Math.min(n - 1, Math.floor(etat.p * n));
+          if (pas === dernier) return;
+          dernier = pas;
+          l.textContent = auHasard(l.textContent ?? undefined);
+        },
+        onComplete: () => {
+          l.textContent = finale;
+        },
+      });
+    };
+
     const ctx = gsap.context(() => {
+      // L'entrée : chaque lettre apparaît à son tour, tourne longtemps, se fige.
       const tl = gsap.timeline({ delay: delai });
       lettres.forEach((l, i) => {
-        const finale = l.dataset.lettre ?? "";
-        if (finale.trim() === "") return;
-        const etat = { p: 0 };
+        if ((l.dataset.lettre ?? "").trim() === "") return;
         gsap.set(l, { autoAlpha: 0 });
         tl.set(l, { autoAlpha: 1 }, i * decalage);
-        tl.to(
-          etat,
-          {
-            p: 1,
-            duration: parLettre,
-            ease: "none",
-            onUpdate: () => {
-              // Un nouveau glyphe tous les 1/12 de la course, jamais deux fois le même.
-              const pas = Math.floor(etat.p * 12);
-              l.textContent = etat.p >= 1 ? finale : glyphes[(pas * 7 + i * 3) % glyphes.length];
-            },
-            onComplete: () => {
-              l.textContent = finale;
-            },
-          },
-          i * decalage,
-        );
+        tl.add(brouiller(l, parLettre, changements), i * decalage);
       });
+
+      // Ensuite, sans fin : une lettre au hasard se rebrouille, puis se refige.
+      // Jamais deux fois de suite la même, une seule à la fois.
+      // `ctx.add` rattache au contexte ce qui naît plus tard, dans un rappel :
+      // sans lui, le scintillement survivrait au démontage du composant.
+      let precedente = -1;
+      const suivante = () =>
+        ctx.add(() => {
+          let i = Math.floor(Math.random() * lettres.length);
+          if (i === precedente) i = (i + 1) % lettres.length;
+          precedente = i;
+          brouiller(lettres[i], scintille.duree, scintille.changements);
+          const pause = scintille.pauseMin + Math.random() * (scintille.pauseMax - scintille.pauseMin);
+          gsap.delayedCall(scintille.duree + pause, suivante);
+        });
       tl.eventCallback("onComplete", () => {
-        lettres.forEach((l) => (l.style.width = ""));
+        ctx.add(() => gsap.delayedCall(scintille.pauseMin, suivante));
       });
     }, el);
 
