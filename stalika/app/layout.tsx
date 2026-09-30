@@ -1,8 +1,20 @@
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { SITE } from "@/lib/site";
 import { DefilementFluide } from "@/components/ui/defilement-fluide";
 import { BuildYourSiteOverlay } from "@/components/buildyoursite/overlay";
+
+/* La police est servie par le site, via next/font : aucune requête vers un
+   CDN de polices, donc aucune adresse IP de visiteur transmise à un tiers, et
+   la page de confidentialité reste vraie. Plus Jakarta Sans est une police
+   variable : toutes les graisses arrivent dans un seul fichier, et les titres
+   ne font que monter en graisse. */
+const sans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--police-sans",
+});
 
 /* Les métadonnées de base, héritées par toutes les pages. Chaque page pose
    les siennes, `title`, `description` et `alternates.canonical`, et le gabarit
@@ -36,12 +48,12 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang="fr" className={sans.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_JS }} />
       </head>
       <body>
-        {/* Retire cette ligne pour une application : le défilement natif y est préférable. */}
+        {/* Vitrine : le défilement fluide reste. Il se retire tout seul en mouvement réduit. */}
         <DefilementFluide />
         {children}
         {process.env.NODE_ENV === "development" && <BuildYourSiteOverlay />}

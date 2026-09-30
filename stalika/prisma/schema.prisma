@@ -7,13 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Modèle d'exemple, remplacé au bootstrap par le schéma du blueprint.
-model Contact {
-  id        String   @id @default(cuid())
-  nom       String
-  email     String
-  message   String
-  createdAt DateTime @default(now())
+// Une réponse au questionnaire de contact : une ligne par personne qui est
+// allée au bout de la conversation. Lue dans l'espace privé, nulle part ailleurs.
+model Demande {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  prenom         String
+  activite       String
+  situation      String
+  // Plusieurs choix possibles : libellés séparés par « | ».
+  objectifs      String
+  demandeClients String?
+  actifs         String
+  siteAime       String?
+  budget         String
+  delai          String
+  // « whatsapp » ou « email », et la valeur saisie à côté.
+  contactMode    String
+  contactValeur  String
+  consentement   Boolean  @default(false)
+  // a_traiter | repondu | archive
+  statut         String   @default("a_traiter")
+  // Page d'où la conversation a été lancée.
+  page           String?
 }
 
 // Conservé à CHAQUE bootstrap, quel que soit le schéma du blueprint :
