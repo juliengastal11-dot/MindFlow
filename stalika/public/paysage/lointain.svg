@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMax slice">
+  <path d="M0 700c150-90 300-130 480-110 140 15 240-60 400-70 190-12 330 60 470 30 100-20 170-40 250-30v480H0z" fill="#9fb4c4"/>
+  <path d="M0 760c180-60 330-70 520-40 150 25 300-30 470-25 180 5 300 60 470 40 60-8 100-15 140-10v235H0z" fill="#7e93a4"/>
+  <g fill="#c9bba3">
+    <rect x="380" y="690" width="80" height="90"/>
+    <rect x="470" y="670" width="60" height="110"/>
+    <rect x="540" y="700" width="90" height="80"/>
+    <rect x="1040" y="680" width="70" height="100"/>
+    <rect x="1120" y="700" width="100" height="80"/>
+    <rect x="1230" y="660" width="40" height="120"/>
+  </g>
+  <g fill="#b46a44">
+    <path d="M375 690h90l-45-40z"/>
+    <path d="M465 670h70l-35-38z"/>
+    <path d="M535 700h100l-50-36z"/>
+    <path d="M1035 680h80l-40-42z"/>
+    <path d="M1115 700h110l-55-40z"/>
+    <path d="M1225 660h50l-25-45z"/>
+  </g>
+  <rect x="1245" y="600" width="12" height="60" fill="#c9bba3"/>
+  <path d="M1240 600h22l-11-22z" fill="#b46a44"/>
+</svg>

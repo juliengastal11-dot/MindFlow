@@ -1,0 +1,255 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ===========================================================================
+   THEME : ce bloc est remplacé au bootstrap par la palette décidée pour ce site.
+   Les noms de variables sont ceux qu'attendent tous les composants du socle :
+   on remplace les valeurs, jamais les noms.
+   =========================================================================== */
+/* Direction « La terrasse, le jour et la nuit » (blueprint §1, version 90°) :
+   le site est clair et chaud, papier crème et marine du logo ; l'orange du
+   logo pour tout ce qui appelle un geste. Les scènes 2 à 4 du film passent
+   « la nuit » : la classe `.nuit` remappe les mêmes variables, et les
+   utilitaires `bg-background`, `text-foreground`… suivent sans rien changer.
+   Contrastes relevés : marine sur crème 17,6:1, marine sur orange 8,3:1,
+   gris sur crème 7:1 ; la nuit : crème sur marine 16,9:1, orange sur marine
+   8,3:1, gris nuit 9:1. L'orange ne porte jamais de texte sur fond clair
+   (2,1:1) : il remplit un bouton ou souligne, le texte reste marine. */
+@theme {
+  --color-background: #fbf6ee;
+  --color-foreground: #070f27;
+  --color-card: #ffffff;
+  --color-card-foreground: #070f27;
+  --color-primary: #070f27;
+  --color-on-primary: #f6f1e8;
+  --color-secondary: #dbe8f4;
+  --color-on-secondary: #070f27;
+  --color-accent: #ff8f03;
+  --color-on-accent: #070f27;
+  --color-muted: #f1eadf;
+  --color-muted-foreground: #4b5470;
+  --color-border: #e2d9c9;
+  --color-destructive: #b91c1c;
+  --color-on-destructive: #fbf6ee;
+  --color-ring: #ff8f03;
+
+  /* Deux familles, servies par le site via next/font (app/layout.tsx) :
+     Averia Serif Libre pour les titres, au trait un peu irrégulier, comme
+     peint ; Plus Jakarta Sans, variable, pour tout le reste. */
+  --font-sans: var(--police-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--police-serif), ui-serif, Georgia, serif;
+
+  --radius-card: 1rem;
+}
+
+/* La nuit : même vocabulaire, autres valeurs. Posée sur une scène du film ou
+   sur n'importe quelle section qui doit passer dans le monde du logo. */
+.nuit {
+  --color-background: #070f27;
+  --color-foreground: #f6f1e8;
+  --color-card: #111a3a;
+  --color-card-foreground: #f6f1e8;
+  --color-primary: #16214a;
+  --color-on-primary: #f6f1e8;
+  --color-secondary: #24306a;
+  --color-on-secondary: #f6f1e8;
+  --color-muted: #0c1533;
+  --color-muted-foreground: #aab2c8;
+  --color-border: #1f2a4d;
+  color-scheme: dark;
+}
+
+/* Eyebrow : le petit libellé en capitales espacées au-dessus d'un titre.
+
+   Il vit ici et nulle part ailleurs. `Section`, `not-found` et les gabarits du
+   module legal posent tous `className="eyebrow"` : quand cette règle manquait,
+   ils rendaient un paragraphe ordinaire, sans capitales ni espacement. Le
+   défaut ne se voyait pas (le texte s'affichait quand même) et il a traversé
+   un bootstrap entier avant d'être trouvé. */
+@utility eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* ===========================================================================
+   Mouvement
+   Les courbes intégrées du navigateur sont trop molles. On passe par ces
+   deux-là partout, et on n'en invente pas d'autres.
+   =========================================================================== */
+@theme {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* --- Mouvement piloté par GSAP --------------------------------------------
+   components/ui/reveal, cascade, entree-hero, compteur, parallaxe, defilant.
+
+   Ce que le mouvement va dévoiler est masqué d'avance, mais SEULEMENT quand
+   JavaScript a pris la main : `app/layout.tsx` pose `html.js` avant le
+   premier rendu. Sans JavaScript, rien n'est masqué et tout est visible.
+   Sans cette règle, un élément apparaîtrait, disparaîtrait à l'hydratation,
+   puis réapparaîtrait.
+
+   GSAP lève le masque en style en ligne (`autoAlpha`), qui l'emporte sur
+   cette feuille. Si TOUT reste invisible, un script a planté avant
+   l'hydratation : regarde la console, ne touche pas à cette règle. */
+html.js [data-mouvement="reveal"],
+html.js [data-mouvement="compteur"],
+html.js [data-mouvement="cascade"] > *,
+html.js [data-mouvement="hero"] > * {
+  visibility: hidden;
+}
+
+/* --- Le film ---------------------------------------------------------------
+   components/ui/scene, frappe, decode, barre, trace, champ3d, rouleaux, paysage.
+
+   Ce qu'une scène va rejouer depuis son état de départ est masqué tant que sa
+   chronologie n'est pas construite : sinon le texte complet s'afficherait un
+   instant avant de s'effacer pour se retaper. `Scene` lève le masque une fois
+   la chronologie posée. Sans JavaScript, rien n'est masqué. */
+html.js [data-film-cache] {
+  visibility: hidden;
+}
+
+/* Le logo qui se compose (components/ui/logo-anime) : l'image attend que
+   l'effet ait décidé de jouer ou non. Sans JavaScript, elle est là. */
+html.js .logo-anime[data-etat="attente"] img {
+  visibility: hidden;
+}
+
+/* Le curseur de la frappe : un trait qui clignote, période réglée en ligne
+   par la primitive depuis lib/mouvement.ts. */
+.frappe-curseur {
+  display: inline-block;
+  width: 0.08em;
+  height: 0.95em;
+  margin-left: 0.06em;
+  vertical-align: -0.12em;
+  background: currentColor;
+  animation: frappe-clignote var(--film-curseur, 0.53s) steps(2, start) infinite;
+}
+@keyframes frappe-clignote {
+  to {
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-film-cache] {
+    visibility: visible;
+  }
+  .frappe-curseur {
+    animation: none;
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Les composants affichent alors sans animer ; la feuille ne masque rien
+     non plus, par sécurité. */
+  html.js [data-mouvement="reveal"],
+  html.js [data-mouvement="compteur"],
+  html.js [data-mouvement="cascade"] > *,
+  html.js [data-mouvement="hero"] > * {
+    visibility: visible;
+  }
+}
+
+/* ===========================================================================
+   LES ÉTATS : ce qui répond
+
+   Les primitives de `components/ui/` répondent toutes à la même question :
+   comment un élément ARRIVE. Aucune ne répond à l'autre moitié : comment il
+   RÉPOND quand on s'approche. C'est pourtant là que se joue la sensation de
+   vie d'un site : une carte qui se soulève sous le curseur se remarque plus
+   qu'une apparition au défilement.
+
+   Sans ces classes, chaque agent improvise la sienne : sur un bootstrap réel,
+   trois fichiers portaient trois transitions différentes et un quatrième n'en
+   avait aucune. Le vocabulaire tient en trois classes ; on n'en invente pas
+   d'autres.
+
+   Deux garde-fous valent pour toutes :
+   · `(hover: hover) and (pointer: fine)` : sur tactile, un appui déclenche un
+     faux survol et l'état resterait collé après le doigt ;
+   · `prefers-reduced-motion` : le mouvement disparaît, la lisibilité reste.
+   =========================================================================== */
+
+/* Une carte, une vignette, un bloc cliquable : se soulève, s'enfonce à la
+   pression. À réserver à ce qui MÈNE quelque part : un bloc décoratif qui
+   réagit au curseur promet un clic qui n'existe pas. */
+.carte-reactive {
+  transition: transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out),
+    border-color 200ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .carte-reactive:hover,
+  .group:hover > .carte-reactive {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px -18px color-mix(in oklab, var(--color-foreground) 45%, transparent);
+  }
+}
+.carte-reactive:active {
+  transform: translateY(-1px);
+}
+
+/* Un lien terminé par une flèche : « Découvrir X → ». La flèche avance, le
+   texte ne bouge pas : le déplacement dit la direction sans faire sauter la
+   ligne. La flèche doit porter la classe `.fleche`. */
+.lien-fleche .fleche {
+  transition: transform 200ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .lien-fleche:hover .fleche {
+    transform: translateX(4px);
+  }
+}
+
+/* --- Zoom au survol d'une carte photo ------------------------------------
+   Conditionne a un vrai pointeur : sur tactile, un appui declenche un faux
+   survol et l'image resterait agrandie apres le doigt. */
+.zoom-survol {
+  transition: transform 700ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .group:hover .zoom-survol {
+    transform: scale(1.05);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zoom-survol,
+  .carte-reactive,
+  .lien-fleche .fleche {
+    transition: none;
+  }
+  .group:hover .zoom-survol,
+  .carte-reactive:hover,
+  .group:hover > .carte-reactive,
+  .carte-reactive:active,
+  .lien-fleche:hover .fleche {
+    transform: none;
+  }
+}
