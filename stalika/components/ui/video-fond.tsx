@@ -14,7 +14,7 @@ import { VideoAdaptative } from "@/components/ui/video-adaptative";
      Sans JavaScript, avant le chargement, ou si le fichier manque, on voit la
      photo. Jamais un rectangle noir. Pas d'attribut `poster` : il ne sait
      pas changer de cadrage selon l'écran, alors que la photo dessous, si.
-   - **`autoPlay muted loop playsInline`**, les quatre ensemble : sans `muted`
+   - **`autoPlay muted loop playsInline`** (`loop` sauf `boucle={false}`), ensemble : sans `muted`
      ou sans `playsInline`, le téléphone n'y touche pas. `preload="metadata"`
      pour ne pas tirer deux mégaoctets avant le premier écran.
    - **Mouvement réduit : la vidéo disparaît, la photo reste.** C'est du CSS
@@ -49,6 +49,8 @@ export type VideoFondProps = React.ComponentProps<"section"> & {
   slot?: string;
   /** Opacité du voile, 0 à 100. 50 laisse lire un titre blanc sur presque tout. */
   voile?: number;
+  /** Faux : lue une fois, la vidéo s'arrête sur sa dernière image. */
+  boucle?: boolean;
 };
 
 export function VideoFond({
@@ -61,6 +63,7 @@ export function VideoFond({
   alt,
   slot = "hero",
   voile = 50,
+  boucle = true,
   className,
   children,
   ...props
@@ -86,6 +89,7 @@ export function VideoFond({
         className="absolute inset-0 -z-10"
         bureau={{ mp4: src, webm: srcWebm }}
         mobile={srcMobile ? { mp4: srcMobile, webm: srcMobileWebm } : undefined}
+        boucle={boucle}
       />
       <div aria-hidden className="absolute inset-0 -z-10 bg-primary" style={{ opacity: voile / 100 }} />
       {children}

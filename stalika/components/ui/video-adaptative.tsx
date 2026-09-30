@@ -27,10 +27,12 @@ export type VideoAdaptativeProps = {
   mobile?: SourcesVideo;
   /** Largeur, en pixels, en dessous de laquelle la version mobile est servie. */
   seuil?: number;
+  /** Faux : la vidéo est lue une fois puis reste sur sa dernière image. */
+  boucle?: boolean;
   className?: string;
 };
 
-export function VideoAdaptative({ bureau, mobile, seuil = 768, className }: VideoAdaptativeProps) {
+export function VideoAdaptative({ bureau, mobile, seuil = 768, boucle = true, className }: VideoAdaptativeProps) {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -64,7 +66,7 @@ export function VideoAdaptative({ bureau, mobile, seuil = 768, className }: Vide
       className={cn("pointer-events-none h-full w-full object-cover motion-reduce:hidden", className)}
       autoPlay
       muted
-      loop
+      loop={boucle}
       playsInline
       preload="metadata"
       aria-hidden
