@@ -134,7 +134,7 @@ function Maquette() {
 
 export function SceneRelecture() {
   return (
-    <Scene nuit src="components/sections/scene-relecture.tsx" aria-labelledby="relecture-titre">
+    <Scene id="relecture" nuit src="components/sections/scene-relecture.tsx" aria-labelledby="relecture-titre">
       <Orbites />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12 md:py-16">
         <div className="space-y-8 md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-center md:gap-12 md:space-y-0">

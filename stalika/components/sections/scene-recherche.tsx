@@ -5,20 +5,18 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { EntreeHero } from "@/components/ui/entree-hero";
 import { Frappe } from "@/components/ui/frappe";
-import { Paysage } from "@/components/ui/paysage";
 import { Scene, useScene } from "@/components/ui/scene";
 import { gsap } from "@/lib/gsap";
 import { lienWhatsApp } from "@/lib/site";
 
 /* ---------------------------------------------------------------------------
-   Scène 1 · Ils vous cherchent (le jour, l'ouverture).
+   Scène 1 · Ils vous cherchent (le jour, juste après le hero vidéo).
 
    Chronologie (fractions de la scène) :
    0,08 → 0,42  la frappe (primitive Frappe)
    0,45 → 0,62  les trois suggestions se déplient une à une
    0,64 → 0,70  la première se surligne
    0,74 → 0,90  la barre et la liste glissent vers le haut, la phrase de fin arrive
-   0    → 0,10  l'indice de défilement s'efface
 --------------------------------------------------------------------------- */
 
 const SUGGESTIONS = [
@@ -46,29 +44,6 @@ function Loupe() {
   );
 }
 
-function Indice() {
-  const scene = useScene();
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!scene || !el) return;
-    return scene.inscrire((tl) => {
-      tl.to(el, { autoAlpha: 0, duration: 0.1 }, 0);
-    });
-  }, [scene]);
-
-  return (
-    <div
-      ref={ref}
-      className="pointer-events-none absolute inset-x-0 bottom-3 z-10 px-6 text-center md:bottom-6"
-    >
-      <span className="eyebrow text-muted-foreground">
-        Faites défiler : la suite se joue sous vos doigts.
-      </span>
-    </div>
-  );
-}
 
 function Sequence() {
   const scene = useScene();
@@ -158,26 +133,21 @@ function Sequence() {
 
 export function SceneRecherche() {
   return (
-    <Scene src="components/sections/scene-recherche.tsx" aria-labelledby="recherche-titre">
-      <Paysage
-        alt="Une terrasse de village en plein jour"
-        calques={[
-          { src: "/paysage/ciel.svg", vitesse: "ciel" },
-          { src: "/paysage/lointain.svg", vitesse: "lointain" },
-          { src: "/paysage/premier-plan.svg", vitesse: "premierPlan" },
-        ]}
-        voile
-      />
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-14 pt-24 md:pb-16 md:pt-28">
+    <Scene
+      id="contenu-suite"
+      src="components/sections/scene-recherche.tsx"
+      aria-labelledby="recherche-titre"
+    >
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-20 md:py-28">
         <EntreeHero>
           <p className="eyebrow text-encre">En ce moment, quelque part en France</p>
-          <h1
+          <h2
             id="recherche-titre"
             className="mt-3 max-w-3xl font-display text-3xl sm:text-4xl md:mt-4 md:text-5xl"
           >
             {"Quelqu'un cherche ce que vous faites."}
             <span className="block text-encre">Maintenant.</span>
-          </h1>
+          </h2>
           <p className="mt-3 max-w-xl text-base md:mt-5 md:text-lg">
             Sur son téléphone, entre deux rues. Ce qu&apos;il trouve en premier décide s&apos;il vous
             appelle.
@@ -207,7 +177,6 @@ export function SceneRecherche() {
         </EntreeHero>
         <Sequence />
       </div>
-      <Indice />
     </Scene>
   );
 }

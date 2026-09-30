@@ -78,6 +78,10 @@ export const MOUVEMENT = {
     /** Position de la scène dans l'écran qui lance son animation. */
     declencheur: "top 65%",
 
+    /** Le mot qui se compose lettre par lettre (STALIKA, en ouverture) : caractères de
+        brouillage, temps de brouillage d'une lettre, écart entre deux lettres. */
+    brouille: { glyphes: "_!X$0-+*#/<>", parLettre: 0.55, decalage: 0.14 },
+
     /** Le texte qui se tape : période du clignotement du curseur, en secondes. */
     frappe: { curseur: 0.53 },
 
