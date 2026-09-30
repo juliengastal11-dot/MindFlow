@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Nav } from "@/components/sections/nav";
+import { Hero } from "@/components/sections/hero";
 import { SceneRecherche } from "@/components/sections/scene-recherche";
 import { SceneModele } from "@/components/sections/scene-modele";
 import { SceneUtile } from "@/components/sections/scene-utile";
@@ -27,8 +27,8 @@ export const metadata: Metadata = {
 export default function Accueil() {
   return (
     <>
-      <Nav />
       <main id="contenu">
+        <Hero />
         <SceneRecherche />
         <SceneModele />
         <SceneUtile />

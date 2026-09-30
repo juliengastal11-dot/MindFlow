@@ -220,7 +220,7 @@ function Avis() {
 
 export function SceneUtile() {
   return (
-    <Scene nuit src="components/sections/scene-utile.tsx" aria-labelledby="utile-titre">
+    <Scene id="utile" nuit src="components/sections/scene-utile.tsx" aria-labelledby="utile-titre">
       <Orbites />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12 md:py-16">
         <div className="mb-8 max-w-2xl md:mb-10">

@@ -69,7 +69,7 @@ function Offre() {
 
 export function SceneLivre() {
   return (
-    <Scene src="components/sections/scene-livre.tsx" aria-labelledby="livre-titre">
+    <Scene id="livre" src="components/sections/scene-livre.tsx" aria-labelledby="livre-titre">
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12 md:py-16">
         <div className="space-y-8 md:grid md:grid-cols-2 md:items-center md:gap-12 md:space-y-0">
           <div>

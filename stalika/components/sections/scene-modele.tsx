@@ -54,7 +54,7 @@ function Paragraphe({ children }: { children: React.ReactNode }) {
 
 export function SceneModele() {
   return (
-    <Scene nuit src="components/sections/scene-modele.tsx" aria-labelledby="modele-titre">
+    <Scene id="sur-mesure" nuit src="components/sections/scene-modele.tsx" aria-labelledby="modele-titre">
       <Orbites />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-16 md:py-20">
         <div className="md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-center md:gap-12">
