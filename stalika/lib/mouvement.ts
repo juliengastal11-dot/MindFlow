@@ -78,7 +78,7 @@ export const MOUVEMENT = {
     /** Position de la scène dans l'écran qui lance son animation. */
     declencheur: "top 65%",
 
-    /** Le mot qui se compose lettre par lettre (STALIKA, en ouverture), puis scintille. */
+    /** Le logo STALIKA qui se compose lettre par lettre en ouverture, puis scintille. */
     brouille: {
       /* Symboles pas plus larges qu'une lettre moyenne : chaque lettre a une
          boîte de largeur fixe, un « % » ou un « & » débordaient sur la voisine. */
