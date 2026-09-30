@@ -31,6 +31,10 @@ import { VideoAdaptative, type SourcesVideo } from "@/components/ui/video-adapta
    Entre deux images générées à part (lumière du hero → crépuscule, aube →
    lumière dorée), c'est un fondu long.
 
+   La nuit, des étoiles filantes traversent la bande de ciel (demande de J) :
+   dessinées en code par-dessus le plan, au hasard, une toutes les deux à
+   cinq secondes, seulement tant que la zone est à l'écran.
+
    L'heure suit le défilement de façon linéaire, du premier repère (le hero,
    0) au dernier (juste avant la plongée, 1). Mouvement réduit : pas de
    glissement ni de vidéo, le plan prend l'heure du repère le plus proche du
@@ -64,6 +68,9 @@ export type CielProps = {
     /** Partie de chaque image que montre la vidéo mobile. */
     recadrageMobile?: Rectangle;
   };
+  /** Étoiles filantes la nuit : entre les images `de` et `a`, dans la bande de ciel
+      (fraction de la hauteur de l'image entière, depuis le haut). */
+  cometes?: { de: number; a: number; hauteur: number };
   /** Description du plan, pour qui ne le voit pas. */
   alt: string;
   children: React.ReactNode;
@@ -82,7 +89,7 @@ const melange = (a: Rectangle, b: Rectangle, k: number): Rectangle => ({
   h: a.h + (b.h - a.h) * k,
 });
 
-export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, alt, children, className }: CielProps) {
+export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, cometes, alt, children, className }: CielProps) {
   const zone = useRef<HTMLDivElement>(null);
   const cadre = useRef<HTMLDivElement>(null);
   const toile = useRef<HTMLCanvasElement>(null);
@@ -135,8 +142,69 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, al
       return jalons[jalons.length - 1][1];
     };
 
+    /* Les étoiles filantes : tirées au hasard pendant la nuit, dessinées
+       par-dessus le plan, seulement dans la bande de ciel. Une toutes les
+       deux à cinq secondes, moins d'une seconde chacune. */
+    type Comete = { x: number; y: number; dx: number; dy: number; vitesse: number; longueur: number; debut: number; duree: number };
+    let filantes: Comete[] = [];
+    let prochaine = 0;
+    const nuit = (f: number) => (cometes ? borne((f - cometes.de) / 2) * borne((cometes.a - f) / 2) : 0);
+    const dessinerCometes = (n: number, w: number, bandeHaut: number, bandeBas: number) => {
+      const maintenant = performance.now();
+      const haut = Math.max(0, bandeHaut);
+      const bas = Math.min(canvas.clientHeight, bandeBas);
+      if (bas - haut < 20) return;
+      if (maintenant >= prochaine) {
+        prochaine = maintenant + 2000 + Math.random() * 3000;
+        const versGauche = Math.random() < 0.6;
+        const angle = ((versGauche ? 155 : 20) + Math.random() * 12) * (Math.PI / 180);
+        const duree = 700 + Math.random() * 450;
+        filantes.push({
+          x: w * (0.15 + Math.random() * 0.75),
+          y: haut + (bas - haut) * (0.1 + Math.random() * 0.45),
+          dx: Math.cos(angle),
+          dy: Math.abs(Math.sin(angle)),
+          vitesse: (w * (0.22 + Math.random() * 0.12)) / (duree / 1000),
+          longueur: Math.min(180, w * 0.14),
+          debut: maintenant,
+          duree,
+        });
+      }
+      filantes = filantes.filter((c) => maintenant - c.debut < c.duree);
+      ctx2d.save();
+      ctx2d.beginPath();
+      ctx2d.rect(0, haut, w, bas - haut);
+      ctx2d.clip();
+      ctx2d.lineCap = "round";
+      for (const c of filantes) {
+        const age = (maintenant - c.debut) / 1000;
+        const vie = (maintenant - c.debut) / c.duree;
+        const hx = c.x + c.dx * c.vitesse * age;
+        const hy = c.y + c.dy * c.vitesse * age;
+        const l = c.longueur * Math.min(1, vie * 3);
+        const qx = hx - c.dx * l;
+        const qy = hy - c.dy * l;
+        const alpha = Math.sin(Math.PI * vie) * n;
+        const g = ctx2d.createLinearGradient(qx, qy, hx, hy);
+        g.addColorStop(0, "rgba(255,255,255,0)");
+        g.addColorStop(1, `rgba(255,250,235,${0.9 * alpha})`);
+        ctx2d.strokeStyle = g;
+        ctx2d.lineWidth = 1.6;
+        ctx2d.beginPath();
+        ctx2d.moveTo(qx, qy);
+        ctx2d.lineTo(hx, hy);
+        ctx2d.stroke();
+        ctx2d.fillStyle = `rgba(255,252,240,${alpha})`;
+        ctx2d.beginPath();
+        ctx2d.arc(hx, hy, 1.4, 0, Math.PI * 2);
+        ctx2d.fill();
+      }
+      ctx2d.restore();
+    };
+
     // Dessine l'heure t : deux images voisines, la seconde en fondu, cadrées sur `r`.
     let dessinee = -1;
+    let nuitVisible = false;
     const dessiner = (t: number) => {
       const f = Math.min(serie.nombre - 1, Math.max(0, indexA(t)));
       let i = Math.floor(f);
@@ -168,6 +236,9 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, al
         ctx2d.drawImage(images[j], x0, y0, dw, dh);
         ctx2d.globalAlpha = 1;
       }
+      const n = reduit ? 0 : nuit(f);
+      nuitVisible = n > 0;
+      if (cometes && n > 0) dessinerCometes(n, w, y0, y0 + cometes.hauteur * dh);
       dessinee = t;
     };
 
@@ -231,7 +302,10 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, al
       if (Math.abs(courant - cible) < 0.0002) courant = cible;
       suivreVideo(courant);
       if (Math.abs(courant - dessinee) > 0.0001) dessiner(courant);
-      boucle = courant !== cible ? requestAnimationFrame(tourner) : 0;
+      // Pendant la nuit, la boucle continue pour les étoiles filantes (tant que la zone est à l'écran).
+      const filer = cometes && nuitVisible && st?.isActive;
+      if (filer && courant === cible) dessiner(courant);
+      boucle = courant !== cible || filer ? requestAnimationFrame(tourner) : 0;
     };
     const viser = () => {
       cible = heure();
@@ -240,11 +314,13 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, al
 
     mesurer();
     courant = cible = heure();
-    const st = ScrollTrigger.create({
+    let st: ScrollTrigger | null = null;
+    st = ScrollTrigger.create({
       trigger: el,
       start: "top bottom",
       end: "bottom top",
       onUpdate: viser,
+      onToggle: viser,
       onRefresh: () => {
         mesurer();
         viser();
@@ -253,12 +329,12 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, al
     const redessiner = () => dessiner(courant);
     window.addEventListener("resize", redessiner);
     return () => {
-      st.kill();
+      st?.kill();
       obs.disconnect();
       cancelAnimationFrame(boucle);
       window.removeEventListener("resize", redessiner);
     };
-  }, [bureau, mobile, cadrageMobile, jalons, reperes, video]);
+  }, [bureau, mobile, cadrageMobile, jalons, reperes, video, cometes]);
 
   return (
     <div ref={zone} data-src="components/ui/ciel.tsx" className={cn("nuit relative bg-background", className)}>
