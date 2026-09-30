@@ -44,6 +44,7 @@ export function Hero() {
         srcWebm="/hero/video.webm"
         srcMobileWebm="/hero/video-mobile.webm"
         affiche="/hero/affiche.jpg"
+        afficheMobile="/hero/affiche-mobile.jpg"
         alt="Un plateau d'herbe au-dessus d'une mer de nuages, au coucher du soleil ; une personne travaille sur un ordinateur, au loin."
         voile={0}
         aria-labelledby="hero-titre"
@@ -56,7 +57,7 @@ export function Hero() {
         />
 
         {/* Le menu, dans un onglet accroché au bord haut du cadre. */}
-        <nav aria-label="Principale" className="mx-auto flex items-center gap-1 rounded-b-2xl bg-background px-3 py-2 sm:gap-2 sm:px-5">
+        <nav aria-label="Principale" className="mx-auto flex max-w-full items-center gap-0.5 rounded-b-2xl bg-background px-1.5 py-1.5 sm:gap-2 sm:px-5 sm:py-2">
           <a
             href="#contenu-suite"
             className="sr-only focus:not-sr-only focus:rounded-md focus:px-2 focus:text-sm"
@@ -67,14 +68,14 @@ export function Hero() {
             <a
               key={l.href}
               href={l.href}
-              className="hidden cursor-pointer rounded-full px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring sm:inline-block"
+              className="inline-block cursor-pointer whitespace-nowrap rounded-full px-2 py-1.5 text-[11px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring sm:px-3 sm:text-xs"
             >
               {l.libelle}
             </a>
           ))}
           <Link
             href="/contact"
-            className="cursor-pointer rounded-full bg-accent px-4 py-1.5 text-xs font-medium text-on-accent transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="cursor-pointer whitespace-nowrap rounded-full bg-accent px-3 py-1.5 text-[11px] font-medium text-on-accent sm:px-4 sm:text-xs transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
             Contact
           </Link>

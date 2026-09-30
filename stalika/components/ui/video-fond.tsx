@@ -11,8 +11,8 @@ import { Photo } from "@/components/ui/photo";
 
    - **L'affiche est la photo d'origine**, rendue par `Photo` sous la vidéo.
      Sans JavaScript, avant le chargement, ou si le fichier manque, on voit la
-     photo. Jamais un rectangle noir. `poster` la reprend pour le premier
-     cadre.
+     photo. Jamais un rectangle noir. Pas d'attribut `poster` : il ne sait
+     pas changer de cadrage selon l'écran, alors que la photo dessous, si.
    - **`autoPlay muted loop playsInline`**, les quatre ensemble : sans `muted`
      ou sans `playsInline`, le téléphone n'y touche pas. `preload="metadata"`
      pour ne pas tirer deux mégaoctets avant le premier écran.
@@ -39,6 +39,8 @@ export type VideoFondProps = React.ComponentProps<"section"> & {
   srcMobileWebm?: string;
   /** La photo d'origine : affiche, repli sans JavaScript, et image en mouvement réduit. */
   affiche: string;
+  /** L'affiche des écrans de moins de 768 px, quand la vidéo mobile a son propre cadrage. */
+  afficheMobile?: string;
   /** Décrit la scène, pour qui ne la voit pas. */
   alt: string;
   /** Emplacement lu par l'overlay d'édition : c'est par lui qu'on remplace la photo au clic. */
@@ -53,6 +55,7 @@ export function VideoFond({
   srcWebm,
   srcMobileWebm,
   affiche,
+  afficheMobile,
   alt,
   slot = "hero",
   voile = 50,
@@ -64,10 +67,18 @@ export function VideoFond({
     <section className={cn("relative isolate overflow-hidden", className)} {...props}>
       {/* La photo d'abord : c'est elle qu'on voit tant que la vidéo n'est pas là.
           `Photo` remplit sa boîte toute seule ; on lui donne la boîte. */}
-      <Photo slot={slot} src={affiche} alt={alt} className="absolute inset-0 -z-20" />
+      <Photo
+        slot={slot}
+        src={affiche}
+        alt={alt}
+        priority
+        className={cn("absolute inset-0 -z-20", afficheMobile && "hidden md:block")}
+      />
+      {afficheMobile && (
+        <Photo slot={`${slot}-mobile`} src={afficheMobile} alt={alt} priority className="absolute inset-0 -z-20 md:hidden" />
+      )}
       <video
         className="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover motion-reduce:hidden"
-        poster={affiche}
         autoPlay
         muted
         loop
