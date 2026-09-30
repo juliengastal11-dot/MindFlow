@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { VideoFond } from "@/components/ui/video-fond";
 import { LogoBrouille } from "@/components/ui/logo-brouille";
 import { EntreeHero } from "@/components/ui/entree-hero";
 import { SITE } from "@/lib/site";
@@ -15,13 +14,14 @@ import { SITE } from "@/lib/site";
    (image Flux Pro Ultra, animée par Kling 3.0, générées le 2026-09-30),
    montée en aller-retour adouci : le zoom avance 10 s, ralentit jusqu'à
    s'arrêter, puis recule 10 s ; aucune reprise au début, donc aucun fondu.
-   Juste en dessous, le même paysage reste en fond et l'heure change au
-   défilement (`Ciel`) ; la plongée dans l'ordinateur arrive à la fin.
+   La vidéo et le plan ne sont plus ici : ils vivent dans `Ciel`, le fond
+   commun du hero jusqu'à la discussion (demande de J). Le hero n'est plus
+   qu'une section transparente posée dessus : menu, nom, texte, bouton.
 
-   Le cadre vit dans la version sombre de la palette (`.nuit`) : le texte clair
-   se lit sur la vidéo grâce à un dégradé sombre vers le bas, dans les jetons
-   du thème. Mouvement réduit : l'affiche reste, la vidéo disparaît (règle du
-   composant `VideoFond`), le nom s'affiche entier.
+   Le hero vit dans la version sombre de la palette (`.nuit`, posée par
+   `Ciel`) : le texte clair se lit sur le plan grâce à un dégradé sombre vers
+   le bas, dans les jetons du thème. Mouvement réduit : la vidéo disparaît
+   (règle de `VideoAdaptative`), le plan reste, le nom s'affiche entier.
 --------------------------------------------------------------------------- */
 
 /* Les sept lettres du logo validé, découpées au milieu des espaces dans le
@@ -53,25 +53,19 @@ function Fleche() {
 
 export function Hero() {
   return (
-    <div data-src="components/sections/hero.tsx" className="nuit bg-background p-2 sm:p-3">
-      <VideoFond
-        src="/hero/video.mp4"
-        srcMobile="/hero/video-mobile.mp4"
-        srcWebm="/hero/video.webm"
-        srcMobileWebm="/hero/video-mobile.webm"
-        affiche="/hero/affiche.jpg"
-        afficheMobile="/hero/affiche-mobile.jpg"
-        alt="Un plateau d'herbe au-dessus d'une mer de nuages, au coucher du soleil ; une personne travaille sur un ordinateur, au loin."
-        voile={0}
-        aria-labelledby="hero-titre"
-        className="flex h-[calc(100svh-1rem)] min-h-[34rem] flex-col rounded-[1.5rem] text-foreground sm:h-[calc(100svh-1.5rem)] sm:rounded-[2rem]"
-      >
-        {/* Le dégradé qui pose le texte sur l'image, en haut et surtout en bas. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-b from-background/45 via-transparent via-40% to-background/85"
-        />
-
+    <section id="accueil" data-src="components/sections/hero.tsx" aria-labelledby="hero-titre" className="relative text-foreground">
+      {/* Le dégradé qui pose le texte sur le plan, en haut et surtout en bas.
+          Plus haut que l'écran, il s'efface sous la section suivante : pas de
+          bord visible quand le hero remonte sur le plan fixe. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-2 top-2 h-[160svh] rounded-t-[1.5rem] sm:inset-x-3 sm:top-3 sm:rounded-t-[2rem]"
+        style={{
+          backgroundImage:
+            "linear-gradient(to bottom, color-mix(in oklab, var(--color-background) 45%, transparent), transparent 22%, color-mix(in oklab, var(--color-background) 85%, transparent) 58%, transparent)",
+        }}
+      />
+      <div className="relative flex h-svh min-h-[34rem] flex-col p-2 sm:p-3">
         {/* Le menu, dans un onglet accroché au bord haut du cadre. */}
         <nav aria-label="Principale" className="mx-auto flex max-w-full items-center gap-0.5 rounded-b-2xl bg-background px-1.5 py-1.5 sm:gap-2 sm:px-5 sm:py-2">
           <a
@@ -123,7 +117,7 @@ export function Hero() {
             </Link>
           </EntreeHero>
         </div>
-      </VideoFond>
-    </div>
+      </div>
+    </section>
   );
 }

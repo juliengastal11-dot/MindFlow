@@ -13,8 +13,8 @@ import { cn } from "@/lib/utils";
    code, au montage, avec `matchMedia`, puis refait si l'écran change de
    catégorie (rotation, fenêtre redimensionnée).
 
-   Rendu serveur : un `<video>` vide et transparent ; c'est l'affiche (la
-   photo posée dessous par `VideoFond`) qu'on voit jusqu'à la première image.
+   Rendu serveur : un `<video>` vide et transparent ; c'est le plan dessiné
+   dessous (`Ciel`, première image) qu'on voit jusqu'à la première image.
    Mouvement réduit : masquée en CSS (`motion-reduce:hidden`), rien n'est
    chargé puisque aucune source n'est posée avant le montage… et le montage
    ne pose rien non plus dans ce cas.
@@ -27,12 +27,10 @@ export type VideoAdaptativeProps = {
   mobile?: SourcesVideo;
   /** Largeur, en pixels, en dessous de laquelle la version mobile est servie. */
   seuil?: number;
-  /** Faux : la vidéo est lue une fois puis reste sur sa dernière image. */
-  boucle?: boolean;
   className?: string;
 };
 
-export function VideoAdaptative({ bureau, mobile, seuil = 768, boucle = true, className }: VideoAdaptativeProps) {
+export function VideoAdaptative({ bureau, mobile, seuil = 768, className }: VideoAdaptativeProps) {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -66,7 +64,7 @@ export function VideoAdaptative({ bureau, mobile, seuil = 768, boucle = true, cl
       className={cn("pointer-events-none h-full w-full object-cover motion-reduce:hidden", className)}
       autoPlay
       muted
-      loop={boucle}
+      loop
       playsInline
       preload="metadata"
       aria-hidden
