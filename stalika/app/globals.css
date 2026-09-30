@@ -82,6 +82,28 @@
   color-scheme: dark;
 }
 
+/* Le retour au clair à l'intérieur d'une zone `.nuit` : la page à l'écran
+   de l'ordinateur, à la fin de la plongée, est une page claire posée dans le
+   cadre sombre. Mêmes valeurs que le thème de base. */
+.jour {
+  --color-background: #f8f7f2;
+  --color-foreground: #1a1a1a;
+  --color-card: #ffffff;
+  --color-card-foreground: #1a1a1a;
+  --color-primary: #c1a875;
+  --color-on-primary: #1a1a1a;
+  --color-secondary: #e5e1d5;
+  --color-on-secondary: #1a1a1a;
+  --color-accent: #c1a875;
+  --color-on-accent: #1a1a1a;
+  --color-muted: #f1ede1;
+  --color-muted-foreground: #6b6352;
+  --color-border: #e2decb;
+  --color-ring: #c1a875;
+  --color-encre: #7b6537;
+  color-scheme: light;
+}
+
 /* Eyebrow : le petit libellé en capitales espacées au-dessus d'un titre.
 
    Il vit ici et nulle part ailleurs. `Section`, `not-found` et les gabarits du
