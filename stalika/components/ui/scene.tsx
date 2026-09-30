@@ -54,15 +54,12 @@ export type SceneProps = React.ComponentProps<"section"> & {
   nuit?: boolean;
   /** Durée de la chronologie, en secondes. Par défaut `MOUVEMENT.film.duree`. */
   duree?: number;
-  /** Quand la jouer (syntaxe ScrollTrigger). Par défaut `MOUVEMENT.film.declencheur`. */
-  declencheur?: string;
 };
 
 export function Scene({
   src,
   nuit = false,
   duree = MOUVEMENT.film.duree,
-  declencheur = MOUVEMENT.film.declencheur,
   className,
   children,
   ...props
@@ -105,7 +102,7 @@ export function Scene({
       tl.eventCallback("onComplete", () => gsap.set(caches, { willChange: "auto" }));
       ScrollTrigger.create({
         trigger: section,
-        start: declencheur,
+        start: MOUVEMENT.film.declencheur,
         once: true,
         onEnter: () => tl.play(),
       });
@@ -115,7 +112,7 @@ export function Scene({
       ctx.revert();
       chrono.current = null;
     };
-  }, [duree, declencheur]);
+  }, [duree]);
 
   return (
     <SceneContexte.Provider value={contexte}>

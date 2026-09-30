@@ -327,3 +327,16 @@ Validées par J le 2026-09-30 avec le reste du blueprint, dans le sens proposé 
 1. La légende de la scène 4 nomme la pizzeria : d'accord pour la citer là, en plus du bandeau ?
 2. La FAQ dit « je peux m'occuper de l'hébergement et du domaine, ou vous laisser la main » sans prix : c'est bien ce que tu proposes ?
 3. Le bandeau de consentement rouvert par un lien « Cookies » en pied de page : ça te va, ou tu préfères un bandeau unique ?
+
+## Plus tard : l'assistant de discussion (noté le 2026-09-30, à la demande de J)
+
+La fenêtre qui s'ouvre au bout de la plongée est une discussion. Le design est en place avec un déroulé scripté ; le branchement viendra quand J l'aura décidé.
+
+- **Moteur** : l'API Claude (compte console.anthropic.com, clé côté serveur uniquement, jamais dans le dépôt public ; plafond de dépense). Ce n'est pas l'abonnement Claude de J ni cette session. Modèle à choisir par J : Opus 5.5 (4 $ / 20 $ par million de tokens), Sonnet 5.5 (2 $ / 10 $), Haiku 4.5 (1 $ / 5 $), grille Anthropic du 2026-09-25. Estimation : 0,05 à 0,22 $ par conversation de dix échanges, à mesurer.
+- **Déroulé voulu par J** : premier message du visiteur écrit tout seul (« Hey, salut ! J'ai un projet de site et j'aimerais qu'on en discute »), première réponse toujours la même (prénom, tutoiement ou vouvoiement, description du projet), puis Claude prend la suite, relance, personnalise (utilise le prénom). En fin d'échange : choisir un créneau (calendrier + créneaux) ou passer sur WhatsApp.
+- **Transparence** : l'assistant dit qu'il est l'assistant IA de Julien (règlement (UE) 2024/1689, art. 50, applicable depuis le 2026-08-02, cité de mémoire, à vérifier). Il ne se fait jamais passer pour J. Passage de relais vers J (résumé par e-mail ou WhatsApp).
+- **Agenda** : accès propre au site (Google Agenda autorisé par J), lecture des créneaux libres uniquement, aucun détail des rendez-vous. Réservation directe ou demande validée par J : à décider.
+- **Garde-fous** : sujet limité à l'offre, seuls les prix publiés, résistance aux détournements, messages et échanges plafonnés par visiteur, plafond de dépense.
+- **RGPD** : information avant l'échange, durée de conservation, politique de confidentialité, Anthropic comme sous-traitant ; à vérifier sur cnil.fr avant la mise en ligne.
+- **À décider par J** : le modèle, le nom de l'assistant, le canal de notification, réservation directe ou validée.
+- **En attendant** : le déroulé est scripté ; après le premier message du visiteur, la fenêtre propose honnêtement un créneau ou WhatsApp, qui envoient un vrai message à J (rien n'est réservé en silence).
