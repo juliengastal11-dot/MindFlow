@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { VideoFond } from "@/components/ui/video-fond";
-import { MotBrouille } from "@/components/ui/mot-brouille";
+import { LogoBrouille } from "@/components/ui/logo-brouille";
 import { EntreeHero } from "@/components/ui/entree-hero";
 import { SITE } from "@/lib/site";
 
@@ -19,6 +19,18 @@ import { SITE } from "@/lib/site";
    du thème. Mouvement réduit : l'affiche reste, la vidéo disparaît (règle du
    composant `VideoFond`), le nom s'affiche entier.
 --------------------------------------------------------------------------- */
+
+/* Les sept lettres du logo validé, découpées au milieu des espaces dans le
+   fichier d'origine (1 743 px de large pour le mot, 217 px de haut). */
+const LETTRES = [
+  { src: "/hero/logo/lettre-1.png", largeur: 234 },
+  { src: "/hero/logo/lettre-2.png", largeur: 267 },
+  { src: "/hero/logo/lettre-3.png", largeur: 309 },
+  { src: "/hero/logo/lettre-4.png", largeur: 246 },
+  { src: "/hero/logo/lettre-5.png", largeur: 133 },
+  { src: "/hero/logo/lettre-6.png", largeur: 285 },
+  { src: "/hero/logo/lettre-7.png", largeur: 269 },
+] as const;
 
 const LIENS = [
   { href: "#sur-mesure", libelle: "Sur mesure" },
@@ -83,11 +95,13 @@ export function Hero() {
 
         {/* Le bas du cadre : le nom géant à gauche, le texte et le bouton à droite. */}
         <div className="mt-auto flex flex-col gap-6 px-5 pb-6 sm:px-8 sm:pb-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
-          <h1 id="hero-titre" className="font-display font-semibold leading-[0.85] tracking-tight">
-            <MotBrouille
-              mot="STALIKA"
+          <h1 id="hero-titre" className="w-[86vw] max-w-[62rem] sm:w-[72vw] lg:w-[54vw]">
+            <LogoBrouille
+              nom="STALIKA, Digital & Conseil"
+              lettres={LETTRES}
+              hauteur={217}
+              baseline={{ src: "/hero/logo/baseline.png", largeur: 1320, hauteur: 65, gauche: 206, ecart: 71 }}
               delai={0.3}
-              className="text-[19vw] sm:text-[17vw] lg:text-[13.5vw]"
             />
             <span className="sr-only"> · sites sur mesure pour restaurants, coachs, artisans et commerces</span>
           </h1>
