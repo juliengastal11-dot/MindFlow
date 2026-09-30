@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Photo } from "@/components/ui/photo";
+import { VideoAdaptative } from "@/components/ui/video-adaptative";
 
 /* ---------------------------------------------------------------------------
    Une vidéo en fond de section : le héros, presque toujours.
@@ -23,8 +24,9 @@ import { Photo } from "@/components/ui/photo";
    - **Un voile** au-dessus, dans un jeton du thème, pour que le texte se lise
      quel que soit le plan qui passe.
 
-   Ce composant est un Server Component : rien à hydrater, rien qui dépende du
-   navigateur. La vidéo se lance toute seule, ou pas. La photo est là.
+   Ce composant est un Server Component ; seule la vidéo (VideoAdaptative)
+   s'hydrate, pour choisir la version selon l'écran. La photo est là quoi
+   qu'il arrive.
 
    Une seule par page. Une deuxième transforme la page en écran de veille.
 --------------------------------------------------------------------------- */
@@ -77,25 +79,14 @@ export function VideoFond({
       {afficheMobile && (
         <Photo slot={`${slot}-mobile`} src={afficheMobile} alt={alt} priority className="absolute inset-0 -z-20 md:hidden" />
       )}
-      <video
-        className="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover motion-reduce:hidden"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        aria-hidden
-      >
-        {/* Le navigateur prend la première source qu'il sait lire et dont la
-            condition est vraie : la légère sur téléphone, sinon la complète.
-            Le WebM (VP9) d'abord : Chrome, Edge, Firefox et Safari récent le
-            lisent, pour moitié moins de poids ; le MP4 (H.264) en secours
-            pour les appareils plus anciens. */}
-        {srcMobileWebm && <source src={srcMobileWebm} type="video/webm" media="(max-width: 767px)" />}
-        {srcMobile && <source src={srcMobile} type="video/mp4" media="(max-width: 767px)" />}
-        {srcWebm && <source src={srcWebm} type="video/webm" />}
-        <source src={src} type="video/mp4" />
-      </video>
+      {/* Le choix entre version mobile et ordinateur se fait dans le code
+          (VideoAdaptative) : l'attribut `media` des sources vidéo n'est pas
+          respecté de façon fiable sur iPhone. */}
+      <VideoAdaptative
+        className="absolute inset-0 -z-10"
+        bureau={{ mp4: src, webm: srcWebm }}
+        mobile={srcMobile ? { mp4: srcMobile, webm: srcMobileWebm } : undefined}
+      />
       <div aria-hidden className="absolute inset-0 -z-10 bg-primary" style={{ opacity: voile / 100 }} />
       {children}
     </section>
