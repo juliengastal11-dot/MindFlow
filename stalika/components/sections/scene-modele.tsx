@@ -67,13 +67,14 @@ export function SceneModele() {
               Pas un modèle rempli à la chaîne.
               <span className="mt-2 block">
                 Un site dessiné{" "}
+                {/* Le point vit dans chaque mot : la largeur est réservée sur le plus
+                    long, un point posé après resterait loin du mot court. */}
                 <Decode
-                  mots={["pour vous", "pour votre métier", "pour vos clients"]}
+                  mots={["pour vous.", "pour votre métier.", "pour vos clients."]}
                   de={0.3}
                   a={0.85}
                   className="text-accent"
                 />
-                .
               </span>
             </h2>
             <Paragraphe>

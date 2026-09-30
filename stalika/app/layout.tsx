@@ -60,6 +60,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${sans.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
+        {/* HTML injecté : la constante SCRIPT_JS ci-dessus, écrite ici, sans aucune entrée extérieure. */}
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_JS }} />
       </head>
       <body>

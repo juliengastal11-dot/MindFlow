@@ -15,6 +15,7 @@ export function JsonLd() {
   };
 
   return (
+    // HTML injecté : un JSON construit ici, depuis lib/site.ts, jamais depuis une saisie.
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(donnees).replace(/</g, "\\u003c") }}

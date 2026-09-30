@@ -92,7 +92,7 @@ export function Paysage({ calques, alt, voile = true, de = 0, a = 1, className, 
       {voile && (
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-b from-background/10 via-background/35 to-background"
+          className="absolute inset-0 bg-linear-to-b from-background/10 via-background/35 to-background"
         />
       )}
     </div>

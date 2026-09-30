@@ -259,7 +259,14 @@ Section → réglages consommés → prop :
 | Compte administrateur en production | J : `ADMIN_EMAIL`, `ADMIN_PASSWORD` dans `.env` ; sans mot de passe, le seed refuse en production | à confirmer |
 | Performance | aucune image lourde, `npm run build` sans avertissement | vérifié à l'auto-test |
 
-**Sécurité, à relire avant la remise** (verdict écrit ici à la fin) : `.env` hors git ; aucune
+**Sécurité, verdict à la remise (2026-09-30)** : relu, conforme. `lib/actions/demandes.ts` valide
+chaque champ contre `lib/questionnaire.ts`, refuse un pot-de-miel rempli, limite à cinq envois par
+adresse et par heure, ne redirige jamais ; `lib/actions/admin-demandes.ts` appelle `exigeAdmin()`
+en tête de chaque action, borne l'identifiant et le statut ; `app/admin/layout.tsx` revérifie la
+session et le rôle ; les deux `dangerouslySetInnerHTML` (script `html.js` et JSON-LD) portent du
+contenu écrit par nous ; `.env` est hors git, le seed refuse un mot de passe absent en production.
+Testé de bout en bout dans un navigateur : envoi d'une demande, connexion, changement de statut,
+suppression. La liste d'origine : `.env` hors git ; aucune
 clé dans le code ; `dangerouslySetInnerHTML` seulement pour le script `html.js` du socle et le
 JSON-LD (contenu construit par nous, jamais par un visiteur) ; chaque action d'administration
 derrière `exigeAdmin()` ; `?suite=` limité à un chemin interne (module) ; validation serveur et
