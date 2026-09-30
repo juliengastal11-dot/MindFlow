@@ -31,9 +31,9 @@ export const SITE = {
 
   /**
    * Couleurs de l'image de partage. Pas des tokens Tailwind : cette image est
-   * rendue hors CSS, en PNG. Calées sur le logo : marine, crème, orange.
+   * rendue hors CSS, en PNG. Calées sur le logo camel : fond sombre de la palette, lin, camel clair.
    */
-  partage: { fond: "#070f27", texte: "#f6f1e8", accent: "#ff8f03" },
+  partage: { fond: "#1a1a18", texte: "#f8f7f2", accent: "#d4bc8b" },
 
   /** Le numéro de Julien, en international pour le lien wa.me, et tel qu'il s'affiche. */
   whatsapp: "33645748608",
