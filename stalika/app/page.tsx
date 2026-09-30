@@ -48,6 +48,9 @@ export default function Accueil() {
             [0.8, 49],
             [1, 50],
           ]}
+          // Étoiles filantes pendant la nuit (images 15 à 37), dans la bande de ciel
+          // au-dessus des nuages (13 % du haut de l'image).
+          cometes={{ de: 14, a: 36, hauteur: 0.13 }}
           reperes={{ accueil: 0, "sur-mesure": 0.3, utile: 0.5, relecture: 0.7, "ciel-fin": 1 }}
           video={{
             bureau: { webm: "/hero/video.webm", mp4: "/hero/video.mp4" },
