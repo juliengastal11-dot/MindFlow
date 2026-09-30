@@ -1,0 +1,7 @@
+# Aperçu Netlify du site Stalika : le projet vit dans le dossier stalika/.
+# La base SQLite n'est pas persistante ici : c'est un aperçu, pas la mise
+# en ligne définitive (prévue chez Hostinger avec une vraie base).
+[build]
+  base = "stalika"
+  command = "npx prisma generate && npx prisma db push && npm run build"
+  publish = ".next"
