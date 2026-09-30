@@ -176,8 +176,10 @@ export function Ciel({ bureau, mobile, reperes, children, className }: CielProps
 
   return (
     <div ref={zone} data-src="components/ui/ciel.tsx" className={cn("nuit relative bg-background", className)}>
-      {/* Le plan, fixe à l'écran pendant toute la zone ; les sections passent par-dessus. */}
-      <div aria-hidden="true" className="pointer-events-none sticky top-0 -mb-[100svh] h-svh p-2 sm:p-3">
+      {/* Le plan, fixe à l'écran pendant toute la zone ; les sections passent par-dessus.
+          Ordre d'empilement explicite (plan en 0, sections en 10) : sans lui,
+          Safari sur iPhone peut peindre le plan collant au-dessus des textes. */}
+      <div aria-hidden="true" className="pointer-events-none sticky top-0 z-0 -mb-[100svh] h-svh p-2 sm:p-3">
         <div className="relative h-full overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]">
           {/* Sans JavaScript : la première image, fixe. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -185,7 +187,7 @@ export function Ciel({ bureau, mobile, reperes, children, className }: CielProps
           <canvas ref={toile} className="absolute inset-0 h-full w-full" />
         </div>
       </div>
-      {children}
+      <div className="relative z-10">{children}</div>
     </div>
   );
 }
