@@ -89,7 +89,7 @@ export const MOUVEMENT = {
       /** Écart entre le départ de deux lettres. */
       decalage: 0.32,
       /** Après l'entrée : une lettre au hasard se rebrouille, puis une pause avant la suivante. */
-      scintille: { duree: 0.45, changements: 7, pauseMin: 1.2, pauseMax: 2.6 },
+      scintille: { duree: 0.4, changements: 7, pauseMin: 0.7, pauseMax: 1.5 },
     },
 
     /** Le texte qui se tape : période du clignotement du curseur, en secondes. */
