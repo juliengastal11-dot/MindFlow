@@ -32,6 +32,11 @@ import { Photo } from "@/components/ui/photo";
 export type VideoFondProps = React.ComponentProps<"section"> & {
   /** Le fichier vidéo, transcodé : 720p, sans audio, moins de 3 Mo. */
   src: string;
+  /** Version plus légère pour les écrans de moins de 768 px (facultative). */
+  srcMobile?: string;
+  /** Les mêmes en WebM (VP9), en secours pour les navigateurs sans H.264 (facultatif). */
+  srcWebm?: string;
+  srcMobileWebm?: string;
   /** La photo d'origine : affiche, repli sans JavaScript, et image en mouvement réduit. */
   affiche: string;
   /** Décrit la scène, pour qui ne la voit pas. */
@@ -44,6 +49,9 @@ export type VideoFondProps = React.ComponentProps<"section"> & {
 
 export function VideoFond({
   src,
+  srcMobile,
+  srcWebm,
+  srcMobileWebm,
   affiche,
   alt,
   slot = "hero",
@@ -59,7 +67,6 @@ export function VideoFond({
       <Photo slot={slot} src={affiche} alt={alt} className="absolute inset-0 -z-20" />
       <video
         className="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover motion-reduce:hidden"
-        src={src}
         poster={affiche}
         autoPlay
         muted
@@ -67,7 +74,15 @@ export function VideoFond({
         playsInline
         preload="metadata"
         aria-hidden
-      />
+      >
+        {/* Le navigateur prend la première source qu'il sait lire et dont la
+            condition est vraie : la légère sur téléphone, sinon la complète ;
+            le MP4 d'abord (Safari, téléphones), le WebM en secours. */}
+        {srcMobile && <source src={srcMobile} type="video/mp4" media="(max-width: 767px)" />}
+        {srcMobileWebm && <source src={srcMobileWebm} type="video/webm" media="(max-width: 767px)" />}
+        <source src={src} type="video/mp4" />
+        {srcWebm && <source src={srcWebm} type="video/webm" />}
+      </video>
       <div aria-hidden className="absolute inset-0 -z-10 bg-primary" style={{ opacity: voile / 100 }} />
       {children}
     </section>

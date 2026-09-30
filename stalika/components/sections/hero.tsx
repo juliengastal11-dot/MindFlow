@@ -40,6 +40,9 @@ export function Hero() {
     <div data-src="components/sections/hero.tsx" className="nuit bg-background p-2 sm:p-3">
       <VideoFond
         src="/hero/video.mp4"
+        srcMobile="/hero/video-mobile.mp4"
+        srcWebm="/hero/video.webm"
+        srcMobileWebm="/hero/video-mobile.webm"
         affiche="/hero/affiche.jpg"
         alt="Un plateau d'herbe au-dessus d'une mer de nuages, au coucher du soleil ; une personne travaille sur un ordinateur, au loin."
         voile={0}
