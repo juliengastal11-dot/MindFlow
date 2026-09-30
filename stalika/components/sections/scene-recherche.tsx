@@ -3,16 +3,24 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { EntreeHero } from "@/components/ui/entree-hero";
 import { Frappe } from "@/components/ui/frappe";
 import { Scene, useScene } from "@/components/ui/scene";
+import { BarreNavigateur } from "@/components/ui/navigateur";
 import { gsap } from "@/lib/gsap";
 import { lienWhatsApp } from "@/lib/site";
 
 /* ---------------------------------------------------------------------------
-   Scène 1 · Ils vous cherchent (le jour, juste après le hero vidéo).
+   Scène 1 · Ils vous cherchent : dans l'ordinateur du hero.
+
+   La plongée se termine sur la page de l'écran, en plein cadre (`Plongee`,
+   `EcranAccueil`). Cette scène reprend exactement la même fenêtre : même
+   cadre, même barre de navigateur, même fond clair. Elle est remontée d'un
+   écran (`-mt-[100svh]`) pour se trouver pile sous la page de la plongée, qui
+   lui laisse la place tout au bout ; sa chronologie ne part qu'à ce moment
+   (`declencheur`), quand son haut touche le haut de l'écran.
 
    Chronologie (fractions de la scène) :
+   0    → 0,2   le texte entre, ligne à ligne, comme une page qui se charge
    0,08 → 0,42  la frappe (primitive Frappe)
    0,45 → 0,62  les trois suggestions se déplient une à une
    0,64 → 0,70  la première se surligne
@@ -44,6 +52,24 @@ function Loupe() {
   );
 }
 
+
+/* Les enfants directs entrent l'un après l'autre sur la chronologie de la scène. */
+function EntreePage({ children }: { children: React.ReactNode }) {
+  const scene = useScene();
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!scene || !el) return;
+    const enfants = Array.from(el.children) as HTMLElement[];
+    return scene.inscrire((tl) => {
+      gsap.set(enfants, { autoAlpha: 0, y: 12 });
+      enfants.forEach((e, i) => tl.to(e, { autoAlpha: 1, y: 0, duration: 0.1 }, i * 0.035));
+    });
+  }, [scene]);
+
+  return <div ref={ref}>{children}</div>;
+}
 
 function Sequence() {
   const scene = useScene();
@@ -133,50 +159,56 @@ function Sequence() {
 
 export function SceneRecherche() {
   return (
-    <Scene
-      id="contenu-suite"
-      src="components/sections/scene-recherche.tsx"
-      aria-labelledby="recherche-titre"
-    >
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-20 md:py-28">
-        <EntreeHero>
-          <p className="eyebrow text-encre">En ce moment, quelque part en France</p>
-          <h2
-            id="recherche-titre"
-            className="mt-3 max-w-3xl font-display text-3xl sm:text-4xl md:mt-4 md:text-5xl"
-          >
-            {"Quelqu'un cherche ce que vous faites."}
-            <span className="block text-encre">Maintenant.</span>
-          </h2>
-          <p className="mt-3 max-w-xl text-base md:mt-5 md:text-lg">
-            Sur son téléphone, entre deux rues. Ce qu&apos;il trouve en premier décide s&apos;il vous
-            appelle.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-3 md:mt-7">
-            <Button
-              asChild
-              variant="accent"
-              shape="pill"
-              size="lg"
-              className="h-11 px-6 sm:h-12 sm:px-8"
+    // Le cadre sombre autour de la fenêtre, comme autour du hero.
+    <div className="relative z-0 -mt-[100svh] bg-foreground p-2 motion-reduce:mt-0 sm:p-3">
+      <Scene
+        id="contenu-suite"
+        src="components/sections/scene-recherche.tsx"
+        aria-labelledby="recherche-titre"
+        declencheur="top 3%"
+        className="min-h-[calc(100svh-1rem)] flex-col items-stretch rounded-[1.5rem] sm:min-h-[calc(100svh-1.5rem)] sm:rounded-[2rem]"
+      >
+        <BarreNavigateur />
+        <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-6 py-14 md:py-20">
+          <EntreePage>
+            <p className="eyebrow text-encre">En ce moment, quelque part en France</p>
+            <h2
+              id="recherche-titre"
+              className="mt-3 max-w-3xl font-display text-3xl sm:text-4xl md:mt-4 md:text-5xl"
             >
-              <Link href="/contact">Parlons de votre site</Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              shape="pill"
-              size="lg"
-              className="h-11 px-6 sm:h-12 sm:px-8"
-            >
-              <a href={lienWhatsApp()} target="_blank" rel="noopener">
-                Écrire sur WhatsApp
-              </a>
-            </Button>
-          </div>
-        </EntreeHero>
-        <Sequence />
-      </div>
-    </Scene>
+              {"Quelqu'un cherche ce que vous faites."}
+              <span className="block text-encre">Maintenant.</span>
+            </h2>
+            <p className="mt-3 max-w-xl text-base md:mt-5 md:text-lg">
+              Sur son téléphone, entre deux rues. Ce qu&apos;il trouve en premier décide s&apos;il vous
+              appelle.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3 md:mt-7">
+              <Button
+                asChild
+                variant="accent"
+                shape="pill"
+                size="lg"
+                className="h-11 px-6 sm:h-12 sm:px-8"
+              >
+                <Link href="/contact">Parlons de votre site</Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                shape="pill"
+                size="lg"
+                className="h-11 px-6 sm:h-12 sm:px-8"
+              >
+                <a href={lienWhatsApp()} target="_blank" rel="noopener">
+                  Écrire sur WhatsApp
+                </a>
+              </Button>
+            </div>
+          </EntreePage>
+          <Sequence />
+        </div>
+      </Scene>
+    </div>
   );
 }
