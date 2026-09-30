@@ -12,9 +12,11 @@ import { SITE } from "@/lib/site";
    cadre arrondi sur fond sombre, menu en onglet accroché au bord haut, nom
    géant en bas à gauche, texte court et bouton pilule en bas à droite). Rien
    de son code, de son image ni de ses textes : la vidéo est la nôtre
-   (image Flux Pro Ultra, animée par Kling 3.0, générées le 2026-09-30),
-   montée en aller-retour adouci : le zoom avance 10 s, ralentit jusqu'à
-   s'arrêter, puis recule 10 s ; aucune reprise au début, donc aucun fondu.
+   (image Flux Pro Ultra, animée par Kling 3.0, générées le 2026-09-30).
+   Idée de J : le zoom avance 11 s en ralentissant, puis la vidéo se fige sur
+   sa dernière image (pas de boucle). Au défilement, la plongée dans
+   l'ordinateur part de ce plan figé (`Plongee`, qui enveloppe ce hero) ;
+   les blocs marqués `data-plongee-efface` s'effacent à ce moment-là.
 
    Le cadre vit dans la version sombre de la palette (`.nuit`) : le texte clair
    se lit sur la vidéo grâce à un dégradé sombre vers le bas, dans les jetons
@@ -61,6 +63,7 @@ export function Hero() {
         afficheMobile="/hero/affiche-mobile.jpg"
         alt="Un plateau d'herbe au-dessus d'une mer de nuages, au coucher du soleil ; une personne travaille sur un ordinateur, au loin."
         voile={0}
+        boucle={false}
         aria-labelledby="hero-titre"
         className="flex h-[calc(100svh-1rem)] min-h-[34rem] flex-col rounded-[1.5rem] text-foreground sm:h-[calc(100svh-1.5rem)] sm:rounded-[2rem]"
       >
@@ -71,7 +74,7 @@ export function Hero() {
         />
 
         {/* Le menu, dans un onglet accroché au bord haut du cadre. */}
-        <nav aria-label="Principale" className="mx-auto flex max-w-full items-center gap-0.5 rounded-b-2xl bg-background px-1.5 py-1.5 sm:gap-2 sm:px-5 sm:py-2">
+        <nav data-plongee-efface aria-label="Principale" className="mx-auto flex max-w-full items-center gap-0.5 rounded-b-2xl bg-background px-1.5 py-1.5 sm:gap-2 sm:px-5 sm:py-2">
           <a
             href="#contenu-suite"
             className="sr-only focus:not-sr-only focus:rounded-md focus:px-2 focus:text-sm"
@@ -96,7 +99,7 @@ export function Hero() {
         </nav>
 
         {/* Le bas du cadre : le nom géant à gauche, le texte et le bouton à droite. */}
-        <div className="mt-auto flex flex-col gap-6 px-5 pb-6 sm:px-8 sm:pb-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+        <div data-plongee-efface className="mt-auto flex flex-col gap-6 px-5 pb-6 sm:px-8 sm:pb-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
           <h1 id="hero-titre" className="w-[86vw] max-w-[62rem] sm:w-[72vw] lg:w-[54vw]">
             <LogoBrouille
               nom="STALIKA, Digital & Conseil"

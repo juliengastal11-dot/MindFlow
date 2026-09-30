@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/sections/hero";
 import { Plongee } from "@/components/ui/plongee";
+import { ECRANS_PLONGEE } from "@/lib/plongee-ecran";
 import { SceneRecherche } from "@/components/sections/scene-recherche";
 import { SceneModele } from "@/components/sections/scene-modele";
 import { SceneUtile } from "@/components/sections/scene-utile";
@@ -29,15 +30,32 @@ export default function Accueil() {
   return (
     <>
       <main id="contenu">
-        <Hero />
-        {/* La plongée dans l'ordinateur (Kling 3.0, du plan large du hero au
-            gros plan sur l'écran), liée au défilement : 61 images. */}
+        {/* Le hero, puis la plongée dans l'ordinateur au défilement (Kling 3.0,
+            du plan figé du hero au gros plan sur l'écran) : 61 images. Le
+            focus de départ reprend le cadrage de la vidéo mobile du hero. */}
         <Plongee
           images={{ dossier: "/hero/plongee", nombre: 61 }}
           ecran={{ x: 0.3, y: 0.4, l: 0.275, h: 0.32 }}
-          focus={{ debut: { x: 0.29, y: 0.42 }, fin: { x: 0.44, y: 0.55 } }}
-          alt="La caméra s'approche du personnage assis au bord de la falaise, passe derrière son épaule et entre dans l'écran de son ordinateur."
-        />
+          focus={{ debut: { x: 0.31, y: 0.5 }, fin: { x: 0.44, y: 0.55 } }}
+          logo={{
+            src: "/hero/logo/ecran.png",
+            lettres: [234, 267, 309, 246, 133, 285, 269],
+            hauteurLettres: 217,
+            coins: ECRANS_PLONGEE,
+          }}
+          raccord={{
+            // Mesuré sur l'image 241 du hero et l'image 1 de la plongée : écart quadratique moyen 30,8 → 15,6 sur 255, en niveaux de gris.
+            echelle: 1.155,
+            x: 0.031,
+            y: 0.056,
+            bureau: { x: 0, y: 0, l: 1, h: 1 },
+            // La vidéo mobile du hero : 560 × 1000 px pris à (320, 76) dans l'image de 1928 × 1076.
+            mobile: { x: 320 / 1928, y: 76 / 1076, l: 560 / 1928, h: 1000 / 1076 },
+          }}
+          alt="La caméra s'approche du personnage assis au bord de la falaise, passe derrière son épaule et entre dans l'écran de son ordinateur, où le logo Stalika est affiché."
+        >
+          <Hero />
+        </Plongee>
         <SceneRecherche />
         <SceneModele />
         <SceneUtile />
