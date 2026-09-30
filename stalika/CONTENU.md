@@ -33,7 +33,7 @@ Description : `Sites sur mesure pour restaurants, coachs, artisans et commerces.
 
 ### Scène 1 · Ils vous cherchent (héros)
 
-- Eyebrow : `Ce soir, quelque part en France`
+- Eyebrow : `En ce moment, quelque part en France`
 - H1 : `Quelqu'un cherche ce que vous faites. *Maintenant.*`
 - Texte : `Sur son téléphone, entre deux rues. Ce qu'il trouve en premier décide s'il vous appelle.`
 - Barre de recherche, texte qui se tape : `pizzeria ouverte ce soir`
@@ -104,8 +104,8 @@ Description : `Sites sur mesure pour restaurants, coachs, artisans et commerces.
 ### Julien
 
 - Eyebrow : `Julien`
-- H2 : `Quatorze ans à faire tourner des restaurants. Aujourd'hui, je construis vos sites.`
-- Texte : `J'ai dirigé des restaurants pendant quatorze ans, jusqu'à cinquante-quatre personnes et trois millions d'euros de chiffre par an. Je sais ce qu'est un service, un client qui attend, une réservation perdue. C'est pour ça que je fais des sites qui servent, pas des sites qui décorent.`
+- H2 : `Je dessine et je code des sites pour des gens qui ont autre chose à faire.`
+- Texte : `Aujourd'hui, je conçois des sites et des applications pour des restaurants, des coachs, des artisans et des commerces, depuis Béziers et pour toute la France. Je m'occupe de tout : le dessin, le code, les textes avec vous, la mise en ligne, et je reste joignable après. Vous relisez sur la page, vous corrigez, j'applique. Un seul interlocuteur, du premier message au site en ligne.`
 
 ### Questions fréquentes
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Averia_Serif_Libre, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { SITE } from "@/lib/site";
 import { DefilementFluide } from "@/components/ui/defilement-fluide";
@@ -14,6 +14,16 @@ const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
   display: "swap",
   variable: "--police-sans",
+});
+
+/* Averia Serif Libre pour les titres : un serif au trait légèrement
+   irrégulier, comme tracé à la main, qui répond à l'illustration peinte de
+   l'ouverture. Trois graisses fixes, pas de variable disponible. */
+const serif = Averia_Serif_Libre({
+  subsets: ["latin"],
+  weight: ["300", "400", "700"],
+  display: "swap",
+  variable: "--police-serif",
 });
 
 /* Les métadonnées de base, héritées par toutes les pages. Chaque page pose
@@ -48,7 +58,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={sans.variable} suppressHydrationWarning>
+    <html lang="fr" className={`${sans.variable} ${serif.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_JS }} />
       </head>

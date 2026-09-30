@@ -7,35 +7,57 @@
    Les noms de variables sont ceux qu'attendent tous les composants du socle :
    on remplace les valeurs, jamais les noms.
    =========================================================================== */
-/* Direction « La terrasse, la nuit » (blueprint, relevé de design) : la nuit
-   bleue du sud en fond, l'ambre des lampes sur les façades pour tout ce qui
-   appelle un geste, l'indigo en second plan. Le texte n'est jamais blanc pur,
-   le fond jamais noir pur. Contrastes relevés : texte sur fond 16:1, ambre sur
-   fond 5,9:1, nuit sur ambre 5,9:1, texte sur indigo 6:1, gris sur fond 8,5:1. */
+/* Direction « La terrasse, le jour et la nuit » (blueprint §1, version 90°) :
+   le site est clair et chaud, papier crème et marine du logo ; l'orange du
+   logo pour tout ce qui appelle un geste. Les scènes 2 à 4 du film passent
+   « la nuit » : la classe `.nuit` remappe les mêmes variables, et les
+   utilitaires `bg-background`, `text-foreground`… suivent sans rien changer.
+   Contrastes relevés : marine sur crème 17,6:1, marine sur orange 8,3:1,
+   gris sur crème 7:1 ; la nuit : crème sur marine 16,9:1, orange sur marine
+   8,3:1, gris nuit 9:1. L'orange ne porte jamais de texte sur fond clair
+   (2,1:1) : il remplit un bouton ou souligne, le texte reste marine. */
 @theme {
-  --color-background: #0f172a;
-  --color-foreground: #f8fafc;
-  --color-card: #1e293b;
-  --color-card-foreground: #f8fafc;
-  --color-primary: #1e1b4b;
-  --color-on-primary: #f8fafc;
-  --color-secondary: #4f46e5;
-  --color-on-secondary: #f8fafc;
-  --color-accent: #d97706;
-  --color-on-accent: #0f172a;
-  --color-muted: #172033;
-  --color-muted-foreground: #a3adc2;
-  --color-border: #283449;
-  --color-destructive: #dc2626;
-  --color-on-destructive: #f8fafc;
-  --color-ring: #d97706;
+  --color-background: #fbf6ee;
+  --color-foreground: #070f27;
+  --color-card: #ffffff;
+  --color-card-foreground: #070f27;
+  --color-primary: #070f27;
+  --color-on-primary: #f6f1e8;
+  --color-secondary: #dbe8f4;
+  --color-on-secondary: #070f27;
+  --color-accent: #ff8f03;
+  --color-on-accent: #070f27;
+  --color-muted: #f1eadf;
+  --color-muted-foreground: #4b5470;
+  --color-border: #e2d9c9;
+  --color-destructive: #b91c1c;
+  --color-on-destructive: #fbf6ee;
+  --color-ring: #ff8f03;
 
-  /* Plus Jakarta Sans, servie par le site via next/font (app/layout.tsx). Une
-     seule famille, variable : les titres prennent la graisse, pas une autre police. */
+  /* Deux familles, servies par le site via next/font (app/layout.tsx) :
+     Averia Serif Libre pour les titres, au trait un peu irrégulier, comme
+     peint ; Plus Jakarta Sans, variable, pour tout le reste. */
   --font-sans: var(--police-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: var(--police-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: var(--police-serif), ui-serif, Georgia, serif;
 
   --radius-card: 1rem;
+}
+
+/* La nuit : même vocabulaire, autres valeurs. Posée sur une scène du film ou
+   sur n'importe quelle section qui doit passer dans le monde du logo. */
+.nuit {
+  --color-background: #070f27;
+  --color-foreground: #f6f1e8;
+  --color-card: #111a3a;
+  --color-card-foreground: #f6f1e8;
+  --color-primary: #16214a;
+  --color-on-primary: #f6f1e8;
+  --color-secondary: #24306a;
+  --color-on-secondary: #f6f1e8;
+  --color-muted: #0c1533;
+  --color-muted-foreground: #aab2c8;
+  --color-border: #1f2a4d;
+  color-scheme: dark;
 }
 
 /* Eyebrow : le petit libellé en capitales espacées au-dessus d'un titre.

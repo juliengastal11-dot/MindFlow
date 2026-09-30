@@ -21,11 +21,11 @@ se posent tels quels.
 | Genre | Vitrine, avec un espace privé pour lire les réponses au questionnaire |
 | Écran prioritaire | **Les deux autant** : composé à 375 px, vérifié de près à 1280 px |
 | Qui parle | **Julien, en son nom** (« je »), vouvoiement du visiteur |
-| Direction | **« La terrasse, la nuit »** : la nuit bleue du sud en fond, l'ambre des lampes sur les façades pour tout ce qui appelle un geste, l'indigo au second plan. Le monde des clients de Julien, pas celui de la tech |
+| Direction | **« La terrasse, le jour et la nuit »** (version 90°, décidée par J le 2026-09-30 sur le logo et un composant 21st) : le site est **clair et chaud**, papier crème et marine du logo, l'orange du logo pour tout ce qui appelle un geste, un serif au trait peint pour les titres. L'ouverture est une **illustration peinte à nous**, en calques, le monde des clients de Julien en plein jour. Le film passe **la nuit** pour les scènes 2 à 4 (le monde du logo, où vivent les effets), et revient au jour pour l'offre et la fin calme : un arc jour, nuit, jour |
 | Élément signature | **La correction.** Un mot barré et réécrit, un texte qui se décode, une ligne reprise sur la page : le site montre partout ce qu'il vend, un site qu'on corrige jusqu'à ce qu'il soit le vôtre, pas un modèle. Test : sans elle, il reste un joli site sombre ; avec elle, on comprend le métier |
 | Mouvement | Ample (vitrine, `--motion 7`) pour les arrivées ; **le film** pour l'accueil : descendre joue, remonter rembobine |
-| Ce qui se tait | Les photos : il n'y en a aucune. Le site vit de ses composants dessinés, du monogramme et de la typographie. L'accent est rare : un mot par titre, l'action, le halo du bouton |
-| Décor | Les **orbites** : deux grands arcs fins qui traversent le bas de l'écran et tournent lentement avec la page, seul décor commun à toutes les scènes. Un fond SVG de plus au maximum (séparateur avant la fin calme) |
+| Ce qui se tait | Les photos : il n'y en a aucune. Une seule image, l'illustration de l'ouverture, à nous. Le reste vit de ses composants dessinés, du logo et de la typographie. L'orange est rare : il remplit un bouton, souligne un mot, ne porte jamais de texte sur fond clair |
+| Décor | Le jour : le papier crème, nu, et l'illustration en ouverture. La nuit : les **orbites**, deux grands arcs fins qui tournent lentement avec la page, seul décor des trois scènes sombres. Un fond SVG de plus au maximum (séparateur avant la fin calme) |
 
 ## §2 · Relevé de design
 
@@ -51,6 +51,17 @@ se posent tels quels.
 donnait 3,4:1, la nuit (#0F172A) donne 5,9:1, c'est elle. Indigo #6366F1 → #4F46E5 dès qu'il
 porte du texte (6:1 au lieu de 4,3:1) ; le #6366F1 reste pour les halos et les orbites. Cartes,
 sourdine et bordures dérivées de la nuit : #1E293B, #172033, #283449. Rayon des cartes 1 rem.
+
+**Version 90° (2026-09-30).** J a envoyé son logo (marine #070F27, crème, orange #FF8F03,
+baseline « Digital & Conseil ») et proposé une direction claire et illustrée d'après le composant
+21st « ghibli-robot-hero ». Décision : ni la nuit seule, ni le 180°. **Le jour** : fond #FBF6EE
+(papier crème), texte #070F27 (17,6:1), cartes blanches, sourdine #F1EADF, bordures #E2D9C9, gris
+#4B5470 (7:1), secondaire ciel #DBE8F4, accent #FF8F03 avec texte marine dessus (8,3:1). L'orange
+ne porte jamais de texte sur clair (2,1:1). **La nuit** (classe `.nuit`, mêmes noms de variables) :
+fond #070F27, texte #F6F1E8 (16,9:1), cartes #111A3A, gris #AAB2C8 (9:1), orange inchangé (8,3:1).
+Typographie : Averia Serif Libre (Google Fonts, via `next/font`) pour les titres, Plus Jakarta Sans
+pour le reste. General Sans, la police du composant, vient de Fontshare : pas de CDN autorisé et
+licence non vérifiée, écartée. L'indigo de la palette « Time amber + night indigo » disparaît.
 
 **Écarté, et pourquoi.** Le doré (« Dramatic dark + spotlight gold ») : trop proche de l'identité
 noir et or de la Pizzeria des Allées, un client. Le vert néon (« Dark audio + play green ») : la
@@ -89,6 +100,7 @@ c'est dit. Les fiches du moteur Pro Max complètent.
 | Scène 3 · bento | 21st « bento grid 01 » (avanishverma4), « Bento » (kinfe123) ; Pro Max « Bento Grid Showcase » | grille 2×2 sombre, une carte plus haute que les autres, un glyphe géant par carte, mobile en pile | les images de fond, le survol vidéo |
 | Scène 4 · relecture | 21st « Chat Messages » (nexus-ui), « Typing Indicator » (ddoemonn) ; le mode relecture de la Pizzeria des Allées (`docs/relecture.md` de son dépôt) | bulle à queue, indicateur de frappe ; le surlignage pointillé au survol puis trait plein au clic | le fil de discussion complet |
 | Scène 5 · offre | 21st « Logo Cloud 15 » (shadcnui-blocks) pour la carte bordée à halo ; Pro Max « climax CTA » | une carte d'offre bordée, halo ambre sur le bord, le chiffre en display | le faisceau qui court sur la bordure |
+| Ouverture · illustration | 21st « ghibli-robot-hero » (composant trouvé par J) | la composition : une grande image peinte plein cadre, un voile dégradé vers le bas pour poser le texte, un serif de titre sur un sans de texte, un bouton translucide à bord clair | **l'image elle-même** (elle appartient à son auteur), le robot, les polices chargées depuis un CDN, le « style Ghibli » nommé comme tel |
 | Bandeau de confiance | 21st « Logo Cloud Marquee » (olewandowski1), « Logo Cloud Marquee » (scrollxui) | le défilement continu, fondu sur les bords, pause au survol ; le titre court au-dessus | le double sens, les logos en couleur |
 | Décor · orbites | 21st « Spinning Arc Logo with Gradient Text » (minhxthanh) | arcs concentriques fins, vitesses différentes, sur fond nuit | le dégradé animé du texte |
 | Conversation | 21st « Questionnaire » (uiable), « Segmented Progress Questionnaire » (sean0205), « Chat Messages » (nexus-ui) | une question à la fois, les choix en cartes qu'on touche, la barre de progression segmentée, les réponses en bulles à droite | la validation croisée, le récapitulatif en puces |
@@ -101,11 +113,11 @@ Cinq champs : nom, hauteur (`bandeau`, `normal`, `grand`, `plein`), fond, conten
 
 ```squelette Accueil /
 Nav | bandeau | background | Monogramme + Stalika, bouton Contact, lien WhatsApp, lien d'évitement
-Scène 1 · Ils vous cherchent | plein | background | Eyebrow, H1, texte, barre de recherche qui se tape, suggestions, 2 boutons, indice de défilement | EntreeHero, Scene, Frappe
-Scène 2 · Pas un modèle | plein | background | Eyebrow 01, H2, mot qui se décode, texte · neuf cartes en perspective, d'abord identiques, qui deviennent différentes | Scene, Decode, Champ3D
-Scène 3 · Utile | plein | primary | Eyebrow 02, H2, texte · bento de 4 cartes : agenda qui se remplit, courbe qui se trace, PDF qui s'empile, étoiles | Scene, Cascade, Trace
-Scène 4 · La relecture | plein | background | Eyebrow 03, H2, texte · maquette client : surlignage, bulle, ligne barrée puis réécrite, tampon | Scene, Frappe, Barre
-Scène 5 · Livré | plein | card | Eyebrow 04, H2, 4 coches · carte d'offre : 300 €, plusieurs fois, 72 h en rouleaux, France, bouton | Scene, Rouleaux
+Scène 1 · Ils vous cherchent | plein | background (jour, illustration en calques) | Eyebrow, H1, texte, barre de recherche qui se tape, suggestions, 2 boutons, indice de défilement | EntreeHero, Paysage, Scene, Frappe
+Scène 2 · Pas un modèle | plein | background **nuit** | Eyebrow 01, H2, mot qui se décode, texte · neuf cartes en perspective, d'abord identiques, qui deviennent différentes | Scene, Decode, Champ3D
+Scène 3 · Utile | plein | primary **nuit** | Eyebrow 02, H2, texte · bento de 4 cartes : agenda qui se remplit, courbe qui se trace, PDF qui s'empile, étoiles | Scene, Cascade, Trace
+Scène 4 · La relecture | plein | background **nuit** | Eyebrow 03, H2, texte · maquette client : surlignage, bulle, ligne barrée puis réécrite, tampon | Scene, Frappe, Barre
+Scène 5 · Livré | plein | background (jour) | Eyebrow 04, H2, 4 coches · carte d'offre : 300 €, plusieurs fois, 72 h en rouleaux, France, bouton | Scene, Rouleaux
 Ils m'ont fait confiance | bandeau | muted | Trois noms et leur sous-titre, en défilement, liens | Defilant
 Julien | normal | background | Eyebrow, H2, un paragraphe | Reveal
 Questions fréquentes | normal | background | Eyebrow, H2, six questions en accordéon | Reveal
@@ -142,12 +154,19 @@ scène et retiré à la sortie.
 
 | Scène | Ce qui bouge, dans l'ordre de la chronologie | Ce qui répond |
 |---|---|---|
-| 1 · Ils vous cherchent | Au chargement : `EntreeHero` sur eyebrow, H1, texte, boutons. Au défilement : la barre se tape lettre à lettre (`Frappe`), les trois suggestions se déplient, la première se surligne, la barre glisse vers le haut et la phrase de fin apparaît | les deux boutons (accent, contour) ; le lien WhatsApp |
+| 1 · Ils vous cherchent | Au chargement : `EntreeHero` sur eyebrow, H1, texte, boutons, l'illustration déjà là. Au défilement : les calques de l'illustration glissent à des vitesses différentes (`Paysage` : ciel lent, collines, terrasse au premier plan plus vite) et le voile monte ; la barre se tape lettre à lettre (`Frappe`), les trois suggestions se déplient, la première se surligne, la barre glisse vers le haut et la phrase de fin apparaît | les deux boutons (accent, contour) ; le lien WhatsApp |
 | 2 · Pas un modèle | Le champ de neuf cartes identiques s'incline et la caméra glisse (`Champ3D`) ; une carte sur deux devient son métier, puis les autres ; le mot en accent se décode trois fois (`Decode`) ; le texte arrive en dernier | rien : les cartes ne mènent nulle part, elles ne réagissent pas au curseur |
 | 3 · Utile | Les quatre cartes entrent en `Cascade` ; puis, au fil du défilement : les créneaux se remplissent un à un, la courbe se trace (`Trace`), les pages du contrat s'empilent et la coche apparaît, les étoiles s'allument et le bouton Itinéraire se pose | rien : cartes non cliquables |
 | 4 · La relecture | La maquette se pose ; un pointeur glisse vers la ligne d'horaires, contour pointillé puis plein ; la bulle s'ouvre et se tape (`Frappe`) ; la ligne d'origine se barre (`Barre`) et la nouvelle se tape à sa place ; le tampon se pose ; la légende apparaît | rien |
 | 5 · Livré | Les quatre coches se cochent une à une ; la carte d'offre glisse, « 300 € » apparaît immobile, « 72 h » roule de 00 à 72 (`Rouleaux`), la zone et le bouton arrivent | le bouton (accent) |
 | Fin calme | `Defilant` pour le bandeau, `Reveal` sur Julien, la FAQ et l'appel ; les orbites terminent leur rotation | les trois noms du bandeau (liens, `lien-fleche`) ; l'accordéon (`<details>`, focus visible) ; les deux boutons |
+
+**L'arc jour, nuit, jour.** La scène 1 est le jour : l'illustration, le papier. Entre la scène 1
+et la scène 2, le fond passe à la nuit sur la fin de l'épinglage de la scène 1 (une transition de
+couleur de fond, `background-color` sur la section suivante, jamais un fondu d'image). Les scènes
+2, 3 et 4 portent `.nuit` et les orbites. La scène 5 revient au jour et la fin calme reste claire.
+Le logo suit : version crème sur la nuit, version marine sur le jour (`public/logo-clair.png`,
+`public/logo-nuit.png`, nommés par le fond qu'ils attendent).
 
 **Mobile.** Mêmes scènes, épinglage plus court, six cartes dans le champ, la maquette de la scène
 4 en pleine largeur sous le texte, le bento en pile. `ScrollTrigger.normalizeScroll(true)` activé
@@ -194,14 +213,15 @@ primitives du film.
 | `Trace` | un `path` SVG qui se trace selon la progression (`stroke-dasharray`) |
 | `Champ3D` | un plan incliné de cartes en perspective, caméra qui glisse, chaque carte avec un état « modèle » et un état « métier » qui se croisent à une position donnée |
 | `Rouleaux` | un nombre dont chaque chiffre roule jusqu'à sa valeur ; rendu serveur : la valeur finale |
-| `Orbites` | le décor fixe : deux arcs qui tournent de `film.orbites.rotation` degrés sur la page |
+| `Orbites` | le décor fixe des scènes de nuit : deux arcs qui tournent de `film.orbites.rotation` degrés sur la page |
+| `Paysage` | l'illustration de l'ouverture en calques (ciel, lointain, premier plan) : chaque calque glisse selon la progression, à sa vitesse (`film.paysage`) ; mouvement réduit : immobile ; rendu serveur : les calques posés, l'image au premier plan avec `priority` |
 | `Pile` | **non retenue** : la scène « notifications » de la vidéo n'a pas d'équivalent sans chiffre vrai |
 
 ## §8 · Qui écrit quoi
 
 | Périmètre exclusif | Agent | Fichiers |
 |---|---|---|
-| Contrats et primitives | l'orchestrateur | `lib/questionnaire.ts`, `lib/reglages.ts`, `app/page.tsx`, `components/ui/{scene,frappe,decode,barre,trace,champ3d,rouleaux,orbites}.tsx`, `app/icon.svg`, `.buildyoursite/consignes-agents.md` |
+| Contrats et primitives | l'orchestrateur | `lib/questionnaire.ts`, `lib/reglages.ts`, `app/page.tsx`, `components/ui/{scene,frappe,decode,barre,trace,champ3d,rouleaux,orbites,paysage}.tsx`, `app/icon.svg`, `public/logo-*.png`, `public/paysage/*`, `.buildyoursite/consignes-agents.md` |
 | Scènes 1 et 2 | agent A | `components/sections/scene-recherche.tsx`, `scene-modele.tsx`, `carte-metier.tsx` |
 | Scènes 3, 4 et 5 | agent B | `components/sections/scene-utile.tsx`, `scene-relecture.tsx`, `scene-livre.tsx` |
 | Le cadre | agent C | `components/sections/nav.tsx`, `pied-de-page.tsx`, `confiance.tsx`, `julien.tsx`, `faq.tsx`, `appel.tsx`, `consentement.tsx`, `components/seo/json-ld.tsx`, `app/not-found.tsx` (habillage), `app/mentions-legales/page.tsx` et `app/confidentialite/page.tsx` (habillage et sections ajoutées) |
@@ -223,7 +243,9 @@ Section → réglages consommés → prop :
 |---|---|---|
 | Titres, descriptions, canoniques par page | agents (chaque page exporte `metadata`) | à construire, vérifié par le garde-fou |
 | Image de partage | socle, couleurs de la direction | fait |
-| Favicon | l'orchestrateur : le monogramme « S », deux arcs ambre sur nuit | à dessiner |
+| Logo | fourni par J (sans fond), deux versions dérivées : crème pour la nuit, marine pour le jour | fait |
+| Favicon | l'orchestrateur : le « A » du logo, triangle crème et triangle orange sur marine | fait |
+| Illustration d'ouverture | à nous : générée (Higgsfield, accord de J image par image) ou dessinée en SVG ; en calques pour la parallaxe ; jamais l'image du composant 21st | à produire, accord attendu |
 | `robots.txt`, `sitemap.xml` | socle, pages `/` et `/contact`, privés exclus | fait |
 | Données structurées `ProfessionalService` (nom, zone France, téléphone, « à partir de 300 € ») | agent C | à construire |
 | Page 404 habillée | agent C | à construire |
@@ -256,7 +278,7 @@ débit limité sur l'envoi public ; aucune requête construite depuis une entré
 - **H4** Pas de page Réalisations. Les trois noms vivent dans le bandeau de confiance, chacun avec un lien quand il existe : VTBON → `vtbon.fr` ; pizzeria et Popec à confirmer.
 - **H5** Le champ 3D montre neuf cartes de métiers dessinées en code, jamais les sites des clients.
 - **H6** Statistiques : Google Analytics 4 après consentement (H de mise en œuvre : bandeau, cookie de choix, chargement conditionnel) et Search Console à côté. Un outil sans cookie éviterait le bandeau ; J a demandé les cookies.
-- **H7** La section « Julien » cite quatorze ans de direction de restaurants, cinquante-quatre personnes et trois millions d'euros, sans nommer l'enseigne.
+- **H7** La section « Julien » dit ce qu'il fait aujourd'hui (sites et applications pour des commerces, depuis Béziers, pour toute la France, du dessin à la mise en ligne) et ne parle pas de son passé en restauration : demandé par J.
 - **H8** La scène 4 cite la Pizzeria des Allées comme exemple de relecture, avec l'accord du client dit obtenu.
 - **H9** Contact : WhatsApp seul. L'e-mail viendra plus tard ; la page des mentions légales le marque à confirmer en attendant.
 - **H10** Le questionnaire compte dix questions, celles de `CONTENU.md`, dans cet ordre ; les réponses vont en base et se lisent dans `/admin` ; aucune alerte par e-mail, aucun service d'envoi n'est branché.
@@ -264,8 +286,10 @@ débit limité sur l'envoi public ; aucune requête construite depuis une entré
 - **H12** Le bandeau dit « VTBON · l'application des chauffeurs VTC » et « Popec · coach sportif » : à relire par J.
 - **H13** « 72 h » est le seul chiffre animé (rouleaux). « 300 € » reste immobile : un prix ne se compte pas.
 - **H14** Sur téléphone : mêmes scènes, épinglages de 1,7 écran, six cartes dans le champ, bento en pile.
-- **H15** Le monogramme est un « S » dessiné en deux arcs ambre sur fond nuit ; il sert de favicon et se retrouve sur l'image de partage.
+- **H15** Le logo fourni par J remplace le monogramme : la version crème sur la nuit, la version marine sur le jour, l'orange conservé tel quel. Le favicon est le « A » du logo. L'image de partage est le logo crème sur marine.
 - **H16** Le nom de dossier est `stalika`, dans le dépôt MindFlow, sans dépôt git imbriqué : c'est le dépôt qui suit.
+- **H18** L'illustration d'ouverture montre le monde des clients de Julien en plein jour (une terrasse, une rue de village du sud), peinte, sans personnage identifiable, sans robot, sans texte dans l'image. Elle est en trois calques au moins pour la parallaxe. Tant qu'elle n'est pas produite, un paysage dessiné en SVG (calques plats aux couleurs du thème) tient sa place, et le site fonctionne avec.
+- **H19** La nuit est une classe (`.nuit`) qui remappe les variables du thème : les composants du socle ne connaissent qu'un vocabulaire, `bg-background`, `text-foreground`, et suivent.
 - **H17** Le mode Édition au clic (overlay) n'est pas exploitable depuis cette session cloud ; il reste dans le projet pour une reprise en local. Les retours se font dans le chat, ou sur le blueprint.
 
 ## Trous à confirmer par J
@@ -279,6 +303,8 @@ Marqués `[[À CONFIRMER PAR L'UTILISATEUR : …]]` dans le code, listés par le
 - L'URL publique et l'hébergement, au moment de la mise en ligne.
 
 ## Questions ouvertes
+
+Validées par J le 2026-09-30 avec le reste du blueprint, dans le sens proposé : oui, oui, le lien « Cookies ».
 
 1. La légende de la scène 4 nomme la pizzeria : d'accord pour la citer là, en plus du bandeau ?
 2. La FAQ dit « je peux m'occuper de l'hébergement et du domaine, ou vous laisser la main » sans prix : c'est bien ce que tu proposes ?

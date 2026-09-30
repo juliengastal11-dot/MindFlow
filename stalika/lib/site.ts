@@ -31,9 +31,9 @@ export const SITE = {
 
   /**
    * Couleurs de l'image de partage. Pas des tokens Tailwind : cette image est
-   * rendue hors CSS, en PNG. Calées sur la direction « La terrasse, la nuit ».
+   * rendue hors CSS, en PNG. Calées sur le logo : marine, crème, orange.
    */
-  partage: { fond: "#0f172a", texte: "#f8fafc", accent: "#d97706" },
+  partage: { fond: "#070f27", texte: "#f6f1e8", accent: "#ff8f03" },
 
   /** Le numéro de Julien, en international pour le lien wa.me, et tel qu'il s'affiche. */
   whatsapp: "33645748608",

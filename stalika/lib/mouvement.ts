@@ -102,6 +102,10 @@ export const MOUVEMENT = {
     /** La pile de cartes qui se poussent. */
     pile: { max: 6, maxMobile: 4, decalage: 12 },
 
+    /** L'illustration de l'ouverture, en calques : déplacement de chaque calque sur la scène,
+        en fraction de sa hauteur. Le ciel bouge à peine, le premier plan franchement. */
+    paysage: { ciel: 0.04, lointain: 0.1, premierPlan: 0.22 },
+
     /** Les grands arcs du décor : rotation totale sur la page, en degrés, et opacité. */
     orbites: { rotation: 14, opacite: 0.16 },
 

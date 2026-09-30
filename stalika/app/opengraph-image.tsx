@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { SITE } from "@/lib/site";
 
 /* L'image qui apparaît quand un lien du site est partagé : messagerie, réseaux,
@@ -12,8 +14,12 @@ export const alt = SITE.nom;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function ImageDePartage() {
+export default async function ImageDePartage() {
   const { fond, texte, accent } = SITE.partage;
+  /* Le logo crème, celui qui attend un fond marine. Lu sur le disque au
+     moment du rendu : l'image est produite à la demande, côté serveur. */
+  const logo = await readFile(path.join(process.cwd(), "public", "logo-clair.png"));
+  const logoSrc = `data:image/png;base64,${logo.toString("base64")}`;
   return new ImageResponse(
     (
       <div
@@ -29,8 +35,9 @@ export default function ImageDePartage() {
           fontFamily: "sans-serif",
         }}
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={logoSrc} alt="" width={560} height={184} style={{ marginBottom: 36 }} />
         <div style={{ width: 96, height: 10, background: accent, marginBottom: 36 }} />
-        <div style={{ fontSize: 76, fontWeight: 700, lineHeight: 1.05, letterSpacing: -2 }}>{SITE.nom}</div>
         <div style={{ fontSize: 30, marginTop: 24, opacity: 0.8, maxWidth: 960 }}>{SITE.description}</div>
       </div>
     ),
