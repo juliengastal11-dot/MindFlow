@@ -1,27 +1,15 @@
 # Node
 node_modules/
-frontend/dist/
-frontend/.vite/
+dist/
+.vite/
 *.log
 
-# Python
-backend/.venv/
-__pycache__/
-*.pyc
-
-# Data & secrets
-*.db
-*.sqlite
-*.sqlite3
+# Secrets
 .env
-backend/.env
-frontend/.env.local
+.env.*
 
 # OS / editors
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
-
-# Données locales (base SQLite, clé secrète générée)
-backend/data/
