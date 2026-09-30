@@ -84,6 +84,9 @@ export const MOUVEMENT = {
     /** Le texte qui se tape : période du clignotement du curseur, en secondes. */
     frappe: { curseur: 0.53 },
 
+    /** Le logo qui se compose à l'ouverture : brouillage, fixation lettre à lettre, fondu vers l'image. */
+    logo: { brouillage: 0.5, fixation: 0.8, fondu: 0.35, glyphes: "_/\\|<>*#-+" },
+
     /** Le mot qui se décode : les glyphes de brouillage, et le nombre de passes par lettre. */
     decode: { glyphes: "abcdefghijklmnopqrstuvwxyzéèàç·", passes: 5 },
 

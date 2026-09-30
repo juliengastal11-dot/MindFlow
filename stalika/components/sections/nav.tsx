@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { LogoAnime } from "@/components/ui/logo-anime";
 import { Button } from "@/components/ui/button";
 import { lienWhatsApp } from "@/lib/site";
 
@@ -15,14 +15,8 @@ export function Nav() {
       </a>
       <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-6">
         <Link href="/" className="cursor-pointer rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring">
-          <Image
-            src="/logo-nuit.png"
-            alt="Stalika"
-            width={880}
-            height={289}
-            className="h-9 w-auto md:h-11"
-            priority
-          />
+          {/* À l'ouverture, le logo se compose lettre à lettre (une fois par visite). */}
+          <LogoAnime className="h-9 text-[2.25rem] md:h-11 md:text-[2.75rem]" />
         </Link>
         <nav aria-label="Contact" className="flex items-center gap-4 sm:gap-6">
           <a
