@@ -69,9 +69,7 @@ function Offre() {
 
 export function SceneLivre() {
   return (
-    <Scene id="livre" className="bg-transparent" src="components/sections/scene-livre.tsx" aria-labelledby="livre-titre">
-      {/* Voile sur le ciel commun (thème sombre hérité de Ciel), en fondu depuis le haut pour laisser voir le lever du jour. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-2 inset-y-0 bg-background/70 sm:inset-x-3 md:bg-transparent md:bg-linear-to-r md:from-background/90 md:via-background/55 md:to-background/5 [mask-image:linear-gradient(to_bottom,transparent,black_30%)]" />
+    <Scene id="livre" src="components/sections/scene-livre.tsx" aria-labelledby="livre-titre">
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12 md:py-16">
         <div className="space-y-8 md:grid md:grid-cols-2 md:items-center md:gap-12 md:space-y-0">
           <div>

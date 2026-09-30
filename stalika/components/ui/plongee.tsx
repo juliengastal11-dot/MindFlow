@@ -7,19 +7,21 @@ import { MOUVEMENT } from "@/lib/mouvement";
 import type { CoinsEcran } from "@/lib/plongee-ecran";
 
 /* ---------------------------------------------------------------------------
-   Plongée : depuis le hero, on entre dans l'écran de l'ordinateur.
+   Plongée : à la fin du ciel, on entre dans l'écran de l'ordinateur.
 
-   Demande de J : la vidéo du hero joue son aller (11 s) puis se fige. Au
-   premier défilement, la plongée démarre à partir de ce plan, dans le même
-   cadre : le hero reste en place (`position: sticky`), ses textes s'effacent,
-   la vidéo se met en pause, et une suite d'images prend le relais, avancée
-   au rythme du défilement. On s'approche du personnage, on passe derrière son
-   épaule, on entre dans l'écran, dont le fond d'écran (le logo) remplit le
-   cadre. Puis une fenêtre s'ouvre, comme sur un Mac, avec l'effet de
-   « feuille » d'iPhone voulu par J : elle monte du bas, et le fond recule un
-   peu, s'arrondit et s'assombrit derrière elle (`fenetre`, la discussion).
-   Au bout du défilement, la plongée reprend sa place dans la page : la
-   fenêtre défile avec elle, comme une section.
+   Structure voulue par J : le hero, puis le même paysage en fond dont
+   l'heure change au défilement (`Ciel`, trois sections), et c'est la
+   dernière image, l'aube, qui mène au zoom dans l'ordinateur et au
+   questionnaire. La plongée vit donc à l'intérieur de `Ciel`, après ses
+   sections : son cadre se pose exactement sur celui du ciel, qui reste en
+   place derrière. Une suite d'images prend le relais, avancée au rythme du
+   défilement : on s'approche du personnage, on passe derrière son épaule, on
+   entre dans l'écran, dont le fond d'écran (le logo) remplit le cadre. Puis
+   une fenêtre s'ouvre, comme sur un Mac, avec l'effet de « feuille »
+   d'iPhone voulu par J : elle monte du bas, et le fond recule un peu,
+   s'arrondit et s'assombrit derrière elle (`fenetre`, la discussion). Au
+   bout du défilement, tout reprend sa place dans la page : la fenêtre
+   défile avec elle, comme une section.
 
    Deux leçons tirées de la première version du film :
    - pas d'épinglage GSAP (il ajoutait des sauts sur iPhone) : `sticky`,
@@ -28,10 +30,11 @@ import type { CoinsEcran } from "@/lib/plongee-ecran";
      saccadent sur iPhone) : des images dessinées sur un canvas selon la
      position de défilement, la méthode des pages produit d'Apple.
 
-   Raccord : la plongée a été générée à part ; sa première image montre la
-   même scène que la dernière du hero, un peu plus large. Mesuré hors ligne
-   (`raccord`), l'écart est compensé : la première image est posée pile sur
-   la vidéo figée, puis le cadrage glisse vers celui de la plongée.
+   Raccord : la plongée a été générée à part ; sa première image a le même
+   cadrage que la dernière du ciel (mesuré hors ligne : échelle 1,005,
+   aucun décalage), seule la lumière change, de l'aube rose à l'or. Le
+   `raccord` pose la première image exactement comme le ciel la cadre
+   (téléphone compris), puis le cadrage glisse vers celui de la plongée.
 
    Sur l'écran de l'ordinateur, en fond d'écran : le vrai logo, en petit,
    dont une lettre au hasard se rebrouille de temps en temps, comme dans le
@@ -39,8 +42,7 @@ import type { CoinsEcran } from "@/lib/plongee-ecran";
    de l'écran, image par image, sont mesurés hors ligne (`lib/plongee-ecran`).
 
    Déroulé du défilement, de 0 à 1 :
-   - 0 à `fondu` : les textes du hero (`data-plongee-efface`) s'effacent et
-     le canvas apparaît en fondu par-dessus la vidéo figée ;
+   - 0 à `fondu` : le canvas apparaît en fondu par-dessus le ciel ;
    - `fondu` à `finVideo` : les images défilent ;
    - `finVideo` à 1 : agrandissement centré sur l'écran (0 → 0,6), puis la
      fenêtre monte et le fond recule (0,5 → 0,9) ; le reste laisse le temps
@@ -104,8 +106,6 @@ export type PlongeeProps = {
   raccord?: Raccord;
   /** Description de la scène, pour qui ne la voit pas. */
   alt: string;
-  /** Le hero : il occupe tout l'écran au départ, la plongée se pose dans son cadre. */
-  children: React.ReactNode;
   /** La fenêtre qui s'ouvre dans l'ordinateur, en « feuille », à la fin de la plongée. */
   fenetre?: React.ReactNode;
   className?: string;
@@ -124,7 +124,6 @@ export function Plongee({
   logo,
   raccord,
   alt,
-  children,
   fenetre,
   className,
 }: PlongeeProps) {
@@ -149,8 +148,6 @@ export function Plongee({
 
     const cible = ecran;
     const images: HTMLImageElement[] = [];
-    const effaces = Array.from(el.querySelectorAll<HTMLElement>("[data-plongee-efface]"));
-    const video = el.querySelector("video");
     let courante = -1;
     let entree = 0; // entrée dans l'écran, de 0 à 1, adoucie
     let avance = 0; // progression dans les images, de 0 à 1, pour le recadrage
@@ -342,14 +339,9 @@ export function Plongee({
       },
       onUpdate: (self) => {
         const p = self.progress;
-        // Le hero : textes effacés, vidéo en pause dès qu'on quitte le haut.
+        // Le canvas apparaît par-dessus le ciel.
         const pf = Math.min(1, p / fondu);
-        gsap.set(effaces, { autoAlpha: Math.max(0, 1 - pf * 1.6) });
         gsap.set(cadre, { autoAlpha: pf * pf * (3 - 2 * pf) });
-        if (video) {
-          if (p > 0.002 && !video.paused) video.pause();
-          else if (p <= 0.002 && video.paused && !video.ended && video.currentTime > 0) void video.play().catch(() => {});
-        }
         const pv = Math.min(1, Math.max(0, (p - fondu) / (finVideo - fondu)));
         const pz = Math.max(0, (p - finVideo) / (1 - finVideo));
         // Entrée dans l'écran : lente au début, franche à la fin.
@@ -377,7 +369,6 @@ export function Plongee({
       obs.disconnect();
       arreter();
       window.removeEventListener("resize", redessiner);
-      gsap.set(effaces, { clearProps: "opacity,visibility" });
     };
   }, [serie, ecran, focus, fondu, finVideo, logo, raccord]);
 
@@ -385,10 +376,9 @@ export function Plongee({
     <div
       ref={zone}
       data-src="components/ui/plongee.tsx"
-      className={cn("nuit relative h-[320svh] bg-background motion-reduce:h-auto", className)}
+      className={cn("nuit relative h-[320svh] motion-reduce:h-auto", className)}
     >
       <div className="sticky top-0 h-svh motion-reduce:static motion-reduce:h-auto">
-        {children}
         {/* La plongée, posée exactement sur le cadre du hero (mêmes marges, mêmes coins). */}
         <div
           ref={calque}
