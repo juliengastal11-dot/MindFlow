@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/sections/hero";
 import { Plongee } from "@/components/ui/plongee";
+import { Ciel } from "@/components/ui/ciel";
 import { ECRANS_PLONGEE } from "@/lib/plongee-ecran";
 import { SceneRecherche } from "@/components/sections/scene-recherche";
 import { SceneModele } from "@/components/sections/scene-modele";
@@ -57,10 +58,20 @@ export default function Accueil() {
           <Hero />
         </Plongee>
         <SceneRecherche />
-        <SceneModele />
-        <SceneUtile />
-        <SceneRelecture />
-        <SceneLivre />
+        {/* Un seul plan derrière l'histoire : la falaise du hero, du crépuscule
+            à l'aube, dont l'heure avance avec le défilement (passages Kling
+            mis bout à bout : 49 images). Heure de chaque section, de 0 à 1 :
+            la nuit tombe entre Sur mesure et Utile, le jour se lève avant Livré. */}
+        <Ciel
+          bureau={{ dossier: "/ciel/bureau", nombre: 49 }}
+          mobile={{ dossier: "/ciel/mobile", nombre: 49 }}
+          reperes={{ "sur-mesure": 0.04, utile: 0.42, relecture: 0.52, livre: 0.97 }}
+        >
+          <SceneModele />
+          <SceneUtile />
+          <SceneRelecture />
+          <SceneLivre />
+        </Ciel>
         <Confiance />
         <Julien />
         <Faq />
