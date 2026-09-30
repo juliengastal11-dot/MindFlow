@@ -68,18 +68,15 @@ export const MOUVEMENT = {
     duree: 0.45,
   },
 
-  /* --- Le film : les scènes épinglées de l'accueil, jouées au défilement ---
-     Descendre joue, remonter rembobine. En mouvement réduit, aucune scène
-     n'est épinglée et chacune affiche son état final. */
+  /* --- Le film : les scènes de l'accueil. Chacune joue son animation une
+     fois, à l'arrivée, sur `duree` secondes. Plus aucune n'est épinglée :
+     J a jugé à l'essai que l'épinglage donnait l'impression d'un bug. En
+     mouvement réduit, chaque scène affiche son état final. */
   film: {
-    /** Lissage entre la molette et la chronologie, en secondes. 0 = collé ; au-delà de 1, ça traîne. */
-    lissage: 0.6,
-    /** Hauteur de défilement d'une scène épinglée, en hauteurs d'écran. */
-    hauteur: 2.4,
-    /** Même chose sur téléphone : plus court, le pouce fatigue vite. */
-    hauteurMobile: 1.7,
-    /** Largeur en dessous de laquelle le film prend ses réglages « mobile ». */
-    seuilMobile: 768,
+    /** Durée de l'animation d'une scène, en secondes. */
+    duree: 2.6,
+    /** Position de la scène dans l'écran qui lance son animation. */
+    declencheur: "top 65%",
 
     /** Le texte qui se tape : période du clignotement du curseur, en secondes. */
     frappe: { curseur: 0.53 },
