@@ -6,33 +6,31 @@ import { gsap, ScrollTrigger, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
 
 /* ---------------------------------------------------------------------------
-   Scène : une section épinglée dont la chronologie suit le défilement.
+   Scène : une section dont la chronologie se joue une fois, quand elle arrive
+   à l'écran.
 
-   Descendre joue, remonter rembobine. La scène reste collée à l'écran le temps
-   de `film.hauteur` hauteurs d'écran (moins sur téléphone), puis la page
-   reprend. Les primitives du film (`Frappe`, `Decode`, `Barre`, `Trace`,
-   `Champ3D`, `Rouleaux`, `Paysage`) s'inscrivent sur cette chronologie par le
-   contexte `useScene()` : elles y posent leurs tweens entre deux positions,
-   `de` et `a`, exprimées en fraction de la scène (0 = l'entrée, 1 = la sortie).
+   Première version : la scène était épinglée et la chronologie suivait la
+   molette. J l'a refusée à l'essai sur son téléphone : la page semblait
+   buguer, elle s'arrêtait et repartait. Désormais la page défile toujours
+   normalement ; chaque scène joue son animation en `film.duree` secondes, au
+   moment où elle entre dans l'écran, et ne la rejoue pas.
+
+   Les primitives du film (`Frappe`, `Decode`, `Barre`, `Trace`, `Champ3D`,
+   `Rouleaux`) s'inscrivent sur cette chronologie par le contexte
+   `useScene()` : elles y posent leurs tweens entre deux positions, `de` et
+   `a`, en fraction de la chronologie (0 = le début, 1 = la fin).
 
    Ordre d'exécution, à connaître : les effets des enfants courent avant celui
    du parent. Les primitives s'inscrivent donc AVANT que la chronologie
    n'existe ; la scène la construit ensuite et rejoue les inscriptions dans
-   l'ordre du document. Une primitive montée plus tard (un rendu conditionnel)
-   s'ajoute au vol.
+   l'ordre du document. Une primitive montée plus tard s'ajoute au vol.
 
    Ce qui est marqué `data-film-cache` est masqué par la feuille de style tant
    que la chronologie n'est pas construite (`html.js [data-film-cache]`), puis
-   révélé dans son état de départ : sans ça, le texte complet apparaîtrait un
-   instant avant de s'effacer pour se retaper.
+   révélé dans son état de départ.
 
-   Mouvement réduit : rien n'est épinglé, la chronologie est posée à 1, la
-   scène affiche son état final et le défilement reste natif. Sans
-   JavaScript : tout le texte est là, dans l'ordre de lecture.
-
-   Sur tactile, `ScrollTrigger.normalizeScroll` est activé une fois pour toutes
-   les scènes : la barre d'adresse de Safari fait sauter les épinglages,
-   c'est le risque connu de cette page, à tester sur un vrai téléphone.
+   Mouvement réduit : la chronologie est posée à 1, la scène affiche son état
+   final. Sans JavaScript : tout le texte est là, dans l'ordre de lecture.
 --------------------------------------------------------------------------- */
 
 export type Inscription = (chrono: gsap.core.Timeline) => void;
@@ -49,23 +47,19 @@ export function useScene(): Contexte | null {
   return useContext(SceneContexte);
 }
 
-let tactileNormalise = false;
-
 export type SceneProps = React.ComponentProps<"section"> & {
   /** Chemin du fichier qui définit la scène, posé en `data-src` pour l'overlay. */
   src?: string;
   /** Passe la scène dans le monde du logo : la classe `.nuit` remappe le thème. */
   nuit?: boolean;
-  /** Hauteur de défilement, en écrans. Par défaut `MOUVEMENT.film.hauteur`. */
-  hauteur?: number;
-  hauteurMobile?: number;
+  /** Durée de la chronologie, en secondes. Par défaut `MOUVEMENT.film.duree`. */
+  duree?: number;
 };
 
 export function Scene({
   src,
   nuit = false,
-  hauteur = MOUVEMENT.film.hauteur,
-  hauteurMobile = MOUVEMENT.film.hauteurMobile,
+  duree = MOUVEMENT.film.duree,
   className,
   children,
   ...props
@@ -101,38 +95,24 @@ export function Scene({
         return;
       }
 
-      if (ScrollTrigger.isTouch === 1 && !tactileNormalise) {
-        ScrollTrigger.normalizeScroll(true);
-        tactileNormalise = true;
-      }
-
-      const seuil = MOUVEMENT.film.seuilMobile;
-      const mm = gsap.matchMedia();
-      mm.add(
-        { mobile: `(max-width: ${seuil - 1}px)`, bureau: `(min-width: ${seuil}px)` },
-        (c) => {
-          const ecrans = c.conditions?.mobile ? hauteurMobile : hauteur;
-          ScrollTrigger.create({
-            trigger: section,
-            start: "top top",
-            end: `+=${Math.round(ecrans * 100)}%`,
-            pin: true,
-            anticipatePin: 1,
-            scrub: MOUVEMENT.film.lissage,
-            animation: tl,
-            invalidateOnRefresh: true,
-            onToggle: (st) =>
-              gsap.set(caches, { willChange: st.isActive ? "transform, opacity" : "auto" }),
-          });
-        },
-      );
+      // La chronologie vaut 1 : on l'étire à `duree` secondes, puis on la
+      // joue une fois, quand le haut de la scène atteint le bas de l'écran.
+      tl.timeScale(1 / duree);
+      gsap.set(caches, { willChange: "transform, opacity" });
+      tl.eventCallback("onComplete", () => gsap.set(caches, { willChange: "auto" }));
+      ScrollTrigger.create({
+        trigger: section,
+        start: MOUVEMENT.film.declencheur,
+        once: true,
+        onEnter: () => tl.play(),
+      });
     }, section);
 
     return () => {
       ctx.revert();
       chrono.current = null;
     };
-  }, [hauteur, hauteurMobile]);
+  }, [duree]);
 
   return (
     <SceneContexte.Provider value={contexte}>

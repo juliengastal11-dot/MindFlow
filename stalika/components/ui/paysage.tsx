@@ -3,9 +3,8 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { gsap } from "@/lib/gsap";
+import { gsap, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
-import { useScene } from "@/components/ui/scene";
 
 /* ---------------------------------------------------------------------------
    Paysage : l'illustration de l'ouverture, en calques qui glissent à des
@@ -34,29 +33,38 @@ export type PaysageProps = React.ComponentProps<"div"> & {
   calques: readonly Calque[];
   /** Description de l'image entière, pour les lecteurs d'écran. */
   alt: string;
+  /** Dégradé vers la couleur de fond, pour poser le texte sur l'image. */
   voile?: boolean;
-  de?: number;
-  a?: number;
 };
 
-export function Paysage({ calques, alt, voile = true, de = 0, a = 1, className, ...props }: PaysageProps) {
-  const scene = useScene();
+export function Paysage({ calques, alt, voile = true, className, ...props }: PaysageProps) {
   const ref = useRef<HTMLDivElement>(null);
 
+  /* Parallaxe classique : chaque calque suit le défilement normal de la
+     page, à sa vitesse, du haut de page jusqu'à ce que le paysage sorte de
+     l'écran. Rien n'est épinglé, rien ne bouge tant qu'on ne défile pas. */
   useEffect(() => {
     const el = ref.current;
-    if (!el || !scene) return;
+    if (!el || mouvementReduit()) return;
     const couches = Array.from(el.querySelectorAll<HTMLElement>("[data-calque]"));
 
-    return scene.inscrire((tl) => {
+    const ctx = gsap.context(() => {
       couches.forEach((couche) => {
         const v = Number(couche.dataset.vitesse ?? 0);
         const borne = (v / (1 + v)) * 100;
-        gsap.set(couche, { yPercent: 0 });
-        tl.to(couche, { yPercent: -borne, duration: Math.max(a - de, 0.01) }, de);
+        gsap.fromTo(
+          couche,
+          { yPercent: 0 },
+          {
+            yPercent: -borne,
+            ease: "none",
+            scrollTrigger: { trigger: el, start: "top top", end: "bottom top", scrub: true },
+          },
+        );
       });
-    });
-  }, [scene, de, a]);
+    }, el);
+    return () => ctx.revert();
+  }, []);
 
   return (
     <div
