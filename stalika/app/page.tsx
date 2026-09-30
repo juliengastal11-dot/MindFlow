@@ -32,23 +32,41 @@ export default function Accueil() {
   return (
     <>
       <main id="contenu">
-        <Hero />
-        {/* Juste sous le hero, le même paysage reste en fond et l'heure avance
-            avec le défilement (passages Kling mis bout à bout : 49 images) :
-            crépuscule pour Sur mesure, nuit pour Utile et La relecture, puis
-            le jour se lève. C'est cette dernière image, l'aube, qui mène au
-            zoom dans l'ordinateur et à la discussion (demande de J). */}
+        {/* Un seul plan du hero jusqu'à la discussion (demande de J) : la vidéo
+            du hero en haut de page, puis la même falaise dont l'heure avance
+            au défilement, en un seul mouvement régulier. 51 images : la
+            lumière du hero (1), les passages Kling crépuscule → nuit → aube
+            (2 à 50), la première image de la plongée (51). */}
         <Ciel
-          bureau={{ dossier: "/ciel/bureau", nombre: 49 }}
-          mobile={{ dossier: "/ciel/mobile", nombre: 49 }}
-          reperes={{ "sur-mesure": 0.04, utile: 0.42, relecture: 0.52, "ciel-aube": 1 }}
+          bureau={{ dossier: "/ciel/bureau", nombre: 51 }}
+          mobile={{ dossier: "/ciel/mobile", nombre: 51 }}
+          cadrageMobile={{ x: 277 / 1924, y: 0, l: 600 / 1924, h: 1 }}
+          jalons={[
+            [0, 0],
+            [0.2, 1],
+            [0.5, 25],
+            [0.8, 49],
+            [1, 50],
+          ]}
+          reperes={{ accueil: 0, "sur-mesure": 0.3, utile: 0.5, relecture: 0.7, "ciel-fin": 1 }}
+          video={{
+            bureau: { webm: "/hero/video.webm", mp4: "/hero/video.mp4" },
+            mobile: { webm: "/hero/video-mobile.webm", mp4: "/hero/video-mobile.mp4" },
+            duree: 20,
+            // Zoom de l'image 241 par rapport à l'image 1, mesuré (quasi linéaire entre les deux).
+            zoom: { echelle: 1.16, x: 0.031, y: 0.056 },
+            // La vidéo mobile : 560 × 1000 px pris à (320, 76) dans chaque image de 1928 × 1076.
+            recadrageMobile: { x: 320 / 1928, y: 76 / 1076, l: 560 / 1928, h: 1000 / 1076 },
+          }}
+          alt="Un plateau d'herbe au-dessus d'une mer de nuages ; une personne travaille sur un ordinateur, au bord de la falaise. La lumière passe du coucher du soleil à la nuit, puis à l'aube."
         >
+          <Hero />
           <SceneModele />
           <SceneUtile />
           <SceneRelecture />
-          {/* Repère : l'aube est complète quand ce point passe au milieu de l'écran,
-              juste avant que la plongée ne prenne le relais. */}
-          <div id="ciel-aube" aria-hidden="true" className="h-px" />
+          {/* Repère : la lumière dorée est revenue (dernière image du ciel, qui est
+              la première de la plongée) quand ce point passe au milieu de l'écran. */}
+          <div id="ciel-fin" aria-hidden="true" className="h-px" />
           {/* La plongée dans l'ordinateur (Kling 3.0, du plan large au gros plan
               sur l'écran, 61 images), posée dans le cadre du ciel. */}
           <Plongee
@@ -62,9 +80,8 @@ export default function Accueil() {
               coins: ECRANS_PLONGEE,
             }}
             raccord={{
-              // Mesuré sur la dernière image du ciel (l'aube) et l'image 1 de la
-              // plongée, sur les contours : même cadrage, seule la lumière change.
-              echelle: 1.005,
+              // La dernière image du ciel EST la première de la plongée : aucun écart.
+              echelle: 1,
               x: 0,
               y: 0,
               bureau: { x: 0, y: 0, l: 1, h: 1 },

@@ -9,10 +9,9 @@ import type { CoinsEcran } from "@/lib/plongee-ecran";
 /* ---------------------------------------------------------------------------
    Plongée : à la fin du ciel, on entre dans l'écran de l'ordinateur.
 
-   Structure voulue par J : le hero, puis le même paysage en fond dont
-   l'heure change au défilement (`Ciel`, trois sections), et c'est la
-   dernière image, l'aube, qui mène au zoom dans l'ordinateur et au
-   questionnaire. La plongée vit donc à l'intérieur de `Ciel`, après ses
+   Structure voulue par J : un seul plan du hero jusqu'ici (`Ciel`), dont
+   l'heure change au défilement ; la lumière dorée du hero revenue à la fin
+   mène au zoom dans l'ordinateur et au questionnaire. La plongée vit donc à l'intérieur de `Ciel`, après ses
    sections : son cadre se pose exactement sur celui du ciel, qui reste en
    place derrière. Une suite d'images prend le relais, avancée au rythme du
    défilement : on s'approche du personnage, on passe derrière son épaule, on
@@ -30,11 +29,9 @@ import type { CoinsEcran } from "@/lib/plongee-ecran";
      saccadent sur iPhone) : des images dessinées sur un canvas selon la
      position de défilement, la méthode des pages produit d'Apple.
 
-   Raccord : la plongée a été générée à part ; sa première image a le même
-   cadrage que la dernière du ciel (mesuré hors ligne : échelle 1,005,
-   aucun décalage), seule la lumière change, de l'aube rose à l'or. Le
-   `raccord` pose la première image exactement comme le ciel la cadre
-   (téléphone compris), puis le cadrage glisse vers celui de la plongée.
+   Raccord : la dernière image du ciel est la première de la plongée. Le
+   `raccord` la pose exactement comme le ciel la cadre (téléphone compris),
+   puis le cadrage glisse vers celui de la plongée.
 
    Sur l'écran de l'ordinateur, en fond d'écran : le vrai logo, en petit,
    dont une lettre au hasard se rebrouille de temps en temps, comme dans le
