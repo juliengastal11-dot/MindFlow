@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { BulleJulien, Courante } from "./bulles";
 
 export const styleCarte =
-  "carte-reactive cursor-pointer text-left rounded-card border border-border bg-card px-4 py-3 text-sm text-card-foreground hover:border-primary outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+  "carte-reactive cursor-pointer text-left rounded-card border border-border bg-card px-4 py-3 text-sm text-card-foreground hover:border-encre outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
 type Props = {
   question: Exclude<Question, { type: "contact" }>;
@@ -114,7 +114,7 @@ function QuestionChoix({
               key={choix}
               type="button"
               aria-expanded={estAutre ? autreOuvert : undefined}
-              className={cn(styleCarte, estAutre && autreOuvert && "border-primary bg-muted")}
+              className={cn(styleCarte, estAutre && autreOuvert && "border-encre bg-muted")}
               onClick={() => (estAutre ? setAutreOuvert(true) : onRepondre(choix))}
             >
               {choix}
@@ -173,7 +173,7 @@ function QuestionMultiple({
               key={choix}
               type="button"
               aria-pressed={actif}
-              className={cn(styleCarte, actif && "border-primary bg-muted")}
+              className={cn(styleCarte, actif && "border-encre bg-muted")}
               onClick={() => basculer(choix)}
             >
               {choix}

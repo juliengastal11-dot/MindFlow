@@ -29,7 +29,7 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-on-secondary hover:opacity-90",
         outline: "border border-border bg-transparent hover:bg-muted",
         ghost: "hover:bg-muted",
-        link: "text-accent underline-offset-4 hover:underline",
+        link: "text-encre underline-offset-4 hover:underline",
         destructive: "bg-destructive text-on-destructive hover:opacity-90",
         /** Contour clair, pour un fond sombre ou une photo. */
         onDark: "border border-background/40 text-background hover:bg-background/10",

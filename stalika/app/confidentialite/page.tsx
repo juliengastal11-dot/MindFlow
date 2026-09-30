@@ -37,7 +37,7 @@ export default async function Confidentialite() {
     <Nav />
     <main id="contenu" className="pt-24">
     <Section largeur="prose" rythme="serre" src="app/confidentialite/page.tsx">
-      <p className="eyebrow text-primary">Vos données</p>
+      <p className="eyebrow text-encre">Vos données</p>
       <h1 className="mt-4 font-display text-3xl sm:text-4xl md:text-5xl">
         Politique de confidentialité
       </h1>
@@ -89,7 +89,7 @@ export default async function Confidentialite() {
             href="https://www.cnil.fr"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary underline underline-offset-4 hover:no-underline"
+            className="text-encre underline underline-offset-4 hover:no-underline"
           >
             cnil.fr
           </a>

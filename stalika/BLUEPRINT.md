@@ -14,6 +14,17 @@ se posent tels quels.
 
 ---
 
+## Mise à jour du 2026-09-30 au soir : palette « Camel Linen », film sans épinglage
+
+J a refusé l'accueil épinglé à l'essai (la page semblait buguer) et a gardé Stalika et son logo
+en abandonnant les pistes florales. Deux décisions remplacent ce qui suit là où elles le
+contredisent : **les scènes ne s'épinglent plus**, chacune joue son animation une fois à
+l'arrivée (`film.duree`) ; **la palette est « Camel Linen »**, fournie par J (thème shadcn/ui :
+Inter, Georgia, JetBrains Mono, interlettrage -0,02 em, rayon 0,75 rem, ombre noire à 40 %,
+flou 25 px, décalage 10 px). Relevé et contrastes : en tête de `app/globals.css`. Deux écarts
+assumés pour la lisibilité : texte sombre sur les boutons camel, et `encre` (#7B6537) pour le
+camel en texte. La nuit reprend la version sombre de la même palette.
+
 ## §1 · La barre de direction
 
 | | Décidé |

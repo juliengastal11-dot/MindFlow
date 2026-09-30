@@ -7,7 +7,8 @@ import { lienWhatsApp } from "@/lib/site";
 export function Appel() {
   return (
     <Section
-      fond="primary"
+      fond="background"
+      className="nuit"
       rythme="large"
       largeur="prose"
       src="components/sections/appel.tsx"
@@ -18,7 +19,7 @@ export function Appel() {
         <Button asChild variant="accent" shape="pill" size="lg">
           <Link href="/contact">Répondre aux questions</Link>
         </Button>
-        <Button asChild variant="onDark" shape="pill" size="lg">
+        <Button asChild variant="outline" shape="pill" size="lg">
           <a href={lienWhatsApp()} target="_blank" rel="noopener">
             Ou directement sur WhatsApp
           </a>

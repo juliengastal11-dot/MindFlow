@@ -35,7 +35,7 @@ export function Trace({
   de = 0,
   a = 1,
   epaisseur = 3,
-  trait = "stroke-accent",
+  trait = "stroke-encre",
   titre,
   className,
   ...props

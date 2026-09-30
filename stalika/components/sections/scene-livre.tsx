@@ -73,9 +73,9 @@ export function SceneLivre() {
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12 md:py-16">
         <div className="space-y-8 md:grid md:grid-cols-2 md:items-center md:gap-12 md:space-y-0">
           <div>
-            <p className="eyebrow text-primary">04 · Livré</p>
+            <p className="eyebrow text-encre">04 · Livré</p>
             <h2 id="livre-titre" className="mt-3 text-2xl sm:text-3xl md:text-4xl">
-              Livré propre. Et il <span className="text-primary">vous appartient</span>.
+              Livré propre. Et il <span className="text-encre">vous appartient</span>.
             </h2>
             <ul className="mt-6 space-y-4">
               {COCHES.map((texte, i) => (
@@ -86,8 +86,8 @@ export function SceneLivre() {
                     de={DEPARTS[i]}
                     a={DEPARTS[i] + 0.08}
                     epaisseur={2.5}
-                    trait="stroke-primary"
-                    className="mt-0.5 size-6 shrink-0 text-primary"
+                    trait="stroke-encre"
+                    className="mt-0.5 size-6 shrink-0 text-encre"
                   />
                   <span>{texte}</span>
                 </li>

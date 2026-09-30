@@ -128,7 +128,7 @@ export function LogoAnime({ fond = "jour", className }: LogoAnimeProps) {
         <span
           aria-hidden="true"
           data-lettrage
-          className="absolute inset-0 flex items-center whitespace-pre pl-[0.1em] font-sans text-[0.62em] font-semibold uppercase tracking-[0.34em] text-foreground"
+          className="absolute inset-0 flex items-center whitespace-pre pl-[0.1em] font-mono text-[0.62em] font-semibold uppercase tracking-[0.34em] text-foreground"
         />
       )}
     </span>

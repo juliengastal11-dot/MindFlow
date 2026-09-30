@@ -16,7 +16,7 @@ export default function Introuvable() {
       <Nav />
       <main id="contenu" className="pt-24">
         <Section largeur="prose" rythme="serre" src="app/not-found.tsx" className="min-h-[60dvh]">
-          <p className="eyebrow text-primary">Page introuvable</p>
+          <p className="eyebrow text-encre">Page introuvable</p>
           <h1 className="mt-4 font-display text-3xl sm:text-4xl md:text-5xl">
             Cette page n&apos;existe pas.
           </h1>

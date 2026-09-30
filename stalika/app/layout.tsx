@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Averia_Serif_Libre, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SITE } from "@/lib/site";
 import { DefilementFluide } from "@/components/ui/defilement-fluide";
@@ -7,24 +7,22 @@ import { BuildYourSiteOverlay } from "@/components/buildyoursite/overlay";
 
 /* La police est servie par le site, via next/font : aucune requête vers un
    CDN de polices, donc aucune adresse IP de visiteur transmise à un tiers, et
-   la page de confidentialité reste vraie. Plus Jakarta Sans est une police
-   variable : toutes les graisses arrivent dans un seul fichier, et les titres
-   ne font que monter en graisse. */
-const sans = Plus_Jakarta_Sans({
+   la page de confidentialité reste vraie. Inter, la police de la palette
+   « Camel Linen » : une seule famille variable, les titres montent en graisse. */
+const sans = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--police-sans",
 });
 
-/* Averia Serif Libre pour les titres : un serif au trait légèrement
-   irrégulier, comme tracé à la main, qui répond à l'illustration peinte de
-   l'ouverture. Trois graisses fixes, pas de variable disponible. */
-const serif = Averia_Serif_Libre({
+/* JetBrains Mono, la police mono de la palette : pour le lettrage brouillé
+   du logo à l'ouverture, où chaque caractère doit garder la même largeur. */
+const mono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["300", "400", "700"],
   display: "swap",
-  variable: "--police-serif",
+  variable: "--police-mono",
 });
+
 
 /* Les métadonnées de base, héritées par toutes les pages. Chaque page pose
    les siennes, `title`, `description` et `alternates.canonical`, et le gabarit
@@ -58,7 +56,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={`${sans.variable} ${serif.variable}`} suppressHydrationWarning>
+    <html lang="fr" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
       <head>
         {/* HTML injecté : la constante SCRIPT_JS ci-dessus, écrite ici, sans aucune entrée extérieure. */}
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_JS }} />
