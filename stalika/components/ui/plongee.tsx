@@ -14,11 +14,12 @@ import type { CoinsEcran } from "@/lib/plongee-ecran";
    cadre : le hero reste en place (`position: sticky`), ses textes s'effacent,
    la vidéo se met en pause, et une suite d'images prend le relais, avancée
    au rythme du défilement. On s'approche du personnage, on passe derrière son
-   épaule, on entre dans l'écran : la page affichée par l'ordinateur se
-   détache de l'écran et grandit jusqu'à remplir le cadre (`page`). La
-   section suivante commence par la même fenêtre de navigateur, posée
-   exactement là : tout au bout, elle prend la place, sans que rien ne bouge,
-   et on se retrouve à faire défiler la page de l'ordinateur (demande de J).
+   épaule, on entre dans l'écran, dont le fond d'écran (le logo) remplit le
+   cadre. Puis une fenêtre s'ouvre, comme sur un Mac, avec l'effet de
+   « feuille » d'iPhone voulu par J : elle monte du bas, et le fond recule un
+   peu, s'arrondit et s'assombrit derrière elle (`fenetre`, la discussion).
+   Au bout du défilement, la plongée reprend sa place dans la page : la
+   fenêtre défile avec elle, comme une section.
 
    Deux leçons tirées de la première version du film :
    - pas d'épinglage GSAP (il ajoutait des sauts sur iPhone) : `sticky`,
@@ -41,8 +42,9 @@ import type { CoinsEcran } from "@/lib/plongee-ecran";
    - 0 à `fondu` : les textes du hero (`data-plongee-efface`) s'effacent et
      le canvas apparaît en fondu par-dessus la vidéo figée ;
    - `fondu` à `finVideo` : les images défilent ;
-   - `finVideo` à 1 : agrandissement centré sur l'écran ; la page apparaît
-     sur l'écran (0,35 → 0,6), puis s'en détache et remplit le cadre (0,55 → 1).
+   - `finVideo` à 1 : agrandissement centré sur l'écran (0 → 0,6), puis la
+     fenêtre monte et le fond recule (0,5 → 0,9) ; le reste laisse le temps
+     de la voir en place avant que la page ne reprenne son cours.
 
    Les images ne sont chargées qu'à l'approche. Une seule série pour tous
    les écrans : quand l'écran rogne l'image (téléphone), le cadrage suit
@@ -104,9 +106,8 @@ export type PlongeeProps = {
   alt: string;
   /** Le hero : il occupe tout l'écran au départ, la plongée se pose dans son cadre. */
   children: React.ReactNode;
-  /** La page de l'écran : posée sur l'écran de l'ordinateur, elle s'en détache et
-      grandit jusqu'à remplir le cadre. La section suivante doit commencer par la même. */
-  page?: React.ReactNode;
+  /** La fenêtre qui s'ouvre dans l'ordinateur, en « feuille », à la fin de la plongée. */
+  fenetre?: React.ReactNode;
   className?: string;
 };
 
@@ -124,22 +125,24 @@ export function Plongee({
   raccord,
   alt,
   children,
-  page,
+  fenetre,
   className,
 }: PlongeeProps) {
   const zone = useRef<HTMLDivElement>(null);
   const calque = useRef<HTMLDivElement>(null);
   const toile = useRef<HTMLCanvasElement>(null);
-  const collant = useRef<HTMLDivElement>(null);
+  const fond = useRef<HTMLDivElement>(null);
+  const ombre = useRef<HTMLDivElement>(null);
   const feuille = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = zone.current;
     const cadre = calque.current;
     const canvas = toile.current;
-    const fixe = collant.current;
-    const pageEl = feuille.current;
-    if (!el || !cadre || !canvas || !fixe) return;
+    const recul = fond.current;
+    const voileFond = ombre.current;
+    const panneau = feuille.current;
+    if (!el || !cadre || !canvas || !recul || !voileFond) return;
     const ctx2d = canvas.getContext("2d");
     if (!ctx2d) return;
     if (mouvementReduit()) return;
@@ -151,57 +154,8 @@ export function Plongee({
     let courante = -1;
     let entree = 0; // entrée dans l'écran, de 0 à 1, adoucie
     let avance = 0; // progression dans les images, de 0 à 1, pour le recadrage
-    let plonge = 0; // entrée dans l'écran, de 0 à 1, brute
-    const pageLogo = pageEl?.querySelector<HTMLElement>("[data-page-logo]") ?? null;
-    const barre = pageEl?.querySelector<HTMLElement>("[data-barre-navigateur]") ?? null;
     const borne = (x: number) => Math.min(1, Math.max(0, x));
     const douce = (x: number) => x * x * (3 - 2 * x);
-    // Présence de la page de l'écran, de 0 à 1 (0 s'il n'y a pas de page).
-    const opacitePage = () => (pageEl ? douce(borne((plonge - 0.35) / 0.25)) : 0);
-
-    /* La page de l'écran. D'abord posée exactement sur l'écran de l'image
-       (même position, même inclinaison, même largeur ; la barre juste
-       au-dessus de la zone de page mesurée), elle apparaît en fondu par-dessus,
-       puis se détache et grandit jusqu'à remplir le cadre. Échelle uniforme :
-       la page ne se déforme pas, quel que soit le format de l'écran. */
-    const poserPage = (
-      i: number,
-      point: (x: number, y: number) => [number, number],
-      w: number,
-      h: number,
-    ) => {
-      if (!pageEl) return;
-      const q = logo?.coins[i];
-      const a = opacitePage();
-      if (!q || a <= 0) {
-        gsap.set(pageEl, { autoAlpha: 0 });
-        return;
-      }
-      const [hx, hy] = point(q[0], q[1]);
-      const [dx2, dy2] = point(q[2], q[3]);
-      const [bx, by] = point(q[4], q[5]);
-      const qw = Math.hypot(dx2 - hx, dy2 - hy);
-      const qh = Math.hypot(bx - hx, by - hy);
-      const angle = Math.atan2(dy2 - hy, dx2 - hx);
-      const s = qw / w;
-      const hc = barre?.offsetHeight ?? 44;
-      // L'origine de la page : au-dessus du coin haut-gauche, de la hauteur de la barre.
-      const ox = hx + Math.sin(angle) * hc * s;
-      const oy = hy - Math.cos(angle) * hc * s;
-      const hauteur = hc + qh / s;
-      const k = douce(borne((plonge - 0.55) / 0.45));
-      gsap.set(pageEl, {
-        autoAlpha: a,
-        x: ox * (1 - k),
-        y: oy * (1 - k),
-        rotation: ((angle * 180) / Math.PI) * (1 - k),
-        scale: s + (1 - s) * k,
-        height: hauteur + (h - hauteur) * k,
-        transformOrigin: "0 0",
-      });
-      // Le logo s'efface pendant qu'elle grandit : la section qui suit n'en a pas.
-      if (pageLogo) gsap.set(pageLogo, { opacity: 1 - douce(borne((plonge - 0.6) / 0.3)) });
-    };
 
     /* Le logo de l'écran et son scintillement, réglé sur celui du hero. */
     const planche = logo ? new Image() : null;
@@ -259,8 +213,7 @@ export function Plongee({
       const x0 = lu * (logo.centre?.x ?? 0.5) - lw / 2;
       const y0 = lv * (logo.centre?.y ?? 0.45) - lh / 2;
       // Sous quelques pixels, le logo n'est qu'une tache : il apparaît en fondu avec la taille.
-      // Quand la page de l'écran apparaît par-dessus, ce logo s'efface : un seul logo à la fois.
-      ctx2d.globalAlpha = Math.min(1, Math.max(0, (lw - 24) / 36)) * (1 - opacitePage());
+      ctx2d.globalAlpha = Math.min(1, Math.max(0, (lw - 24) / 36));
       // La baseline, puis les lettres une à une (sauf celle qui se brouille).
       const hl = logo.hauteurLettres;
       ctx2d.drawImage(planche, 0, hl, total, planche.naturalHeight - hl, x0, y0 + hl * k, lw, lh - hl * k);
@@ -328,7 +281,7 @@ export function Plongee({
       const cy = dy + (cible.y + cible.h / 2) * dh2;
       // Agrandissement final : l'écran de l'ordinateur remplit la vue. En
       // portrait, le remplir en hauteur couperait le logo : on s'arrête quand
-      // il dépasse un peu la largeur, la page de l'écran finit le travail.
+      // il dépasse un peu la largeur : le fond d'écran reste lisible.
       const rw = w / (cible.l * dw2);
       const rh = h / (cible.h * dh2);
       const zoom = 1 + (Math.min(Math.max(rw, rh), rw * 1.6) * 1.15 - 1) * entree;
@@ -340,7 +293,6 @@ export function Plongee({
       ctx2d.drawImage(img, dx, dy, dw2, dh2);
       etatBrouille(performance.now());
       dessinerLogo(i, dx, dy, dw2, dh2);
-      poserPage(i, (x, y) => [cx + zoom * (dx + x * dw2 - cx), cy + zoom * (dy + y * dh2 - cy)], w, h);
       courante = i;
     };
 
@@ -401,11 +353,14 @@ export function Plongee({
         const pv = Math.min(1, Math.max(0, (p - fondu) / (finVideo - fondu)));
         const pz = Math.max(0, (p - finVideo) / (1 - finVideo));
         // Entrée dans l'écran : lente au début, franche à la fin.
-        const ez = pz * pz * (3 - 2 * pz);
-        entree = ez;
-        plonge = pz;
-        // Tout au bout, la section suivante, identique à la page, prend la place.
-        gsap.set(fixe, { visibility: p >= 0.999 && page ? "hidden" : "visible" });
+        entree = douce(borne(pz / 0.6));
+        // La feuille : elle monte du bas (fin franche, comme un ressort
+        // amorti), le fond recule, s'arrondit et s'assombrit derrière elle.
+        const f = borne((pz - 0.5) / 0.4);
+        const ef = 1 - Math.pow(1 - f, 3);
+        if (panneau) gsap.set(panneau, { yPercent: 105 * (1 - ef), autoAlpha: f > 0 ? 1 : 0 });
+        gsap.set(recul, { scale: 1 - 0.06 * ef, borderRadius: 24 * ef });
+        gsap.set(voileFond, { opacity: 0.45 * ef });
         avance = pv;
         const i = Math.round(pv * (serie.nombre - 1));
         // Si l'image voulue n'est pas encore là, on garde la plus proche déjà chargée.
@@ -432,20 +387,31 @@ export function Plongee({
       data-src="components/ui/plongee.tsx"
       className={cn("nuit relative h-[320svh] bg-background motion-reduce:h-auto", className)}
     >
-      <div ref={collant} className="sticky top-0 z-10 h-svh motion-reduce:static motion-reduce:h-auto">
+      <div className="sticky top-0 h-svh motion-reduce:static motion-reduce:h-auto">
         {children}
         {/* La plongée, posée exactement sur le cadre du hero (mêmes marges, mêmes coins). */}
         <div
           ref={calque}
-          className="pointer-events-none invisible absolute inset-2 overflow-hidden rounded-[1.5rem] opacity-0 sm:inset-3 sm:rounded-[2rem] motion-reduce:hidden"
+          className="pointer-events-none invisible absolute inset-2 overflow-hidden rounded-[1.5rem] bg-background opacity-0 sm:inset-3 sm:rounded-[2rem] motion-reduce:hidden"
         >
-          <canvas ref={toile} role="img" aria-label={alt} className="absolute inset-0 h-full w-full" />
-          {page && (
-            <div ref={feuille} aria-hidden="true" className="invisible absolute left-0 top-0 w-full opacity-0">
-              {page}
-            </div>
-          )}
+          {/* Le fond qui recule derrière la feuille. */}
+          <div ref={fond} className="absolute inset-0 overflow-hidden">
+            <canvas ref={toile} role="img" aria-label={alt} className="absolute inset-0 h-full w-full" />
+            <div ref={ombre} aria-hidden="true" className="absolute inset-0 bg-background opacity-0" />
+          </div>
         </div>
+        {/* La fenêtre en « feuille », dans le même cadre. Mouvement réduit : posée
+            sous le hero, dans le cours de la page. */}
+        {fenetre && (
+          <div className="pointer-events-none absolute inset-2 overflow-hidden rounded-[1.5rem] sm:inset-3 sm:rounded-[2rem] motion-reduce:pointer-events-auto motion-reduce:relative motion-reduce:inset-auto motion-reduce:mx-2 motion-reduce:h-[85svh] motion-reduce:overflow-visible sm:motion-reduce:mx-3">
+            <div
+              ref={feuille}
+              className="pointer-events-auto invisible absolute inset-x-0 bottom-0 top-11 mx-auto md:top-14 md:max-w-3xl motion-reduce:visible motion-reduce:top-0"
+            >
+              {fenetre}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

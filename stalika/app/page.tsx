@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { Hero } from "@/components/sections/hero";
 import { Plongee } from "@/components/ui/plongee";
 import { Ciel } from "@/components/ui/ciel";
-import { EcranAccueil } from "@/components/ui/navigateur";
+import { Discussion } from "@/components/ui/discussion";
 import { ECRANS_PLONGEE } from "@/lib/plongee-ecran";
-import { SceneRecherche } from "@/components/sections/scene-recherche";
 import { SceneModele } from "@/components/sections/scene-modele";
 import { SceneUtile } from "@/components/sections/scene-utile";
 import { SceneRelecture } from "@/components/sections/scene-relecture";
@@ -54,12 +53,11 @@ export default function Accueil() {
             // La vidéo mobile du hero : 560 × 1000 px pris à (320, 76) dans l'image de 1928 × 1076.
             mobile: { x: 320 / 1928, y: 76 / 1076, l: 560 / 1928, h: 1000 / 1076 },
           }}
-          page={<EcranAccueil />}
+          fenetre={<Discussion />}
           alt="La caméra s'approche du personnage assis au bord de la falaise, passe derrière son épaule et entre dans l'écran de son ordinateur, où le logo Stalika est affiché."
         >
           <Hero />
         </Plongee>
-        <SceneRecherche />
         {/* Un seul plan derrière l'histoire : la falaise du hero, du crépuscule
             à l'aube, dont l'heure avance avec le défilement (passages Kling
             mis bout à bout : 49 images). Heure de chaque section, de 0 à 1 :

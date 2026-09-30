@@ -76,7 +76,7 @@ export function Hero() {
         {/* Le menu, dans un onglet accroché au bord haut du cadre. */}
         <nav data-plongee-efface aria-label="Principale" className="mx-auto flex max-w-full items-center gap-0.5 rounded-b-2xl bg-background px-1.5 py-1.5 sm:gap-2 sm:px-5 sm:py-2">
           <a
-            href="#contenu-suite"
+            href="#discussion"
             className="sr-only focus:not-sr-only focus:rounded-md focus:px-2 focus:text-sm"
           >
             Aller au contenu
