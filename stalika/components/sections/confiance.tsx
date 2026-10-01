@@ -33,8 +33,14 @@ export function Confiance() {
           sous="l'application des chauffeurs VTC"
         />
         <span aria-hidden="true" className="text-muted-foreground">·</span>
-        {/* [[À CONFIRMER PAR L'UTILISATEUR : adresse du site Popec]] */}
-        <Element nom={<span className={NOM}>Popec</span>} sous="coach sportif" />
+        <Element
+          nom={
+            <a href="https://popec-run.vercel.app" target="_blank" rel="noopener" className={`lien-fleche cursor-pointer ${NOM}`}>
+              Popec
+            </a>
+          }
+          sous="coach sportif"
+        />
         <span aria-hidden="true" className="text-muted-foreground">·</span>
       </Defilant>
     </Section>
