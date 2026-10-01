@@ -2,10 +2,13 @@
 //   1. le haut de page « en action » : les images du compositeur (CDP screencast),
 //      horodatées, depuis l'ouverture de la page, pendant `duree` secondes ;
 //   2. la page entière jusqu'au pied de page, après un premier passage qui
-//      déclenche les apparitions au défilement : une image pleine page, et la même
-//      page en tuiles d'un écran (pour comparer les deux rendus).
+//      déclenche les apparitions au défilement : en tuiles d'un écran, et, avec
+//      `--pleine-page`, d'un seul tenant. Les tuiles montrent ce que l'œil voit en
+//      descendant, mais un hero en parallaxe s'y retrouve deux fois (Popec) ; d'un
+//      seul tenant, la page est figée en haut, mais un hero fixe peut s'y répéter
+//      en bas (la pizzeria). `produire.mjs` prend la pleine page quand elle existe.
 //
-// node capturer.mjs <nom> <url> <duree en s> [--sans-page]
+// node capturer.mjs <nom> <url> <duree en s> [--sans-page] [--pleine-page]
 import { chromium } from "playwright-core";
 import fs from "node:fs";
 import path from "node:path";
@@ -13,6 +16,7 @@ import path from "node:path";
 const [nom, url, dureeTexte = "8", ...options] = process.argv.slice(2);
 const duree = Number(dureeTexte) * 1000;
 const sansPage = options.includes("--sans-page");
+const pleinePage = options.includes("--pleine-page");
 const L = 390;
 const H = 650;
 
@@ -121,8 +125,17 @@ if (!sansPage) {
     tuiles.push({ fichier: path.basename(fichier), y: reel });
   }
   fs.writeFileSync(path.join(dossier, "tuiles.json"), JSON.stringify({ hauteur: hauteurFinale, ecran: H, tuiles }, null, 1));
-
   console.log(`[${nom}] page de ${hauteurFinale} px, ${tuiles.length} tuiles`);
+
+  const pleine = path.join(dossier, "page-pleine.png");
+  fs.rmSync(pleine, { force: true });
+  if (pleinePage) {
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(1500);
+    await masquerFixes();
+    await page.screenshot({ path: pleine, fullPage: true });
+    console.log(`[${nom}] page entière d'un seul tenant`);
+  }
 }
 
 await navigateur.close();

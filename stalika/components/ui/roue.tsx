@@ -38,8 +38,17 @@ import { useScene } from "@/components/ui/scene";
    Tout est piloté par l'horloge de GSAP (comme Lenis) : le panneau de
    développement peut l'avancer à la main quand il est masqué.
 
-   Les cartes ne sont pas des liens. Sur ordinateur, un clic sur la carte de
-   face l'ouvre en « visite » : on fait défiler le site dedans (`visitable`).
+   Les cartes ne sont pas des liens, mais on fait défiler le site dans la carte
+   de face, jusqu'à son pied de page :
+   · au doigt (téléphone, tablette), directement : glisser sur la carte de face
+     fait défiler le site ; glisser au-dessus ou en dessous fait tourner la roue ;
+   · à la souris, après un clic sur la carte de face (`visitable`) : sans ce
+     clic, la molette ferait défiler la carte au lieu de la page à chaque
+     passage du curseur.
+   Pendant qu'on lit, la roue attend `repriseLecture` secondes avant de repartir.
+
+   Toutes les cartes tiennent sur la face visible du cylindre : l'écart entre
+   deux cartes est un demi-tour divisé par leur nombre.
 --------------------------------------------------------------------------- */
 
 export type EtatCarte = {
@@ -51,15 +60,24 @@ export type EtatCarte = {
   loin: boolean;
   /** La roue est à l'écran. */
   enVue: boolean;
-  /** Ouverte en visite : son contenu défile. */
+  /** Ouverte en visite, à la souris. */
   visite: boolean;
+  /** Son contenu défile : en visite, ou de face sur un écran tactile. */
+  defilable: boolean;
+};
+
+export type ActionsCarte = {
+  /** Referme la visite. */
+  sortir: () => void;
+  /** On lit la carte : la roue attend avant de repartir. */
+  retenir: () => void;
 };
 
 export type RoueProps = {
   /** Une carte par élément : le titre et le sous-titre de sa légende. */
   legendes: { titre: string; sous: string }[];
-  /** Le contenu d'une carte, selon son état. `sortir` referme la visite. */
-  rendu: (index: number, etat: EtatCarte, actions: { sortir: () => void }) => ReactNode;
+  /** Le contenu d'une carte, selon son état. */
+  rendu: (index: number, etat: EtatCarte, actions: ActionsCarte) => ReactNode;
   /** Nom du carrousel, lu par les lecteurs d'écran. */
   label: string;
   /** Un clic sur la carte de face l'ouvre en visite (ordinateur seulement). */
@@ -92,8 +110,14 @@ function vitesseCran(tau: number) {
   return (cran(Math.min(1, tau + e)) - cran(Math.max(0, tau - e))) / (2 * e) / R0.periode;
 }
 
+/** Les seuils d'état d'une carte, à `d` cartes de la face et `phi` degrés. */
+const DEVANT = 0.12;
+const PROCHE = 1.3;
+const LOIN = 80;
+
 export function Roue({ legendes, rendu, label, visitable = false, className }: RoueProps) {
   const n = legendes.length;
+  const ecart = 180 / n;
   const scene = useScene();
   const racine = useRef<HTMLDivElement>(null);
   const scenePlan = useRef<HTMLDivElement>(null);
@@ -105,7 +129,14 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
 
   const [courant, setCourant] = useState(0);
   const [etats, setEtats] = useState<EtatCarte[]>(() =>
-    legendes.map((_, i) => ({ devant: i === 0, proche: Math.abs(ecartA(i, 0, n)) < 1.3, loin: false, enVue: false, visite: false })),
+    legendes.map((_, i) => ({
+      devant: i === 0,
+      proche: Math.abs(ecartA(i, 0, n)) < PROCHE,
+      loin: false,
+      enVue: false,
+      visite: false,
+      defilable: false,
+    })),
   );
   const [pause, setPause] = useState(false);
   // Mouvement réduit : la roue ne tourne jamais seule, le bouton pause n'a rien à arrêter.
@@ -132,6 +163,7 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
     focus: false,
     pause: false,
     visite: -1,
+    contact: false,
     reduit: false,
     enVue: false,
     repriseA: 0,
@@ -141,6 +173,7 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
     perspective: 0,
     parCarte: 1,
     bureau: false,
+    tactile: false,
     // pour ne prévenir React que d'un vrai changement
     cle: "",
     courant: 0,
@@ -148,7 +181,7 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
 
   const suspendue = () => {
     const s = m.current;
-    return s.survol || s.focus || s.pause || s.visite >= 0 || s.reduit || !s.enVue;
+    return s.survol || s.focus || s.pause || s.visite >= 0 || s.contact || s.reduit || !s.enVue;
   };
 
   /* --- Poser les cartes à la position courante ---------------------------- */
@@ -160,7 +193,7 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
       const carte = cartes.current[i];
       if (!carte) continue;
       const d = ecartA(i, s.pos, n);
-      const phi = d * R0.ecart;
+      const phi = d * ecart;
       const a = phi * RAD;
       const visible = Math.abs(phi) < 97;
       carte.style.visibility = visible ? "visible" : "hidden";
@@ -199,11 +232,23 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
     }
 
     // Prévenir React seulement quand une carte change d'état.
-    const etatsNeufs = legendes.map((_, i) => {
+    // Pendant l'entrée, aucune carte n'est de face : la roue ne s'est pas
+    // encore posée (et, avant l'entrée, elle attend sur une position qui
+    // équivaut à la première carte).
+    const posee = s.mode !== "entree";
+    const etatsNeufs = legendes.map((_, i): EtatCarte => {
       const d = Math.abs(ecartA(i, s.pos, n));
-      return { devant: d < 0.12, proche: d < 1.3, loin: d > 1.7, enVue: s.enVue, visite: s.visite === i };
+      const devant = posee && d < DEVANT;
+      return {
+        devant,
+        proche: d < PROCHE,
+        loin: d * ecart > LOIN,
+        enVue: s.enVue,
+        visite: s.visite === i,
+        defilable: s.visite === i || (s.tactile && devant),
+      };
     });
-    const cle = etatsNeufs.map((e) => `${+e.devant}${+e.proche}${+e.loin}${+e.enVue}${+e.visite}`).join("");
+    const cle = etatsNeufs.map((e) => `${+e.devant}${+e.proche}${+e.loin}${+e.enVue}${+e.visite}${+e.defilable}`).join("");
     if (cle !== s.cle) {
       s.cle = cle;
       setEtats(etatsNeufs);
@@ -299,13 +344,16 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
     const plan = scenePlan.current;
     if (!premiere || !plan) return;
     const requete = window.matchMedia("(min-width: 768px)");
+    // Un écran tactile : la carte de face défile au doigt, sans clic préalable.
+    const doigt = window.matchMedia("(pointer: coarse)");
     const mesurer = () => {
       const h = premiere.offsetHeight;
       s.h = h;
-      s.rayon = (h * (1 + R0.jour)) / 2 / Math.tan((R0.ecart * RAD) / 2);
+      s.rayon = (h * (1 + R0.jour)) / 2 / Math.tan((ecart * RAD) / 2);
       s.perspective = h * R0.perspective;
-      s.parCarte = s.rayon * R0.ecart * RAD;
+      s.parCarte = s.rayon * ecart * RAD;
       s.bureau = requete.matches;
+      s.tactile = doigt.matches;
       plan.style.perspective = `${s.perspective}px`;
       poser();
     };
@@ -313,9 +361,11 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
     const ro = new ResizeObserver(mesurer);
     ro.observe(premiere);
     requete.addEventListener("change", mesurer);
+    doigt.addEventListener("change", mesurer);
     return () => {
       ro.disconnect();
       requete.removeEventListener("change", mesurer);
+      doigt.removeEventListener("change", mesurer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -388,12 +438,27 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
     poser();
   };
 
+  /** On lit une carte : la roue s'arrête, et attend avant de repartir. */
+  const retenir = () => {
+    const s = m.current;
+    s.repriseA = Math.max(s.repriseA, gsap.ticker.time + R0.repriseLecture);
+    if (s.mode === "auto") finirBascule();
+  };
+
   const auDebut = (e: React.PointerEvent<HTMLDivElement>) => {
     const s = m.current;
     if (e.pointerType === "mouse" && e.button !== 0) return;
     const carte = (e.target as HTMLElement).closest<HTMLElement>("[data-roue-carte]");
+    const indexCarte = carte ? Number(carte.dataset.index) : -1;
     // Dans la carte qu'on visite, le geste appartient au site.
-    if (s.visite >= 0 && carte && Number(carte.dataset.index) === s.visite) return;
+    if (s.visite >= 0 && indexCarte === s.visite) return;
+    // Au doigt, sur la carte de face : le geste fait défiler le site dans la
+    // carte (défilement natif), la roue ne bouge pas.
+    if (e.pointerType !== "mouse" && s.tactile && indexCarte >= 0 && Math.abs(ecartA(indexCarte, s.pos, n)) < DEVANT) {
+      s.contact = true;
+      retenir();
+      return;
+    }
     sortirDeVisite();
     s.tween?.kill();
     s.tween = null;
@@ -403,7 +468,7 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
     s.departPos = s.pos;
     // La carte touchée se lit ici : une fois le pointeur capturé, le lâcher
     // vise le plan entier et non plus la carte.
-    s.carteTouchee = carte ? Number(carte.dataset.index) : -1;
+    s.carteTouchee = indexCarte;
     s.glisse = false;
     s.histo = [{ t: performance.now(), p: s.pos }];
     s.mode = "glisse";
@@ -424,6 +489,11 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
 
   const aLaFin = (e: React.PointerEvent<HTMLDivElement>) => {
     const s = m.current;
+    // Le doigt quitte la carte de face qu'il faisait défiler.
+    if (s.contact) {
+      s.contact = false;
+      retenir();
+    }
     if (s.pointeur !== e.pointerId) return;
     s.pointeur = -1;
     const premier = s.histo[0];
@@ -522,9 +592,9 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
 
   // Rendu serveur (et sans JavaScript) : la roue posée sur la première carte.
   // Les longueurs viennent du CSS ; l'horloge prend le relais au montage.
-  const rayonCss = `calc(var(--roue-h) * ${((1 + R0.jour) / 2 / Math.tan((R0.ecart * RAD) / 2)).toFixed(4)})`;
+  const rayonCss = `calc(var(--roue-h) * ${((1 + R0.jour) / 2 / Math.tan((ecart * RAD) / 2)).toFixed(4)})`;
   const transformInitiale = (i: number) => {
-    const phi = ecartA(i, 0, n) * R0.ecart;
+    const phi = ecartA(i, 0, n) * ecart;
     return `translateZ(calc(${rayonCss} * -1)) rotateX(${-phi}deg) translateZ(${rayonCss})`;
   };
 
@@ -586,7 +656,7 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
                   style={{ transform: transformInitiale(i) }}
                 >
                   <div className="relative h-full w-full overflow-hidden rounded-[var(--roue-coin)] bg-card shadow-carte ring-1 ring-foreground/12">
-                    {rendu(i, etats[i], { sortir: sortirDeVisite })}
+                    {rendu(i, etats[i], { sortir: sortirDeVisite, retenir })}
                     <div
                       ref={(el) => {
                         reflets.current[i] = el;
@@ -609,14 +679,14 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
         </div>
 
         {/* Ordinateur : les noms suivent leur carte sur un arc, à droite de la roue. */}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-[calc(var(--roue-x,50%)+var(--roue-l)/2+1.75rem)] hidden w-72 [mask-image:linear-gradient(to_bottom,transparent,black_22%,black_78%,transparent)] [-webkit-mask-image:linear-gradient(to_bottom,transparent,black_22%,black_78%,transparent)] md:block">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-[calc(var(--roue-x,50%)+var(--roue-l)/2+1.75rem)] hidden w-56 [mask-image:linear-gradient(to_bottom,transparent,black_22%,black_78%,transparent)] [-webkit-mask-image:linear-gradient(to_bottom,transparent,black_22%,black_78%,transparent)] md:block">
           {legendes.map((legende, i) => (
             <div
               key={legende.titre}
               ref={(el) => {
                 etiquettes.current[i] = el;
               }}
-              className="absolute left-0 top-1/2 w-max origin-left -translate-y-1/2 opacity-0"
+              className="absolute left-0 top-1/2 w-max max-w-56 origin-left -translate-y-1/2 opacity-0"
             >
               <span className="flex items-center gap-2.5">
                 <span className={cn("size-1.5 rounded-full transition-colors duration-300", i === courant ? "bg-accent" : "bg-foreground/25")} />
@@ -628,7 +698,7 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
                 ref={(el) => {
                   sousTitres.current[i] = el;
                 }}
-                className="mt-1 block pl-4 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground"
+                className="mt-1 block pl-4 text-xs font-medium uppercase leading-snug tracking-[0.14em] text-balance text-muted-foreground"
               >
                 {legende.sous}
               </span>

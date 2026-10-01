@@ -104,9 +104,10 @@ export const MOUVEMENT = {
     /** La roue des sites (scène « Sur mesure ») : un cylindre de cartes qui
         tourne seul, qu'on attrape, qu'on lance, et qui se pose sur une carte. */
     roue: {
-      /** Écart entre deux cartes sur le cylindre, en degrés. À 36°, la carte
-          d'avant et celle d'après se voient de biais ; les autres filent derrière. */
-      ecart: 36,
+      /* L'écart entre deux cartes n'est pas un réglage : c'est un demi-tour
+         divisé par le nombre de cartes (60° pour trois). Toutes les cartes
+         tiennent sur la face visible du cylindre, et une carte passe du haut
+         au bas de la roue quand elle est de tranche, sans qu'on la voie sauter. */
       /** Jour entre deux cartes, en fraction de la hauteur d'une carte. */
       jour: 0.06,
       /** Distance de l'œil, en hauteurs de carte : la roue garde le même relief
@@ -124,6 +125,9 @@ export const MOUVEMENT = {
       reprise: 2.6,
       /** Après le survol, la rotation reprend plus vite. */
       repriseSurvol: 0.8,
+      /** Après qu'on a fait défiler un site dans sa carte, elle attend plus
+          longtemps : on était en train de lire. */
+      repriseLecture: 6,
       /** Inertie du lancer, en secondes : plus c'est long, plus la roue file. */
       inertie: 0.34,
       /** Au plus, de combien de cartes un lancer fait tourner la roue. */

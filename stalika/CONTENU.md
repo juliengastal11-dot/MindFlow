@@ -54,13 +54,12 @@ Description : `Sites sur mesure pour restaurants, coachs, artisans et commerces.
 - Point 2 : `Beaucoup d'échanges` · `vous me racontez votre métier, je vous montre, vous réagissez.`
 - Point 3 : `Un lien pour corriger` · `vous cliquez sur ce que vous voulez changer, à votre guise, et j'applique.`
 - Invitation : `Attrapez la roue : aucun site ne ressemble au voisin.`
-- La roue (2026-10-01, remplace le champ de neuf cartes), libellé accessible `Cinq sites, cinq styles`. Une carte par site, avec son nom et son sous-titre :
+- La roue (2026-10-01, remplace le champ de neuf cartes), libellé accessible `Trois sites, trois styles`. Une carte par site, avec son nom et son sous-titre :
   - `La Pizzeria des Allées` · `pizzeria · Béziers`
-  - `Ocre & Cendre` · `céramiste · site d'exemple`
   - `VTBON` · `application des chauffeurs VTC`
   - `Popec` · `coach sportif · Béziers`
-  - `Le Signet` · `librairie · site d'exemple`
 - Sur la carte de face, au survol (ordinateur) : `Cliquez pour visiter le site` ; en visite : `Faites défiler · Échap pour sortir`, bouton `Refermer la visite`
+- Au doigt, la première fois qu'une carte s'offre au défilement : `Faites défiler le site`
 - Commandes : `Mettre la roue en pause` / `Relancer la roue`, et un point par carte `Voir <nom>`
 
 ### Scène 3 · Utile
@@ -109,7 +108,7 @@ Description : `Sites sur mesure pour restaurants, coachs, artisans et commerces.
 - Titre du bandeau (petit, au-dessus) : `Ils m'ont fait confiance`
 - Élément 1 : `La Pizzeria des Allées` · sous-titre `Béziers` · lien `[[À CONFIRMER PAR L'UTILISATEUR : adresse du site de la pizzeria]]`
 - Élément 2 : `VTBON` · sous-titre `l'application des chauffeurs VTC` · lien `https://vtbon.fr`
-- Élément 3 : `Popec` · sous-titre `coach sportif` · lien `[[À CONFIRMER PAR L'UTILISATEUR : adresse du site Popec]]`
+- Élément 3 : `Popec` · sous-titre `coach sportif` · lien `https://popec-run.vercel.app` (donné par J le 2026-10-01)
 
 ### Julien
 

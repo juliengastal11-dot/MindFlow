@@ -12,10 +12,10 @@ import { REALISATIONS } from "@/lib/realisations";
    Scène 2 · Sur mesure (le crépuscule, sur le ciel commun).
 
    À gauche, la roue des sites (demande de J, 2026-10-01) : trois sites de
-   Julien et deux sites d'exemple, chacun en action. Elle tourne seule, on
-   l'attrape, on la lance ; sur ordinateur, un clic sur la carte de face fait
-   visiter le site. À droite, ce que « sur mesure » veut dire. Même
-   disposition sur téléphone : la roue à gauche, le texte à droite.
+   Julien, chacun en action. Elle tourne seule, on l'attrape, on la lance ; le
+   site de face défile dans sa carte, au doigt sur téléphone, après un clic à
+   la souris. À droite, ce que « sur mesure » veut dire. Même disposition sur
+   téléphone : la roue à gauche, le texte à droite.
 
    La chronologie de la scène : la roue arrive lancée et se pose sur la
    première carte (0 à 0,92) ; le mot se décode (0,3 à 0,85) ; le texte et
@@ -59,11 +59,11 @@ export function SceneModele() {
       <div className="relative z-10 mx-auto w-full max-w-6xl px-3.5 py-8 sm:px-6 md:py-12">
         <div className="grid grid-cols-[minmax(0,43fr)_minmax(0,57fr)] items-center gap-3 sm:gap-6 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:gap-10">
           <Roue
-            label="Cinq sites, cinq styles"
+            label="Trois sites, trois styles"
             legendes={REALISATIONS.map((r) => ({ titre: r.nom, sous: r.sous }))}
             visitable
             className="h-[min(80svh,660px)] [--roue-coin:calc(var(--roue-l)*0.075)] [--roue-h:calc(var(--roue-l)/0.6)] [--roue-l:min(38vw,200px)] md:h-[min(90svh,880px)] md:[--roue-l:clamp(220px,22vw,290px)] md:[--roue-x:36%]"
-            rendu={(i, etat, { sortir }) => <CarteRealisation site={REALISATIONS[i]} etat={etat} sortir={sortir} />}
+            rendu={(i, etat, actions) => <CarteRealisation site={REALISATIONS[i]} etat={etat} actions={actions} />}
           />
 
           <div className="min-w-0">
