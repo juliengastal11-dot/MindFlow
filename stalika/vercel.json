@@ -1,0 +1,4 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "export DATABASE_URL=\"${DATABASE_URL:-file:./dev.db}\" && npx prisma generate && npx prisma db push && npm run build"
+}
