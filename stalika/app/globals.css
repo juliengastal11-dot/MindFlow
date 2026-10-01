@@ -168,7 +168,7 @@ html.js [data-mouvement="hero"] > * {
 }
 
 /* --- Le film ---------------------------------------------------------------
-   components/ui/scene, frappe, decode, barre, trace, champ3d, rouleaux, paysage.
+   components/ui/scene, frappe, decode, barre, trace, roue, rouleaux, paysage.
 
    Ce qu'une scène va rejouer depuis son état de départ est masqué tant que sa
    chronologie n'est pas construite : sinon le texte complet s'afficherait un
@@ -301,6 +301,21 @@ html.js .logo-anime[data-etat="attente"] img {
   .lien-fleche:hover .fleche {
     transform: none;
   }
+}
+
+/* La roue des sites (components/ui/roue.tsx) : le nom de la carte de face
+   arrive en montant ; en visite, l'indication s'efface d'elle-même. */
+@keyframes roue-legende {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes roue-indice {
+  0% { opacity: 0; transform: translateY(6px); }
+  12%, 78% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-[roue-"] { animation: none; }
 }
 
 /* Discussion (components/ui/discussion.tsx) : une bulle arrive en montant

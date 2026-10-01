@@ -101,16 +101,42 @@ export const MOUVEMENT = {
     /** Le mot qui se décode : les glyphes de brouillage, et le nombre de passes par lettre. */
     decode: { glyphes: "abcdefghijklmnopqrstuvwxyzéèàç·", passes: 5 },
 
-    /** Le champ de cartes en perspective. */
-    champ3d: {
-      cartes: 9,
-      cartesMobile: 6,
-      /** Distance de l'œil au plan, en pixels : plus c'est court, plus ça se déforme. */
-      perspective: 1400,
-      /** Inclinaison du plan, en degrés. */
-      inclinaison: 16,
-      /** Léger vrillage, en degrés, pour que le champ ne soit pas un tableau. */
-      vrille: -6,
+    /** La roue des sites (scène « Sur mesure ») : un cylindre de cartes qui
+        tourne seul, qu'on attrape, qu'on lance, et qui se pose sur une carte. */
+    roue: {
+      /** Écart entre deux cartes sur le cylindre, en degrés. À 36°, la carte
+          d'avant et celle d'après se voient de biais ; les autres filent derrière. */
+      ecart: 36,
+      /** Jour entre deux cartes, en fraction de la hauteur d'une carte. */
+      jour: 0.06,
+      /** Distance de l'œil, en hauteurs de carte : la roue garde le même relief
+          sur téléphone et sur ordinateur. */
+      perspective: 2.4,
+      /** La rotation seule : une carte toutes les `periode` secondes. La roue
+          s'attarde d'abord sur la carte de face (`attente`, en fraction de la
+          période), en dérivant à peine (`derive`), puis bascule vers la
+          suivante avec la courbe `bascule`. */
+      periode: 5,
+      attente: 0.5,
+      derive: 0.04,
+      bascule: "power2.inOut",
+      /** Reprise de la rotation seule après une prise en main, en secondes. */
+      reprise: 2.6,
+      /** Après le survol, la rotation reprend plus vite. */
+      repriseSurvol: 0.8,
+      /** Inertie du lancer, en secondes : plus c'est long, plus la roue file. */
+      inertie: 0.34,
+      /** Au plus, de combien de cartes un lancer fait tourner la roue. */
+      lancerMax: 4,
+      /** L'entrée : la roue arrive lancée de `cartes` cartes et se pose sur la
+          première, en `duree` (fraction de la chronologie de la scène). */
+      entree: { cartes: 6, duree: 0.92 },
+      /** Obscurité d'une carte qui s'éloigne de la lumière (0 = aucune). */
+      ombre: 0.85,
+      /** D'où vient la lumière, en degrés au-dessus de la face. */
+      lumiere: 25,
+      /** Agrandissement de la carte qu'on visite. */
+      visite: 1.04,
     },
 
     /** La pile de cartes qui se poussent. */

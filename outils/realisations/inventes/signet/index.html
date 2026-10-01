@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le Signet · Librairie et salon de thé</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=block" rel="stylesheet">
+<style>
+  :root {
+    --vert: #13312a;
+    --vert-fonce: #0d241f;
+    --vert-clair: #1d4239;
+    --creme: #f1e9d8;
+    --sourdine: #aab8ad;
+    --moutarde: #d8a54a;
+    --rouille: #b65a3c;
+    --rose: #e2b8a8;
+    --bleu: #2c4a6b;
+    --sauge: #8fa58b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--vert); }
+  body { font-family: "DM Sans", system-ui, sans-serif; color: var(--creme); -webkit-font-smoothing: antialiased; }
+  .mono { font-family: "DM Mono", ui-monospace, monospace; }
+  a { color: inherit; text-decoration: none; }
+
+  header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px 0; }
+  .marque { display: flex; align-items: center; gap: 8px; font-family: "DM Serif Display", serif; font-size: 24px; letter-spacing: -0.01em; }
+  .marque svg { width: 12px; height: 22px; }
+  .menu { font-family: "DM Mono", monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; border: 1px solid rgba(241,233,216,.35); border-radius: 999px; padding: 7px 14px; }
+
+  .hero { position: relative; height: 650px; overflow: hidden; }
+  .etagere { position: absolute; left: 0; right: 0; top: 66px; height: 250px; }
+  .etagere .rayon { position: absolute; left: 14px; right: 14px; bottom: 26px; height: 9px; background: linear-gradient(#6b4a32, #4a3222); border-radius: 2px; box-shadow: 0 10px 18px rgba(0,0,0,.35); }
+  .livres { position: absolute; left: 26px; right: 26px; bottom: 35px; display: flex; align-items: flex-end; gap: 3px; }
+  .dos { position: relative; border-radius: 2px 2px 1px 1px; display: flex; align-items: center; justify-content: center; box-shadow: inset -3px 0 0 rgba(0,0,0,.14), inset 2px 0 0 rgba(255,255,255,.12); }
+  .dos span { writing-mode: vertical-rl; transform: rotate(180deg); font-family: "DM Mono", monospace; font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
+  .dos.serif span { font-family: "DM Serif Display", serif; font-size: 11px; letter-spacing: 0.02em; text-transform: none; }
+  .dos::before, .dos::after { content: ""; position: absolute; left: 3px; right: 3px; height: 1.5px; background: currentColor; opacity: .55; }
+  .dos::before { top: 10px; }
+  .dos::after { bottom: 10px; }
+  .dos.penche { transform: rotate(-9deg); transform-origin: bottom left; margin-left: 10px; margin-right: 8px; }
+  .tasse { position: absolute; right: 30px; bottom: 35px; width: 46px; height: 40px; }
+
+  .texte { position: absolute; left: 22px; right: 22px; top: 338px; }
+  .sur { font-family: "DM Mono", monospace; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--moutarde); }
+  h1 { margin-top: 12px; font-family: "DM Serif Display", serif; font-weight: 400; font-size: 44px; line-height: 0.98; letter-spacing: -0.02em; }
+  h1 em { color: var(--moutarde); }
+  .chapo { margin-top: 14px; font-size: 14.5px; line-height: 1.55; color: var(--sourdine); max-width: 330px; }
+  .actions { display: flex; gap: 10px; margin-top: 22px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 46px; padding: 0 20px; border-radius: 999px; font-size: 13.5px; font-weight: 600; }
+  .btn.plein { background: var(--moutarde); color: var(--vert-fonce); }
+  .btn.contour { border: 1.5px solid rgba(241,233,216,.6); }
+
+  section { padding: 64px 22px; }
+  .titre { font-family: "DM Serif Display", serif; font-weight: 400; font-size: 36px; line-height: 1.02; letter-spacing: -0.015em; margin-top: 10px; }
+  .coups { display: grid; gap: 18px; margin-top: 28px; }
+  .coup { display: grid; grid-template-columns: 112px 1fr; gap: 16px; align-items: center; background: var(--vert-clair); border-radius: 16px; padding: 14px; }
+  .couverture { height: 160px; border-radius: 3px 8px 8px 3px; padding: 14px 12px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: inset 4px 0 0 rgba(0,0,0,.15), 0 12px 20px rgba(0,0,0,.3); }
+  .couverture b { font-family: "DM Serif Display", serif; font-weight: 400; font-size: 19px; line-height: 1; }
+  .couverture small { font-family: "DM Mono", monospace; font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .coup h3 { font-family: "DM Serif Display", serif; font-weight: 400; font-size: 21px; }
+  .coup p { font-size: 13px; line-height: 1.5; color: var(--sourdine); margin-top: 6px; }
+  .coup .qui { font-family: "DM Mono", monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rose); margin-top: 10px; }
+
+  .salon { background: var(--creme); color: var(--vert-fonce); border-radius: 28px 28px 0 0; }
+  .salon .sur { color: var(--rouille); }
+  .carte { margin-top: 24px; }
+  .ligne { display: flex; align-items: baseline; gap: 8px; padding: 13px 0; border-bottom: 1px dashed rgba(13,36,31,.25); font-size: 15px; }
+  .ligne i { flex: 1; border-bottom: 1px dotted rgba(13,36,31,.35); transform: translateY(-4px); }
+  .ligne b { font-family: "DM Mono", monospace; font-weight: 500; font-size: 13px; }
+  .salon .note { margin-top: 18px; font-size: 13px; color: #4b5d56; line-height: 1.5; }
+
+  .rencontres { background: var(--vert-fonce); }
+  .rdv { display: grid; grid-template-columns: 58px 1fr; gap: 14px; padding: 18px 0; border-top: 1px solid rgba(241,233,216,.14); }
+  .rdv:first-of-type { margin-top: 22px; }
+  .date { text-align: center; border: 1px solid rgba(216,165,74,.6); border-radius: 12px; padding: 8px 0; }
+  .date b { display: block; font-family: "DM Serif Display", serif; font-weight: 400; font-size: 26px; line-height: 1; color: var(--moutarde); }
+  .date small { font-family: "DM Mono", monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--sourdine); }
+  .rdv h3 { font-family: "DM Serif Display", serif; font-weight: 400; font-size: 19px; }
+  .rdv p { font-size: 13px; color: var(--sourdine); margin-top: 4px; line-height: 1.45; }
+
+  .infos dl { margin-top: 22px; display: grid; gap: 16px; }
+  .infos dt { font-family: "DM Mono", monospace; font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--moutarde); }
+  .infos dd { margin-top: 4px; font-size: 15px; line-height: 1.5; }
+
+  footer { padding: 40px 22px 34px; border-top: 1px solid rgba(241,233,216,.14); }
+  footer p { font-size: 12px; color: var(--sourdine); margin-top: 10px; line-height: 1.6; }
+  footer nav { display: flex; gap: 16px; margin-top: 18px; font-size: 12.5px; font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="hero">
+    <header>
+      <span class="marque"><svg viewBox="0 0 12 22"><path d="M1 0h10v22l-5-5-5 5z" fill="#d8a54a"/></svg>Le Signet</span>
+      <span class="menu">Menu</span>
+    </header>
+    <div class="etagere">
+      <div class="livres">
+        <div class="dos" style="width:22px;height:168px;background:#e2b8a8;color:#5b2f22"><span>Petits matins</span></div>
+        <div class="dos serif" style="width:30px;height:196px;background:#2c4a6b;color:#f1e9d8"><span>L'atlas des vents</span></div>
+        <div class="dos" style="width:18px;height:152px;background:#f1e9d8;color:#13312a"><span>Sel</span></div>
+        <div class="dos serif" style="width:34px;height:206px;background:#b65a3c;color:#f8e9d9"><span>La patience des pierres</span></div>
+        <div class="dos" style="width:20px;height:176px;background:#8fa58b;color:#13312a"><span>Nord-Ouest</span></div>
+        <div class="dos penche serif" style="width:26px;height:184px;background:#d8a54a;color:#2a2010"><span>Marée basse</span></div>
+        <div class="dos" style="width:16px;height:146px;background:#3e2c22;color:#e9c98f"><span>Carnets</span></div>
+        <div class="dos serif" style="width:28px;height:190px;background:#f1e9d8;color:#b65a3c"><span>Jardins d'hiver</span></div>
+        <div class="dos" style="width:21px;height:170px;background:#5e7a6e;color:#f1e9d8"><span>Les heures claires</span></div>
+      </div>
+      <svg class="tasse" viewBox="0 0 46 40"><path d="M14 2 q-4 5 0 9 q3 4 -1 8" stroke="#aab8ad" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".7"/><path d="M24 4 q-4 5 0 9 q3 4 -1 7" stroke="#aab8ad" stroke-width="1.4" fill="none" stroke-linecap="round" opacity=".55"/><path d="M4 18 h32 v6 q0 14 -16 14 q-16 0 -16 -14 z" fill="#f1e9d8"/><path d="M36 22 q8 0 8 6 q0 6 -9 6" stroke="#f1e9d8" stroke-width="3" fill="none"/><rect x="4" y="22" width="32" height="3" fill="#d8a54a"/></svg>
+      <div class="rayon"></div>
+    </div>
+    <div class="texte">
+      <p class="sur">Librairie indépendante · salon de thé</p>
+      <h1>Des livres choisis, <em>un par un.</em></h1>
+      <p class="chapo">Des conseils, des commandes en 48 h, et des rencontres le jeudi soir autour d'une théière.</p>
+      <div class="actions">
+        <a class="btn plein" href="#">Nos coups de cœur</a>
+        <a class="btn contour" href="#">Nous trouver</a>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <p class="sur">Coups de cœur</p>
+    <h2 class="titre">Ce qu'on vous glisse dans les mains ce mois-ci.</h2>
+    <div class="coups">
+      <div class="coup">
+        <div class="couverture" style="background:#2c4a6b;color:#f1e9d8"><small>Roman</small><b>L'atlas des vents</b><small>M. Arnaud</small></div>
+        <div><h3>L'atlas des vents</h3><p>Une cartographe recense les vents d'une côte qui disparaît. Lent, lumineux, inoubliable.</p><p class="qui">Le mot de Clémence</p></div>
+      </div>
+      <div class="coup">
+        <div class="couverture" style="background:#e2b8a8;color:#5b2f22"><small>Récit</small><b>Petits matins</b><small>J. Pellegrin</small></div>
+        <div><h3>Petits matins</h3><p>Trente aubes au marché de gros, racontées par un boulanger. Ça sent le pain chaud.</p><p class="qui">Le mot de Bastien</p></div>
+      </div>
+      <div class="coup">
+        <div class="couverture" style="background:#b65a3c;color:#f8e9d9"><small>Essai</small><b>La patience des pierres</b><small>S. Vidal</small></div>
+        <div><h3>La patience des pierres</h3><p>Ce que les murs en pierre sèche disent de ceux qui les montent. À offrir.</p><p class="qui">Le mot de Clémence</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="salon">
+    <p class="sur">Le salon de thé</p>
+    <h2 class="titre">Un chapitre, une tasse.</h2>
+    <div class="carte">
+      <div class="ligne">Thé du jour, en théière<i></i><b>4 €</b></div>
+      <div class="ligne">Chocolat épais à l'ancienne<i></i><b>5 €</b></div>
+      <div class="ligne">Part de gâteau maison<i></i><b>4,50 €</b></div>
+      <div class="ligne">Formule lecture : boisson et part<i></i><b>8 €</b></div>
+    </div>
+    <p class="note">Les livres de la boutique se lisent au salon : on les feuillette, on les repose, on revient les chercher.</p>
+  </section>
+
+  <section class="rencontres">
+    <p class="sur">Rencontres</p>
+    <h2 class="titre">Le jeudi, on lit à voix haute.</h2>
+    <div class="rdv"><div class="date"><b>08</b><small>oct.</small></div><div><h3>Soirée nouvelles</h3><p>Trois textes courts, lus par l'équipe. Entrée libre, thé offert.</p></div></div>
+    <div class="rdv"><div class="date"><b>15</b><small>oct.</small></div><div><h3>Club de lecture</h3><p>On parle de « L'atlas des vents ». Huit places, sur inscription.</p></div></div>
+    <div class="rdv"><div class="date"><b>22</b><small>oct.</small></div><div><h3>Atelier d'écriture</h3><p>Une heure pour écrire une lettre qu'on n'enverra pas.</p></div></div>
+  </section>
+
+  <section class="infos">
+    <p class="sur">Infos pratiques</p>
+    <h2 class="titre">Ouvert du mardi au samedi.</h2>
+    <dl>
+      <div><dt>Horaires</dt><dd>10 h · 19 h, le jeudi jusqu'à 21 h</dd></div>
+      <div><dt>Commandes</dt><dd>Un titre introuvable ? On le commande, il arrive sous 48 h.</dd></div>
+      <div><dt>Contact</dt><dd>Un message, un appel : on vous répond entre deux clients.</dd></div>
+    </dl>
+  </section>
+
+  <footer>
+    <span class="marque"><svg viewBox="0 0 12 22"><path d="M1 0h10v22l-5-5-5 5z" fill="#d8a54a"/></svg>Le Signet</span>
+    <p>Librairie indépendante et salon de thé.<br>Site d'exemple dessiné par Stalika : la librairie est imaginaire, le site pourrait être le vôtre.</p>
+    <nav><span>Coups de cœur</span><span>Salon</span><span>Rencontres</span></nav>
+  </footer>
+</body>
+</html>

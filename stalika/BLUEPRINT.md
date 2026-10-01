@@ -25,6 +25,33 @@ flou 25 px, décalage 10 px). Relevé et contrastes : en tête de `app/globals.c
 assumés pour la lisibilité : texte sombre sur les boutons camel, et `encre` (#7B6537) pour le
 camel en texte. La nuit reprend la version sombre de la même palette.
 
+## Mise à jour du 2026-10-01 : la roue des sites (scène « Sur mesure »)
+
+À la demande de J, le champ de neuf cartes dessinées (`Champ3D`) laisse la place à une **roue** :
+cinq sites sur un cylindre couché (`components/ui/roue.tsx`), à gauche, et le texte du sur mesure
+à droite, **sur téléphone comme sur ordinateur**. Idée tirée de 21st (« vertical-image-stack »,
+fourni par J), avec la géométrie de « Cylinder Carousel » et l'inertie de « Wheel Carousel » ;
+aucun code repris.
+
+- **Le mouvement** : la roue tourne seule, s'attarde 2,5 s sur chaque site puis bascule vers le
+  suivant (`film.roue` dans `lib/mouvement.ts`). Elle s'attrape à la souris et au doigt, se lance
+  avec inertie et se pose sur la carte la plus proche ; flèches du clavier, points, bouton pause
+  (WCAG 2.2.2). Elle s'arrête au survol et hors de l'écran. Entrée : elle arrive lancée et se pose
+  sur la première carte. Mouvement réduit : elle ne tourne pas seule, aucune vidéo.
+- **Les cartes** montrent le haut de chaque site sur téléphone, **en action** : la devanture de
+  la pizzeria et le bol du céramiste en boucle ; l'arrivée sur VTBON et sur Popec rejouée à chaque
+  passage. Aucun lien. Sur ordinateur, un clic sur la carte de face la fait **visiter** : la page
+  entière défile dans la carte jusqu'au pied de page (Échap pour sortir).
+- **Les sites** (`lib/realisations.ts`) : la Pizzeria des Allées, VTBON et Popec, capturés le
+  2026-10-01 ; et **deux sites d'exemple** imaginés à la demande de J, Ocre & Cendre (céramiste,
+  animé) et Le Signet (librairie). Ils sont marqués « site d'exemple » sous leur nom, et leur pied
+  de page le dit : la roue ne les fait pas passer pour des clients.
+- **Les outils** pour refaire les captures et les sources des deux sites d'exemple :
+  `outils/realisations/` à la racine du dépôt (non publié).
+
+Ce qui change ailleurs : **H5** ne tient plus (la roue montre les vrais sites des clients, à la
+demande de J). Le paragraphe de la scène et ses trois points sont dans `CONTENU.md`.
+
 ## §1 · La barre de direction
 
 | | Décidé |
@@ -294,7 +321,7 @@ débit limité sur l'envoi public ; aucune requête construite depuis une entré
 **Si je me trompe ici, on corrige.**
 
 - **H4** Pas de page Réalisations. Les trois noms vivent dans le bandeau de confiance, chacun avec un lien quand il existe : VTBON → `vtbon.fr` ; pizzeria et Popec à confirmer.
-- **H5** Le champ 3D montre neuf cartes de métiers dessinées en code, jamais les sites des clients.
+- **H5** Le champ 3D montre neuf cartes de métiers dessinées en code, jamais les sites des clients. *Abandonnée le 2026-10-01 : la roue montre les sites, voir la mise à jour en tête.*
 - **H6** Statistiques : Google Analytics 4 après consentement (H de mise en œuvre : bandeau, cookie de choix, chargement conditionnel) et Search Console à côté. Un outil sans cookie éviterait le bandeau ; J a demandé les cookies.
 - **H7** La section « Julien » dit ce qu'il fait aujourd'hui (sites et applications pour des commerces, depuis Béziers, pour toute la France, du dessin à la mise en ligne) et ne parle pas de son passé en restauration : demandé par J.
 - **H8** La scène 4 cite la Pizzeria des Allées comme exemple de relecture, avec l'accord du client dit obtenu.

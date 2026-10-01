@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ocre &amp; Cendre · Céramiques tournées à la main</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Manrope:wght@400;500;600&display=block" rel="stylesheet">
+<style>
+  :root {
+    --porcelaine: #f3ece2;
+    --argile: #e6d9c6;
+    --encre: #2e221b;
+    --gris: #7a6f66;
+    --terre: #b5532f;
+    --terre-fonce: #8f3f22;
+    --filet: #d8cab6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--porcelaine); }
+  body { font-family: "Manrope", system-ui, sans-serif; color: var(--encre); -webkit-font-smoothing: antialiased; }
+  .serif { font-family: "Cormorant Garamond", Georgia, serif; }
+  a { color: inherit; text-decoration: none; }
+
+  header { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px 0; }
+  .marque { font-family: "Cormorant Garamond", serif; font-style: italic; font-weight: 600; font-size: 23px; letter-spacing: -0.01em; }
+  .marque b { color: var(--terre); font-weight: 600; }
+  .menu { display: flex; align-items: center; gap: 9px; font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; }
+  .menu i { display: grid; gap: 5px; }
+  .menu i::before, .menu i::after { content: ""; display: block; width: 20px; height: 1.5px; background: currentColor; }
+
+  .hero { position: relative; height: 650px; overflow: hidden; }
+  .scene { position: absolute; left: 0; right: 0; top: 52px; height: 300px; }
+  .scene canvas { width: 100%; height: 100%; display: block; }
+  .texte { position: absolute; left: 22px; right: 22px; top: 350px; }
+  .sur { font-size: 10.5px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--terre-fonce); }
+  h1 { margin-top: 12px; font-family: "Cormorant Garamond", serif; font-weight: 500; font-size: 43px; line-height: 0.98; letter-spacing: -0.015em; }
+  h1 em { color: var(--terre); font-weight: 500; }
+  .chapo { margin-top: 14px; font-size: 14.5px; line-height: 1.55; color: var(--gris); max-width: 320px; }
+  .actions { display: flex; gap: 10px; margin-top: 22px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 46px; padding: 0 20px; border-radius: 999px; font-size: 13.5px; font-weight: 600; }
+  .btn.plein { background: var(--terre); color: #fbf6ef; }
+  .btn.contour { border: 1.5px solid var(--encre); }
+
+  section { padding: 64px 22px; }
+  .titre { font-family: "Cormorant Garamond", serif; font-weight: 500; font-size: 36px; line-height: 1.02; letter-spacing: -0.01em; margin-top: 10px; }
+  .pieces { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 28px; }
+  .piece { background: var(--argile); border-radius: 18px; padding: 14px 14px 16px; }
+  .piece svg { width: 100%; height: 120px; display: block; }
+  .piece h3 { font-family: "Cormorant Garamond", serif; font-weight: 600; font-size: 20px; margin-top: 8px; }
+  .piece p { font-size: 12.5px; color: var(--gris); margin-top: 2px; display: flex; justify-content: space-between; }
+  .piece p b { color: var(--encre); font-weight: 600; }
+
+  .atelier { background: var(--encre); color: #f1e8db; border-radius: 28px 28px 0 0; }
+  .atelier .sur { color: #e2a17f; }
+  .atelier p.long { margin-top: 18px; font-size: 15px; line-height: 1.65; color: #cfc3b4; }
+  .chiffres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 30px; border-top: 1px solid #4a3b31; padding-top: 22px; }
+  .chiffres b { display: block; font-family: "Cormorant Garamond", serif; font-weight: 500; font-size: 38px; color: #f1e8db; line-height: 1; }
+  .chiffres span { font-size: 11.5px; color: #a8998a; line-height: 1.4; display: block; margin-top: 6px; }
+  .four { margin-top: 34px; }
+  .four svg { width: 100%; height: auto; display: block; }
+
+  .cours { background: var(--argile); }
+  .formule { border-top: 1px solid var(--filet); padding: 20px 0; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; }
+  .formule:first-of-type { margin-top: 24px; }
+  .formule h3 { font-family: "Cormorant Garamond", serif; font-size: 23px; font-weight: 600; }
+  .formule .prix { font-family: "Cormorant Garamond", serif; font-size: 23px; font-weight: 600; color: var(--terre-fonce); }
+  .formule p { grid-column: 1 / -1; font-size: 13.5px; color: var(--gris); line-height: 1.5; }
+  .cours .btn { margin-top: 18px; width: 100%; }
+
+  .infos dl { margin-top: 22px; display: grid; gap: 16px; }
+  .infos dt { font-size: 10.5px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--terre-fonce); }
+  .infos dd { margin-top: 4px; font-size: 15px; line-height: 1.5; }
+
+  footer { padding: 40px 22px 34px; border-top: 1px solid var(--filet); }
+  footer .marque { font-size: 28px; }
+  footer p { font-size: 12px; color: var(--gris); margin-top: 10px; line-height: 1.6; }
+  footer nav { display: flex; gap: 16px; margin-top: 18px; font-size: 12.5px; font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="hero">
+    <header>
+      <span class="marque">Ocre <b>&amp;</b> Cendre</span>
+      <span class="menu">Menu <i></i></span>
+    </header>
+    <div class="scene"><canvas id="tour" width="780" height="600"></canvas></div>
+    <div class="texte">
+      <p class="sur">Céramiques en grès · atelier</p>
+      <h1>Des pièces tournées à la main, <em>une à une.</em></h1>
+      <p class="chapo">Bols, tasses et vases émaillés à l'atelier, cuits au bois deux fois par saison.</p>
+      <div class="actions">
+        <a class="btn plein" href="#">Voir les pièces</a>
+        <a class="btn contour" href="#">Cours de tournage</a>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <p class="sur">La fournée d'automne</p>
+    <h2 class="titre">Vingt-quatre pièces, aucune pareille.</h2>
+    <div class="pieces">
+      <div class="piece">
+        <svg viewBox="0 0 160 120"><ellipse cx="80" cy="104" rx="46" ry="6" fill="#cdbba3"/><path d="M28 46 Q32 98 80 100 Q128 98 132 46 Z" fill="#b5532f"/><path d="M28 46 Q32 70 80 72 Q128 70 132 46 Z" fill="#efe6d6"/><path d="M40 62 q4 10 7 0 M96 66 q3 9 6 0" stroke="#efe6d6" stroke-width="5" stroke-linecap="round" fill="none"/><ellipse cx="80" cy="46" rx="52" ry="9" fill="#e4d8c4" stroke="#efe6d6" stroke-width="2"/></svg>
+        <h3>Bol Sillon</h3><p>Grès, émail lait <b>38 €</b></p>
+      </div>
+      <div class="piece">
+        <svg viewBox="0 0 160 120"><ellipse cx="80" cy="106" rx="34" ry="5" fill="#cdbba3"/><path d="M52 30 L54 98 Q80 106 106 98 L108 30 Z" fill="#6f655c"/><path d="M52 30 L53 58 Q80 64 107 58 L108 30 Z" fill="#2f3a3a"/><path d="M108 46 q22 2 18 22 q-4 14 -18 12" stroke="#6f655c" stroke-width="7" fill="none"/><ellipse cx="80" cy="30" rx="28" ry="5" fill="#26302f"/></svg>
+        <h3>Tasse Cendre</h3><p>Grès, émail tenmoku <b>29 €</b></p>
+      </div>
+      <div class="piece">
+        <svg viewBox="0 0 160 120"><ellipse cx="80" cy="108" rx="28" ry="4" fill="#cdbba3"/><path d="M70 12 L90 12 Q88 26 96 36 Q118 60 104 94 Q98 106 80 106 Q62 106 56 94 Q42 60 64 36 Q72 26 70 12 Z" fill="#c9b79c"/><path d="M64 36 Q72 26 70 12 L90 12 Q88 26 96 36 Q110 52 108 66 Q80 74 52 66 Q50 52 64 36 Z" fill="#7d8f7a"/><ellipse cx="80" cy="12" rx="10" ry="2.5" fill="#5f705d"/></svg>
+        <h3>Vase Garrigue</h3><p>Grès, émail céladon <b>64 €</b></p>
+      </div>
+      <div class="piece">
+        <svg viewBox="0 0 160 120"><ellipse cx="80" cy="80" rx="62" ry="16" fill="#b5532f"/><ellipse cx="80" cy="74" rx="62" ry="16" fill="#efe6d6"/><ellipse cx="80" cy="74" rx="40" ry="9" fill="#e6dac7"/><circle cx="62" cy="72" r="1.6" fill="#8f3f22"/><circle cx="96" cy="77" r="1.2" fill="#8f3f22"/><circle cx="84" cy="69" r="1" fill="#8f3f22"/></svg>
+        <h3>Assiette Plage</h3><p>Grès moucheté <b>32 €</b></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="atelier">
+    <p class="sur">L'atelier</p>
+    <h2 class="titre">De la motte d'argile au four à bois.</h2>
+    <p class="long">Chaque pièce passe entre mes mains une dizaine de fois : tournage, tournassage, séchage lent, émaillage au trempé, puis deux jours de cuisson au bois. Les flammes décident des nuances ; c'est pour ça qu'aucune pièce ne ressemble à sa voisine.</p>
+    <div class="chiffres">
+      <div><b>1 280°</b><span>la température du four</span></div>
+      <div><b>36 h</b><span>de cuisson, au bois</span></div>
+      <div><b>2</b><span>fournées par saison</span></div>
+    </div>
+    <div class="four">
+      <svg viewBox="0 0 346 150" fill="none" stroke="#e2a17f" stroke-width="1.4" stroke-linecap="round">
+        <path d="M20 140 H326"/>
+        <path d="M60 140 V82 Q60 34 130 30 Q200 34 200 82 V140"/>
+        <path d="M86 140 V96 Q86 70 130 68 Q174 70 174 96 V140"/>
+        <path d="M200 100 H252 V40 H272 V100 H300 V140"/>
+        <path d="M262 30 q-8 -10 2 -18 q8 -6 2 -12" opacity=".7"/>
+        <path d="M110 122 q8 -18 20 -6 q10 -16 18 4" stroke="#f1c27a"/>
+        <path d="M122 126 q6 -10 12 0" stroke="#f1c27a"/>
+      </svg>
+    </div>
+  </section>
+
+  <section class="cours">
+    <p class="sur">Apprendre</p>
+    <h2 class="titre">Cours de tournage</h2>
+    <div class="formule"><h3>Initiation</h3><span class="prix">45 €</span><p>Deux heures pour centrer la terre et monter un premier bol. Six places, le samedi matin.</p></div>
+    <div class="formule"><h3>Week-end</h3><span class="prix">190 €</span><p>Tournage, tournassage et émaillage : vos pièces cuisent avec la fournée suivante.</p></div>
+    <div class="formule"><h3>Trimestre</h3><span class="prix">320 €</span><p>Dix séances du soir, terre et cuissons comprises, pour avancer à votre rythme.</p></div>
+    <a class="btn plein" href="#">Réserver une place</a>
+  </section>
+
+  <section class="infos">
+    <p class="sur">Venir à l'atelier</p>
+    <h2 class="titre">Porte ouverte du mercredi au samedi.</h2>
+    <dl>
+      <div><dt>Horaires</dt><dd>10 h · 13 h et 15 h · 19 h</dd></div>
+      <div><dt>Boutique</dt><dd>Les pièces de la dernière fournée, et des commandes sur mesure pour les restaurants.</dd></div>
+      <div><dt>Contact</dt><dd>Un message pour un cours ou une commande : réponse sous la journée.</dd></div>
+    </dl>
+  </section>
+
+  <footer>
+    <span class="marque">Ocre <b style="color:var(--terre)">&amp;</b> Cendre</span>
+    <p>Céramiques tournées à la main.<br>Site d'exemple dessiné par Stalika : l'atelier est imaginaire, le site pourrait être le vôtre.</p>
+    <nav><span>Pièces</span><span>Cours</span><span>Atelier</span><span>Contact</span></nav>
+  </footer>
+
+<script>
+/* Le bol tourne : une surface de révolution dessinée en bandes horizontales,
+   dont l'émail (bord ondulé, coulures, mouchetures) tourne avec la pièce. Une
+   révolution toutes les 4 s : n'importe quel segment de 4 s boucle sans couture. */
+const toile = document.getElementById("tour");
+const ctx = toile.getContext("2d");
+const W = 390, H = 300, D = 2;
+ctx.scale(D, D);
+const PERIODE = 4;
+const cx = 195;
+const baseY = 238, rimY = 120;
+const inclinaison = 0.2; // aplatissement des cercles vus d'un peu au-dessus
+const rayon = (u) => 40 + 70 * (1 - Math.pow(1 - u, 2.1)); // u : 0 au pied, 1 au bord
+const hauteur = (u) => baseY - (baseY - rimY) * u;
+
+// L'émail : bord ondulé, et trois coulures qui descendent.
+const coulures = [0.6, 2.4, 4.3].map((a, i) => ({ a, l: 0.16 + i * 0.05, w: 0.09 + i * 0.015 }));
+function limiteEmail(theta) {
+  let u = 0.56 + 0.035 * Math.sin(3 * theta + 0.7) + 0.02 * Math.sin(7 * theta + 2.1);
+  for (const c of coulures) {
+    let d = Math.atan2(Math.sin(theta - c.a), Math.cos(theta - c.a));
+    u -= c.l * Math.exp(-Math.pow(d / c.w, 2));
+  }
+  return u;
+}
+// Mouchetures de fer, figées dans l'émail.
+let graine = 7;
+const alea = () => ((graine = (graine * 16807) % 2147483647) / 2147483647);
+const points = Array.from({ length: 70 }, () => ({ a: alea() * Math.PI * 2, u: 0.6 + alea() * 0.38, r: 0.5 + alea() * 1.1 }));
+const lumiere = -0.75; // la lumière vient d'en haut à gauche
+
+function teinte(c1, c2, t) {
+  return `rgb(${c1.map((v, i) => Math.round(v + (c2[i] - v) * t)).join(",")})`;
+}
+const EMAIL = [[214, 203, 186], [246, 239, 227]];
+const TERRE = [[118, 50, 26], [196, 98, 60]];
+
+function dessiner(t) {
+  const rot = (t / PERIODE) * Math.PI * 2;
+  ctx.clearRect(0, 0, W, H);
+
+  // Le plateau du tour, qui tourne aussi : des traces de barbotine.
+  const py = 252;
+  const g = ctx.createLinearGradient(0, py - 30, 0, py + 30);
+  g.addColorStop(0, "#8a7a6d"); g.addColorStop(1, "#5a4d44");
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(cx, py, 132, 26, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "#4a3f38";
+  ctx.beginPath(); ctx.ellipse(cx, py + 7, 132, 26, 0, 0, Math.PI); ctx.fill();
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(cx, py, 132, 26, 0, 0, Math.PI * 2); ctx.fill();
+  for (let k = 0; k < 14; k++) {
+    const a = rot * 1 + (k / 14) * Math.PI * 2;
+    const rr = 70 + ((k * 37) % 50);
+    const x = cx + rr * Math.cos(a), y = py + rr * 0.19 * Math.sin(a);
+    ctx.strokeStyle = `rgba(214, 196, 172, ${0.18 + 0.2 * (Math.sin(a) + 1) / 2})`;
+    ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.ellipse(cx, py, rr, rr * 0.19, 0, a, a + 0.32); ctx.stroke();
+  }
+  // Ombre du bol sur le plateau.
+  const om = ctx.createRadialGradient(cx, py - 2, 10, cx, py - 2, 70);
+  om.addColorStop(0, "rgba(30,22,18,.45)"); om.addColorStop(1, "rgba(30,22,18,0)");
+  ctx.fillStyle = om;
+  ctx.beginPath(); ctx.ellipse(cx, py - 4, 74, 14, 0, 0, Math.PI * 2); ctx.fill();
+
+  // L'extérieur du bol, en tranches verticales : chacune porte la terre nue du
+  // pied jusqu'à la limite de l'émail, puis l'émail jusqu'au bord. La limite
+  // est calculée au pixel près, sans marches.
+  const tranches = 150, pas = 28;
+  const point = (u, p) => [cx + rayon(u) * Math.sin(p), hauteur(u) + rayon(u) * inclinaison * Math.cos(p)];
+  // Une tranche entre deux méridiens p0 et p1 : de ua0 à ub0 sur le premier, de
+  // ua1 à ub1 sur le second. La limite de l'émail est donc un segment en pente
+  // d'une tranche à l'autre, pas une marche.
+  const bande = (ua0, ub0, ua1, ub1, p0, p1) => {
+    ctx.beginPath();
+    for (let i = 0; i <= pas; i++) { const [x, y] = point(ua0 + ((ub0 - ua0) * i) / pas, p0); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    for (let i = pas; i >= 0; i--) { const [x, y] = point(ua1 + ((ub1 - ua1) * i) / pas, p1); ctx.lineTo(x, y); }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke(); // même couleur : referme les jours entre deux tranches
+  };
+  const borne = (u) => Math.max(0.02, Math.min(0.98, u));
+  ctx.lineWidth = 0.6;
+  for (let s = 0; s < tranches; s++) {
+    const p0 = -Math.PI / 2 + (s / tranches) * Math.PI;
+    const p1 = -Math.PI / 2 + ((s + 1) / tranches) * Math.PI;
+    const pm = (p0 + p1) / 2;
+    const l0 = borne(limiteEmail(p0 - rot));
+    const l1 = borne(limiteEmail(p1 - rot));
+    const eclair = 0.35 + 0.65 * Math.max(0, Math.cos(pm - lumiere));
+    const bord = Math.pow(Math.max(0, Math.cos(pm)), 0.35);
+    const v = Math.min(1, eclair * (0.55 + 0.45 * bord));
+    ctx.fillStyle = ctx.strokeStyle = teinte(...TERRE, v);
+    bande(0, l0, 0, l1, p0, p1);
+    ctx.fillStyle = ctx.strokeStyle = teinte(...EMAIL, v);
+    bande(l0, 1, l1, 1, p0, p1);
+  }
+  // Ombre portée du pied : la terre fonce vers le bas.
+  ctx.save();
+  ctx.beginPath();
+  for (let i = 0; i <= 40; i++) { const [x, y] = point(i / 40, -Math.PI / 2); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+  for (let i = 0; i <= 60; i++) { const [x, y] = point(1, -Math.PI / 2 + (i / 60) * Math.PI); ctx.lineTo(x, y); }
+  for (let i = 40; i >= 0; i--) { const [x, y] = point(i / 40, Math.PI / 2); ctx.lineTo(x, y); }
+  for (let i = 60; i >= 0; i--) { const [x, y] = point(0, -Math.PI / 2 + (i / 60) * Math.PI); ctx.lineTo(x, y); }
+  ctx.closePath();
+  ctx.clip();
+  const pied = ctx.createLinearGradient(0, baseY + 8, 0, rimY + 40);
+  pied.addColorStop(0, "rgba(40, 16, 6, .45)"); pied.addColorStop(0.45, "rgba(40, 16, 6, 0)");
+  ctx.fillStyle = pied;
+  ctx.fillRect(0, rimY, W, baseY - rimY + 30);
+  // Sillons de tournage, discrets, sur la terre nue.
+  ctx.strokeStyle = "rgba(80, 30, 14, .22)";
+  ctx.lineWidth = 0.8;
+  for (const u of [0.07, 0.14, 0.21]) {
+    ctx.beginPath(); ctx.ellipse(cx, hauteur(u), rayon(u), rayon(u) * inclinaison, 0, 0, Math.PI); ctx.stroke();
+  }
+  ctx.restore();
+  // Mouchetures qui passent devant.
+  for (const p of points) {
+    const phi = p.a + rot;
+    const face = Math.cos(phi);
+    if (face < 0.08) continue;
+    if (p.u < limiteEmail(p.a) + 0.02) continue;
+    const r = rayon(p.u);
+    const x = cx + r * Math.sin(phi), y = hauteur(p.u) + r * inclinaison * Math.cos(phi);
+    ctx.fillStyle = `rgba(120, 58, 28, ${0.75 * face})`;
+    ctx.beginPath(); ctx.ellipse(x, y, p.r * Math.max(0.25, face), p.r, 0, 0, Math.PI * 2); ctx.fill();
+  }
+  // Reflet fixe : la lumière ne tourne pas, la pièce si.
+  const reflet = ctx.createLinearGradient(cx - 70, 0, cx - 20, 0);
+  reflet.addColorStop(0, "rgba(255,255,255,0)"); reflet.addColorStop(0.5, "rgba(255,255,255,.32)"); reflet.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.save();
+  ctx.beginPath();
+  for (let i = 0; i <= 40; i++) { const u = 0.62 + (i / 40) * 0.34; ctx.lineTo(cx - rayon(u) * 0.62, hauteur(u)); }
+  for (let i = 40; i >= 0; i--) { const u = 0.62 + (i / 40) * 0.34; ctx.lineTo(cx - rayon(u) * 0.38, hauteur(u)); }
+  ctx.closePath(); ctx.fillStyle = reflet; ctx.fill();
+  ctx.restore();
+
+  // Le bord et l'intérieur.
+  const R = rayon(1);
+  const interieur = ctx.createLinearGradient(cx - R, rimY, cx + R, rimY);
+  interieur.addColorStop(0, "#efe6d6"); interieur.addColorStop(0.55, "#d9cdb9"); interieur.addColorStop(1, "#c6b8a1");
+  ctx.fillStyle = interieur;
+  ctx.beginPath(); ctx.ellipse(cx, rimY, R - 3, (R - 3) * inclinaison, 0, 0, Math.PI * 2); ctx.fill();
+  // Le fond du bol, plus sombre, et ses mouchetures qui tournent.
+  ctx.fillStyle = "rgba(170, 150, 124, .35)";
+  ctx.beginPath(); ctx.ellipse(cx, rimY + 6, R * 0.5, R * 0.5 * inclinaison, 0, 0, Math.PI * 2); ctx.fill();
+  for (let k = 0; k < 9; k++) {
+    const a = rot + k * 0.7;
+    const rr = 12 + ((k * 23) % 60);
+    ctx.fillStyle = "rgba(120, 58, 28, .5)";
+    ctx.beginPath(); ctx.arc(cx + rr * Math.cos(a), rimY + 2 + rr * inclinaison * Math.sin(a), 0.9, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.strokeStyle = "#f8f2e8"; ctx.lineWidth = 2.4;
+  ctx.beginPath(); ctx.ellipse(cx, rimY, R - 1.5, (R - 1.5) * inclinaison, 0, 0, Math.PI * 2); ctx.stroke();
+  ctx.strokeStyle = "rgba(120, 90, 60, .35)"; ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.ellipse(cx, rimY + 0.8, R - 4, (R - 4) * inclinaison, 0, Math.PI, Math.PI * 2); ctx.stroke();
+}
+
+const depart = performance.now();
+function boucle(maintenant) {
+  dessiner((maintenant - depart) / 1000);
+  requestAnimationFrame(boucle);
+}
+requestAnimationFrame(boucle);
+</script>
+</body>
+</html>

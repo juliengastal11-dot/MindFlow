@@ -15,7 +15,7 @@ import { MOUVEMENT } from "@/lib/mouvement";
    normalement ; chaque scène joue son animation en `film.duree` secondes, au
    moment où elle entre dans l'écran, et ne la rejoue pas.
 
-   Les primitives du film (`Frappe`, `Decode`, `Barre`, `Trace`, `Champ3D`,
+   Les primitives du film (`Frappe`, `Decode`, `Barre`, `Trace`, `Roue`,
    `Rouleaux`) s'inscrivent sur cette chronologie par le contexte
    `useScene()` : elles y posent leurs tweens entre deux positions, `de` et
    `a`, en fraction de la chronologie (0 = le début, 1 = la fin).
