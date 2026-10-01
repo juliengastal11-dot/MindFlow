@@ -110,7 +110,7 @@ Description : `Sites sur mesure pour restaurants, coachs, artisans et commerces.
 ### Questions fréquentes
 
 - Eyebrow : `Avant de signer`
-- H2 : `Ce qu'on me demande souvent`
+- H2 : `Vos questions, mes réponses`
 - Q1 : `Combien ça coûte, vraiment ?` · R1 : `À partir de 300 € pour un site vitrine simple, payable en plusieurs fois sans frais. Le prix est écrit avant de commencer et il ne bouge pas en route. Une fonction en plus, une réservation ou un espace client, se chiffre à part, avant, jamais après.`
 - Q2 : `C'est un modèle ou une page blanche ?` · R2 : `Une page blanche. Je pars de votre activité et de vos clients, pas d'un gabarit à remplir. Deux sites Stalika ne se ressemblent pas.`
 - Q3 : `Je pourrai modifier mon site moi-même ?` · R3 : `Vous relisez et vous corrigez directement sur la page, avec le lien de relecture. J'applique et je publie : vous n'avez rien à casser. Plus tard, pour un changement, un message suffit.`

@@ -35,7 +35,7 @@ export function Faq() {
       largeur="prose"
       src="components/sections/faq.tsx"
       eyebrow="Avant de signer"
-      titre="Ce qu'on me demande souvent"
+      titre="Vos questions, mes réponses"
     >
       <Reveal>
         <div className="border-t border-border">
