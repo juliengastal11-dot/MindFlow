@@ -104,15 +104,25 @@ export const MOUVEMENT = {
     /** La roue des sites (scène « Sur mesure ») : un cylindre de cartes qui
         tourne seul, qu'on attrape, qu'on lance, et qui se pose sur une carte. */
     roue: {
-      /* L'écart entre deux cartes n'est pas un réglage : c'est un demi-tour
-         divisé par le nombre de cartes (60° pour trois). Toutes les cartes
-         tiennent sur la face visible du cylindre, et une carte passe du haut
-         au bas de la roue quand elle est de tranche, sans qu'on la voie sauter. */
-      /** Jour entre deux cartes, en fraction de la hauteur d'une carte. */
-      jour: 0.06,
+      /* La roue est un vrai cylindre : chaque carte est un pan courbe, enroulé
+         autour de l'axe (demande de J, 2026-10-01 : « une forme arrondie, pas
+         des plaques qui se suivent »). L'écart entre deux cartes n'est pas un
+         réglage : c'est un demi-tour divisé par le nombre de cartes (60° pour
+         trois). Une carte couvre cet écart moins `jour` ; le rayon du cylindre
+         s'en déduit, pour que la carte déroulée garde sa hauteur. Avec trois
+         cartes, celle de face est légèrement bombée, haut et bas fuyant vers
+         l'arrière, et les deux autres, plus inclinées, s'enroulent derrière. */
+      /** Jour entre deux cartes, en fraction de l'écart (0,05 de 60° : 3°). */
+      jour: 0.05,
+      /** Chaque carte est découpée en `bandes` bandes horizontales, posées sur
+          le cylindre une à une. Plus il y en a, plus la courbe est lisse. */
+      bandes: 12,
+      /** Chevauchement de deux bandes voisines, en pixels : sans lui, la
+          rotation laisse un filet clair entre elles. */
+      recouvrement: 1.5,
       /** Distance de l'œil, en hauteurs de carte : la roue garde le même relief
           sur téléphone et sur ordinateur. */
-      perspective: 2.4,
+      perspective: 2.6,
       /** La rotation seule : une carte toutes les `periode` secondes. La roue
           s'attarde d'abord sur la carte de face (`attente`, en fraction de la
           période), en dérivant à peine (`derive`), puis bascule vers la
@@ -135,10 +145,13 @@ export const MOUVEMENT = {
       /** L'entrée : la roue arrive lancée de `cartes` cartes et se pose sur la
           première, en `duree` (fraction de la chronologie de la scène). */
       entree: { cartes: 6, duree: 0.92 },
-      /** Obscurité d'une carte qui s'éloigne de la lumière (0 = aucune). */
-      ombre: 0.85,
+      /** Obscurité d'une bande qui s'éloigne de la lumière (0 = aucune). */
+      ombre: 0.6,
       /** D'où vient la lumière, en degrés au-dessus de la face. */
       lumiere: 25,
+      /** Le reflet sur le cylindre : intensité maximale, angle où il passe
+          (négatif : au-dessus de la face) et largeur, en degrés. */
+      reflet: { max: 0.11, centre: -14, largeur: 17 },
       /** Agrandissement de la carte qu'on visite. */
       visite: 1.04,
     },

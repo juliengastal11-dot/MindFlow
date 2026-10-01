@@ -38,9 +38,24 @@ de « Wheel Carousel » ; aucun code repris.
   avec inertie et se pose sur la carte la plus proche ; flèches du clavier, points, bouton pause
   (WCAG 2.2.2). Elle s'arrête au survol et hors de l'écran. Entrée : elle fait un tour complet et
   se pose sur la première carte. Mouvement réduit : elle ne tourne pas seule, aucune vidéo.
+- **Un vrai cylindre, pas des plaques** (demande de J, 2026-10-01) : chaque carte est un pan
+  courbe, découpé en 12 bandes horizontales (de petits canevas) que la CSS pose une à une sur le
+  cylindre. La carte de face est légèrement bombée, haut et bas fuyant vers l'arrière ; les deux
+  autres, plus inclinées, s'enroulent derrière. Le rayon se déduit de la hauteur de la carte et de
+  l'arc qu'elle couvre (57° pour trois cartes). La lumière, les reflets et les coins arrondis se
+  jouent bande par bande. Le site est peint à plat par `lib/peinture-carte.ts` puis découpé en
+  bandes : la vidéo joue dans un élément caché, chaque image est recopiée dans les bandes. Piège
+  noté dans le code : une bande se pose AU MILIEU de la carte et c'est la rotation qui l'amène à son
+  angle ; posée à son rang, elle sortirait du cylindre.
 - **Les cartes** montrent le haut de chaque site sur téléphone, **en action** : la devanture de
-  la pizzeria en boucle ; l'arrivée sur VTBON rejouée à chaque passage ; l'arrivée sur Popec puis
-  sa bande qui défile. Aucun lien.
+  la pizzeria en boucle ; l'arrivée sur Popec puis sa bande qui défile. Aucun lien.
+- **VTBON, en calques** : le site a un fond fixe derrière toute la page, un film (cuir surpiqué,
+  puis le chauffeur et son téléphone, puis la route de nuit) que le défilement fait avancer, avec
+  un voile qui s'assombrit. La première version de la carte l'avait perdu : la capture masquait les
+  éléments fixes. La carte le rejoue maintenant : 40 images du film, le voile et la courbe
+  d'avancement du site, et la page en tranches transparentes qui défile par-dessus. L'entrée du
+  héros se rejoue bloc par bloc (surtitre, titre, texte, bouton, mentions), comme sur le site, à
+  chaque arrivée de la carte. Film pris sur `vtbon.fr/video/hero-portrait.mp4`.
 - **Le site défile dans la carte** de face, jusqu'au pied de page : **au doigt**, directement (on
   glisse sur la carte du milieu ; au-dessus ou en dessous, on fait tourner la roue ; sur le texte,
   on fait défiler la page) ; **à la souris**, après un clic sur la carte (Échap pour sortir). Les

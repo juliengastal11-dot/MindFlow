@@ -12,8 +12,7 @@ const [SORTIE, ...seuls] = process.argv.slice(2);
 const SITES = {
   // boucle : segment [de, a], fondu de `fondu` s avec ce qui précède `de`.
   pizzeria: { video: { type: "boucle", de: 3.0, a: 11.0, fondu: 1.0 }, affiche: 3.0 },
-  // entrée : jouée une fois quand la carte arrive devant, puis tenue.
-  vtbon: { video: { type: "entree", de: 0.05, a: 2.0 }, affiche: 1.98 },
+  // (une entrée seule, jouée une fois puis tenue : `{ type: "entree", de, a }`)
   // entrée puis boucle : l'arrivée [de, boucle[0] + fondu], puis la boucle sans
   // couture [boucle[0], boucle[1]] ; la carte reprend la lecture au début de la
   // boucle (instant affiché, à reporter dans `reprise`).

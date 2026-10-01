@@ -62,7 +62,7 @@ export function SceneModele() {
             label="Trois sites, trois styles"
             legendes={REALISATIONS.map((r) => ({ titre: r.nom, sous: r.sous }))}
             visitable
-            className="h-[min(80svh,660px)] [--roue-coin:calc(var(--roue-l)*0.075)] [--roue-h:calc(var(--roue-l)/0.6)] [--roue-l:min(38vw,200px)] md:h-[min(90svh,880px)] md:[--roue-l:clamp(220px,22vw,290px)] md:[--roue-x:36%]"
+            className="h-[min(80svh,660px)] [--roue-h:calc(var(--roue-l)/0.6)] [--roue-l:min(38vw,200px)] md:h-[min(90svh,880px)] md:[--roue-l:clamp(220px,22vw,290px)] md:[--roue-x:36%]"
             rendu={(i, etat, actions) => <CarteRealisation site={REALISATIONS[i]} etat={etat} actions={actions} />}
           />
 
