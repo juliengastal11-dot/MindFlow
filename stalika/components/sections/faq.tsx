@@ -15,7 +15,7 @@ const QUESTIONS = [
     r: "Vous relisez et vous corrigez directement sur la page, avec le lien de relecture. J'applique et je publie : vous n'avez rien à casser. Plus tard, pour un changement, un message suffit.",
   },
   {
-    q: "Le site m'appartient ?",
+    q: "Je serai propriétaire de mon site ?",
     r: "Oui. Le code, les textes, les images que vous m'avez confiées : tout est à vous. Vous pouvez partir avec.",
   },
   {
@@ -23,7 +23,7 @@ const QUESTIONS = [
     r: "Je peux m'en occuper, ou vous laisser la main. On décide ensemble, et c'est écrit dans le devis.",
   },
   {
-    q: "En combien de temps ?",
+    q: "Sous combien de temps ?",
     r: "Une première ébauche sous 72 heures. Ensuite, le rythme dépend de vos retours : plus ils arrivent vite, plus le site sort vite.",
   },
 ];
@@ -35,7 +35,7 @@ export function Faq() {
       largeur="prose"
       src="components/sections/faq.tsx"
       eyebrow="Avant de signer"
-      titre="Ce qu'on me demande souvent"
+      titre="Vos questions, mes réponses"
     >
       <Reveal>
         <div className="border-t border-border">
