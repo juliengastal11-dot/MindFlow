@@ -15,7 +15,7 @@ const QUESTIONS = [
     r: "Vous relisez et vous corrigez directement sur la page, avec le lien de relecture. J'applique et je publie : vous n'avez rien à casser. Plus tard, pour un changement, un message suffit.",
   },
   {
-    q: "Le site m'appartient ?",
+    q: "Je serai propriétaire de mon site ?",
     r: "Oui. Le code, les textes, les images que vous m'avez confiées : tout est à vous. Vous pouvez partir avec.",
   },
   {
