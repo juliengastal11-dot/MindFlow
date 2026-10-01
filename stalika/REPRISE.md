@@ -8,10 +8,16 @@
 - Dépôt `juliengastal11-dot/MindFlow`, dossier `stalika/` (Next.js 15, TypeScript, Tailwind 4,
   GSAP + ScrollTrigger, Lenis, Prisma SQLite, Auth.js).
 - Branche de travail `claude/jolly-heisenberg-1uq9pg`, fusionnée dans `main` à chaque étape.
-- Aperçu : stalika-apercu.netlify.app, reconstruit par Netlify à chaque push sur `main`
-  (`netlify.toml` à la racine, base `stalika`).
+- Aperçu : stalika-apercu.netlify.app (`netlify.toml` à la racine, base `stalika`).
+  **Netlify n'est pas relié au dépôt** (constaté le 2026-10-01) : un push sur `main` ne
+  reconstruit rien. On déploie par l'API : l'opération `deploy-site` du connecteur Netlify
+  renvoie une commande `npx -y @netlify/mcp@latest --site-id … --proxy-path …`, à lancer depuis
+  une copie propre de `main` (`git clone --depth 1`), pour n'envoyer ni `.env`, ni la base, ni
+  `node_modules`. Le 2026-10-01, Netlify a refusé la construction (« Skipped due to account
+  credit usage exceeded » : offre gratuite, crédits épuisés). L'aperçu est resté au
+  2026-09-30 à 23 h 10 (commit `e40ecf7`), sans les étoiles filantes ni ce qui a suivi.
 - Garde-fou du kit : `node <buildyoursite>/scripts/verifier-projet.mjs --projet .`
-  (état actuel : 0 bloquant, 6 avertissements connus).
+  (état au 2026-10-01 : 0 bloquant, 7 avertissements connus).
 - Compte admin de dev : `admin@stalika.local` / `stalika-dev` (variables `ADMIN_EMAIL` / `ADMIN_PASSWORD`).
 
 ## Structure actuelle de l'accueil (`app/page.tsx`)
@@ -23,7 +29,8 @@
    - Puis 111 images (`public/ciel/bureau|mobile`) : lumière du hero → crépuscule → nuit →
      nuit où le personnage s'étire → aube → lumière dorée. Heure linéaire avec le défilement.
      Étoiles filantes dessinées en code la nuit.
-   - Par-dessus : `Hero` (section transparente), `SceneModele` (#sur-mesure), `SceneUtile`
+   - Par-dessus : `Hero` (section transparente), `SceneModele` (#sur-mesure, la roue des trois
+     sites de Julien : `components/ui/roue.tsx`, voir `BLUEPRINT.md`), `SceneUtile`
      (#utile), `SceneRelecture` (#relecture), puis `Plongee` (`components/ui/plongee.tsx`) :
      zoom dans l'ordinateur (61 images `public/hero/plongee/`), logo Stalika qui scintille sur
      l'écran (`lib/plongee-ecran.ts`), puis la fenêtre de discussion qui s'ouvre en « feuille ».
@@ -63,7 +70,8 @@ recadrée à 600/1924 de large depuis 277/1924, pleine hauteur, comme la série 
 - Le dépôt est public : aucun secret dans le code.
 - Des références tierces (21st…), reprendre l'idée seulement, jamais le code ni les médias.
 - Pas de tiret cadratin dans les textes.
-- Pousser sur la branche puis fusionner dans `main` pour mettre l'aperçu à jour.
+- Pousser sur la branche puis fusionner dans `main`, puis déployer l'aperçu par l'API (voir
+  plus haut : la fusion seule ne le met pas à jour).
 
 ## Mettre en place le skill /overlay
 
