@@ -23,7 +23,7 @@ const QUESTIONS = [
     r: "Je peux m'en occuper, ou vous laisser la main. On décide ensemble, et c'est écrit dans le devis.",
   },
   {
-    q: "En combien de temps ?",
+    q: "Sous combien de temps ?",
     r: "Une première ébauche sous 72 heures. Ensuite, le rythme dépend de vos retours : plus ils arrivent vite, plus le site sort vite.",
   },
 ];

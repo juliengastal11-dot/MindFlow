@@ -116,7 +116,7 @@ Description : `Sites sur mesure pour restaurants, coachs, artisans et commerces.
 - Q3 : `Je pourrai modifier mon site moi-même ?` · R3 : `Vous relisez et vous corrigez directement sur la page, avec le lien de relecture. J'applique et je publie : vous n'avez rien à casser. Plus tard, pour un changement, un message suffit.`
 - Q4 : `Je serai propriétaire de mon site ?` · R4 : `Oui. Le code, les textes, les images que vous m'avez confiées : tout est à vous. Vous pouvez partir avec.`
 - Q5 : `Et l'hébergement, le nom de domaine ?` · R5 : `Je peux m'en occuper, ou vous laisser la main. On décide ensemble, et c'est écrit dans le devis.`
-- Q6 : `En combien de temps ?` · R6 : `Une première ébauche sous 72 heures. Ensuite, le rythme dépend de vos retours : plus ils arrivent vite, plus le site sort vite.`
+- Q6 : `Sous combien de temps ?` · R6 : `Une première ébauche sous 72 heures. Ensuite, le rythme dépend de vos retours : plus ils arrivent vite, plus le site sort vite.`
 
 ### On en parle ?
 
