@@ -55,7 +55,7 @@ function Maquette() {
 
   return (
     <div ref={ref} role="img" aria-label="Exemple de relecture, animé au défilement">
-      <Card className="relative overflow-hidden">
+      <Card data-rebond="" className="relative overflow-hidden">
         <div className="flex items-center gap-1.5 border-b px-4 py-3" aria-hidden="true">
           <span className="size-2.5 rounded-full bg-muted" />
           <span className="size-2.5 rounded-full bg-muted" />
@@ -140,7 +140,7 @@ export function SceneRelecture() {
         <div className="space-y-8 md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-center md:gap-12 md:space-y-0">
           <div>
             <p className="eyebrow text-accent">03 · La relecture</p>
-            <h2 id="relecture-titre" className="mt-3 text-2xl sm:text-3xl md:text-4xl">
+            <h2 id="relecture-titre" data-rebond="" className="mt-3 text-2xl sm:text-3xl md:text-4xl">
               Un mot à changer ? <span className="block text-accent">Changez-le sur la page.</span>
             </h2>
             <p className="mt-4 text-sm text-muted-foreground md:text-base">

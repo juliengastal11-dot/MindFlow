@@ -4,6 +4,7 @@ import { Plongee } from "@/components/ui/plongee";
 import { Ciel } from "@/components/ui/ciel";
 import { Discussion } from "@/components/ui/discussion";
 import { ECRANS_PLONGEE } from "@/lib/plongee-ecran";
+import { CADRAGE_MOBILE } from "@/lib/ciel";
 import { SceneModele } from "@/components/sections/scene-modele";
 import { SceneUtile } from "@/components/sections/scene-utile";
 import { SceneRelecture } from "@/components/sections/scene-relecture";
@@ -43,7 +44,7 @@ export default function Accueil() {
         <Ciel
           bureau={{ dossier: "/ciel/bureau", nombre: 111 }}
           mobile={{ dossier: "/ciel/mobile", nombre: 111 }}
-          cadrageMobile={{ x: 277 / 1924, y: 0, l: 600 / 1924, h: 1 }}
+          cadrageMobile={CADRAGE_MOBILE}
           jalons={[
             [0.08, 0],
             [1, 110],
@@ -90,8 +91,8 @@ export default function Accueil() {
               x: 0,
               y: 0,
               bureau: { x: 0, y: 0, l: 1, h: 1 },
-              // La série mobile du ciel : 600 px de large pris à 277 px dans l'image de 1924.
-              mobile: { x: 277 / 1924, y: 0, l: 600 / 1924, h: 1 },
+              // La série mobile du ciel (mesures dans lib/ciel.ts).
+              mobile: CADRAGE_MOBILE,
             }}
             fenetre={<Discussion />}
             alt="La caméra s'approche du personnage assis au bord de la falaise, passe derrière son épaule et entre dans l'écran de son ordinateur, où le logo Stalika est affiché."

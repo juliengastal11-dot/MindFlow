@@ -37,7 +37,7 @@ Textes de J, posés par l'overlay le 2026-10-02, tels qu'il les a écrits (à dr
 
 - Ligne 1 : `Votre site sur mesure, dessiné pour vous en accord avec vos besoins. Tout type de profession libérale ou entreprise, première maquette en 72h`
 - Ligne 2 : `Audit de besoin IA en entreprise, création et accompagnement, avec vous`
-- Bouton : `Parlons de votre projet` → `/contact`
+- Bouton : `Parlons projet` → `/contact` (demande de J, 2026-10-02 : « écris juste dans le bouton : Parlons projet »). C'est un Cyber Button de 21st (capitales en police mono, flèche) : premier clic, il se décroche et se balance au menu ; second clic, il tombe de scène en scène jusqu'à l'ordinateur (`components/ui/bouton-chute.tsx`). Sans JavaScript ou en mouvement réduit, c'est un simple lien vers `/contact`.
 
 La description des moteurs de recherche (`Description` plus haut) ne change pas.
 

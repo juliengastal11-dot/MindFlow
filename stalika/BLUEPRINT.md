@@ -68,6 +68,49 @@ de « Wheel Carousel » ; aucun code repris.
 Ce qui change ailleurs : **H5** ne tient plus (la roue montre les vrais sites des clients, à la
 demande de J). Le paragraphe de la scène et ses trois points sont dans `CONTENU.md`.
 
+## Mise à jour du 2026-10-02 : le bouton du hero qui tombe jusqu'à l'ordinateur
+
+À la demande de J (overlay, puis tchat), le bouton pilule du hero devient un **Cyber Button** de
+21st (`jahed/cyber-button`) qui lit **« Parlons projet »** et raconte un petit film. Le code de 21st
+est **copié tel quel** (`components/ui/cyber-button.tsx`, avec l'accord exprès de J ; une seule
+retouche : `bg-gradient-to-*` devient `bg-linear-to-*`, que le garde-fou exige, rendu identique).
+Ses jetons « shadcn » (`--primary`, `--foreground`…) sont des alias de nos jetons dans
+`app/globals.css`, répétés sous `.nuit` et `.jour`. Le halo pointillé et le cadre qui s'éclaire au
+survol sont ceux de l'original ; la lueur est camel (`primary`).
+
+**Le déroulé (première étape, faite)** : `components/ui/bouton-chute.tsx`.
+1. **Premier clic** : le bouton s'accroupit et saute s'accrocher **au bord du menu**, par son coin
+   haut gauche (le hero n'a pas la place de le laisser pendre là où il est). Il se balance 4,4 s
+   comme une plaque pendue à un clou (presque debout : un rectangle long pend par un coin à la
+   verticale), puis s'arrête. Un indice discret : « Encore un clic : il tombe. ».
+2. **Second clic** : le clou lâche, le bouton **tombe de scène en scène** pendant que la page
+   défile avec lui (5,5 à 9 s selon la longueur du trajet), rebondit sur les éléments marqués
+   `data-rebond` (titres, textes, cartes), s'écrase à chaque choc, fait un tour sur lui-même quand
+   il est assez haut, et **se pose à côté de l'ordinateur, sur la dernière image du ciel**, réduit
+   de moitié (la falaise est loin). Un repère « Faites défiler » apparaît : on entre dans
+   l'ordinateur en défilant, ou en cliquant sur le bouton, qui emmène à la fenêtre de discussion.
+   Le visiteur peut passer la chute (molette, doigt, Échap, bouton « Passer »).
+3. Le bouton posé s'efface sur les premiers pixels de la plongée ; en remontant, il reste là où il est
+   tombé (« le bouton reste en bas », J).
+- **Réglages** : `MOUVEMENT.bouton` dans `lib/mouvement.ts` (durées, gravité, rebonds, échelles).
+  **Calcul** : `lib/chute.ts` (pur, déterministe : balancement, arcs de parabole, caméra monotone).
+  **Où il atterrit** : `POSE_BOUTON` dans `lib/ciel.ts` (en fractions de l'image entière).
+  **Défilement** : la page suit le bouton par l'instance de Lenis du site (`lib/defilement.ts`).
+- **`data-rebond`** : un élément qui porte cet attribut sert d'appui. Vide : il tressaille au choc.
+  `sec` : il sert d'appui sans bouger (ce que GSAP anime déjà : les cartes de la cascade). Posé
+  aujourd'hui sur le texte du hero, les titres et textes des trois scènes, les cartes de « Utile »
+  et la maquette de « La relecture ».
+- **Accessibilité** : le vrai lien reste dans le hero (clavier, lecteurs d'écran : deux Entrées font
+  le même parcours, avec annonces) ; la copie qui voyage est décorative. **Mouvement réduit, écran
+  de moins de 520 px de haut, défilement fluide absent, ou sans JavaScript : un simple lien vers
+  `/contact`.**
+- **Pas encore fait (deuxième étape)** : si le visiteur ne clique pas, le bouton descend quand même
+  de section en section : 1,5 s après qu'il s'est arrêté sur une section, le bouton y trouve un
+  endroit où s'accrocher (par un coin, il se balance puis s'arrête), reste cliquable (un clic le
+  fait tomber et emmène à l'ordinateur), ne remonte jamais, et finit près de l'ordinateur sur la
+  dernière image. Décisions de J : coin haut gauche, balancement de quelques secondes puis arrêt,
+  indice discret, le bouton reste en bas quand on remonte.
+
 ## §1 · La barre de direction
 
 | | Décidé |

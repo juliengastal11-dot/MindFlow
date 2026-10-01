@@ -104,6 +104,21 @@
   color-scheme: light;
 }
 
+/* Les jetons « shadcn » du Cyber Button de 21st, copié tel quel
+   (components/ui/cyber-button.tsx) : il lit --primary, --secondary,
+   --destructive, --foreground et --border. On les pointe sur nos jetons. À
+   répéter dans chaque monde : une variable qui en cite une autre se résout là
+   où elle est posée, et garderait sinon la valeur du clair sous `.nuit`. */
+:root,
+.nuit,
+.jour {
+  --primary: var(--color-primary);
+  --secondary: var(--color-secondary);
+  --destructive: var(--color-destructive);
+  --foreground: var(--color-foreground);
+  --border: var(--color-border);
+}
+
 /* Eyebrow : le petit libellé en capitales espacées au-dessus d'un titre.
 
    Il vit ici et nulle part ailleurs. `Section`, `not-found` et les gabarits du
@@ -335,4 +350,25 @@ html.js .logo-anime[data-etat="attente"] img {
 .points-frappe span:nth-child(3) { animation-delay: 0.3s; }
 @media (prefers-reduced-motion: reduce) {
   .bulle-entree, .points-frappe span { animation: none; }
+}
+
+/* Le bouton qui tombe (components/ui/bouton-chute.tsx) : l'indice du second
+   clic arrive en montant ; le bouton posé près de l'ordinateur respire ; le
+   repère de défilement fait descendre un point le long d'un trait. Mouvement
+   réduit : le bouton n'est qu'un lien, rien de tout cela n'existe. */
+@keyframes bouton-indice {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes bouton-souffle {
+  0%, 100% { filter: drop-shadow(0 0 2px color-mix(in oklab, var(--color-accent) 25%, transparent)); }
+  50% { filter: drop-shadow(0 0 9px color-mix(in oklab, var(--color-accent) 65%, transparent)); }
+}
+@keyframes bouton-defile {
+  0% { transform: translateY(-110%); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(210%); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="animate-[bouton-"] { animation: none; }
 }

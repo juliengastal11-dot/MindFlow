@@ -68,7 +68,7 @@ export function SceneModele() {
 
           <div className="min-w-0">
             <p className="eyebrow text-accent">01 · Sur mesure</p>
-            <h2 id="modele-titre" className="mt-2.5 font-display text-[1.1875rem] leading-[1.15] sm:text-3xl md:mt-4 md:text-4xl md:leading-[1.1]">
+            <h2 id="modele-titre" data-rebond="" className="mt-2.5 font-display text-[1.1875rem] leading-[1.15] sm:text-3xl md:mt-4 md:text-4xl md:leading-[1.1]">
               Pas un modèle rempli à la chaîne.
               <span className="mt-1.5 block md:mt-2">
                 Un site dessiné{" "}
@@ -78,11 +78,11 @@ export function SceneModele() {
               </span>
             </h2>
             <Arrivee de={0.42}>
-              <p className="mt-3 text-[0.8125rem] leading-relaxed text-foreground/85 sm:text-base md:mt-6 md:text-lg">
+              <p data-rebond="" className="mt-3 text-[0.8125rem] leading-relaxed text-foreground/85 sm:text-base md:mt-6 md:text-lg">
                 Chaque site part d&apos;une page blanche : votre métier, vos clients, vos envies. Rien n&apos;est figé tant que vous n&apos;avez pas dit oui.
               </p>
             </Arrivee>
-            <ul className="mt-3.5 space-y-2.5 md:mt-8 md:space-y-4">
+            <ul data-rebond="" className="mt-3.5 space-y-2.5 md:mt-8 md:space-y-4">
               {POINTS.map((point, i) => (
                 <li key={point.titre}>
                   <Arrivee de={0.56 + i * 0.08} className="flex gap-2.5 md:gap-3.5">
