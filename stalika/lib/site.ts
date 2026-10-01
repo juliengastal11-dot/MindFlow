@@ -12,15 +12,20 @@
 
    L'URL publique vient de l'environnement : en développement, localhost ;
    en production, `NEXT_PUBLIC_SITE_URL` dans `.env`, à confirmer par
-   l'utilisateur au moment de la mise en ligne.
+   l'utilisateur au moment de la mise en ligne. Sur l'aperçu Vercel, sans
+   cette variable, c'est l'adresse de production du projet, que Vercel
+   fournit lui-même (`NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL`, sans le
+   protocole).
 --------------------------------------------------------------------------- */
+
+const urlVercel = process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL;
 
 export const SITE = {
   nom: "Stalika",
   /** Une phrase, 150 caractères au plus : c'est celle que Google affiche. */
   description:
     "Sites sur mesure pour restaurants, coachs, artisans et commerces. Pas un modèle : un site dessiné pour vous, première ébauche sous 72 h.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? (urlVercel ? `https://${urlVercel}` : "http://localhost:3000"),
   locale: "fr_FR",
 
   /** Pages publiques listées dans le sitemap. */
