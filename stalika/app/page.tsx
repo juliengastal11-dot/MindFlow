@@ -33,35 +33,36 @@ export default function Accueil() {
     <>
       <main id="contenu">
         {/* Un seul plan du hero jusqu'à la discussion (demande de J) : la vidéo
-            du hero en haut de page, puis la même falaise dont l'heure avance
-            au défilement, en un seul mouvement régulier. 51 images : la
-            lumière du hero (1), les passages Kling crépuscule → nuit → aube
-            (2 à 50), la première image de la plongée (51). */}
+            du hero en haut de page (la caméra s'approche, une rafale soulève la
+            poussière dès le début), puis la même falaise dont l'heure avance au
+            défilement, en un seul mouvement régulier. 111 images tirées de cinq
+            passages Kling bout à bout : lumière du hero → crépuscule (1 à 21),
+            → nuit (22 à 41), la nuit où le personnage s'étire (42 à 71),
+            → aube (72 à 91), → lumière dorée, première image de la plongée
+            (92 à 111). */}
         <Ciel
-          bureau={{ dossier: "/ciel/bureau", nombre: 51 }}
-          mobile={{ dossier: "/ciel/mobile", nombre: 51 }}
+          bureau={{ dossier: "/ciel/bureau", nombre: 111 }}
+          mobile={{ dossier: "/ciel/mobile", nombre: 111 }}
           cadrageMobile={{ x: 277 / 1924, y: 0, l: 600 / 1924, h: 1 }}
           jalons={[
-            [0, 0],
-            [0.2, 1],
-            [0.5, 25],
-            [0.8, 49],
-            [1, 50],
+            [0.08, 0],
+            [1, 110],
           ]}
-          // Étoiles filantes pendant la nuit (images 15 à 37), dans la bande de ciel
-          // au-dessus des nuages (13 % du haut de l'image).
-          cometes={{ de: 14, a: 36, hauteur: 0.13 }}
+          // Étoiles filantes pendant la nuit, dans la bande de ciel au-dessus des nuages.
+          cometes={{ de: 30, a: 82, hauteur: 0.13 }}
           reperes={{ accueil: 0, "sur-mesure": 0.3, utile: 0.5, relecture: 0.7, "ciel-fin": 1 }}
           video={{
             bureau: { webm: "/hero/video.webm", mp4: "/hero/video.mp4" },
+            // Même recadrage que la série mobile du ciel : aucun saut au premier défilement.
             mobile: { webm: "/hero/video-mobile.webm", mp4: "/hero/video-mobile.mp4" },
             duree: 20,
-            // Zoom de l'image 241 par rapport à l'image 1, mesuré (quasi linéaire entre les deux).
-            zoom: { echelle: 1.16, x: 0.031, y: 0.056 },
-            // La vidéo mobile : 560 × 1000 px pris à (320, 76) dans chaque image de 1928 × 1076.
-            recadrageMobile: { x: 320 / 1928, y: 76 / 1076, l: 560 / 1928, h: 1000 / 1076 },
+            retour: {
+              bureau: { dossier: "/hero/recul/bureau", nombre: 30 },
+              mobile: { dossier: "/hero/recul/mobile", nombre: 30 },
+            },
+            recul: 0.08,
           }}
-          alt="Un plateau d'herbe au-dessus d'une mer de nuages ; une personne travaille sur un ordinateur, au bord de la falaise. La lumière passe du coucher du soleil à la nuit, puis à l'aube."
+          alt="Un plateau d'herbe au-dessus d'une mer de nuages ; une personne travaille sur un ordinateur, au bord de la falaise, près d'une cabane. La lumière passe du coucher du soleil à la nuit étoilée, puis à l'aube."
         >
           <Hero />
           <SceneModele />
@@ -83,7 +84,8 @@ export default function Accueil() {
               coins: ECRANS_PLONGEE,
             }}
             raccord={{
-              // La dernière image du ciel EST la première de la plongée : aucun écart.
+              // Le dernier passage du ciel se termine sur la première image de la plongée
+              // (imposée à Kling comme image d'arrivée) : aucun écart de cadrage.
               echelle: 1,
               x: 0,
               y: 0,
