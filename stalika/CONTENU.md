@@ -31,6 +31,16 @@ aucun tiret long. Le mot en accent d'un titre est indiqué entre `*astérisques*
 Titre d'onglet : `Stalika · Sites sur mesure, pas un modèle`
 Description : `Sites sur mesure pour restaurants, coachs, artisans et commerces. Pas un modèle : un site dessiné pour vous, première ébauche sous 72 h.`
 
+### Héros actuel (le haut de page, avec le nom géant)
+
+Textes de J, posés par l'overlay le 2026-10-02, tels qu'il les a écrits (à droite du nom) :
+
+- Ligne 1 : `Votre site sur mesure, dessiné pour vous en accord avec vos besoins. Tout type de profession libérale ou entreprise, première maquette en 72h`
+- Ligne 2 : `Audit de besoin IA en entreprise, création et accompagnement, avec vous`
+- Bouton : `Parlons de votre projet` → `/contact`
+
+La description des moteurs de recherche (`Description` plus haut) ne change pas.
+
 ### Scène 1 · Ils vous cherchent (héros)
 
 - Eyebrow : `En ce moment, quelque part en France`

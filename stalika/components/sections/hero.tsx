@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { LogoBrouille } from "@/components/ui/logo-brouille";
 import { EntreeHero } from "@/components/ui/entree-hero";
-import { SITE } from "@/lib/site";
 
 /* ---------------------------------------------------------------------------
    Le hero de l'accueil : un grand cadre arrondi, une vidéo plein cadre, et
@@ -104,13 +103,17 @@ export function Hero() {
             <span className="sr-only"> · sites sur mesure pour restaurants, coachs, artisans et commerces</span>
           </h1>
 
-          <EntreeHero delai={1.2} className="max-w-sm pb-2 lg:pb-5">
-            <p className="text-sm leading-relaxed text-foreground/85 sm:text-base">{SITE.description}</p>
+          <EntreeHero delai={1.2} className="max-w-md pb-2 lg:pb-5">
+            {/* Les deux lignes de J (overlay, 2026-10-02), telles qu'il les a écrites. */}
+            <p className="text-sm leading-relaxed text-foreground/85 sm:text-base">
+              Votre site sur mesure, dessiné pour vous en accord avec vos besoins. Tout type de profession libérale ou entreprise, première maquette en 72h
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-foreground/85 sm:text-base">Audit de besoin IA en entreprise, création et accompagnement, avec vous</p>
             <Link
               href="/contact"
               className="group mt-5 inline-flex cursor-pointer items-center gap-3 rounded-full bg-foreground py-1.5 pl-5 pr-1.5 text-sm font-medium text-background transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
-              Parlons de votre site
+              Parlons de votre projet
               <span className="grid size-8 place-items-center rounded-full bg-background text-foreground transition-transform group-hover:translate-x-0.5">
                 <Fleche />
               </span>
