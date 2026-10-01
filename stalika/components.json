@@ -18,6 +18,8 @@
   "iconLibrary": "lucide",
   "registries": {
     "@watermelon": "https://registry.watermelon.sh/r/{name}.json",
-    "@motion-primitives": "https://motion-primitives.com/c/{name}.json"
+    "@motion-primitives": "https://motion-primitives.com/c/{name}.json",
+    "@reui": "https://reui.io/r/radix-nova/{name}.json",
+    "@coss": "https://coss.com/ui/r/{name}.json"
   }
 }
