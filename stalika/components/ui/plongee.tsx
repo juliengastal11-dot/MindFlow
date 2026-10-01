@@ -29,7 +29,8 @@ import type { CoinsEcran } from "@/lib/plongee-ecran";
      saccadent sur iPhone) : des images dessinées sur un canvas selon la
      position de défilement, la méthode des pages produit d'Apple.
 
-   Raccord : la dernière image du ciel est la première de la plongée. Le
+   Raccord : le dernier passage du ciel se termine sur la première image de
+   la plongée (image d'arrivée imposée à Kling). Le
    `raccord` la pose exactement comme le ciel la cadre (téléphone compris),
    puis le cadrage glisse vers celui de la plongée.
 

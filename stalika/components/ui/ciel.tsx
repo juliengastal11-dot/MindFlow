@@ -17,19 +17,19 @@ import { VideoAdaptative, type SourcesVideo } from "@/components/ui/video-adapta
    par `position: sticky`.
 
    En haut de page, c'est la vidéo du hero qui joue (son aller-retour de
-   20 s). Au premier défilement, elle se met en pause et s'efface dans le
-   plan dessiné, posé au même endroit : on sait où en est son zoom à chaque
-   instant (courbe en cosinus du montage, zoom mesuré image par image :
-   `video.zoom`), et le plan reprend ce cadrage avant de revenir doucement au
-   plan large.
+   20 s, la caméra s'approche de la falaise). Au premier défilement, elle se
+   met en pause et s'efface dans le plan dessiné, à la même image : on sait
+   où elle en est à chaque instant (courbe en cosinus du montage). Le plan
+   rejoue alors ses images à l'envers (`video.retour`) : la caméra recule
+   vraiment jusqu'au plan large, sans agrandir d'image fixe.
 
    Le plan dessiné : une suite d'images (`jalons` : quelle image à quelle
-   heure). La lumière du hero, puis les deux passages en accéléré (Kling 3.0
-   Pro, crépuscule → nuit → aube), puis la première image de la plongée.
-   Dessinées sur un canvas (fluide sur iPhone), chaque image fondue dans la
-   suivante selon la position exacte : aucun à-coup, même très lentement.
-   Entre deux images générées à part (lumière du hero → crépuscule, aube →
-   lumière dorée), c'est un fondu long.
+   heure), tirées de cinq passages en accéléré à caméra fixe (Kling 3.0 Pro),
+   bout à bout, chacun partant de l'image où finit le précédent : lumière du
+   hero → crépuscule → nuit (où le personnage s'étire) → aube → lumière
+   dorée, jusqu'à la première image de la plongée. Dessinées sur un canvas
+   (fluide sur iPhone), chaque image fondue dans la suivante selon la
+   position exacte : aucun à-coup, même très lentement.
 
    La nuit, des étoiles filantes traversent la bande de ciel (demande de J) :
    dessinées en code par-dessus le plan, au hasard, une toutes les deux à
@@ -63,10 +63,10 @@ export type CielProps = {
     mobile?: SourcesVideo;
     /** Durée de l'aller-retour, en secondes. */
     duree: number;
-    /** Zoom au bout de l'aller par rapport à la première image : échelle et décalage (fractions). */
-    zoom: { echelle: number; x: number; y: number };
-    /** Partie de chaque image que montre la vidéo mobile. */
-    recadrageMobile?: Rectangle;
+    /** Les images de l'aller, réparties régulièrement (même cadrage que le plan, mobile compris). */
+    retour: { bureau: SerieCiel; mobile?: SerieCiel };
+    /** Heure à laquelle le recul est fini et le plan reprend la main. */
+    recul: number;
   };
   /** Étoiles filantes la nuit : entre les images `de` et `a`, dans la bande de ciel
       (fraction de la hauteur de l'image entière, depuis le haut). */
@@ -82,12 +82,6 @@ const ENTIER: Rectangle = { x: 0, y: 0, l: 1, h: 1 };
 const RAPPORT = 1924 / 1076; // largeur / hauteur des images entières
 const borne = (x: number) => Math.min(1, Math.max(0, x));
 const douce = (x: number) => x * x * (3 - 2 * x);
-const melange = (a: Rectangle, b: Rectangle, k: number): Rectangle => ({
-  x: a.x + (b.x - a.x) * k,
-  y: a.y + (b.y - a.y) * k,
-  l: a.l + (b.l - a.l) * k,
-  h: a.h + (b.h - a.h) * k,
-});
 
 export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, cometes, alt, children, className }: CielProps) {
   const zone = useRef<HTMLDivElement>(null);
@@ -108,29 +102,24 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
     const lecteur = video && !reduit ? cadre.current.querySelector("video") : null;
     const images: HTMLImageElement[] = [];
     const prete = (i: number) => images[i]?.complete && images[i].naturalWidth > 0;
+    // Les images de l'aller de la vidéo, pour le recul.
+    const serieRetour = video ? (video.retour.mobile && surMobile ? video.retour.mobile : video.retour.bureau) : null;
+    const retour: HTMLImageElement[] = [];
+    const preteRetour = (i: number) => retour[i]?.complete && retour[i].naturalWidth > 0;
 
     let cible = 0; // heure visée, d'après le défilement
     let courant = 0; // heure affichée, qui rejoint la cible en douceur
     let boucle = 0;
-    let zoomPause = 0; // où en était le zoom de la vidéo quand elle s'est arrêtée (0 à 1)
+    let avanceePause = 0; // où en était la vidéo dans son aller quand elle s'est arrêtée (0 à 1)
 
-    // Où en est le zoom de la vidéo : même courbe que le montage (cosinus, aller puis retour).
-    const zoomVideo = () => {
+    // Où en est la vidéo dans son aller : même courbe que le montage (cosinus, aller puis retour).
+    const avanceeVideo = () => {
       if (!lecteur || !video) return 0;
       const moitie = video.duree / 2;
       const t = lecteur.currentTime % video.duree;
       const u = t <= moitie ? t / moitie : (video.duree - t) / moitie;
       return (1 - Math.cos(Math.PI * u)) / 2;
     };
-    // La partie de la première image que montre la vidéo, à ce zoom.
-    const cadrageVideo = (s: number): Rectangle => {
-      if (!video) return source;
-      const e = 1 + (video.zoom.echelle - 1) * s;
-      const r = { x: (-0.5 - video.zoom.x * s) / e + 0.5, y: (-0.5 - video.zoom.y * s) / e + 0.5, l: 1 / e, h: 1 / e };
-      const c = surMobile && video.recadrageMobile;
-      return c ? { x: r.x + c.x * r.l, y: r.y + c.y * r.h, l: c.l * r.l, h: c.h * r.h } : r;
-    };
-
     // L'image (fractionnaire) à l'heure t, d'après les jalons.
     const indexA = (t: number) => {
       if (t <= jalons[0][0]) return jalons[0][1];
@@ -219,15 +208,12 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
         canvas.width = Math.round(w * dpr);
         canvas.height = Math.round(h * dpr);
       }
-      // Cadrage : celui de la vidéo au moment de la pause, qui revient au plan large.
-      const k = douce(borne(t / 0.12));
-      const r = video && !reduit ? melange(cadrageVideo(zoomPause), source, k) : source;
-      // Le rectangle `r` couvre le canvas ; chaque image montre la partie `source` de l'image entière.
-      const e = Math.max(w / (r.l * RAPPORT), h / r.h);
-      const x0 = w / 2 + (source.x - (r.x + r.l / 2)) * RAPPORT * e;
-      const y0 = h / 2 + (source.y - (r.y + r.h / 2)) * e;
+      // Chaque image, en « cover », centrée : la série mobile est déjà recadrée sur la falaise.
+      const e = Math.max(w / (source.l * RAPPORT), h / source.h);
       const dw = source.l * RAPPORT * e;
       const dh = source.h * e;
+      const x0 = (w - dw) / 2;
+      const y0 = (h - dh) / 2;
       ctx2d.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx2d.globalAlpha = 1;
       ctx2d.drawImage(images[i], x0, y0, dw, dh);
@@ -235,6 +221,26 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
         ctx2d.globalAlpha = a;
         ctx2d.drawImage(images[j], x0, y0, dw, dh);
         ctx2d.globalAlpha = 1;
+      }
+      // Le recul : les images de l'aller de la vidéo, à l'envers, par-dessus le plan,
+      // qui s'effacent juste avant la fin du recul (même image de départ des deux côtés).
+      if (video && serieRetour && !reduit && t < video.recul) {
+        const n = serieRetour.nombre;
+        const g = avanceePause * (n - 1) * (1 - douce(borne(t / (video.recul * 0.85))));
+        let ri = Math.floor(g);
+        while (ri > 0 && !preteRetour(ri)) ri--;
+        if (preteRetour(ri)) {
+          const fondu = 1 - borne((t - video.recul * 0.85) / (video.recul * 0.15));
+          const rj = Math.min(n - 1, ri + 1);
+          ctx2d.globalAlpha = fondu;
+          ctx2d.drawImage(retour[ri], x0, y0, dw, dh);
+          const ra = g - Math.floor(g);
+          if (ra > 0.001 && preteRetour(rj)) {
+            ctx2d.globalAlpha = fondu * ra;
+            ctx2d.drawImage(retour[rj], x0, y0, dw, dh);
+          }
+          ctx2d.globalAlpha = 1;
+        }
       }
       const n = reduit ? 0 : nuit(f);
       nuitVisible = n > 0;
@@ -247,7 +253,7 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
       if (!lecteur) return;
       lecteur.style.opacity = String(1 - borne(t / 0.03));
       if (t > 0.0005 && !lecteur.paused) {
-        zoomPause = zoomVideo();
+        avanceePause = avanceeVideo();
         lecteur.pause();
       } else if (t <= 0.0005 && lecteur.paused && lecteur.currentTime > 0) {
         void lecteur.play().catch(() => {});
@@ -261,6 +267,15 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
         if (charge || !entrees.some((e) => e.isIntersecting)) return;
         charge = true;
         obs.disconnect();
+        // Les images du recul d'abord : c'est le premier défilement qui en a besoin.
+        if (serieRetour && !reduit) {
+          for (let n = 0; n < serieRetour.nombre; n++) {
+            const img = new Image();
+            img.decoding = "async";
+            img.src = chemin(serieRetour, n);
+            retour[n] = img;
+          }
+        }
         for (let n = 0; n < serie.nombre; n++) {
           const img = new Image();
           img.decoding = "async";
