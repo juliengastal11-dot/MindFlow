@@ -77,8 +77,9 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 ### Scène 3 · Utile
 
 - Eyebrow : `02 · Utile`
-- H2 : `Un site qui *travaille*, pas une plaquette.`
-- Texte : `Réservation avec agenda, espace client, contrat en PDF, avis et itinéraire : ce que vos clients font aujourd'hui au téléphone, votre site peut le faire à leur place. Et au-delà du site : création de logiciels et d'applications personnalisés pour votre activité.`
+- H2 : `Création de logiciels et applications *personnalisés*` (titre de J, overlay du 2026-10-02 ; avant : « Un site qui travaille, pas une plaquette. »)
+- Texte (demande de J, overlay du 2026-10-02 : SaaS, CRM, logiciels sur mesure, une phrase choc, quatre lignes ; la phrase choc est en gras) : `**Vous avez un problème, il y a forcément une solution.** Je crée des SaaS, des CRM et des logiciels sur mesure : l'outil qui automatise vos tâches et vous fait gagner des heures, pensé pour votre activité.`
+- Les quatre cartes qui suivent (agenda, espace client, contrat, avis) n'ont plus de phrase d'introduction : à reprendre quand J retravaille la section.
 - Carte 1 · titre : `Réservation avec agenda` · texte : `Le créneau se prend en trois gestes, et le doublon est impossible.`
 - Carte 2 · titre : `Espace client` · texte : `Chacun retrouve ses séances, ses documents, sa progression.`
 - Carte 3 · titre : `Contrat en PDF` · texte : `Rempli, signé, envoyé, sans rien imprimer.`

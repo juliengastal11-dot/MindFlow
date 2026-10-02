@@ -226,12 +226,12 @@ export function SceneUtile() {
         <div className="mb-8 max-w-2xl md:mb-10">
           <p className="eyebrow text-accent">02 · Utile</p>
           <h2 id="utile-titre" data-rebond="" className="mt-3 text-2xl sm:text-3xl md:text-4xl">
-            Un site qui <span className="text-accent">travaille</span>, pas une plaquette.
+            Création de logiciels et applications <span className="text-accent">personnalisés</span>
           </h2>
           <p className="mt-4 text-sm text-muted-foreground md:text-base">
-            Réservation avec agenda, espace client, contrat en PDF, avis et itinéraire : ce que vos clients font
-            aujourd&apos;hui au téléphone, votre site peut le faire à leur place. Et au-delà du site : création de logiciels et
-            d&apos;applications personnalisés pour votre activité.
+            <strong className="font-semibold text-foreground">Vous avez un problème, il y a forcément une solution.</strong> Je
+            crée des SaaS, des CRM et des logiciels sur mesure : l&apos;outil qui automatise vos tâches et vous fait gagner des
+            heures, pensé pour votre activité.
           </p>
         </div>
 
