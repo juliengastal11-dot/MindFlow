@@ -23,9 +23,9 @@ import { JsonLd } from "@/components/seo/json-ld";
    qu'assembler, dans l'ordre. */
 
 export const metadata: Metadata = {
-  title: { absolute: "Stalika · Sites sur mesure, pas un modèle" },
+  title: { absolute: "Stalika · Sites, logiciels et applications sur mesure" },
   description:
-    "Sites sur mesure pour restaurants, coachs, artisans et commerces. Pas un modèle : un site dessiné pour vous, première ébauche sous 72 h.",
+    "Sites, logiciels et applications sur mesure pour restaurants, coachs, artisans et commerces. Pas un modèle. Première ébauche de site sous 72 h.",
   alternates: { canonical: "/" },
 };
 

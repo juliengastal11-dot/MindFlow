@@ -28,8 +28,8 @@ aucun tiret long. Le mot en accent d'un titre est indiqué entre `*astérisques*
 
 ## Accueil `/`
 
-Titre d'onglet : `Stalika · Sites sur mesure, pas un modèle`
-Description : `Sites sur mesure pour restaurants, coachs, artisans et commerces. Pas un modèle : un site dessiné pour vous, première ébauche sous 72 h.`
+Titre d'onglet : `Stalika · Sites, logiciels et applications sur mesure` (adapté le 2026-10-02, à la demande de J, pour les logiciels et applications ; avant : `Stalika · Sites sur mesure, pas un modèle`)
+Description (150 caractères au plus ; reprise par l'image de partage et les données structurées) : `Sites, logiciels et applications sur mesure pour restaurants, coachs, artisans et commerces. Pas un modèle. Première ébauche de site sous 72 h.`
 
 ### Héros actuel (le haut de page, avec le nom géant)
 
@@ -112,7 +112,8 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 - Offre, sous le chiffre : `payable en plusieurs fois, sans frais`
 - Offre, délai (les rouleaux) : `Première ébauche sous 72 h`
 - Offre, zone : `Partout en France, à distance`
-- Bouton : `Parlons de votre site` → `/contact`
+- Offre, ligne ajoutée le 2026-10-02 (le prix est celui d'un site vitrine) : `Un logiciel ou une application sur mesure ? Dites-moi ce qu'il vous faut.`
+- Bouton : `Parlons de votre projet` → `/contact` (avant : `Parlons de votre site`)
 
 ### Ils m'ont fait confiance (bandeau)
 
@@ -124,8 +125,8 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 ### Julien
 
 - Eyebrow : `Julien`
-- H2 : `Je dessine et je code des sites pour des gens qui ont autre chose à faire.`
-- Texte : `Aujourd'hui, je conçois des sites et des applications pour des restaurants, des coachs, des artisans et des commerces, depuis Béziers et pour toute la France. Je m'occupe de tout : le dessin, le code, les textes avec vous, la mise en ligne, et je reste joignable après. Vous relisez sur la page, vous corrigez, j'applique. Un seul interlocuteur, du premier message au site en ligne.`
+- H2 : `Je dessine et je code des sites, des logiciels et des applications pour des gens qui ont autre chose à faire.`
+- Texte : `Aujourd'hui, je conçois des sites, des logiciels et des applications sur mesure pour des restaurants, des coachs, des artisans et des commerces, depuis Béziers et pour toute la France. Je m'occupe de tout : le dessin, le code, les textes avec vous, la mise en ligne, et je reste joignable après. Vous relisez sur la page, vous corrigez, j'applique. Un seul interlocuteur, du premier message à la mise en ligne.`
 
 ### Questions fréquentes
 
@@ -133,10 +134,11 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 - H2 : `Vos questions, mes réponses`
 - Q1 : `Combien ça coûte, vraiment ?` · R1 : `À partir de 300 € pour un site vitrine simple, payable en plusieurs fois sans frais. Le prix est écrit avant de commencer et il ne bouge pas en route. Une fonction en plus, une réservation ou un espace client, se chiffre à part, avant, jamais après.`
 - Q2 : `C'est un modèle ou une page blanche ?` · R2 : `Une page blanche. Je pars de votre activité et de vos clients, pas d'un gabarit à remplir. Deux sites Stalika ne se ressemblent pas.`
-- Q3 : `Je pourrai modifier mon site moi-même ?` · R3 : `Vous relisez et vous corrigez directement sur la page, avec le lien de relecture. J'applique et je publie : vous n'avez rien à casser. Plus tard, pour un changement, un message suffit.`
-- Q4 : `Je serai propriétaire de mon site ?` · R4 : `Oui. Le code, les textes, les images que vous m'avez confiées : tout est à vous. Vous pouvez partir avec.`
-- Q5 : `Et l'hébergement, le nom de domaine ?` · R5 : `Je peux m'en occuper, ou vous laisser la main. On décide ensemble, et c'est écrit dans le devis.`
-- Q6 : `Sous combien de temps ?` · R6 : `Une première ébauche sous 72 heures. Ensuite, le rythme dépend de vos retours : plus ils arrivent vite, plus le site sort vite.`
+- Q3 (ajoutée le 2026-10-02) : `Faites-vous aussi des logiciels et des applications ?` · R3 : `Oui. Au-delà du site, je crée des logiciels et des applications personnalisés pour votre activité, comme VTBON, l'application des chauffeurs VTC. Dites-moi ce que vous voulez simplifier ou automatiser, et je reviens vers vous avec une première idée.`
+- Q4 : `Je pourrai modifier mon site moi-même ?` · R4 : `Vous relisez et vous corrigez directement sur la page, avec le lien de relecture. J'applique et je publie : vous n'avez rien à casser. Plus tard, pour un changement, un message suffit.`
+- Q5 : `Je serai propriétaire de mon site ?` · R5 : `Oui. Le code, les textes, les images que vous m'avez confiées : tout est à vous. Vous pouvez partir avec.`
+- Q6 : `Et l'hébergement, le nom de domaine ?` · R6 : `Je peux m'en occuper, ou vous laisser la main. On décide ensemble, et c'est écrit dans le devis.`
+- Q7 : `Sous combien de temps ?` · R7 : `Une première ébauche sous 72 heures. Ensuite, le rythme dépend de vos retours : plus ils arrivent vite, plus le site sort vite.`
 
 ### On en parle ?
 
@@ -148,7 +150,7 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 ### Pied de page
 
 - Ligne 1 : `Stalika · Julien Gastal`
-- Ligne 2 : `Sites sur mesure pour ceux qui font tourner leur boutique. Toute la France, à distance.`
+- Ligne 2 : `Sites, logiciels et applications sur mesure pour ceux qui font tourner leur boutique. Toute la France, à distance.`
 - WhatsApp : `06 45 74 86 08` (lien wa.me)
 - Liens légaux : `Mentions légales` · `Confidentialité`
 - Lien discret : `Espace privé` → `/connexion`
@@ -157,10 +159,10 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 
 ## Contact `/contact` : la conversation
 
-Titre d'onglet : `Parlons de votre site`
-Description : `Dix questions, cinq minutes. Je reviens vers vous sous 72 heures avec une première idée de site.`
+Titre d'onglet : `Parlons de votre projet` (avant : `Parlons de votre site`)
+Description : `Dix questions, cinq minutes. Je reviens vers vous sous 72 heures avec une première idée.`
 
-- H1 (en tête de la conversation) : `Parlons de votre site`
+- H1 (en tête de la conversation) : `Parlons de votre projet`
 - Progression : `{n} / 10`
 - Lien de retour sur chaque question : `Modifier ma réponse précédente`
 - Bouton de passage des questions facultatives : `Passer`
@@ -220,7 +222,7 @@ Textes du module, conservés : titre `Connexion`, champs `E-mail` et `Mot de pas
 - Eyebrow : `Page introuvable`
 - H1 : `Cette page n'existe pas.`
 - Texte : `Elle a été déplacée, ou n'a jamais existé. Reprenons depuis le début.`
-- Boutons : `Retour à l'accueil` · `Parlons de votre site`
+- Boutons : `Retour à l'accueil` · `Parlons de votre projet`
 
 ## Confidentialité `/confidentialite` : ce qui s'ajoute au gabarit
 

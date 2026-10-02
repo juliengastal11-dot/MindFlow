@@ -15,7 +15,7 @@ export function PiedDePage() {
           <Image src="/logo-nuit.png" alt="Stalika" width={880} height={289} className="h-8 w-auto" />
           <p className="mt-4 font-medium">Stalika · Julien Gastal</p>
           <p className="mt-2 max-w-xs text-sm text-muted-foreground">
-            Sites sur mesure pour ceux qui font tourner leur boutique. Toute la France, à distance.
+            Sites, logiciels et applications sur mesure pour ceux qui font tourner leur boutique. Toute la France, à distance.
           </p>
         </div>
 

@@ -93,7 +93,7 @@ export function Hero() {
               baseline={{ src: "/hero/logo/baseline.png", largeur: 1320, hauteur: 65, gauche: 206, ecart: 71 }}
               delai={0.3}
             />
-            <span className="sr-only"> · sites sur mesure pour restaurants, coachs, artisans et commerces</span>
+            <span className="sr-only"> · sites, logiciels et applications sur mesure pour restaurants, coachs, artisans et commerces</span>
           </h1>
 
           <EntreeHero delai={1.2} className="max-w-md pb-2 lg:pb-5">

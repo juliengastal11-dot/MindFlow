@@ -3,7 +3,8 @@
 Construit avec Fable 5.1 (effort non connu depuis la session), sous-agents Sonnet 5 · 2026-09-30.
 Méthode : buildyoursite. Dépôt : `juliengastal11-dot/MindFlow`, dossier `stalika/`.
 
-**En une phrase.** Le site de Stalika, l'activité de Julien Gastal : des sites sur mesure pour
+**En une phrase.** Le site de Stalika, l'activité de Julien Gastal : des sites, des logiciels et
+des applications sur mesure (logiciels et applications ajoutés à la demande de J, 2026-10-02) pour
 restaurants, coachs, artisans et commerces, partout en France. L'accueil est **un film joué au
 défilement** : cinq scènes épinglées qui racontent une seule chose chacune, puis une fin calme
 qui mène à une conversation de dix questions. Deux arguments doivent apparaître, et ils sont
