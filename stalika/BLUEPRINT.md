@@ -37,7 +37,10 @@ de « Wheel Carousel » ; aucun code repris.
 - **Le mouvement** : la roue tourne seule, s'attarde 2,5 s sur chaque site puis bascule vers le
   suivant (`film.roue` dans `lib/mouvement.ts`). Elle s'attrape à la souris et au doigt, se lance
   avec inertie et se pose sur la carte la plus proche ; flèches du clavier, points, bouton pause
-  (WCAG 2.2.2). Elle s'arrête au survol et hors de l'écran. Entrée : elle fait un tour complet et
+  (WCAG 2.2.2). Depuis le 2026-10-02 (J, par l'overlay), le bouton pause et les points ne se voient
+  plus, pas plus que le nom de la carte de face sous la roue sur téléphone : ils restent là,
+  transparents, pour le clavier et les lecteurs d'écran, et apparaissent quand on y arrive au
+  clavier. Elle s'arrête au survol et hors de l'écran. Entrée : elle fait un tour complet et
   se pose sur la première carte. Mouvement réduit : elle ne tourne pas seule, aucune vidéo.
 - **Un vrai cylindre, pas des plaques** (demande de J, 2026-10-01) : chaque carte est un pan
   courbe, découpé en 12 bandes horizontales (de petits canevas) que la CSS pose une à une sur le

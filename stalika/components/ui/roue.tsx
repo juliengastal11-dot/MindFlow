@@ -773,46 +773,42 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
         </div>
       </div>
 
-      {/* Téléphone : le nom de la carte de face, sous la roue. */}
-      <p aria-hidden="true" className="mt-2 min-h-[2.6em] px-1 text-center md:hidden">
-        <span key={courant} className="block animate-[roue-legende_0.45s_var(--ease-out)_both]">
-          <span className="block text-[0.8125rem] font-semibold leading-tight text-foreground">{legendes[courant].titre}</span>
-          <span className="mt-0.5 block text-[0.625rem] font-medium uppercase leading-tight tracking-[0.12em] text-muted-foreground">
-            {legendes[courant].sous}
-          </span>
-        </span>
-      </p>
-
-      {/* Les commandes : pause, et un point par carte. */}
-      <div className="relative left-[calc(var(--roue-x,50%)-50%)] mt-2 flex items-center justify-center gap-3 md:mt-4">
-        {!reduit && (
-          <button
-            type="button"
-            onClick={basculerPause}
-            aria-label={pause ? "Relancer la roue" : "Mettre la roue en pause"}
-            className="grid size-8 place-items-center rounded-full text-muted-foreground ring-1 ring-foreground/15 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          >
-            {pause ? <Play aria-hidden="true" className="size-3.5" /> : <Pause aria-hidden="true" className="size-3.5" />}
-          </button>
-        )}
-        <div className="flex items-center gap-1.5">
-          {legendes.map((legende, i) => (
+      {/* Les commandes (pause, un point par carte) ne se voient plus : J les a retirées de la page
+          (overlay, 2026-10-02), avec le nom de la carte de face qui s'affichait sous la roue sur
+          téléphone. Elles restent pour le clavier et les lecteurs d'écran, comme le veut le critère
+          WCAG 2.2.2 (pouvoir arrêter ce qui bouge) : transparentes, posées sur le bas de la roue sans
+          rien décaler, et elles apparaissent dès qu'on y arrive au clavier. */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 opacity-0 focus-within:pointer-events-auto focus-within:opacity-100">
+        <div className="relative left-[calc(var(--roue-x,50%)-50%)] flex items-center justify-center gap-3">
+          {!reduit && (
             <button
-              key={legende.titre}
               type="button"
-              onClick={() => allerA(i)}
-              aria-label={`Voir ${legende.titre}`}
-              aria-current={i === courant ? "true" : undefined}
-              className="group grid h-8 place-items-center px-0.5 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+              onClick={basculerPause}
+              aria-label={pause ? "Relancer la roue" : "Mettre la roue en pause"}
+              className="grid size-8 place-items-center rounded-full bg-background/70 text-muted-foreground ring-1 ring-foreground/15 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
-              <span
-                className={cn(
-                  "block h-1.5 rounded-full transition-all duration-500 ease-[var(--ease-out)]",
-                  i === courant ? "w-5 bg-accent" : "w-1.5 bg-foreground/30 group-hover:bg-foreground/60",
-                )}
-              />
+              {pause ? <Play aria-hidden="true" className="size-3.5" /> : <Pause aria-hidden="true" className="size-3.5" />}
             </button>
-          ))}
+          )}
+          <div className="flex items-center gap-1.5">
+            {legendes.map((legende, i) => (
+              <button
+                key={legende.titre}
+                type="button"
+                onClick={() => allerA(i)}
+                aria-label={`Voir ${legende.titre}`}
+                aria-current={i === courant ? "true" : undefined}
+                className="group grid h-8 place-items-center px-0.5 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+              >
+                <span
+                  className={cn(
+                    "block h-1.5 rounded-full transition-all duration-500 ease-[var(--ease-out)]",
+                    i === courant ? "w-5 bg-accent" : "w-1.5 bg-foreground/30 group-hover:bg-foreground/60",
+                  )}
+                />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

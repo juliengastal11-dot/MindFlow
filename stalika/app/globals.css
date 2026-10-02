@@ -318,12 +318,8 @@ html.js .logo-anime[data-etat="attente"] img {
   }
 }
 
-/* La roue des sites (components/ui/roue.tsx) : le nom de la carte de face
-   arrive en montant ; en visite, l'indication s'efface d'elle-même. */
-@keyframes roue-legende {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: none; }
-}
+/* La roue des sites (components/ui/roue.tsx) : l'indication posée sur la
+   carte (« Faites défiler le site ») arrive en montant, puis s'efface d'elle-même. */
 @keyframes roue-indice {
   0% { opacity: 0; transform: translateY(6px); }
   12%, 78% { opacity: 1; transform: none; }

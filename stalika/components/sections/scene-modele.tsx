@@ -96,11 +96,6 @@ export function SceneModele() {
                 </li>
               ))}
             </ul>
-            <Arrivee de={0.87}>
-              <p className="mt-4 text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-accent/90 md:mt-9 md:text-xs">
-                Attrapez la roue : aucun site ne ressemble au voisin.
-              </p>
-            </Arrivee>
           </div>
         </div>
       </div>
