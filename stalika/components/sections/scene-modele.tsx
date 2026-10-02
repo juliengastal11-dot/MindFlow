@@ -56,11 +56,11 @@ function Arrivee({ de, className, children }: { de: number; className?: string; 
 
 export function SceneModele() {
   return (
-    <Scene id="sur-mesure" nuit className="bg-transparent" src="components/sections/scene-modele.tsx" aria-labelledby="modele-titre">
+    <Scene id="sur-mesure" nuit className="min-h-0 bg-transparent" src="components/sections/scene-modele.tsx" aria-labelledby="modele-titre">
       {/* Voile sur le ciel commun : partout sur téléphone ; sur ordinateur, plus
           dense à droite, sous le texte, pour laisser la roue dans le ciel. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-2 inset-y-0 bg-background/60 sm:inset-x-3 md:bg-transparent md:bg-linear-to-l md:from-background/90 md:via-background/50 md:to-background/10" />
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-3.5 py-8 sm:px-6 md:py-12">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-3.5 py-3 sm:px-6 md:py-6">
         <div className="grid grid-cols-[minmax(0,43fr)_minmax(0,57fr)] items-center gap-3 sm:gap-6 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:gap-10">
           <Roue
             label="Trois sites, trois styles"
