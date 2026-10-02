@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { Link2, MessagesSquare, Palette } from "lucide-react";
 import { CarteRealisation } from "@/components/sections/carte-realisation";
 import { Decode } from "@/components/ui/decode";
 import { Roue } from "@/components/ui/roue";
@@ -23,10 +24,13 @@ import { REALISATIONS } from "@/lib/realisations";
    début.
 --------------------------------------------------------------------------- */
 
+// Une icône par point à la place du tiret (demande de J, 2026-10-02). Lucide, le jeu que
+// les composants de 21st utilisent : palette pour les envies, bulles pour les échanges, lien pour le lien.
 const POINTS = [
-  { titre: "Selon vos envies", texte: "couleurs, ton, animations : on choisit ensemble, rien n'est imposé." },
-  { titre: "Beaucoup d'échanges", texte: "vous me racontez votre métier, je vous montre, vous réagissez." },
+  { icone: Palette, titre: "Selon vos envies", texte: "couleurs, ton, animations : on choisit ensemble, rien n'est imposé." },
+  { icone: MessagesSquare, titre: "Beaucoup d'échanges", texte: "vous me racontez votre métier, je vous montre, vous réagissez." },
   {
+    icone: Link2,
     titre: "Un lien pour corriger",
     texte: "une fois la première maquette élaborée, vous recevez un lien de visualisation qui vous permet aussi d'éditer. Je reçois vos commentaires et je mets à jour à votre guise.",
   },
@@ -90,7 +94,7 @@ export function SceneModele() {
               {POINTS.map((point, i) => (
                 <li key={point.titre}>
                   <Arrivee de={0.56 + i * 0.08} className="flex gap-2.5 md:gap-3.5">
-                    <span aria-hidden="true" className="mt-[0.45em] h-px w-3 shrink-0 bg-accent md:w-5" />
+                    <point.icone aria-hidden="true" strokeWidth={1.75} className="mt-[0.12em] size-3.5 shrink-0 text-accent md:size-[1.15rem]" />
                     <p className="text-[0.75rem] leading-snug text-muted-foreground sm:text-sm md:text-base">
                       <strong className="font-semibold text-foreground">{point.titre}</strong> : {point.texte}
                     </p>
