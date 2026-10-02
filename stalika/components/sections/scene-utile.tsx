@@ -230,7 +230,8 @@ export function SceneUtile() {
           </h2>
           <p className="mt-4 text-sm text-muted-foreground md:text-base">
             Réservation avec agenda, espace client, contrat en PDF, avis et itinéraire : ce que vos clients font
-            aujourd&apos;hui au téléphone, votre site peut le faire à leur place.
+            aujourd&apos;hui au téléphone, votre site peut le faire à leur place. Et au-delà du site : création de logiciels et
+            d&apos;applications personnalisés pour votre activité.
           </p>
         </div>
 

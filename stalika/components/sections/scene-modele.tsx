@@ -26,9 +26,11 @@ import { REALISATIONS } from "@/lib/realisations";
 const POINTS = [
   { titre: "Selon vos envies", texte: "couleurs, ton, animations : on choisit ensemble, rien n'est imposé." },
   { titre: "Beaucoup d'échanges", texte: "vous me racontez votre métier, je vous montre, vous réagissez." },
-  { titre: "Un lien pour corriger", texte: "vous cliquez sur ce que vous voulez changer, à votre guise, et j'applique." },
-  // Ajouté à la demande de J (2026-10-02) : le sur mesure ne s'arrête pas au site.
-  { titre: "Au-delà du site", texte: "création de logiciels et d'applications personnalisés pour votre activité." },
+  {
+    titre: "Un lien pour corriger",
+    texte: "une fois la première maquette élaborée, vous recevez un lien de visualisation qui vous permet aussi d'éditer. Je reçois vos commentaires et je mets à jour à votre guise.",
+  },
+  // « Au-delà du site » (logiciels et applications) est passé dans la section 02, à la demande de J (2026-10-02).
 ] as const;
 
 /** Un bloc qui arrive en montant, à la position `de` de la chronologie. */
@@ -81,7 +83,7 @@ export function SceneModele() {
             </h2>
             <Arrivee de={0.42}>
               <p data-rebond="" className="mt-3 text-[0.8125rem] leading-relaxed text-foreground/85 sm:text-base md:mt-6 md:text-lg">
-                Chaque site part d&apos;une page blanche : votre métier, vos clients, vos envies. Rien n&apos;est figé tant que vous n&apos;avez pas dit oui.
+                Chaque site part d&apos;une page blanche et naît de nos échanges et réflexions. Votre métier, vos clients, vos envies. Tout est modifiable à volonté, jusqu&apos;à satisfaction.
               </p>
             </Arrivee>
             <ul data-rebond="" className="mt-3.5 space-y-2.5 md:mt-8 md:space-y-4">

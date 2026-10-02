@@ -35,8 +35,8 @@ Description (150 caractères au plus ; reprise par l'image de partage et les don
 
 Textes de J, posés par l'overlay le 2026-10-02, tels qu'il les a écrits (à droite du nom) :
 
-- Ligne 1 : `Votre site sur mesure, dessiné pour vous en accord avec vos besoins.`
-- Ligne 2 : `Audit de besoin IA en entreprise, création de logiciels personnalisés et accompagnement, avec vous` (J a ajouté « de logiciels personnalisés », overlay du 2026-10-02)
+- Ligne 1 : `Votre site sur mesure, dessiné et pensé pour vous, en accord avec vos besoins.`
+- Ligne 2 : `Audit de besoin IA en entreprise, création de logiciels personnalisés et accompagnement` (J a ajouté « de logiciels personnalisés » et retiré « , avec vous », overlay du 2026-10-02)
 - Ligne 3 : `Tout type de profession libérale ou entreprise, première maquette en 72h` (c'était la seconde phrase de sa première ligne ; il l'a fait passer après la ligne de l'audit, overlay du 2026-10-02)
 - Bouton : `Parlons projet` → `/contact` (demande de J, 2026-10-02 : « écris juste dans le bouton : Parlons projet »). C'est un Cyber Button de 21st (capitales en police mono, flèche) : premier clic, il se décroche et se balance au menu ; second clic, il tombe de scène en scène jusqu'à l'ordinateur (`components/ui/bouton-chute.tsx`). Sans JavaScript ou en mouvement réduit, c'est un simple lien vers `/contact`.
 
@@ -60,11 +60,11 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 - Eyebrow : `01 · Sur mesure`
 - H2 : `Pas un modèle rempli à la chaîne.`
 - Ligne 2, le mot se décode : `Un site dessiné *pour vous*.` → `*pour votre métier*` → `*pour vos clients*`
-- Texte : `Chaque site part d'une page blanche : votre métier, vos clients, vos envies. Rien n'est figé tant que vous n'avez pas dit oui.`
+- Texte : `Chaque site part d'une page blanche et naît de nos échanges et réflexions. Votre métier, vos clients, vos envies. Tout est modifiable à volonté, jusqu'à satisfaction.` (mots de J, overlay du 2026-10-02, orthographe corrigée)
 - Point 1 : `Selon vos envies` · `couleurs, ton, animations : on choisit ensemble, rien n'est imposé.`
 - Point 2 : `Beaucoup d'échanges` · `vous me racontez votre métier, je vous montre, vous réagissez.`
-- Point 3 : `Un lien pour corriger` · `vous cliquez sur ce que vous voulez changer, à votre guise, et j'applique.`
-- Point 4 (ajouté à la demande de J, 2026-10-02) : `Au-delà du site` · `création de logiciels et d'applications personnalisés pour votre activité.`
+- Point 3 : `Un lien pour corriger` · `une fois la première maquette élaborée, vous recevez un lien de visualisation qui vous permet aussi d'éditer. Je reçois vos commentaires et je mets à jour à votre guise.` (mots de J, overlay du 2026-10-02, orthographe corrigée)
+- Le point « Au-delà du site » est passé dans la section 02 (demande de J, overlay du 2026-10-02) : voir son texte.
 - Invitation `Attrapez la roue : aucun site ne ressemble au voisin.` : supprimée (J, overlay, 2026-10-02). Le nom et le sous-titre de la carte de face sous la roue (téléphone), le bouton pause et les points sont retirés de l'affichage ; ils ne subsistent que pour le clavier et les lecteurs d'écran.
 - La roue (2026-10-01, remplace le champ de neuf cartes), libellé accessible `Trois sites, trois styles`. Une carte par site, avec son nom et son sous-titre :
   - `La Pizzeria des Allées` · `pizzeria · Béziers`
@@ -78,7 +78,7 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 
 - Eyebrow : `02 · Utile`
 - H2 : `Un site qui *travaille*, pas une plaquette.`
-- Texte : `Réservation avec agenda, espace client, contrat en PDF, avis et itinéraire : ce que vos clients font aujourd'hui au téléphone, votre site peut le faire à leur place.`
+- Texte : `Réservation avec agenda, espace client, contrat en PDF, avis et itinéraire : ce que vos clients font aujourd'hui au téléphone, votre site peut le faire à leur place. Et au-delà du site : création de logiciels et d'applications personnalisés pour votre activité.`
 - Carte 1 · titre : `Réservation avec agenda` · texte : `Le créneau se prend en trois gestes, et le doublon est impossible.`
 - Carte 2 · titre : `Espace client` · texte : `Chacun retrouve ses séances, ses documents, sa progression.`
 - Carte 3 · titre : `Contrat en PDF` · texte : `Rempli, signé, envoyé, sans rien imprimer.`
