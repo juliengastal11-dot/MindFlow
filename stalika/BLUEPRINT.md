@@ -47,6 +47,15 @@ de « Wheel Carousel » ; aucun code repris.
   bandes : la vidéo joue dans un élément caché, chaque image est recopiée dans les bandes. Piège
   noté dans le code : une bande se pose AU MILIEU de la carte et c'est la rotation qui l'amène à son
   angle ; posée à son rang, elle sortirait du cylindre.
+- **La zone du geste** (retour de J sur téléphone, 2026-10-02 : « difficile de faire tourner la
+  roue sans que ça fasse défiler la page ») : sur téléphone la roue ne fait que la moitié de la
+  largeur, et un doigt posé à côté de la carte faisait défiler la page. La zone qui capte le doigt
+  (`touch-action: none`) déborde maintenant de la roue : `--roue-ext-g` / `--roue-ext-d`, posés par
+  la scène (14 px et 30 px sur téléphone, 28 px de chaque côté dès 768 px). À la souris, seule la
+  roue elle-même se saisit. Un glissé qui franchit un cinquième de carte (`seuilGlisse`) change de
+  carte, même lent. Reste une bande d'environ 7 px juste à droite de la carte de face, où le
+  navigateur prend la couche de défilement pour la carte et fait défiler la page (la page, très
+  haute, est projetée en 3D) : essais de bandes de garde et de `clip-path` sans effet.
 - **Les cartes** montrent le haut de chaque site sur téléphone, **en action** : la devanture de
   la pizzeria en boucle ; l'arrivée sur Popec puis sa bande qui défile. Aucun lien.
 - **VTBON, en calques** : le site a un fond fixe derrière toute la page, un film (cuir surpiqué,

@@ -142,6 +142,9 @@ export const MOUVEMENT = {
       inertie: 0.34,
       /** Au plus, de combien de cartes un lancer fait tourner la roue. */
       lancerMax: 4,
+      /** Un glissé qui franchit cette part d'une carte change de carte, même lent
+          (0,2 : un cinquième de carte, soit une cinquantaine de pixels sur téléphone). */
+      seuilGlisse: 0.2,
       /** L'entrée : la roue arrive lancée de `cartes` cartes et se pose sur la
           première, en `duree` (fraction de la chronologie de la scène). */
       entree: { cartes: 6, duree: 0.92 },
