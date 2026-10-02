@@ -2,6 +2,7 @@ import Link from "next/link";
 import { LogoBrouille } from "@/components/ui/logo-brouille";
 import { EntreeHero } from "@/components/ui/entree-hero";
 import { BoutonChute } from "@/components/ui/bouton-chute";
+import { IleMenu } from "@/components/ui/ile-menu";
 
 /* ---------------------------------------------------------------------------
    Le hero de l'accueil : un grand cadre arrondi, une vidéo plein cadre, et
@@ -58,8 +59,8 @@ export function Hero() {
         }}
       />
       <div className="relative flex h-svh min-h-[34rem] flex-col p-2 sm:p-3">
-        {/* Le menu, dans un onglet accroché au bord haut du cadre. */}
-        <nav aria-label="Principale" className="mx-auto flex max-w-full items-center gap-0.5 rounded-b-2xl bg-background px-1.5 py-1.5 sm:gap-2 sm:px-5 sm:py-2">
+        {/* Le menu, en île dynamique : une capsule détachée du bord haut (demande de J, 2026-10-02). */}
+        <IleMenu aria-label="Principale" className="mx-auto mt-1.5 flex max-w-full items-center gap-0.5 rounded-full bg-background px-2 py-1.5 sm:mt-2 sm:gap-2 sm:px-5 sm:py-2">
           <a
             href="#sur-mesure"
             className="sr-only focus:not-sr-only focus:rounded-md focus:px-2 focus:text-sm"
@@ -81,7 +82,7 @@ export function Hero() {
           >
             Contact
           </Link>
-        </nav>
+        </IleMenu>
 
         {/* Le bas du cadre : le nom géant à gauche, le texte et le bouton à droite. */}
         <div className="mt-auto flex flex-col gap-6 px-5 pb-6 sm:px-8 sm:pb-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
