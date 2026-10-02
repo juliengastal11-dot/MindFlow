@@ -97,11 +97,17 @@ export function Hero() {
           </h1>
 
           <EntreeHero delai={1.2} className="max-w-md pb-2 lg:pb-5">
-            {/* Les deux lignes de J (overlay, 2026-10-02), telles qu'il les a écrites. */}
+            {/* Les lignes de J (overlay, 2026-10-02), telles qu'il les a écrites. Le même jour il a
+                ajouté « de logiciels personnalisés » à la ligne de l'audit et l'a placée avant
+                « Tout type de profession… en 72h » : les deux phrases de sa première ligne
+                forment donc deux paragraphes, la ligne de l'audit entre eux. */}
             <p data-rebond="" className="text-sm leading-relaxed text-foreground/85 sm:text-base">
-              Votre site sur mesure, dessiné pour vous en accord avec vos besoins. Tout type de profession libérale ou entreprise, première maquette en 72h
+              Votre site sur mesure, dessiné pour vous en accord avec vos besoins.
             </p>
-            <p className="mt-3 text-sm leading-relaxed text-foreground/85 sm:text-base">Audit de besoin IA en entreprise, création et accompagnement, avec vous</p>
+            <p className="mt-3 text-sm leading-relaxed text-foreground/85 sm:text-base">
+              Audit de besoin IA en entreprise, création de logiciels personnalisés et accompagnement, avec vous
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-foreground/85 sm:text-base">Tout type de profession libérale ou entreprise, première maquette en 72h</p>
             {/* Le bouton : un Cyber Button (21st) qui se décroche et tombe jusqu'à l'ordinateur au fil des clics. */}
             <BoutonChute href="/contact" className="mt-7">
               Parlons projet

@@ -35,8 +35,9 @@ Description (150 caractères au plus ; reprise par l'image de partage et les don
 
 Textes de J, posés par l'overlay le 2026-10-02, tels qu'il les a écrits (à droite du nom) :
 
-- Ligne 1 : `Votre site sur mesure, dessiné pour vous en accord avec vos besoins. Tout type de profession libérale ou entreprise, première maquette en 72h`
-- Ligne 2 : `Audit de besoin IA en entreprise, création et accompagnement, avec vous`
+- Ligne 1 : `Votre site sur mesure, dessiné pour vous en accord avec vos besoins.`
+- Ligne 2 : `Audit de besoin IA en entreprise, création de logiciels personnalisés et accompagnement, avec vous` (J a ajouté « de logiciels personnalisés », overlay du 2026-10-02)
+- Ligne 3 : `Tout type de profession libérale ou entreprise, première maquette en 72h` (c'était la seconde phrase de sa première ligne ; il l'a fait passer après la ligne de l'audit, overlay du 2026-10-02)
 - Bouton : `Parlons projet` → `/contact` (demande de J, 2026-10-02 : « écris juste dans le bouton : Parlons projet »). C'est un Cyber Button de 21st (capitales en police mono, flèche) : premier clic, il se décroche et se balance au menu ; second clic, il tombe de scène en scène jusqu'à l'ordinateur (`components/ui/bouton-chute.tsx`). Sans JavaScript ou en mouvement réduit, c'est un simple lien vers `/contact`.
 
 La description des moteurs de recherche (`Description` plus haut) ne change pas.
