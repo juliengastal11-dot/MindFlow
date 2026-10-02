@@ -59,8 +59,10 @@ function Offre() {
 
       <div ref={zone} data-film-cache className="mt-6">
         <p className="text-muted-foreground">Partout en France, à distance</p>
+        {/* Le prix ci-dessus est celui d'un site vitrine : un logiciel ou une application se parle d'abord. */}
+        <p className="mt-1 text-muted-foreground">Un logiciel ou une application sur mesure ? Dites-moi ce qu&apos;il vous faut.</p>
         <Button asChild variant="accent" shape="pill" size="lg" className="mt-5">
-          <Link href="/contact">Parlons de votre site</Link>
+          <Link href="/contact">Parlons de votre projet</Link>
         </Button>
       </div>
     </Card>

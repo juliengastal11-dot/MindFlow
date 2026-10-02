@@ -28,7 +28,7 @@ export default function Introuvable() {
               <Link href="/">Retour à l&apos;accueil</Link>
             </Button>
             <Button asChild variant="accent" shape="pill" size="lg">
-              <Link href="/contact">Parlons de votre site</Link>
+              <Link href="/contact">Parlons de votre projet</Link>
             </Button>
           </div>
         </Section>

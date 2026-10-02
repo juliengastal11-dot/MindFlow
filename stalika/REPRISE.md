@@ -77,7 +77,8 @@ recadrée à 600/1924 de large depuis 277/1924, pleine hauteur, comme la série 
 - Le dépôt est public : aucun secret dans le code.
 - Des références tierces (21st…), reprendre l'idée seulement, jamais le code ni les médias. Seule exception : quand J demande
   « exactement » ou donne son accord après qu'on lui a dit ce que coûte la récupération du code (le Cyber Button, copié tel
-  quel le 2026-10-02 ; 21st donne deux récupérations de code par jour).
+  quel le 2026-10-02 ; 21st donne deux récupérations de code par jour). Le carrousel d'iPhone de la section 02 (« Phone Mockups 1 »,
+  demandé par J le 2026-10-02) vient du registre public de son auteur, Solace UI : gratuit, il ne compte pas dans les deux.
 - Pas de tiret cadratin dans les textes.
 - Commits locaux à chaque retouche ; **ne rien pousser** (ni la branche, ni `main`) tant que J ne le demande : chaque push sur `main` redéploie l'aperçu Vercel.
 

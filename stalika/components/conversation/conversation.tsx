@@ -73,7 +73,7 @@ export function Conversation() {
 
   return (
     <div data-src="components/conversation/conversation.tsx" className="mx-auto max-w-2xl px-6 pb-24">
-      <h1 className="font-display text-3xl sm:text-4xl md:text-5xl">Parlons de votre site</h1>
+      <h1 className="font-display text-3xl sm:text-4xl md:text-5xl">Parlons de votre projet</h1>
 
       <div className="mt-8 flex flex-col gap-6">
         <Progression n={n} />

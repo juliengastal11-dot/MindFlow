@@ -88,7 +88,7 @@ export function Scene({
       for (const fn of inscriptions.current) fn(tl);
 
       const caches = section.querySelectorAll<HTMLElement>("[data-film-cache]");
-      gsap.set(caches, { visibility: "inherit" });
+      if (caches.length) gsap.set(caches, { visibility: "inherit" });
 
       if (mouvementReduit()) {
         tl.progress(1);
@@ -98,8 +98,10 @@ export function Scene({
       // La chronologie vaut 1 : on l'étire à `duree` secondes, puis on la
       // joue une fois, quand le haut de la scène atteint le bas de l'écran.
       tl.timeScale(1 / duree);
-      gsap.set(caches, { willChange: "transform, opacity" });
-      tl.eventCallback("onComplete", () => gsap.set(caches, { willChange: "auto" }));
+      if (caches.length) {
+        gsap.set(caches, { willChange: "transform, opacity" });
+        tl.eventCallback("onComplete", () => gsap.set(caches, { willChange: "auto" }));
+      }
       ScrollTrigger.create({
         trigger: section,
         start: MOUVEMENT.film.declencheur,

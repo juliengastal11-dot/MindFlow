@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { Link2, MessagesSquare, Palette } from "lucide-react";
 import { CarteRealisation } from "@/components/sections/carte-realisation";
 import { Decode } from "@/components/ui/decode";
 import { Roue } from "@/components/ui/roue";
@@ -23,10 +24,17 @@ import { REALISATIONS } from "@/lib/realisations";
    début.
 --------------------------------------------------------------------------- */
 
+// Une icône par point à la place du tiret (demande de J, 2026-10-02). Lucide, le jeu que
+// les composants de 21st utilisent : palette pour les envies, bulles pour les échanges, lien pour le lien.
 const POINTS = [
-  { titre: "Selon vos envies", texte: "couleurs, ton, animations : on choisit ensemble, rien n'est imposé." },
-  { titre: "Beaucoup d'échanges", texte: "vous me racontez votre métier, je vous montre, vous réagissez." },
-  { titre: "Un lien pour corriger", texte: "vous cliquez sur ce que vous voulez changer, à votre guise, et j'applique." },
+  { icone: Palette, titre: "Selon vos envies", texte: "couleurs, ton, animations : on choisit ensemble, rien n'est imposé." },
+  { icone: MessagesSquare, titre: "Beaucoup d'échanges", texte: "vous me racontez votre métier, je vous montre, vous réagissez." },
+  {
+    icone: Link2,
+    titre: "Un lien pour corriger",
+    texte: "une fois la première maquette élaborée, vous recevez un lien de visualisation qui vous permet aussi d'éditer. Je reçois vos commentaires et je mets à jour à votre guise.",
+  },
+  // « Au-delà du site » (logiciels et applications) est passé dans la section 02, à la demande de J (2026-10-02).
 ] as const;
 
 /** Un bloc qui arrive en montant, à la position `de` de la chronologie. */
@@ -52,17 +60,17 @@ function Arrivee({ de, className, children }: { de: number; className?: string; 
 
 export function SceneModele() {
   return (
-    <Scene id="sur-mesure" nuit className="bg-transparent" src="components/sections/scene-modele.tsx" aria-labelledby="modele-titre">
+    <Scene id="sur-mesure" nuit className="min-h-0 bg-transparent" src="components/sections/scene-modele.tsx" aria-labelledby="modele-titre">
       {/* Voile sur le ciel commun : partout sur téléphone ; sur ordinateur, plus
           dense à droite, sous le texte, pour laisser la roue dans le ciel. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-2 inset-y-0 bg-background/60 sm:inset-x-3 md:bg-transparent md:bg-linear-to-l md:from-background/90 md:via-background/50 md:to-background/10" />
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-3.5 py-8 sm:px-6 md:py-12">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-3.5 py-3 sm:px-6 md:py-6">
         <div className="grid grid-cols-[minmax(0,43fr)_minmax(0,57fr)] items-center gap-3 sm:gap-6 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:gap-10">
           <Roue
             label="Trois sites, trois styles"
             legendes={REALISATIONS.map((r) => ({ titre: r.nom, sous: r.sous }))}
             visitable
-            className="h-[min(80svh,660px)] [--roue-h:calc(var(--roue-l)/0.6)] [--roue-l:min(38vw,200px)] md:h-[min(90svh,880px)] md:[--roue-l:clamp(220px,22vw,290px)] md:[--roue-x:36%]"
+            className="h-[min(80svh,660px)] [--roue-ext-d:30px] [--roue-ext-g:14px] [--roue-h:calc(var(--roue-l)/0.6)] [--roue-l:min(38vw,200px)] md:h-[min(90svh,880px)] md:[--roue-ext-d:28px] md:[--roue-ext-g:28px] md:[--roue-l:clamp(220px,22vw,290px)] md:[--roue-x:36%]"
             rendu={(i, etat, actions) => <CarteRealisation site={REALISATIONS[i]} etat={etat} actions={actions} />}
           />
 
@@ -79,14 +87,14 @@ export function SceneModele() {
             </h2>
             <Arrivee de={0.42}>
               <p data-rebond="" className="mt-3 text-[0.8125rem] leading-relaxed text-foreground/85 sm:text-base md:mt-6 md:text-lg">
-                Chaque site part d&apos;une page blanche : votre métier, vos clients, vos envies. Rien n&apos;est figé tant que vous n&apos;avez pas dit oui.
+                Chaque site part d&apos;une page blanche et naît de nos échanges et réflexions. Votre métier, vos clients, vos envies. Tout est modifiable à volonté, jusqu&apos;à satisfaction.
               </p>
             </Arrivee>
             <ul data-rebond="" className="mt-3.5 space-y-2.5 md:mt-8 md:space-y-4">
               {POINTS.map((point, i) => (
                 <li key={point.titre}>
                   <Arrivee de={0.56 + i * 0.08} className="flex gap-2.5 md:gap-3.5">
-                    <span aria-hidden="true" className="mt-[0.45em] h-px w-3 shrink-0 bg-accent md:w-5" />
+                    <point.icone aria-hidden="true" strokeWidth={1.75} className="mt-[0.12em] size-3.5 shrink-0 text-accent md:size-[1.15rem]" />
                     <p className="text-[0.75rem] leading-snug text-muted-foreground sm:text-sm md:text-base">
                       <strong className="font-semibold text-foreground">{point.titre}</strong> : {point.texte}
                     </p>
@@ -94,11 +102,6 @@ export function SceneModele() {
                 </li>
               ))}
             </ul>
-            <Arrivee de={0.84}>
-              <p className="mt-4 text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-accent/90 md:mt-9 md:text-xs">
-                Attrapez la roue : aucun site ne ressemble au voisin.
-              </p>
-            </Arrivee>
           </div>
         </div>
       </div>

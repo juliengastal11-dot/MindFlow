@@ -502,13 +502,17 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
   const auDebut = (e: React.PointerEvent<HTMLDivElement>) => {
     const s = m.current;
     if (e.pointerType === "mouse" && e.button !== 0) return;
+    // La marge de la zone du geste ne sert qu'au doigt : à la souris, on saisit la roue elle-même.
+    if (e.pointerType === "mouse" && !scenePlan.current?.contains(e.target as Node)) return;
     const carte = (e.target as HTMLElement).closest<HTMLElement>("[data-roue-carte]");
     const indexCarte = carte ? Number(carte.dataset.index) : -1;
     // Dans la carte qu'on visite, le geste appartient au site.
     if (s.visite >= 0 && indexCarte === s.visite) return;
-    // Au doigt, sur la carte de face : le geste fait défiler le site dans la
-    // carte (défilement natif), la roue ne bouge pas.
-    if (e.pointerType !== "mouse" && s.tactile && indexCarte >= 0 && Math.abs(ecartA(indexCarte, s.pos, n)) < DEVANT) {
+    // Au doigt, sur la page de la carte de face : le geste fait défiler le site dans la
+    // carte (défilement natif), la roue ne bouge pas. Sur le reste de la carte (ses
+    // bords), il fait tourner la roue.
+    const surLaPage = !!(e.target as HTMLElement).closest("[data-lenis-prevent]");
+    if (e.pointerType !== "mouse" && s.tactile && surLaPage && indexCarte >= 0 && Math.abs(ecartA(indexCarte, s.pos, n)) < DEVANT) {
       s.contact = true;
       retenir();
       return;
@@ -578,7 +582,13 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
       }
     }
     const elan = s.pos + vitesse * R0.inertie;
-    const cible = Math.round(gsap.utils.clamp(s.pos - R0.lancerMax, s.pos + R0.lancerMax, elan));
+    let cible = Math.round(gsap.utils.clamp(s.pos - R0.lancerMax, s.pos + R0.lancerMax, elan));
+    // Un glissé qui a franchi `seuilGlisse` carte change de carte, même lent : sur la
+    // petite roue d'un téléphone (une carte ne fait que 260 px de haut), un glissé de
+    // quelques doigts retombait sur la carte d'où l'on partait (retour de J, 2026-10-02).
+    const parti = s.pos - s.departPos;
+    const depart = Math.round(s.departPos);
+    if (s.glisse && cible === depart && Math.abs(parti) >= R0.seuilGlisse) cible = depart + Math.sign(parti);
     allerVers(cible, vitesse);
   };
 
@@ -674,49 +684,62 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
           m.current.repriseA = Math.max(m.current.repriseA, gsap.ticker.time + R0.repriseSurvol);
         }}
       >
-        {/* La roue se perd dans le ciel en haut et en bas. Le masque ne porte que
-            sur elle : posé sur les légendes, il couperait ce qui déborde. */}
-        <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_14%,black_86%,transparent)] [-webkit-mask-image:linear-gradient(to_bottom,transparent,black_14%,black_86%,transparent)]">
-          <div
-            ref={scenePlan}
-            tabIndex={0}
-            onKeyDown={auClavier}
-            onFocus={() => (m.current.focus = true)}
-            onBlur={() => {
-              m.current.focus = false;
-              m.current.repriseA = gsap.ticker.time + R0.repriseSurvol;
-            }}
-            onPointerDown={auDebut}
-            onPointerMove={auMouvement}
-            onPointerUp={aLaFin}
-            onPointerCancel={aLaFin}
-            role="group"
-            aria-label="La roue : flèches haut et bas pour la faire tourner"
-            className="absolute inset-y-0 left-[var(--roue-x,50%)] w-[var(--roue-l)] -translate-x-1/2 cursor-grab touch-none select-none outline-none active:cursor-grabbing focus-visible:[&>div]:outline-2 focus-visible:[&>div]:outline-offset-8 focus-visible:[&>div]:outline-ring"
-            style={{ perspective: `calc(var(--roue-h) * ${R0.perspective})` } as CSSProperties}
-          >
-            <div className="absolute inset-0 [transform-style:preserve-3d]">
-              {legendes.map((legende, i) => (
-                <div
-                  key={legende.titre}
-                  ref={(el) => {
-                    cartes.current[i] = el;
-                  }}
-                  data-roue-carte=""
-                  data-index={i}
-                  role="group"
-                  aria-roledescription="diapositive"
-                  aria-label={`${i + 1} sur ${n} : ${legende.titre}, ${legende.sous}`}
-                  aria-hidden={i !== courant}
-                  // Rien ici ne doit aplatir la 3D (overflow, opacité, filtre, masque) : la carte
-                  // est faite de bandes posées sur le cylindre. Elles se cachent d'elles-mêmes
-                  // (`backface-visibility`) une fois passées derrière.
-                  className="absolute left-0 top-1/2 h-[var(--roue-h)] w-full -translate-y-1/2 [transform-style:preserve-3d] will-change-transform"
-                  style={{ transform: transformInitiale(i) }}
-                >
-                  {rendu(i, etats[i], { sortir: sortirDeVisite, retenir, courbe })}
-                </div>
-              ))}
+        {/* La zone du geste : la roue, et de chaque côté de quoi poser le doigt
+            (`--roue-ext-g` à gauche, `--roue-ext-d` à droite, posés par la scène).
+            Sur téléphone la roue ne fait que la moitié de la largeur : sans cette
+            marge, un doigt posé à côté de la carte faisait défiler la page au lieu
+            de tourner la roue (retour de J, 2026-10-02). Le `z-10` garde la marge
+            au-dessus du texte voisin, que GSAP a déjà fait passer en couche
+            (transform). Le masque est DANS la zone, pas autour : Chrome ne livre pas
+            le doigt à ce qui sort de la boîte d'un élément masqué. À la souris, seule
+            la roue elle-même se saisit. */}
+        <div
+          onPointerDown={auDebut}
+          onPointerMove={auMouvement}
+          onPointerUp={aLaFin}
+          onPointerCancel={aLaFin}
+          className="absolute inset-y-0 left-[calc(var(--roue-x,50%)-var(--roue-l)/2-var(--roue-ext-g,0px))] z-10 w-[calc(var(--roue-l)+var(--roue-ext-g,0px)+var(--roue-ext-d,0px))] touch-none select-none"
+        >
+          {/* La roue se perd dans le ciel en haut et en bas. Le masque ne porte que
+              sur elle : posé sur les légendes, il couperait ce qui déborde. */}
+          <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_14%,black_86%,transparent)] [-webkit-mask-image:linear-gradient(to_bottom,transparent,black_14%,black_86%,transparent)]">
+            <div
+              ref={scenePlan}
+              tabIndex={0}
+              onKeyDown={auClavier}
+              onFocus={() => (m.current.focus = true)}
+              onBlur={() => {
+                m.current.focus = false;
+                m.current.repriseA = gsap.ticker.time + R0.repriseSurvol;
+              }}
+              role="group"
+              aria-label="La roue : flèches haut et bas pour la faire tourner"
+              className="absolute inset-y-0 left-[var(--roue-ext-g,0px)] w-[var(--roue-l)] cursor-grab touch-none select-none outline-none active:cursor-grabbing focus-visible:[&>div]:outline-2 focus-visible:[&>div]:outline-offset-8 focus-visible:[&>div]:outline-ring"
+              style={{ perspective: `calc(var(--roue-h) * ${R0.perspective})` } as CSSProperties}
+            >
+              <div className="absolute inset-0 [transform-style:preserve-3d]">
+                {legendes.map((legende, i) => (
+                  <div
+                    key={legende.titre}
+                    ref={(el) => {
+                      cartes.current[i] = el;
+                    }}
+                    data-roue-carte=""
+                    data-index={i}
+                    role="group"
+                    aria-roledescription="diapositive"
+                    aria-label={`${i + 1} sur ${n} : ${legende.titre}, ${legende.sous}`}
+                    aria-hidden={i !== courant}
+                    // Rien ici ne doit aplatir la 3D (overflow, opacité, filtre, masque) : la carte
+                    // est faite de bandes posées sur le cylindre. Elles se cachent d'elles-mêmes
+                    // (`backface-visibility`) une fois passées derrière.
+                    className="absolute left-0 top-1/2 h-[var(--roue-h)] w-full -translate-y-1/2 [transform-style:preserve-3d] will-change-transform"
+                    style={{ transform: transformInitiale(i) }}
+                  >
+                    {rendu(i, etats[i], { sortir: sortirDeVisite, retenir, courbe })}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -750,46 +773,42 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
         </div>
       </div>
 
-      {/* Téléphone : le nom de la carte de face, sous la roue. */}
-      <p aria-hidden="true" className="mt-2 min-h-[2.6em] px-1 text-center md:hidden">
-        <span key={courant} className="block animate-[roue-legende_0.45s_var(--ease-out)_both]">
-          <span className="block text-[0.8125rem] font-semibold leading-tight text-foreground">{legendes[courant].titre}</span>
-          <span className="mt-0.5 block text-[0.625rem] font-medium uppercase leading-tight tracking-[0.12em] text-muted-foreground">
-            {legendes[courant].sous}
-          </span>
-        </span>
-      </p>
-
-      {/* Les commandes : pause, et un point par carte. */}
-      <div className="relative left-[calc(var(--roue-x,50%)-50%)] mt-2 flex items-center justify-center gap-3 md:mt-4">
-        {!reduit && (
-          <button
-            type="button"
-            onClick={basculerPause}
-            aria-label={pause ? "Relancer la roue" : "Mettre la roue en pause"}
-            className="grid size-8 place-items-center rounded-full text-muted-foreground ring-1 ring-foreground/15 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-          >
-            {pause ? <Play aria-hidden="true" className="size-3.5" /> : <Pause aria-hidden="true" className="size-3.5" />}
-          </button>
-        )}
-        <div className="flex items-center gap-1.5">
-          {legendes.map((legende, i) => (
+      {/* Les commandes (pause, un point par carte) ne se voient plus : J les a retirées de la page
+          (overlay, 2026-10-02), avec le nom de la carte de face qui s'affichait sous la roue sur
+          téléphone. Elles restent pour le clavier et les lecteurs d'écran, comme le veut le critère
+          WCAG 2.2.2 (pouvoir arrêter ce qui bouge) : transparentes, posées sur le bas de la roue sans
+          rien décaler, et elles apparaissent dès qu'on y arrive au clavier. */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 opacity-0 focus-within:pointer-events-auto focus-within:opacity-100">
+        <div className="relative left-[calc(var(--roue-x,50%)-50%)] flex items-center justify-center gap-3">
+          {!reduit && (
             <button
-              key={legende.titre}
               type="button"
-              onClick={() => allerA(i)}
-              aria-label={`Voir ${legende.titre}`}
-              aria-current={i === courant ? "true" : undefined}
-              className="group grid h-8 place-items-center px-0.5 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+              onClick={basculerPause}
+              aria-label={pause ? "Relancer la roue" : "Mettre la roue en pause"}
+              className="grid size-8 place-items-center rounded-full bg-background/70 text-muted-foreground ring-1 ring-foreground/15 transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
-              <span
-                className={cn(
-                  "block h-1.5 rounded-full transition-all duration-500 ease-[var(--ease-out)]",
-                  i === courant ? "w-5 bg-accent" : "w-1.5 bg-foreground/30 group-hover:bg-foreground/60",
-                )}
-              />
+              {pause ? <Play aria-hidden="true" className="size-3.5" /> : <Pause aria-hidden="true" className="size-3.5" />}
             </button>
-          ))}
+          )}
+          <div className="flex items-center gap-1.5">
+            {legendes.map((legende, i) => (
+              <button
+                key={legende.titre}
+                type="button"
+                onClick={() => allerA(i)}
+                aria-label={`Voir ${legende.titre}`}
+                aria-current={i === courant ? "true" : undefined}
+                className="group grid h-8 place-items-center px-0.5 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+              >
+                <span
+                  className={cn(
+                    "block h-1.5 rounded-full transition-all duration-500 ease-[var(--ease-out)]",
+                    i === courant ? "w-5 bg-accent" : "w-1.5 bg-foreground/30 group-hover:bg-foreground/60",
+                  )}
+                />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

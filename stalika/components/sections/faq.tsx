@@ -11,6 +11,10 @@ const QUESTIONS = [
     r: "Une page blanche. Je pars de votre activité et de vos clients, pas d'un gabarit à remplir. Deux sites Stalika ne se ressemblent pas.",
   },
   {
+    q: "Faites-vous aussi des logiciels et des applications ?",
+    r: "Oui. Au-delà du site, je crée des logiciels et des applications personnalisés pour votre activité, comme VTBON, l'application des chauffeurs VTC. Dites-moi ce que vous voulez simplifier ou automatiser, et je reviens vers vous avec une première idée.",
+  },
+  {
     q: "Je pourrai modifier mon site moi-même ?",
     r: "Vous relisez et vous corrigez directement sur la page, avec le lien de relecture. J'applique et je publie : vous n'avez rien à casser. Plus tard, pour un changement, un message suffit.",
   },

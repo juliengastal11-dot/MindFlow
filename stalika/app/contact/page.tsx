@@ -4,8 +4,8 @@ import { PiedDePage } from "@/components/sections/pied-de-page";
 import { Conversation } from "@/components/conversation/conversation";
 
 export const metadata: Metadata = {
-  title: "Parlons de votre site",
-  description: "Dix questions, cinq minutes. Je reviens vers vous sous 72 heures avec une première idée de site.",
+  title: "Parlons de votre projet",
+  description: "Dix questions, cinq minutes. Je reviens vers vous sous 72 heures avec une première idée.",
   alternates: { canonical: "/contact" },
 };
 

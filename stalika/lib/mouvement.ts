@@ -142,6 +142,9 @@ export const MOUVEMENT = {
       inertie: 0.34,
       /** Au plus, de combien de cartes un lancer fait tourner la roue. */
       lancerMax: 4,
+      /** Un glissé qui franchit cette part d'une carte change de carte, même lent
+          (0,2 : un cinquième de carte, soit une cinquantaine de pixels sur téléphone). */
+      seuilGlisse: 0.2,
       /** L'entrée : la roue arrive lancée de `cartes` cartes et se pose sur la
           première, en `duree` (fraction de la chronologie de la scène). */
       entree: { cartes: 6, duree: 0.92 },
@@ -220,5 +223,27 @@ export const MOUVEMENT = {
     /** Du bouton posé à la fenêtre de discussion, quand on clique dessus :
         durée du défilement, et part de la plongée où la fenêtre est en place. */
     discussion: { duree: 3.4, avancee: 0.985 },
+  },
+
+  /* --- Les démos de logiciels de la section 02 (components/demos, demande de
+     J du 2026-10-02) : de vraies interfaces qui se servent toutes seules, en
+     boucle. Chaque démo pose ses étapes en secondes sur sa propre chronologie ;
+     ici, le tempo commun. */
+  demos: {
+    /** Une boucle complète, en secondes. J : « environ 10 à 12 secondes ». */
+    boucle: 12,
+    /** Le curseur : un trajet, l'appui d'un clic. */
+    curseur: { trajet: 0.62, appui: 0.13 },
+    /** Ouvrir ou fermer un panneau. */
+    panneau: 0.48,
+    /** Une donnée qui apparaît, et l'écart entre deux lignes qui se suivent. */
+    apparition: 0.32,
+    decalage: 0.07,
+    /** `sortie` freine ce qui arrive ; `trajet` porte ce qui se déplace. */
+    sortie: "power3.out",
+    trajet: "power2.inOut",
+    /** Part visible d'une carte pour que sa démo tourne : les cartes voisines,
+        à peine visibles au bord du carrousel, restent à l'arrêt. */
+    seuilVisible: 0.35,
   },
 } as const;

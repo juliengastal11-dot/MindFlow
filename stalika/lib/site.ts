@@ -24,7 +24,7 @@ export const SITE = {
   nom: "Stalika",
   /** Une phrase, 150 caractères au plus : c'est celle que Google affiche. */
   description:
-    "Sites sur mesure pour restaurants, coachs, artisans et commerces. Pas un modèle : un site dessiné pour vous, première ébauche sous 72 h.",
+    "Sites, logiciels et applications sur mesure pour restaurants, coachs, artisans et commerces. Pas un modèle. Première ébauche de site sous 72 h.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? (urlVercel ? `https://${urlVercel}` : "http://localhost:3000"),
   locale: "fr_FR",
 
