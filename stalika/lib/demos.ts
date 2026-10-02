@@ -21,6 +21,8 @@ export const PRODUITS = {
     description: "Le suivi de vos chantiers : tâches, photos, réserves et compte-rendu, au même endroit.",
     fonctions: ["Chantiers", "Tâches", "Photos", "Comptes-rendus", "Réserves", "Planning"],
     statut: "Démo",
+    /** L'heure de la barre d'état du téléphone : celle de la scène. */
+    heure: "10:24",
     resume:
       "Démonstration de Carnet : on ouvre le chantier Dupont, deux tâches passent à Terminé, une photo s'ajoute, puis le compte-rendu se crée à partir du chantier.",
   },
@@ -30,6 +32,7 @@ export const PRODUITS = {
     description: "Vos devis et vos factures suivis jusqu'au paiement, et des relances qui partent à temps.",
     fonctions: ["Factures", "Devis", "Échéances", "Relances", "Paiements", "Historique"],
     statut: "Démo",
+    heure: "9:41",
     resume:
       "Démonstration de RelancePro : la facture n°124 de M. Martin a dépassé son échéance ; on ouvre le message de relance, on l'envoie, et l'historique de la facture se complète.",
   },
@@ -39,6 +42,7 @@ export const PRODUITS = {
     description: "Les contrôles de vos équipes, et chaque anomalie suivie jusqu'à ce qu'elle soit réglée.",
     fonctions: ["Checklists", "Contrôles", "Incidents", "Photos", "Responsables", "Historique"],
     statut: "Démo",
+    heure: "22:41",
     resume:
       "Démonstration de Contrôle : pendant le contrôle de fermeture, le frigo n°2 affiche 9,2 °C ; un incident s'ouvre avec une photo et un commentaire, Thomas en devient responsable, et l'historique se remplit.",
   },

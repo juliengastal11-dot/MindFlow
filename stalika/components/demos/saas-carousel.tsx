@@ -1,260 +1,198 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { mouvementReduit } from "@/lib/gsap";
-import { PauseDemos, SaaSPreviewCard } from "./saas-preview-card";
+import { gsap, mouvementReduit } from "@/lib/gsap";
+import { MOUVEMENT } from "@/lib/mouvement";
+import { PhoneCarousel, type ImageItem } from "@/components/ui/phone-mockups-1-utils/phone-carousel";
+import { SaaSPreviewCard, type EtatDemo } from "./saas-preview-card";
 import { DEMOS, type Demo } from "./produits";
 
 /* ---------------------------------------------------------------------------
-   SaaSCarousel : les cartes des logiciels, une principale au centre et ses
-   voisines qui dépassent sur les bords ; sur téléphone, une seule carte et un
-   liseré des voisines.
+   SaaSCarousel : les trois logiciels de la section 02, chacun sur l'écran
+   d'un iPhone du carrousel de Solace UI (« Phone Mockups 1 », choisi par J
+   le 2026-10-02), et la légende du logiciel de face.
 
-   Le défilement est celui du navigateur, accroché au centre (CSS) : le doigt
-   glisse comme partout, et le défilement vertical de la page n'est jamais
-   pris en otage. À la souris, on attrape la piste et on la tire ; au relâché,
-   elle file vers la carte la plus proche, élan compris. Les flèches, les noms
-   des logiciels (l'indicateur de position) et le clavier (← →) complètent.
-   Une carte voisine se clique : elle vient au centre.
+   Le carrousel garde son allure et ses gestes : le téléphone de face, ses
+   voisins estompés de part et d'autre, les trois boutons posés dessus
+   (précédent, pause, suivant), la rotation qui s'arrête au survol. Il tourne
+   ici au rythme des démos : un téléphone reste de face le temps de sa boucle
+   (12 s), et sa démo repart du début quand il arrive. La pause arrête la
+   rotation et la démo (critère WCAG 2.2.2) ; la rotation s'arrête aussi
+   quand le clavier entre dans le carrousel. Hors de l'écran, tout s'arrête.
+   Mouvement réduit : pas de rotation, des écrans arrêtés sur leur étape la
+   plus parlante.
 
-   Les cartes s'approchent à mesure qu'elles arrivent au centre : échelle et
-   opacité suivent la piste image par image, pendant le geste.
-
-   Les démos tournent dans leurs cartes indépendamment du carrousel ; le
-   bouton pause les arrête toutes (critère WCAG 2.2.2). Mouvement réduit : pas
-   de défilement animé, et des démos arrêtées sur leur étape la plus parlante.
-
-   D'où vient l'idée : la carte principale et ses voisines rapetissées d'un
-   « Carousel Slider » (Watermelon UI) ; la rangée flèches, noms et pause d'un
-   carrousel de captures (« Phone Mockups », Solace UI, sur 21st) ; le motif
-   accessible du carrousel de l'APG (W3C). Rejoués en CSS et en React.
+   La légende dit ce que fait le logiciel de face et pour qui ; ses noms
+   servent d'indicateur de position et se cliquent. Sur ordinateur, elle est
+   à gauche des téléphones ; sur téléphone, dessous.
 --------------------------------------------------------------------------- */
 
-const BOUTON =
-  "grid size-8 shrink-0 place-items-center rounded-full border border-foreground/10 bg-secondary/85 text-foreground transition-[background-color,opacity] hover:bg-secondary disabled:pointer-events-none disabled:opacity-35 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:size-9";
+const M = MOUVEMENT.demos;
 
-type Geste = { x: number; depart: number; t: number; vitesse: number; tire: boolean };
-
-export function SaaSCarousel({
-  demos = DEMOS,
-  label = "Trois logiciels en démonstration",
-  className,
-}: {
-  demos?: readonly Demo[];
-  label?: string;
-  className?: string;
-}) {
-  const piste = useRef<HTMLUListElement>(null);
-  const geste = useRef<Geste | null>(null);
+export function SaaSCarousel({ demos = DEMOS, className }: { demos?: readonly Demo[]; className?: string }) {
+  const zone = useRef<HTMLDivElement>(null);
   const [courant, setCourant] = useState(0);
   const [pause, setPause] = useState(false);
-  const [annonce, setAnnonce] = useState("");
+  const [enVue, setEnVue] = useState(false);
+  const [focus, setFocus] = useState(false);
   const [reduit, setReduit] = useState(false);
-  const n = demos.length;
 
   useEffect(() => setReduit(mouvementReduit()), []);
 
-  /** Le défilement qui met la carte `i` au centre de la piste. */
-  const viser = useCallback((i: number) => {
-    const ul = piste.current;
-    const li = ul?.children[i] as HTMLElement | undefined;
-    if (!ul || !li) return 0;
-    return li.offsetLeft + li.offsetWidth / 2 - ul.clientWidth / 2;
-  }, []);
-
-  const aller = useCallback(
-    (i: number) => {
-      const ul = piste.current;
-      if (!ul) return;
-      const cible = Math.max(0, Math.min(n - 1, i));
-      ul.scrollTo({ left: viser(cible), behavior: mouvementReduit() ? "auto" : "smooth" });
-      setAnnonce(`${demos[cible].carte.nom}, ${cible + 1} sur ${n}`);
-    },
-    [demos, n, viser],
-  );
-
-  // Suivre la piste : la carte la plus proche du centre, et la proximité de chacune.
+  // Assez visible pour tourner ?
   useEffect(() => {
-    const ul = piste.current;
-    if (!ul) return;
-    let image = 0;
-    const mesurer = () => {
-      image = 0;
-      const cartes = Array.from(ul.children) as HTMLElement[];
-      if (cartes.length === 0) return;
-      const pas = cartes.length > 1 ? cartes[1].offsetLeft - cartes[0].offsetLeft : cartes[0].offsetWidth;
-      const centre = ul.scrollLeft + ul.clientWidth / 2;
-      let meilleur = 0;
-      let ecart = Infinity;
-      cartes.forEach((li, i) => {
-        const d = (li.offsetLeft + li.offsetWidth / 2 - centre) / pas;
-        li.style.setProperty("--proche", Math.max(0, 1 - Math.abs(d)).toFixed(3));
-        // Une voisine rapetisse vers le centre : le bord qu'on voit dépasser reste en place.
-        li.style.transformOrigin = d > 0.02 ? "0% 50%" : d < -0.02 ? "100% 50%" : "50% 50%";
-        if (Math.abs(d) < ecart) {
-          ecart = Math.abs(d);
-          meilleur = i;
-        }
-      });
-      setCourant(meilleur);
-    };
-    const demander = () => {
-      if (!image) image = requestAnimationFrame(mesurer);
-    };
-    mesurer();
-    ul.addEventListener("scroll", demander, { passive: true });
-    window.addEventListener("resize", demander);
-    return () => {
-      ul.removeEventListener("scroll", demander);
-      window.removeEventListener("resize", demander);
-      cancelAnimationFrame(image);
-    };
+    const el = zone.current;
+    if (!el) return;
+    const observateur = new IntersectionObserver(([e]) => setEnVue(e.intersectionRatio >= M.seuilVisible), {
+      threshold: [0, M.seuilVisible, 0.7, 1],
+    });
+    observateur.observe(el);
+    return () => observateur.disconnect();
   }, []);
 
-  /* --- La piste tirée à la souris (le doigt, lui, fait défiler nativement). */
-  const surAppui = (e: React.PointerEvent<HTMLUListElement>) => {
-    if (e.pointerType !== "mouse" || e.button !== 0 || !piste.current) return;
-    geste.current = { x: e.clientX, depart: piste.current.scrollLeft, t: e.timeStamp, vitesse: 0, tire: false };
-  };
-  const surDeplacement = (e: React.PointerEvent<HTMLUListElement>) => {
-    const g = geste.current;
-    const ul = piste.current;
-    if (!g || !ul) return;
-    const dx = e.clientX - g.x;
-    if (!g.tire) {
-      if (Math.abs(dx) < 6) return;
-      g.tire = true;
-      ul.setPointerCapture(e.pointerId);
-      ul.dataset.tire = "";
-    }
-    const avant = ul.scrollLeft;
-    ul.scrollLeft = g.depart - dx;
-    g.vitesse = (ul.scrollLeft - avant) / Math.max(1, e.timeStamp - g.t);
-    g.t = e.timeStamp;
-  };
-  const surRelache = () => {
-    const g = geste.current;
-    const ul = piste.current;
-    geste.current = null;
-    if (!g?.tire || !ul) return;
-    // La carte visée : la plus proche de là où l'élan aurait mené la piste ; et
-    // au moins la voisine, dès qu'on a tiré d'un cinquième de carte ou d'un coup sec.
-    const pas = n > 1 ? viser(1) - viser(0) : ul.clientWidth;
-    const depart = Math.round((g.depart - viser(0)) / pas);
-    const tire = ul.scrollLeft - g.depart;
-    let cible = Math.round((ul.scrollLeft + g.vitesse * 220 - viser(0)) / pas);
-    if (cible === depart && (Math.abs(tire) > pas * 0.2 || Math.abs(g.vitesse) > 0.4)) cible += Math.sign(tire || g.vitesse);
-    aller(cible);
-    // L'accrochage revient une fois arrivé, sinon il couperait l'élan.
-    const fin = () => {
-      delete ul.dataset.tire;
-      ul.removeEventListener("scrollend", fin);
-    };
-    ul.addEventListener("scrollend", fin);
-    window.setTimeout(fin, 900);
-    // Le clic qui conclut un glissé n'ouvre rien.
-    const bloquer = (ev: MouseEvent) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-    };
-    ul.addEventListener("click", bloquer, { capture: true, once: true });
-    window.setTimeout(() => ul.removeEventListener("click", bloquer, { capture: true }), 0);
-  };
+  const surPause = useCallback((p: boolean) => setPause(p), []);
 
-  const surClavier = (e: React.KeyboardEvent) => {
-    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-    e.preventDefault();
-    aller(courant + (e.key === "ArrowRight" ? 1 : -1));
-  };
+  const etatDe = (i: number): EtatDemo => (i !== courant ? "repos" : pause || !enVue ? "pause" : "joue");
+
+  const ecrans: ImageItem[] = demos.map((d, i) => ({
+    src: "",
+    alt: d.nom,
+    content: (
+      <SaaSPreviewCard
+        nom={d.nom}
+        description={d.description}
+        resume={d.resume}
+        accent={d.accent}
+        statut={d.statut}
+        heure={d.heure}
+        animation={d.animation}
+        etat={etatDe(i)}
+      >
+        <d.Apercu />
+      </SaaSPreviewCard>
+    ),
+  }));
 
   return (
-    <PauseDemos.Provider value={pause}>
-      <div
-        role="region"
-        aria-roledescription="carrousel"
-        aria-label={label}
-        data-rebond="sec"
-        onKeyDown={surClavier}
-        className={cn("relative", className)}
-      >
-        {/* La piste déborde du conteneur sur téléphone, pour que les voisines affleurent au bord de
-            l'écran ; sur ordinateur, ses bords s'estompent au lieu de couper les voisines net. */}
-        <div className="-mx-6 @container md:mx-0 [--carte-l:calc(100cqw-3.5rem)] md:[--carte-l:min(46rem,calc(100cqw-7rem))]">
-          <ul
-            ref={piste}
-            onPointerDown={surAppui}
-            onPointerMove={surDeplacement}
-            onPointerUp={surRelache}
-            onPointerCancel={surRelache}
-            onDragStart={(e) => e.preventDefault()}
-            className="relative flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-[calc((100cqw-var(--carte-l))/2)] pb-3 pt-1 [scrollbar-width:none] data-tire:cursor-grabbing data-tire:snap-none data-tire:select-none md:cursor-grab md:gap-6 md:[mask-image:linear-gradient(to_right,transparent,black_7%,black_93%,transparent)] [&::-webkit-scrollbar]:hidden"
-          >
-            {demos.map((d, i) => (
-              <li
-                key={d.id}
-                role="group"
-                aria-roledescription="diapositive"
-                aria-label={`${i + 1} sur ${n} : ${d.carte.nom}`}
-                onClickCapture={(e) => {
-                  if (i === courant) return;
-                  e.preventDefault();
-                  e.stopPropagation();
-                  aller(i);
-                }}
-                className="w-(--carte-l) shrink-0 snap-center snap-always [opacity:calc(0.4+0.6*var(--proche,1))] [scale:calc(0.94+0.06*var(--proche,1))]"
-              >
-                <SaaSPreviewCard {...d.carte}>
-                  <d.Apercu />
-                </SaaSPreviewCard>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="mt-4 flex items-center justify-center gap-2 sm:mt-5">
-          <button type="button" onClick={() => aller(courant - 1)} disabled={courant === 0} aria-label="Logiciel précédent" className={BOUTON}>
-            <ChevronLeft aria-hidden="true" className="size-4" />
-          </button>
-          <div className="flex items-center gap-0.5 rounded-full border border-foreground/10 bg-secondary/85 p-1">
-            {demos.map((d, i) => (
-              <button
-                key={d.id}
-                type="button"
-                onClick={() => aller(i)}
-                aria-current={i === courant ? "true" : undefined}
-                style={{ "--color-produit": d.carte.accent } as React.CSSProperties}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-full px-2 py-1.5 text-[12px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring sm:px-2.5 sm:py-1",
-                  i === courant ? "bg-foreground/10 text-foreground" : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <span aria-hidden="true" className="size-2 rounded-full bg-produit sm:size-1.5" />
-                <span className="sr-only sm:not-sr-only">{d.carte.nom}</span>
-              </button>
-            ))}
-          </div>
-          <button type="button" onClick={() => aller(courant + 1)} disabled={courant === n - 1} aria-label="Logiciel suivant" className={BOUTON}>
-            <ChevronRight aria-hidden="true" className="size-4" />
-          </button>
-          {/* Mouvement réduit : les démos sont déjà à l'arrêt, la pause n'aurait rien à arrêter. */}
-          {!reduit && (
-            <button
-              type="button"
-              onClick={() => setPause((p) => !p)}
-              aria-label={pause ? "Relancer les démos" : "Mettre les démos en pause"}
-              title={pause ? "Relancer les démos" : "Mettre les démos en pause"}
-              className={cn(BOUTON, "ml-1")}
-            >
-              {pause ? <Play aria-hidden="true" className="size-3.5" /> : <Pause aria-hidden="true" className="size-3.5" />}
-            </button>
-          )}
-        </div>
-        <p aria-live="polite" className="sr-only">
-          {annonce}
-        </p>
+    <div
+      ref={zone}
+      data-rebond="sec"
+      onFocus={() => setFocus(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocus(false);
+      }}
+      className={cn("grid items-center gap-2 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-6", className)}
+    >
+      <div className="-mx-6 min-w-0 sm:mx-0 lg:order-2">
+        <PhoneCarousel
+          images={ecrans}
+          index={courant}
+          onIndexChange={setCourant}
+          onPauseChange={surPause}
+          suspendu={!enVue || focus || reduit}
+          interval={M.boucle * 1000}
+          className="py-2 md:py-4"
+        />
       </div>
-    </PauseDemos.Provider>
+      <Legende demos={demos} courant={courant} onChoisir={setCourant} className="lg:order-1" />
+    </div>
+  );
+}
+
+/** Ce que fait le logiciel de face, pour qui, et le lien ; au-dessus, les trois noms. */
+function Legende({
+  demos,
+  courant,
+  onChoisir,
+  className,
+}: {
+  demos: readonly Demo[];
+  courant: number;
+  onChoisir: (i: number) => void;
+  className?: string;
+}) {
+  const d = demos[courant];
+  const Icone = d.icone;
+  const bloc = useRef<HTMLDivElement>(null);
+  const premier = useRef(true);
+
+  // Au changement de logiciel, la légende se relit d'un fondu court, ligne après ligne.
+  useEffect(() => {
+    if (premier.current) {
+      premier.current = false;
+      return;
+    }
+    const el = bloc.current;
+    if (!el || mouvementReduit()) return;
+    const tween = gsap.fromTo(
+      el.children,
+      { autoAlpha: 0, y: 8 },
+      { autoAlpha: 1, y: 0, duration: 0.45, stagger: 0.05, ease: MOUVEMENT.ease, overwrite: true },
+    );
+    return () => {
+      tween.kill();
+    };
+  }, [courant]);
+
+  return (
+    <div className={cn("flex flex-col gap-5", className)}>
+      <div className="flex flex-wrap items-center justify-center gap-1 lg:justify-start">
+        {demos.map((x, i) => (
+          <button
+            key={x.id}
+            type="button"
+            onClick={() => onChoisir(i)}
+            aria-current={i === courant ? "true" : undefined}
+            style={{ "--color-produit": x.accent } as React.CSSProperties}
+            className={cn(
+              "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring",
+              i === courant ? "bg-foreground/10 text-foreground" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-produit" />
+            {x.nom}
+          </button>
+        ))}
+      </div>
+
+      <div
+        ref={bloc}
+        style={{ "--color-produit": d.accent } as React.CSSProperties}
+        className="flex flex-col items-center gap-3.5 text-center lg:items-start lg:text-left"
+      >
+        <div className="flex items-center gap-3 text-left">
+          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-produit text-on-produit shadow-[inset_0_1px_0_rgb(255_255_255/0.2)]">
+            <Icone aria-hidden="true" className="size-5" strokeWidth={2} />
+          </span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <h3 className="text-xl font-semibold leading-tight tracking-tight">{d.nom}</h3>
+              <span className="rounded-full border border-foreground/15 px-1.5 text-[11px] font-medium leading-4 text-muted-foreground">
+                {d.statut}
+              </span>
+            </div>
+            <p className="mt-0.5 text-[13px] leading-snug text-muted-foreground">{d.pourQui}</p>
+          </div>
+        </div>
+        <p className="max-w-md text-[15px] leading-relaxed text-foreground/85">{d.description}</p>
+        <ul aria-label={`Ce que fait ${d.nom}`} className="flex max-w-md flex-wrap justify-center gap-1.5 lg:justify-start">
+          {d.fonctions.map((f) => (
+            <li key={f} className="rounded-md bg-foreground/[0.07] px-2 py-0.5 text-[12px] text-muted-foreground">
+              {f}
+            </li>
+          ))}
+        </ul>
+        <Link
+          href={d.lien?.href ?? "/contact"}
+          className="lien-fleche mt-1 inline-flex items-center gap-1.5 rounded-sm text-[14px] font-medium text-foreground transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+        >
+          {d.lien?.libelle ?? "Parlons de votre outil"}
+          <ArrowRight aria-hidden="true" className="fleche size-4" />
+        </Link>
+      </div>
+    </div>
   );
 }

@@ -78,7 +78,7 @@ export const animerRelance: AnimationDemo = (tl, o) => {
   tl.to(anciennes, { y: 0, duration: 0.4, ease: "power2.out" }, 7.95);
   tl.fromTo(nouvelle, { autoAlpha: 0, x: -6 }, { autoAlpha: 1, x: 0, duration: 0.35, ease: M.sortie, immediateRender: false }, 8.1);
   tl.fromTo(un("histo-point"), { scale: 1 }, { scale: 1.9, duration: 0.2, yoyo: true, repeat: 1, ease: "power1.inOut", immediateRender: false }, 8.25);
-  tl.addLabel("pose", 9.0);
+  tl.addLabel("pose", 9.4);
 
   // 10–12 s : retour au tableau de bord.
   o.rentrer(tl, 10.75);

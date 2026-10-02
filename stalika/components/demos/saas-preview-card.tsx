@@ -1,97 +1,90 @@
 "use client";
 
-import { createContext, useContext, useEffect, useId, useRef, useState } from "react";
-import Link from "next/link";
-import { ArrowRight, type LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
 import { creerOutils, type AnimationDemo } from "./moteur";
+import { EcranTelephone } from "./interface";
 
 /* ---------------------------------------------------------------------------
-   SaaSPreviewCard : la carte d'un logiciel. Son nom et à qui il s'adresse, sa
-   fenêtre de démonstration qui se sert toute seule, ce qu'il fait, et un lien.
+   SaaSPreviewCard : un logiciel, vivant, sur l'écran d'un iPhone du carrousel
+   (components/ui/phone-mockups-1-utils, choisi par J le 2026-10-02).
 
-   La carte porte la couleur du logiciel (`accent`, posée en
-   `--color-produit` pour tout ce qu'elle contient) et le moteur de sa
-   boucle : elle construit le film de `animation` sur sa fenêtre et le joue
-   tant qu'elle est assez visible. La voisine, qui dépasse à peine au bord du
-   carrousel, attend son tour là où elle en était : les démos vivent
-   indépendamment du carrousel. Le bouton pause du carrousel les arrête
-   toutes (critère WCAG 2.2.2). Quand la largeur de la fenêtre change, le film
-   est reconstruit au même instant : le curseur vise des positions mesurées.
+   La carte pose sa couleur (`accent`, en `--color-produit`), dessine
+   l'écran à la taille qu'il a dans un iPhone de 350 px (315 × 682) puis le
+   met à l'échelle du téléphone réel, et fait tourner le film de `animation`
+   sur sa fenêtre. L'application occupe le haut de l'écran : le carrousel
+   coupe ses téléphones au bas de la scène et pose ses boutons par-dessus.
 
-   Mouvement réduit : pas de boucle ; la fenêtre montre l'étape la plus
-   parlante de la démo (le repère « pose » du film), sans curseur.
+   `etat` vient du carrousel : `joue` (le téléphone de face), `pause` (le
+   bouton pause, ou le carrousel hors de l'écran : le film s'arrête là où il
+   en est), `repos` (un téléphone de côté : le film revient à son départ, et
+   repartira du début quand il passera de face).
+
+   Mouvement réduit : pas de film ; l'écran montre l'étape la plus parlante
+   (le repère « pose »), sans curseur ni doigt.
+
+   Le nom, la description et le statut se lisent dans la légende du
+   carrousel ; ici, ils décrivent l'écran aux lecteurs d'écran.
 --------------------------------------------------------------------------- */
 
 const M = MOUVEMENT.demos;
 
-/** Le carrousel dit aux cartes si les démos sont en pause. */
-export const PauseDemos = createContext(false);
+/** L'écran d'un iPhone de 350 px dans le dessin du carrousel. */
+const ECRAN = { largeur: 315, hauteur: 682 };
+/** La part de l'écran que la scène laisse voir au-dessus des boutons du carrousel. */
+const HAUTEUR_APPLI = 420;
+
+export type EtatDemo = "joue" | "pause" | "repos";
 
 export type SaaSPreviewCardProps = {
   nom: string;
-  /** À qui le logiciel s'adresse, en une ligne. */
-  pourQui: string;
   description: string;
+  /** Ce que la démo montre, en une phrase : l'écran le dit aux lecteurs d'écran. */
+  resume?: string;
   /** La couleur du logiciel : une valeur CSS, en général `var(--produit-…)`. */
   accent: string;
-  icone: LucideIcon;
   /** Une étiquette à côté du nom : « Démo », « Disponible »… */
   statut?: string;
-  fonctions?: readonly string[];
-  /** Ce que la démo montre, en une phrase, pour les lecteurs d'écran. */
-  resume: string;
+  /** L'heure de la barre d'état du téléphone. */
+  heure: string;
   /** Le film de la démo, joué en boucle sur la fenêtre. */
   animation: AnimationDemo;
-  lien?: { href: string; libelle: string };
-  className?: string;
+  etat: EtatDemo;
   /** L'interface de la démo : une `Fenetre` (components/demos/interface). */
   children: React.ReactNode;
 };
 
-export function SaaSPreviewCard({
-  nom,
-  pourQui,
-  description,
-  accent,
-  icone: Icone,
-  statut,
-  fonctions,
-  resume,
-  animation,
-  lien = { href: "/contact", libelle: "Parlons de votre outil" },
-  className,
-  children,
-}: SaaSPreviewCardProps) {
-  const titre = useId();
-  const carte = useRef<HTMLElement>(null);
-  const cadre = useRef<HTMLDivElement>(null);
+export function SaaSPreviewCard({ nom, description, resume, accent, statut, heure, animation, etat, children }: SaaSPreviewCardProps) {
+  const ecran = useRef<HTMLDivElement>(null);
   const film = useRef<gsap.core.Timeline | null>(null);
-  const pause = useContext(PauseDemos);
-  const [enVue, setEnVue] = useState(false);
-  const joue = enVue && !pause;
-  const joueRef = useRef(joue);
-  useEffect(() => {
-    joueRef.current = joue;
-  }, [joue]);
+  const etatRef = useRef(etat);
+  const [echelle, setEchelle] = useState(1);
 
-  // Le film : construit sur la fenêtre, reconstruit au même instant quand sa largeur change.
+  // L'écran dessiné à 315 px de large, mis à l'échelle du téléphone réel.
+  useLayoutEffect(() => {
+    const el = ecran.current;
+    if (!el) return;
+    const mesurer = () => setEchelle(el.clientWidth / ECRAN.largeur || 1);
+    mesurer();
+    const observateur = new ResizeObserver(mesurer);
+    observateur.observe(el);
+    return () => observateur.disconnect();
+  }, []);
+
+  // Le film : construit une fois la fenêtre en place, reconstruit au même instant
+  // quand les polices arrivent (les largeurs du texte changent les positions visées).
   useEffect(() => {
-    const fenetre = cadre.current?.querySelector<HTMLElement>("[data-fenetre]");
+    const fenetre = ecran.current?.querySelector<HTMLElement>("[data-fenetre]");
     if (!fenetre) return;
     const reduit = mouvementReduit();
     let ctx: gsap.Context | undefined;
-    let largeur = -1;
     let vivant = true;
-    let minuteur = 0;
 
     const construire = () => {
       if (!vivant) return;
       const instant = film.current?.time() ?? 0;
       ctx?.revert();
-      largeur = fenetre.offsetWidth;
       ctx = gsap.context(() => {
         const tl = gsap.timeline({ paused: true, repeat: -1 });
         animation(tl, creerOutils(fenetre));
@@ -104,105 +97,61 @@ export function SaaSPreviewCard({
           gsap.set(fenetre.querySelectorAll('[data-d="curseur"], [data-d="anneau"], [data-d="doigt"]'), { autoAlpha: 0 });
           return;
         }
-        tl.time(instant);
-        if (joueRef.current) tl.play();
+        tl.time(etatRef.current === "repos" ? 0 : instant);
+        if (etatRef.current === "joue") tl.play();
       }, fenetre);
     };
 
     construire();
-    const observateur = new ResizeObserver(() => {
-      if (Math.abs(fenetre.offsetWidth - largeur) < 1) return;
-      window.clearTimeout(minuteur);
-      minuteur = window.setTimeout(construire, 150);
-    });
-    observateur.observe(fenetre);
-    // Les polices changent les largeurs du texte : on remesure quand elles sont là.
     document.fonts?.ready.then(() => {
       if (vivant && document.fonts.status === "loaded") construire();
     });
 
     return () => {
       vivant = false;
-      observateur.disconnect();
-      window.clearTimeout(minuteur);
       ctx?.revert();
       film.current = null;
     };
   }, [animation]);
 
-  // Assez visible pour jouer ?
+  // Le carrousel dit quoi faire : jouer, s'arrêter là, ou revenir au départ.
   useEffect(() => {
-    const el = carte.current;
-    if (!el) return;
-    const observateur = new IntersectionObserver(([e]) => setEnVue(e.intersectionRatio >= M.seuilVisible), {
-      threshold: [0, M.seuilVisible, 0.7, 1],
-    });
-    observateur.observe(el);
-    return () => observateur.disconnect();
-  }, []);
-
-  useEffect(() => {
+    const avant = etatRef.current;
+    etatRef.current = etat;
     const tl = film.current;
     if (!tl || mouvementReduit()) return;
-    if (joue) tl.play();
-    else tl.pause();
-  }, [joue]);
+    if (etat === "joue") {
+      if (avant === "repos") tl.restart();
+      else tl.play();
+    } else if (etat === "pause") {
+      tl.pause();
+    } else {
+      tl.pause(0);
+    }
+  }, [etat]);
 
+  // Pour un lecteur d'écran, l'écran est une image décrite : ce que montre la démo.
   return (
-    <article
-      ref={carte}
-      aria-labelledby={titre}
-      style={{ "--color-produit": accent } as React.CSSProperties}
-      className={cn(
-        "flex h-full flex-col rounded-2xl border border-foreground/10 bg-secondary/[0.93] p-2.5 shadow-carte sm:p-3",
-        className,
-      )}
+    <div
+      ref={ecran}
+      role="img"
+      aria-label={`${nom}${statut ? ` (${statut})` : ""} : ${resume ?? description}`}
+      className="jour absolute inset-0 bg-card"
     >
-      <header className="flex items-start gap-3 px-1.5 pb-3 pt-1.5">
-        <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-produit text-on-produit shadow-[inset_0_1px_0_rgb(255_255_255/0.2)]">
-          <Icone aria-hidden="true" className="size-[18px]" strokeWidth={2} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h3 id={titre} className="text-base font-semibold leading-tight tracking-tight">
-              {nom}
-            </h3>
-            {statut && (
-              <span className="rounded-full border border-foreground/15 px-1.5 text-[10.5px] font-medium leading-4 text-muted-foreground">
-                {statut}
-              </span>
-            )}
-          </div>
-          <p className="mt-0.5 text-[12.5px] leading-snug text-muted-foreground">{pourQui}</p>
-        </div>
-      </header>
-
-      <div ref={cadre} aria-hidden="true" className="@container">
-        <div className="aspect-[4/5] @lg:aspect-[16/10]">{children}</div>
+      <div
+        aria-hidden="true"
+        className="absolute left-0 top-0 origin-top-left"
+        style={
+          {
+            width: ECRAN.largeur,
+            height: HAUTEUR_APPLI,
+            transform: `scale(${echelle})`,
+            "--color-produit": accent,
+          } as React.CSSProperties
+        }
+      >
+        <EcranTelephone.Provider value={{ heure }}>{children}</EcranTelephone.Provider>
       </div>
-      <p className="sr-only">{resume}</p>
-
-      <footer className="flex flex-1 flex-col gap-3 px-1.5 pb-1.5 pt-3.5">
-        <p className="text-[13px] leading-relaxed text-foreground/85">{description}</p>
-        <div className="mt-auto flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-          {fonctions && (
-            <ul aria-label={`Ce que fait ${nom}`} className="flex flex-wrap gap-1">
-              {fonctions.map((f) => (
-                <li key={f} className="rounded-md bg-foreground/[0.06] px-1.5 py-0.5 text-[11px] text-muted-foreground">
-                  {f}
-                </li>
-              ))}
-            </ul>
-          )}
-          <Link
-            href={lien.href}
-            className="lien-fleche inline-flex shrink-0 items-center gap-1.5 rounded-sm text-[13px] font-medium text-foreground transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-          >
-            {lien.libelle}
-            <ArrowRight aria-hidden="true" className="fleche size-3.5" />
-          </Link>
-        </div>
-      </footer>
-    </article>
+    </div>
   );
 }

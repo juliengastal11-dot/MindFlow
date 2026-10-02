@@ -51,6 +51,13 @@
   --color-succes: #2f7a55;
   --color-on-succes: #ffffff;
   --color-attente: #a8660f;
+  /* Le cadre d'iPhone du carrousel (components/ui/phone-mockups-1-utils,
+     Solace UI) : ses couleurs d'origine, en jetons. Sur fond sombre (`.nuit`),
+     le cadre et l'écran prennent les valeurs du mode sombre du composant. */
+  --color-iphone-cadre: #404040;
+  --color-iphone-corps: #262626;
+  --color-iphone-ecran: #404040;
+  --color-iphone-reflet: transparent;
   /* Leurs fenêtres : un trait d'un pixel et des ombres courtes empilées. */
   --shadow-fenetre: 0 0 0 1px rgb(0 0 0 / 0.06), 0 2px 4px rgb(0 0 0 / 0.12), 0 18px 40px -12px rgb(0 0 0 / 0.45);
   --shadow-panneau: -18px 0 32px -22px rgb(0 0 0 / 0.3);
@@ -94,6 +101,9 @@
   --color-border: #2d2b28;
   --color-ring: #d4bc8b;
   --color-encre: #d4bc8b;
+  --color-iphone-cadre: #dadada;
+  --color-iphone-ecran: #f5f5f5;
+  --color-iphone-reflet: rgb(255 255 255 / 0.2);
   color-scheme: dark;
 }
 
@@ -116,6 +126,9 @@
   --color-border: #e2decb;
   --color-ring: #c1a875;
   --color-encre: #7b6537;
+  --color-iphone-cadre: #404040;
+  --color-iphone-ecran: #404040;
+  --color-iphone-reflet: transparent;
   color-scheme: light;
 }
 

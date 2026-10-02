@@ -177,15 +177,17 @@ export function presser(tl: Chrono, el: Cible, a: number) {
   tl.to(el, { scale: 1, duration: 0.22, ease: "power2.out" }, a + 0.07);
 }
 
-/** La notification du coin : elle monte à `de`, repart à `a`. */
+/** La notification : elle arrive à `de`, repart à `a`. Dans le coin, elle monte ;
+    sur un téléphone, elle descend du haut de l'écran. */
 export function notifier(tl: Chrono, el: HTMLElement, de: number, a: number) {
+  const sens = el.closest("[data-telephone]") ? -1 : 1;
   tl.fromTo(
     el,
-    { autoAlpha: 0, y: 10, scale: 0.98 },
+    { autoAlpha: 0, y: 10 * sens, scale: 0.98 },
     { autoAlpha: 1, y: 0, scale: 1, duration: 0.36, ease: M.sortie, immediateRender: false },
     de,
   );
-  tl.to(el, { autoAlpha: 0, y: 6, duration: 0.3, ease: "power2.in" }, a);
+  tl.to(el, { autoAlpha: 0, y: 6 * sens, duration: 0.3, ease: "power2.in" }, a);
 }
 
 /** Une roue de chargement qui tourne pendant `duree`. */

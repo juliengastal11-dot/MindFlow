@@ -1,4 +1,7 @@
-import { Bell, Check, ChevronsUpDown, MousePointer2, Search, type LucideIcon } from "lucide-react";
+"use client";
+
+import { createContext, useContext } from "react";
+import { BatteryFull, Bell, Check, ChevronsUpDown, MousePointer2, Search, Signal, Wifi, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Ton } from "@/lib/demos";
 
@@ -17,9 +20,31 @@ import type { Ton } from "@/lib/demos";
    et avec un doigt au lieu du curseur ; la barre latérale n'apparaît qu'à
    partir de 42 rem (sur tablette, la fiche qui glisse garde ainsi sa largeur).
 
+   Dans un iPhone (le carrousel de la section 02), la fenêtre devient l'écran
+   d'une application : la barre d'état et son heure en haut, sous l'île du
+   téléphone, plus de coins arrondis ni d'ombre, et la notification descend du
+   haut de l'écran.
+
    Tout ici est décoratif : la carte cache la fenêtre aux lecteurs d'écran et
    dit en une phrase ce que la démo montre.
 --------------------------------------------------------------------------- */
+
+/** Posé par la carte quand la fenêtre est l'écran d'un téléphone : l'heure de sa barre d'état. */
+export const EcranTelephone = createContext<{ heure: string } | null>(null);
+
+/** La barre d'état d'un iPhone : l'heure à gauche de l'île, le réseau et la batterie à droite. */
+function BarreEtat({ heure }: { heure: string }) {
+  return (
+    <div className="flex h-11 shrink-0 items-center justify-between pl-7 pr-6 pt-0.5 text-[13px] font-semibold tracking-normal">
+      <span className="tabular-nums">{heure}</span>
+      <span className="flex items-center gap-1">
+        <Signal className="size-3.5" strokeWidth={2.75} />
+        <Wifi className="size-3.5" strokeWidth={2.75} />
+        <BatteryFull className="size-[19px]" strokeWidth={1.75} />
+      </span>
+    </div>
+  );
+}
 
 export type FenetreProps = {
   nom: string;
@@ -35,11 +60,17 @@ export type FenetreProps = {
 };
 
 export function Fenetre({ nom, marque: Marque, entreprise, utilisateur, nav, icones, vue, suite, children }: FenetreProps) {
+  const telephone = useContext(EcranTelephone);
   return (
     <div
       data-fenetre=""
-      className="jour relative flex size-full select-none flex-col overflow-hidden rounded-[0.7rem] bg-card text-[12px] leading-snug text-foreground shadow-fenetre"
+      data-telephone={telephone ? "" : undefined}
+      className={cn(
+        "jour relative flex size-full select-none flex-col overflow-hidden bg-card text-[12px] leading-snug text-foreground",
+        !telephone && "rounded-[0.7rem] shadow-fenetre",
+      )}
     >
+      {telephone && <BarreEtat heure={telephone.heure} />}
       <div className="flex h-9 shrink-0 items-center gap-2 border-b border-border/80 px-3 @lg:h-10 @lg:px-3.5">
         <span className="grid size-5 shrink-0 place-items-center rounded-[5px] bg-produit text-on-produit">
           <Marque className="size-3" strokeWidth={2.25} />
@@ -206,10 +237,15 @@ export function Barre({ valeur, marque, className }: { valeur: number; marque?: 
 
 /** La notification qui monte dans le coin, quand une action aboutit. */
 export function Notification({ icone: Icone = Check, children }: { icone?: LucideIcon; children: React.ReactNode }) {
+  // Sur un téléphone, elle descend du haut de l'écran, sous la barre d'état.
+  const telephone = useContext(EcranTelephone);
   return (
     <div
       data-d="notification"
-      className="pointer-events-none absolute bottom-3 right-3 z-30 flex items-center gap-2 rounded-lg bg-foreground py-2 pl-2 pr-3 text-[11.5px] font-medium text-background opacity-0 shadow-flottant"
+      className={cn(
+        "pointer-events-none absolute z-30 flex items-center gap-2 rounded-lg bg-foreground py-2 pl-2 pr-3 text-[11.5px] font-medium text-background opacity-0 shadow-flottant",
+        telephone ? "inset-x-2.5 top-12 rounded-xl py-2.5" : "bottom-3 right-3",
+      )}
     >
       <span className="grid size-4 place-items-center rounded-full bg-succes text-on-succes">
         <Icone className="size-2.5" strokeWidth={3} />

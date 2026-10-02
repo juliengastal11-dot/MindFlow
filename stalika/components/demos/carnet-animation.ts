@@ -98,8 +98,8 @@ export const animerCarnet: AnimationDemo = (tl, o) => {
   // Dans une fenêtre basse (tablette), le volet défile pour montrer le bas du compte-rendu.
   const reste = doc.offsetTop + doc.offsetHeight + 10 - volets[2].clientHeight;
   if (reste > 0) tl.to(doc, { y: -reste, duration: 0.45, ease: M.trajet }, 9.95);
-  notifier(tl, un("notification"), 9.85, 11.05);
-  tl.addLabel("pose", 10.1);
+  notifier(tl, un("notification"), 10.15, 11.05);
+  tl.addLabel("pose", 10.08);
 
   // 10–12 s : la fiche se referme ; retour au tableau, la boucle repart.
   o.rentrer(tl, 11.0);
