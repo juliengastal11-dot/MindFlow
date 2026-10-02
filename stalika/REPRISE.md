@@ -43,9 +43,10 @@
 ## Ce qui reste à faire ou à vérifier
 
 - Le bouton du hero (Cyber Button « Parlons projet », `components/ui/bouton-chute.tsx`) : première
-  étape faite (décrochage, balancement, chute jusqu'à l'ordinateur) ; **deuxième étape à faire** : les
-  perchoirs de section quand le visiteur ne clique pas (voir `BLUEPRINT.md`, mise à jour du
-  2026-10-02). À tester par J sur iPhone (fluidité de la chute).
+  étape faite (décrochage, balancement, chute jusqu'à l'ordinateur) ; **deuxième étape reportée par J
+  (2026-10-02), jusqu'à ce qu'il ait retravaillé toutes les sections** : les perchoirs de section quand
+  le visiteur ne clique pas (voir `BLUEPRINT.md`, mise à jour du 2026-10-02). Après chaque retouche de
+  section, vérifier que les `data-rebond` suivent. À tester par J sur iPhone (fluidité de la chute).
 - Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion.
 - Mode « animations réduites » non revérifié après les derniers changements.
 - Assistant de discussion (API Claude, agenda, RGPD, transparence IA) : plus tard, voir `BLUEPRINT.md`.

@@ -104,7 +104,9 @@ survol sont ceux de l'original ; la lueur est camel (`primary`).
   le même parcours, avec annonces) ; la copie qui voyage est décorative. **Mouvement réduit, écran
   de moins de 520 px de haut, défilement fluide absent, ou sans JavaScript : un simple lien vers
   `/contact`.**
-- **Pas encore fait (deuxième étape)** : si le visiteur ne clique pas, le bouton descend quand même
+- **Pas encore fait (deuxième étape), reportée par J le 2026-10-02 : elle attend qu'il ait retravaillé
+  toutes les sections, qui vont beaucoup bouger (les repères `data-rebond` devront les suivre).**
+  Si le visiteur ne clique pas, le bouton descend quand même
   de section en section : 1,5 s après qu'il s'est arrêté sur une section, le bouton y trouve un
   endroit où s'accrocher (par un coin, il se balance puis s'arrête), reste cliquable (un clic le
   fait tomber et emmène à l'ordinateur), ne remonte jamais, et finit près de l'ordinateur sur la
