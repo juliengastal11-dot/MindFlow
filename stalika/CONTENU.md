@@ -79,15 +79,13 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 - Eyebrow : `02 · Utile`
 - H2 : `Création de logiciels et applications *personnalisés*` (titre de J, overlay du 2026-10-02 ; avant : « Un site qui travaille, pas une plaquette. »)
 - Texte (demande de J, overlay du 2026-10-02 : SaaS, CRM, logiciels sur mesure, une phrase choc, quatre lignes ; la phrase choc est en gras) : `**Vous avez un problème, il y a forcément une solution.** Je crée des SaaS, des CRM et des logiciels sur mesure : l'outil qui automatise vos tâches et vous fait gagner des heures, pensé pour votre activité.`
-- Les quatre cartes qui suivent (agenda, espace client, contrat, avis) n'ont plus de phrase d'introduction : à reprendre quand J retravaille la section.
-- Carte 1 · titre : `Réservation avec agenda` · texte : `Le créneau se prend en trois gestes, et le doublon est impossible.`
-- Carte 2 · titre : `Espace client` · texte : `Chacun retrouve ses séances, ses documents, sa progression.`
-- Carte 3 · titre : `Contrat en PDF` · texte : `Rempli, signé, envoyé, sans rien imprimer.`
-- Carte 4 · titre : `Avis et itinéraire` · texte : `Les étoiles de votre fiche Google, et le chemin jusqu'à votre porte.`
-- Dans la carte 1, les créneaux : `9h` · `10h` · `11h` · `14h` · `15h` · `16h` ; mention : `Réservé`
-- Dans la carte 2, la courbe, axe : `Semaine 1` … `Semaine 8` ; légende : `Progression`
-- Dans la carte 3, les pages : `Contrat` · `Signé` ; mention finale : `Envoyé`
-- Dans la carte 4 : `4,8` · `sur 5` · `Itinéraire`
+- Sous le texte, un carrousel de trois logiciels en démonstration (demande de J, 2026-10-02, scénarios et textes d'interface de J). Il remplace le bento de quatre cartes (agenda, espace client, contrat, avis). Tous les textes, cartes et interfaces, sont dans `lib/demos.ts` ; ce qui suit en est le résumé.
+- Carte 1 · `Carnet` · `Démo` · `Pour les artisans et les entreprises du bâtiment` · `Le suivi de vos chantiers : tâches, photos, réserves et compte-rendu, au même endroit.` · fonctions : `Chantiers` `Tâches` `Photos` `Comptes-rendus` `Réserves` `Planning`
+- Carte 2 · `RelancePro` · `Démo` · `Pour les TPE, les indépendants et les petites entreprises` · `Vos devis et vos factures suivis jusqu'au paiement, et des relances qui partent à temps.` · fonctions : `Factures` `Devis` `Échéances` `Relances` `Paiements` `Historique`
+- Carte 3 · `Contrôle` · `Démo` · `Pour les restaurants, les commerces et les hôtels` · `Les contrôles de vos équipes, et chaque anomalie suivie jusqu'à ce qu'elle soit réglée.` · fonctions : `Checklists` `Contrôles` `Incidents` `Photos` `Responsables` `Historique`
+- Lien de chaque carte : `Parlons de votre outil` → `/contact`
+- Commandes du carrousel : `Logiciel précédent`, `Logiciel suivant` (flèches), les trois noms (position), `Mettre les démos en pause` / `Relancer les démos`
+- Dans les interfaces, les données de J : `Mes chantiers` · Dupont, `Rénovation salle de bain` · Martin, `Terrasse bois` · Entreprise Garcia, `Local commercial` · `Progression 72 %` · tâches `Pose carrelage`, `Installation douche`, `Raccordement plomberie` · `Compte-rendu du chantier` ; `À relancer aujourd'hui` · Martin 1 240 €, Dupont 2 800 €, Garcia 450 € · `Facture #124` · `Échéance dépassée` · le message `Bonjour Monsieur Martin, Sauf erreur de notre part, la facture n°124 reste en attente de règlement.` · `Envoyer la relance` → `Relance envoyée` · historique 02/10, 28/09, 15/09 ; `Contrôle fermeture` · `Frigos` `Nettoyage` `Caisse` `Sols` `Température frigo n°2` · `9,2 °C` · `Incident #248` · `Température trop élevée.` · `Thomas` · `Vérifier le frigo` · échéance `Demain à 10:00` (J avait écrit l'heure après un tiret long, un tic de texte généré que le garde-fou relève).
 
 ### Scène 4 · La relecture
 

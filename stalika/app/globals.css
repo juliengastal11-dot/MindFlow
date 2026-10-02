@@ -41,6 +41,21 @@
   /* Le lin du fond clair, qui ne change pas la nuit : la page à l'écran de la plongée. */
   --color-lin: #f8f7f2;
 
+  /* Les démos de logiciels de la section 02 (components/demos, demande de J
+     du 2026-10-02). `produit` est la couleur du logiciel montré : chaque carte
+     la remplace par la sienne, en style en ligne (`--produit-carnet`, etc.,
+     plus bas). `succes` et `attente` sont les états dans leurs fenêtres
+     claires ; le retard prend `destructive`. Sur le blanc : 5,2:1 et 4,6:1. */
+  --color-produit: #c1a875;
+  --color-on-produit: #ffffff;
+  --color-succes: #2f7a55;
+  --color-on-succes: #ffffff;
+  --color-attente: #a8660f;
+  /* Leurs fenêtres : un trait d'un pixel et des ombres courtes empilées. */
+  --shadow-fenetre: 0 0 0 1px rgb(0 0 0 / 0.06), 0 2px 4px rgb(0 0 0 / 0.12), 0 18px 40px -12px rgb(0 0 0 / 0.45);
+  --shadow-panneau: -18px 0 32px -22px rgb(0 0 0 / 0.3);
+  --shadow-flottant: 0 0 0 1px rgb(0 0 0 / 0.07), 0 14px 34px -10px rgb(0 0 0 / 0.32);
+
   /* Inter partout, servie par le site via next/font (app/layout.tsx). Les
      titres ne changent que de graisse. */
   --font-sans: var(--police-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -117,6 +132,98 @@
   --destructive: var(--color-destructive);
   --foreground: var(--color-foreground);
   --border: var(--color-border);
+}
+
+/* Les couleurs des trois logiciels des démos : chaque carte en fait sa
+   couleur `produit` (style en ligne). Terre cuite pour le chantier, bleu
+   d'encre pour la facture, bleu pétrole pour le contrôle. Sur le blanc de
+   leurs fenêtres : 5,0:1, 6,5:1 et 5,1:1. */
+:root {
+  --produit-carnet: #b4532a;
+  --produit-relance: #3b5ba5;
+  --produit-controle: #1f7a7a;
+}
+
+/* Les « photos » des démos : des matières en dégradés, assez justes à la
+   taille d'une vignette pour se lire comme des photos, sans une image à
+   charger. `.cliche` pose la lumière et le vignettage communs.
+   Dans la couche des composants : une classe utilitaire posée à côté
+   (`absolute`, `block`…) l'emporte, comme pour tout composant. */
+@layer components {
+.cliche {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.cliche::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 55% at 28% 16%, rgb(255 255 255 / 0.3), transparent 70%),
+    radial-gradient(80% 78% at 50% 45%, transparent 56%, rgb(0 0 0 / 0.3));
+}
+/* Le sol carrelé, en perspective, au pied d'un mur et de sa plinthe. */
+.cliche-sol {
+  background:
+    linear-gradient(180deg, transparent 0 40%, #8a8173 40% 41.5%, #c9c1b3 41.5% 43%, transparent 43%),
+    linear-gradient(180deg, #eee9e0, #e0d9cc 40%, #b5ab9b 40%);
+}
+.cliche-sol::before {
+  content: "";
+  position: absolute;
+  inset: 43% -90% -70%;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 24px, rgb(60 53 44 / 0.5) 24px 26px),
+    repeating-linear-gradient(0deg, transparent 0 24px, rgb(60 53 44 / 0.5) 24px 26px),
+    linear-gradient(180deg, #b2a896, #d6cdbe);
+  transform: perspective(150px) rotateX(60deg);
+  transform-origin: 50% 0;
+}
+/* La douche : faïence métro, colonne chromée, receveur. */
+.cliche-douche {
+  background:
+    radial-gradient(circle at 50% 50%, #f4f5f6 0 3px, #868c93 3.6px 4.6px, transparent 5px) 66% 13% / 14px 14px no-repeat,
+    linear-gradient(90deg, #7e848b, #f1f3f5 45%, #7a8087) 69.5% 18% / 3px 58% no-repeat,
+    linear-gradient(90deg, #7e848b, #e9ecee 50%, #7a8087) 72% 64% / 9px 5px no-repeat,
+    linear-gradient(180deg, #ebe8e1, #cdc8bd) 0 100% / 100% 14% no-repeat,
+    linear-gradient(100deg, transparent 0 40%, rgb(255 255 255 / 0.45) 40% 42%, transparent 42% 46%, rgb(255 255 255 / 0.3) 46% 47%, transparent 47%),
+    repeating-linear-gradient(90deg, transparent 0 19px, rgb(110 108 102 / 0.3) 19px 20px),
+    repeating-linear-gradient(0deg, transparent 0 9px, rgb(110 108 102 / 0.3) 9px 10px),
+    linear-gradient(165deg, #f6f4ef, #dcd7cc);
+}
+/* La plomberie : deux tuyaux de cuivre et une descente, sur du plâtre. */
+.cliche-plomberie {
+  background:
+    radial-gradient(circle, #5d6166 0 2px, transparent 2.6px) 24% 36% / 8px 8px no-repeat,
+    radial-gradient(circle, #5d6166 0 2px, transparent 2.6px) 54% 60% / 8px 8px no-repeat,
+    linear-gradient(90deg, #6b3f1f, #c9874f 30%, #f0c49c 48%, #b0703f 70%, #6b3f1f) 74% 100% / 9px 72% no-repeat,
+    linear-gradient(180deg, #6b3f1f, #c9874f 30%, #f0c49c 48%, #b0703f 70%, #6b3f1f) 0 36% / 78% 9px no-repeat,
+    linear-gradient(180deg, #6b3f1f, #c9874f 30%, #f0c49c 48%, #b0703f 70%, #6b3f1f) 0 60% / 78% 8px no-repeat,
+    linear-gradient(160deg, #ece5d8, #cbbfab);
+}
+/* La faïence posée ce jour-là : un zellige vert, carreau par carreau. */
+.cliche-faience {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 12px, rgb(232 228 216 / 0.95) 12px 13.5px),
+    repeating-linear-gradient(0deg, transparent 0 12px, rgb(232 228 216 / 0.95) 12px 13.5px),
+    conic-gradient(#2c6656 0 25%, #3b7a66 0 50%, #2f6e5c 0 75%, #24594b 0) 0 0 / 27px 27px,
+    #2f6b5a;
+}
+/* L'intérieur d'un frigo : deux clayettes, des bacs de couleur, la lumière froide d'en haut. */
+.cliche-frigo {
+  background:
+    linear-gradient(90deg, #7f878e, #c9cfd4 55%, #959da4) 0 0 / 10% 100% no-repeat,
+    linear-gradient(#e0ae38, #b9861f) 26% 37% / 22% 22% no-repeat,
+    linear-gradient(#cf5847, #a03d2d) 55% 38% / 15% 20% no-repeat,
+    linear-gradient(#f4f3ee, #c7c9c4) 80% 36% / 13% 24% no-repeat,
+    linear-gradient(#6c9a58, #4b773c) 34% 77% / 30% 18% no-repeat,
+    linear-gradient(#ece7dc, #bdb6a8) 72% 78% / 22% 16% no-repeat,
+    linear-gradient(180deg, transparent 0 48%, #f7fafc 48% 51%, #7d8994 51% 54%, transparent 54% 88%, #f7fafc 88% 91%, #7d8994 91% 94%, transparent 94%),
+    radial-gradient(75% 45% at 55% 0%, #ffffff, transparent 80%),
+    linear-gradient(180deg, #c3cfd8, #8b9aa6);
+}
 }
 
 /* Eyebrow : le petit libellé en capitales espacées au-dessus d'un titre.
