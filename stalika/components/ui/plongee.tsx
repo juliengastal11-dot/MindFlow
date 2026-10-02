@@ -376,7 +376,8 @@ export function Plongee({
       data-src="components/ui/plongee.tsx"
       className={cn("nuit relative h-[320svh] motion-reduce:h-auto", className)}
     >
-      <div className="sticky top-0 h-svh motion-reduce:static motion-reduce:h-auto">
+      {/* `data-plongee-colle` : là où se pose ce qui reste collé au plan quand la plongée commence (le bouton tombé près de l'ordinateur). */}
+      <div data-plongee-colle="" className="sticky top-0 h-svh motion-reduce:static motion-reduce:h-auto">
         {/* La plongée, posée exactement sur le cadre du hero (mêmes marges, mêmes coins). */}
         <div
           ref={calque}

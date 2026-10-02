@@ -7,17 +7,17 @@
 
 - Dépôt `juliengastal11-dot/MindFlow`, dossier `stalika/` (Next.js 15, TypeScript, Tailwind 4,
   GSAP + ScrollTrigger, Lenis, Prisma SQLite, Auth.js).
-- Branche de travail `claude/jolly-heisenberg-1uq9pg`, fusionnée dans `main` à chaque étape.
+- Branche de travail `claude/jolly-heisenberg-1uq9pg`. On y commite en local ; `main` n'est mis à
+  jour que quand J le demande.
 - Aperçu : **https://stalika-apercu.vercel.app** (Vercel, équipe VTBON-App, projet
   `stalika-apercu`, créé par J le 2026-10-01). Relié au dépôt, dossier racine `stalika`, branche
-  `main` : **chaque fusion dans `main` redéploie l'aperçu** (environ 1 min 30). La commande de
-  construction est dans `stalika/vercel.json` (elle crée la base SQLite, non persistante : le
-  formulaire de contact et l'espace privé n'enregistrent rien sur l'aperçu). Seule variable
-  posée chez Vercel : `AUTH_SECRET`. Le connecteur Vercel de Claude peut lire les déploiements et
-  leurs journaux, mais pas créer de projet (403).
-- Ancien aperçu Netlify (`stalika-apercu.netlify.app`) : abandonné. Il n'était pas relié au
-  dépôt, et le 2026-10-01 Netlify a refusé de construire (« Skipped due to account credit usage
-  exceeded »). Il reste au 2026-09-30 à 23 h 10. `netlify.toml` peut être supprimé.
+  `main` : **chaque push sur `main` redéploie l'aperçu** (environ 1 min 30), d'où la règle :
+  **on ne pousse que quand J le demande** (décision du 2026-10-01). La commande de construction
+  est dans `stalika/vercel.json` (elle crée la base SQLite, non persistante : le formulaire de
+  contact et l'espace privé n'enregistrent rien sur l'aperçu). Seule variable posée chez
+  Vercel : `AUTH_SECRET`. Le connecteur Vercel de Claude peut lire les déploiements et leurs
+  journaux, mais pas créer de projet (403).
+- Netlify : abandonné (J, 2026-10-01). `netlify.toml` peut être supprimé.
 - Garde-fou du kit : `node <buildyoursite>/scripts/verifier-projet.mjs --projet .`
   (état au 2026-10-01 : 0 bloquant, 7 avertissements connus).
 - Compte admin de dev : `admin@stalika.local` / `stalika-dev` (variables `ADMIN_EMAIL` / `ADMIN_PASSWORD`).
@@ -42,6 +42,11 @@
 
 ## Ce qui reste à faire ou à vérifier
 
+- Le bouton du hero (Cyber Button « Parlons projet », `components/ui/bouton-chute.tsx`) : première
+  étape faite (décrochage, balancement, chute jusqu'à l'ordinateur) ; **deuxième étape reportée par J
+  (2026-10-02), jusqu'à ce qu'il ait retravaillé toutes les sections** : les perchoirs de section quand
+  le visiteur ne clique pas (voir `BLUEPRINT.md`, mise à jour du 2026-10-02). Après chaque retouche de
+  section, vérifier que les `data-rebond` suivent. À tester par J sur iPhone (fluidité de la chute).
 - Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion.
 - Mode « animations réduites » non revérifié après les derniers changements.
 - Assistant de discussion (API Claude, agenda, RGPD, transparence IA) : plus tard, voir `BLUEPRINT.md`.
@@ -70,9 +75,11 @@ recadrée à 600/1924 de large depuis 277/1924, pleine hauteur, comme la série 
 - Ne jamais inventer : « Je ne sais pas » si ce n'est pas vérifiable ; citer les sources.
 - Aucune génération ni achat sans le prix annoncé et l'accord explicite de J, élément par élément.
 - Le dépôt est public : aucun secret dans le code.
-- Des références tierces (21st…), reprendre l'idée seulement, jamais le code ni les médias.
+- Des références tierces (21st…), reprendre l'idée seulement, jamais le code ni les médias. Seule exception : quand J demande
+  « exactement » ou donne son accord après qu'on lui a dit ce que coûte la récupération du code (le Cyber Button, copié tel
+  quel le 2026-10-02 ; 21st donne deux récupérations de code par jour).
 - Pas de tiret cadratin dans les textes.
-- Pousser sur la branche puis fusionner dans `main` : l'aperçu Vercel se met à jour tout seul.
+- Commits locaux à chaque retouche ; **ne rien pousser** (ni la branche, ni `main`) tant que J ne le demande : chaque push sur `main` redéploie l'aperçu Vercel.
 
 ## Mettre en place le skill /overlay
 

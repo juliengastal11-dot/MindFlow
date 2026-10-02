@@ -104,15 +104,25 @@ export const MOUVEMENT = {
     /** La roue des sites (scène « Sur mesure ») : un cylindre de cartes qui
         tourne seul, qu'on attrape, qu'on lance, et qui se pose sur une carte. */
     roue: {
-      /* L'écart entre deux cartes n'est pas un réglage : c'est un demi-tour
-         divisé par le nombre de cartes (60° pour trois). Toutes les cartes
-         tiennent sur la face visible du cylindre, et une carte passe du haut
-         au bas de la roue quand elle est de tranche, sans qu'on la voie sauter. */
-      /** Jour entre deux cartes, en fraction de la hauteur d'une carte. */
-      jour: 0.06,
+      /* La roue est un vrai cylindre : chaque carte est un pan courbe, enroulé
+         autour de l'axe (demande de J, 2026-10-01 : « une forme arrondie, pas
+         des plaques qui se suivent »). L'écart entre deux cartes n'est pas un
+         réglage : c'est un demi-tour divisé par le nombre de cartes (60° pour
+         trois). Une carte couvre cet écart moins `jour` ; le rayon du cylindre
+         s'en déduit, pour que la carte déroulée garde sa hauteur. Avec trois
+         cartes, celle de face est légèrement bombée, haut et bas fuyant vers
+         l'arrière, et les deux autres, plus inclinées, s'enroulent derrière. */
+      /** Jour entre deux cartes, en fraction de l'écart (0,05 de 60° : 3°). */
+      jour: 0.05,
+      /** Chaque carte est découpée en `bandes` bandes horizontales, posées sur
+          le cylindre une à une. Plus il y en a, plus la courbe est lisse. */
+      bandes: 12,
+      /** Chevauchement de deux bandes voisines, en pixels : sans lui, la
+          rotation laisse un filet clair entre elles. */
+      recouvrement: 1.5,
       /** Distance de l'œil, en hauteurs de carte : la roue garde le même relief
           sur téléphone et sur ordinateur. */
-      perspective: 2.4,
+      perspective: 2.6,
       /** La rotation seule : une carte toutes les `periode` secondes. La roue
           s'attarde d'abord sur la carte de face (`attente`, en fraction de la
           période), en dérivant à peine (`derive`), puis bascule vers la
@@ -135,10 +145,13 @@ export const MOUVEMENT = {
       /** L'entrée : la roue arrive lancée de `cartes` cartes et se pose sur la
           première, en `duree` (fraction de la chronologie de la scène). */
       entree: { cartes: 6, duree: 0.92 },
-      /** Obscurité d'une carte qui s'éloigne de la lumière (0 = aucune). */
-      ombre: 0.85,
+      /** Obscurité d'une bande qui s'éloigne de la lumière (0 = aucune). */
+      ombre: 0.6,
       /** D'où vient la lumière, en degrés au-dessus de la face. */
       lumiere: 25,
+      /** Le reflet sur le cylindre : intensité maximale, angle où il passe
+          (négatif : au-dessus de la face) et largeur, en degrés. */
+      reflet: { max: 0.11, centre: -14, largeur: 17 },
       /** Agrandissement de la carte qu'on visite. */
       visite: 1.04,
     },
@@ -152,5 +165,60 @@ export const MOUVEMENT = {
 
     /** Le trait qui barre un mot, en fraction de la hauteur de ligne. */
     barre: { epaisseur: 0.08 },
+  },
+
+  /* --- Le bouton du héros : il se décroche, se balance, puis tombe de scène
+     en scène jusqu'à l'ordinateur (demande de J, 2026-10-02). Premier clic :
+     il saute s'accrocher au menu par un coin et se balance. Second clic : il
+     tombe, rebondit sur les textes et les animations du site, et se pose près
+     de l'ordinateur, sur la dernière image du ciel. En mouvement réduit, rien
+     de tout cela : le bouton est un simple lien. */
+  bouton: {
+    /** Le saut vers le clou : le bouton s'accroupit, puis vole (secondes). */
+    envol: { accroupi: 0.16, vol: 0.62 },
+    /** Le balancement par le coin haut gauche. `amplitude` : de combien il part
+        de sa position de repos, en radians (0,63 ≈ 36°) ; `periode` des petites
+        oscillations ; `duree` avant qu'il ne s'arrête ; `taux` : amortissement
+        par seconde. */
+    pendule: { amplitude: 0.63, periode: 1.45, duree: 4.4, taux: 0.6 },
+    /** L'indice du second clic apparaît quand le balancement n'a plus que cette
+        part de sa durée à courir. */
+    indice: { apres: 0.55 },
+    chute: {
+      /** Durée voulue du film, en secondes : `base`, plus `parEcran` par hauteur
+          d'écran à parcourir, bornée par `min` et `max`. */
+      duree: { base: 1.8, parEcran: 0.95, min: 5.5, max: 9 },
+      /** Gravité du calcul (px/s²) : le film est ensuite mis à la durée voulue. */
+      gravite: 3200,
+      /** Part de la vitesse conservée à chaque rebond. */
+      restitution: 0.66,
+      /** Hauteur d'un rebond, en fraction de la hauteur de l'écran : assez haut
+          pour qu'il se voie, et pour que le bouton ait la place de tourner. */
+      rebond: { min: 0.07, max: 0.24 },
+      /** Écart minimal entre deux impacts, en fraction de la hauteur de l'écran, et leur nombre. */
+      ecartMin: 0.24,
+      maxRebonds: 10,
+      /** Où l'impact se place à l'écran, en fraction de la hauteur depuis le haut. */
+      ancrage: 0.56,
+      /** Les trois petits rebonds d'atterrissage, en fraction de la hauteur de l'écran. */
+      petitsRebonds: [0.035, 0.012, 0.004],
+      /** Un tour sur lui-même demande que le bouton reste assez haut, loin des
+          surfaces, au moins ce temps (secondes du calcul). */
+      tour: 0.4,
+      /** Écrasement à l'impact : durée (s du calcul), force, étirement avant le choc. */
+      ecrasement: { duree: 0.09, force: 0.22, etirement: 0.1 },
+      facteurTemps: { min: 0.55, max: 1.7 },
+      /** Échelle du bouton qui tombe, puis une fois posé près de l'ordinateur
+          (la falaise est loin : un bouton à taille réelle y serait un panneau). */
+      echelleVol: 0.82,
+      echelleFin: 0.5,
+      /** Vitesse du film quand le visiteur le passe (molette, doigt, Échap). */
+      accelerer: 6,
+    },
+    /** Le bouton posé s'efface sur cette première part du défilement de la plongée. */
+    pose: { fondu: 0.07 },
+    /** Du bouton posé à la fenêtre de discussion, quand on clique dessus :
+        durée du défilement, et part de la plongée où la fenêtre est en place. */
+    discussion: { duree: 3.4, avancee: 0.985 },
   },
 } as const;

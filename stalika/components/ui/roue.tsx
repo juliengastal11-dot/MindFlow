@@ -32,8 +32,18 @@ import { useScene } from "@/components/ui/scene";
    elle ne tourne plus seule, ses vidéos ne jouent pas ; elle se manipule
    toujours au geste, au clavier et par les points.
 
-   La lumière vient d'en haut : une carte qui descend sous la face s'assombrit,
-   une carte qui monte passe sous un reflet.
+   Un vrai cylindre, pas des plaques : chaque carte est un pan courbe, découpé
+   en `bandes` bandes horizontales (de petits canevas, peints par la carte) que
+   la CSS pose une à une sur le cylindre. La carte de face est légèrement
+   bombée, haut et bas fuyant vers l'arrière ; les autres, plus inclinées,
+   s'enroulent derrière. Le rayon vient de la hauteur de la carte et de l'arc
+   qu'elle couvre : déroulée, une carte garde sa hauteur.
+
+   La lumière vient d'en haut, et se joue bande par bande : une bande qui
+   descend sous la face s'assombrit, un reflet passe sur le cylindre à un angle
+   fixe. La carte (`rendu`) n'a qu'à poser ses bandes : tout élément portant
+   `data-bande` (et `data-alpha`, son angle sur la carte) est ombré d'ici, avec
+   un enfant `data-ombre` et un enfant `data-reflet`.
 
    Tout est piloté par l'horloge de GSAP (comme Lenis) : le panneau de
    développement peut l'avancer à la main quand il est masqué.
@@ -66,11 +76,23 @@ export type EtatCarte = {
   defilable: boolean;
 };
 
+/** La géométrie du cylindre, que la carte reprend pour poser ses bandes. */
+export type CourbeCarte = {
+  /** Nombre de bandes par carte. */
+  bandes: number;
+  /** Arc couvert par une carte, en degrés. */
+  arc: number;
+  /** Chevauchement de deux bandes voisines, en pixels. */
+  recouvrement: number;
+};
+
 export type ActionsCarte = {
   /** Referme la visite. */
   sortir: () => void;
   /** On lit la carte : la roue attend avant de repartir. */
   retenir: () => void;
+  /** La géométrie du cylindre. */
+  courbe: CourbeCarte;
 };
 
 export type RoueProps = {
@@ -115,15 +137,22 @@ const DEVANT = 0.12;
 const PROCHE = 1.3;
 const LOIN = 80;
 
+type Bande = { alpha: number; ombre: HTMLElement | null; reflet: HTMLElement | null; o: number; r: number };
+
 export function Roue({ legendes, rendu, label, visitable = false, className }: RoueProps) {
   const n = legendes.length;
   const ecart = 180 / n;
+  // Une carte couvre l'écart moins le jour : 57° pour trois cartes. Déroulée, elle
+  // garde sa hauteur `h` : le rayon du cylindre vaut donc `h` / (l'arc en radians).
+  const arc = ecart * (1 - R0.jour);
+  const rayonK = 1 / (arc * RAD);
+  const courbe: CourbeCarte = { bandes: R0.bandes, arc, recouvrement: R0.recouvrement };
   const scene = useScene();
   const racine = useRef<HTMLDivElement>(null);
   const scenePlan = useRef<HTMLDivElement>(null);
   const cartes = useRef<(HTMLDivElement | null)[]>([]);
-  const ombres = useRef<(HTMLDivElement | null)[]>([]);
-  const reflets = useRef<(HTMLDivElement | null)[]>([]);
+  /** Les bandes de chaque carte, lues une fois dans le DOM. */
+  const bandes = useRef<(Bande[] | null)[]>([]);
   const etiquettes = useRef<(HTMLDivElement | null)[]>([]);
   const sousTitres = useRef<(HTMLSpanElement | null)[]>([]);
 
@@ -184,36 +213,61 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
     return s.survol || s.focus || s.pause || s.visite >= 0 || s.contact || s.reduit || !s.enVue;
   };
 
+  /** Les bandes d'une carte (éléments `data-bande`), lues dans le DOM la première fois. */
+  const lireBandes = (i: number): Bande[] => {
+    const cache = bandes.current[i];
+    if (cache && cache.length) return cache;
+    const carte = cartes.current[i];
+    if (!carte) return [];
+    const lues = [...carte.querySelectorAll<HTMLElement>("[data-bande]")].map((el) => ({
+      alpha: Number(el.dataset.alpha),
+      ombre: el.querySelector<HTMLElement>("[data-ombre]"),
+      reflet: el.querySelector<HTMLElement>("[data-reflet]"),
+      o: -1,
+      r: -1,
+    }));
+    bandes.current[i] = lues;
+    return lues;
+  };
+
   /* --- Poser les cartes à la position courante ---------------------------- */
   const poser = () => {
     const s = m.current;
     const { rayon: r, perspective: p } = s;
     if (!r) return;
+    const l = R0.lumiere * RAD;
+    const { max: refletMax, centre: refletCentre, largeur: refletLargeur } = R0.reflet;
     for (let i = 0; i < n; i++) {
       const carte = cartes.current[i];
       if (!carte) continue;
       const d = ecartA(i, s.pos, n);
       const phi = d * ecart;
       const a = phi * RAD;
-      const visible = Math.abs(phi) < 97;
+      // Une carte est cachée quand toutes ses bandes ont passé l'horizon du cylindre.
+      const visible = Math.abs(phi) < 90 + arc / 2 + 2;
       carte.style.visibility = visible ? "visible" : "hidden";
       if (!visible) continue;
       const echelle = s.visite === i ? R0.visite : 1;
       carte.style.transform = `translateZ(${-r}px) rotateX(${-phi}deg) translateZ(${r}px) scale(${echelle})`;
 
-      // La lumière vient d'en haut, à `lumiere` degrés : une carte qui
-      // descend s'en détourne et s'assombrit ; la carte de face reste nette.
-      const l = R0.lumiere * RAD;
-      const ombre = Math.max(0, Math.cos(l) - Math.cos(a + l)) * R0.ombre;
+      // La lumière vient d'en haut, à `lumiere` degrés. Chaque bande a son angle
+      // sur le cylindre : une bande qui descend s'en détourne et s'assombrit, et un
+      // reflet passe à un angle fixe. Seule une vraie différence est écrite.
       const enRetrait = s.visite >= 0 && s.visite !== i ? 0.35 : 0;
-      const o = ombres.current[i];
-      if (o) o.style.opacity = String(Math.min(0.92, ombre + Math.max(0, 1 - Math.cos(a)) * 0.25 + enRetrait));
-      // Le reflet passe sur la carte quand elle monte face à la lumière.
-      const rf = reflets.current[i];
-      if (rf) {
-        const k = (phi + R0.lumiere / 2) / (R0.lumiere * 0.9);
-        rf.style.opacity = String(0.42 * Math.exp(-k * k));
-        rf.style.transform = `translateY(${(-k * 22).toFixed(2)}%)`;
+      for (const b of lireBandes(i)) {
+        const A = (phi + b.alpha) * RAD;
+        const ombre = Math.max(0, Math.cos(l) - Math.cos(A + l)) * R0.ombre + Math.max(0, 1 - Math.cos(A)) * 0.25 + enRetrait;
+        const o = Math.min(0.92, ombre);
+        if (b.ombre && Math.abs(o - b.o) > 0.004) {
+          b.o = o;
+          b.ombre.style.opacity = o.toFixed(3);
+        }
+        const k = (phi + b.alpha - refletCentre) / refletLargeur;
+        const rf = refletMax * Math.exp(-k * k);
+        if (b.reflet && Math.abs(rf - b.r) > 0.004) {
+          b.r = rf;
+          b.reflet.style.opacity = rf.toFixed(3);
+        }
       }
 
       // La légende suit sa carte sur un arc, à la hauteur de son centre vu.
@@ -349,7 +403,7 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
     const mesurer = () => {
       const h = premiere.offsetHeight;
       s.h = h;
-      s.rayon = (h * (1 + R0.jour)) / 2 / Math.tan((ecart * RAD) / 2);
+      s.rayon = h * rayonK;
       s.perspective = h * R0.perspective;
       s.parCarte = s.rayon * ecart * RAD;
       s.bureau = requete.matches;
@@ -592,7 +646,8 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
 
   // Rendu serveur (et sans JavaScript) : la roue posée sur la première carte.
   // Les longueurs viennent du CSS ; l'horloge prend le relais au montage.
-  const rayonCss = `calc(var(--roue-h) * ${((1 + R0.jour) / 2 / Math.tan((ecart * RAD) / 2)).toFixed(4)})`;
+  // `--roue-r` : le rayon du cylindre, que reprennent aussi les bandes de chaque carte.
+  const rayonCss = "var(--roue-r)";
   const transformInitiale = (i: number) => {
     const phi = ecartA(i, 0, n) * ecart;
     return `translateZ(calc(${rayonCss} * -1)) rotateX(${-phi}deg) translateZ(${rayonCss})`;
@@ -606,6 +661,7 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
       aria-label={label}
       data-src="components/ui/roue.tsx"
       className={cn("roue relative flex flex-col", className)}
+      style={{ "--roue-r": `calc(var(--roue-h) * ${rayonK.toFixed(4)})` } as CSSProperties}
     >
       <div
         className="relative min-h-0 flex-1"
@@ -639,7 +695,7 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
             className="absolute inset-y-0 left-[var(--roue-x,50%)] w-[var(--roue-l)] -translate-x-1/2 cursor-grab touch-none select-none outline-none active:cursor-grabbing focus-visible:[&>div]:outline-2 focus-visible:[&>div]:outline-offset-8 focus-visible:[&>div]:outline-ring"
             style={{ perspective: `calc(var(--roue-h) * ${R0.perspective})` } as CSSProperties}
           >
-            <div className="absolute inset-0 rounded-[var(--roue-coin)] [transform-style:preserve-3d]">
+            <div className="absolute inset-0 [transform-style:preserve-3d]">
               {legendes.map((legende, i) => (
                 <div
                   key={legende.titre}
@@ -652,26 +708,13 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
                   aria-roledescription="diapositive"
                   aria-label={`${i + 1} sur ${n} : ${legende.titre}, ${legende.sous}`}
                   aria-hidden={i !== courant}
-                  className="absolute left-0 top-1/2 h-[var(--roue-h)] w-full -translate-y-1/2 [backface-visibility:hidden] will-change-transform"
+                  // Rien ici ne doit aplatir la 3D (overflow, opacité, filtre, masque) : la carte
+                  // est faite de bandes posées sur le cylindre. Elles se cachent d'elles-mêmes
+                  // (`backface-visibility`) une fois passées derrière.
+                  className="absolute left-0 top-1/2 h-[var(--roue-h)] w-full -translate-y-1/2 [transform-style:preserve-3d] will-change-transform"
                   style={{ transform: transformInitiale(i) }}
                 >
-                  <div className="relative h-full w-full overflow-hidden rounded-[var(--roue-coin)] bg-card shadow-carte ring-1 ring-foreground/12">
-                    {rendu(i, etats[i], { sortir: sortirDeVisite, retenir })}
-                    <div
-                      ref={(el) => {
-                        reflets.current[i] = el;
-                      }}
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-x-0 -top-full h-[300%] bg-[linear-gradient(172deg,transparent_42%,color-mix(in_oklab,var(--color-foreground)_55%,transparent)_50%,transparent_58%)] opacity-0 mix-blend-soft-light"
-                    />
-                    <div
-                      ref={(el) => {
-                        ombres.current[i] = el;
-                      }}
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 bg-background opacity-0"
-                    />
-                  </div>
+                  {rendu(i, etats[i], { sortir: sortirDeVisite, retenir, courbe })}
                 </div>
               ))}
             </div>

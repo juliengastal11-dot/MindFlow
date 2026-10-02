@@ -225,7 +225,7 @@ export function SceneUtile() {
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12 md:py-16">
         <div className="mb-8 max-w-2xl md:mb-10">
           <p className="eyebrow text-accent">02 · Utile</p>
-          <h2 id="utile-titre" className="mt-3 text-2xl sm:text-3xl md:text-4xl">
+          <h2 id="utile-titre" data-rebond="" className="mt-3 text-2xl sm:text-3xl md:text-4xl">
             Un site qui <span className="text-accent">travaille</span>, pas une plaquette.
           </h2>
           <p className="mt-4 text-sm text-muted-foreground md:text-base">
@@ -235,7 +235,8 @@ export function SceneUtile() {
         </div>
 
         <Cascade className="grid grid-cols-1 gap-4 md:grid-cols-3 md:grid-rows-2 md:gap-6">
-          <Card className="relative overflow-hidden md:row-span-2">
+          {/* `data-rebond="sec"` : le bouton qui tombe rebondit sur le bord de la carte, sans la faire bouger (la cascade l'anime déjà). */}
+          <Card data-rebond="sec" className="relative overflow-hidden md:row-span-2">
             <GlypheAgenda />
             <CardHeader>
               <CardTitle className="font-display">Réservation avec agenda</CardTitle>
@@ -246,7 +247,7 @@ export function SceneUtile() {
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden md:col-span-2">
+          <Card data-rebond="sec" className="relative overflow-hidden md:col-span-2">
             <GlypheCourbe />
             <CardHeader>
               <CardTitle className="font-display">Espace client</CardTitle>
@@ -270,7 +271,7 @@ export function SceneUtile() {
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden">
+          <Card data-rebond="sec" className="relative overflow-hidden">
             <GlypheContrat />
             <CardHeader>
               <CardTitle className="font-display">Contrat en PDF</CardTitle>
@@ -281,7 +282,7 @@ export function SceneUtile() {
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden">
+          <Card data-rebond="sec" className="relative overflow-hidden">
             <GlypheItineraire />
             <CardHeader>
               <CardTitle className="font-display">Avis et itinéraire</CardTitle>

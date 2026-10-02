@@ -38,9 +38,24 @@ de « Wheel Carousel » ; aucun code repris.
   avec inertie et se pose sur la carte la plus proche ; flèches du clavier, points, bouton pause
   (WCAG 2.2.2). Elle s'arrête au survol et hors de l'écran. Entrée : elle fait un tour complet et
   se pose sur la première carte. Mouvement réduit : elle ne tourne pas seule, aucune vidéo.
+- **Un vrai cylindre, pas des plaques** (demande de J, 2026-10-01) : chaque carte est un pan
+  courbe, découpé en 12 bandes horizontales (de petits canevas) que la CSS pose une à une sur le
+  cylindre. La carte de face est légèrement bombée, haut et bas fuyant vers l'arrière ; les deux
+  autres, plus inclinées, s'enroulent derrière. Le rayon se déduit de la hauteur de la carte et de
+  l'arc qu'elle couvre (57° pour trois cartes). La lumière, les reflets et les coins arrondis se
+  jouent bande par bande. Le site est peint à plat par `lib/peinture-carte.ts` puis découpé en
+  bandes : la vidéo joue dans un élément caché, chaque image est recopiée dans les bandes. Piège
+  noté dans le code : une bande se pose AU MILIEU de la carte et c'est la rotation qui l'amène à son
+  angle ; posée à son rang, elle sortirait du cylindre.
 - **Les cartes** montrent le haut de chaque site sur téléphone, **en action** : la devanture de
-  la pizzeria en boucle ; l'arrivée sur VTBON rejouée à chaque passage ; l'arrivée sur Popec puis
-  sa bande qui défile. Aucun lien.
+  la pizzeria en boucle ; l'arrivée sur Popec puis sa bande qui défile. Aucun lien.
+- **VTBON, en calques** : le site a un fond fixe derrière toute la page, un film (cuir surpiqué,
+  puis le chauffeur et son téléphone, puis la route de nuit) que le défilement fait avancer, avec
+  un voile qui s'assombrit. La première version de la carte l'avait perdu : la capture masquait les
+  éléments fixes. La carte le rejoue maintenant : 40 images du film, le voile et la courbe
+  d'avancement du site, et la page en tranches transparentes qui défile par-dessus. L'entrée du
+  héros se rejoue bloc par bloc (surtitre, titre, texte, bouton, mentions), comme sur le site, à
+  chaque arrivée de la carte. Film pris sur `vtbon.fr/video/hero-portrait.mp4`.
 - **Le site défile dans la carte** de face, jusqu'au pied de page : **au doigt**, directement (on
   glisse sur la carte du milieu ; au-dessus ou en dessous, on fait tourner la roue ; sur le texte,
   on fait défiler la page) ; **à la souris**, après un clic sur la carte (Échap pour sortir). Les
@@ -52,6 +67,51 @@ de « Wheel Carousel » ; aucun code repris.
 
 Ce qui change ailleurs : **H5** ne tient plus (la roue montre les vrais sites des clients, à la
 demande de J). Le paragraphe de la scène et ses trois points sont dans `CONTENU.md`.
+
+## Mise à jour du 2026-10-02 : le bouton du hero qui tombe jusqu'à l'ordinateur
+
+À la demande de J (overlay, puis tchat), le bouton pilule du hero devient un **Cyber Button** de
+21st (`jahed/cyber-button`) qui lit **« Parlons projet »** et raconte un petit film. Le code de 21st
+est **copié tel quel** (`components/ui/cyber-button.tsx`, avec l'accord exprès de J ; une seule
+retouche : `bg-gradient-to-*` devient `bg-linear-to-*`, que le garde-fou exige, rendu identique).
+Ses jetons « shadcn » (`--primary`, `--foreground`…) sont des alias de nos jetons dans
+`app/globals.css`, répétés sous `.nuit` et `.jour`. Le halo pointillé et le cadre qui s'éclaire au
+survol sont ceux de l'original ; la lueur est camel (`primary`).
+
+**Le déroulé (première étape, faite)** : `components/ui/bouton-chute.tsx`.
+1. **Premier clic** : le bouton s'accroupit et saute s'accrocher **au bord du menu**, par son coin
+   haut gauche (le hero n'a pas la place de le laisser pendre là où il est). Il se balance 4,4 s
+   comme une plaque pendue à un clou (presque debout : un rectangle long pend par un coin à la
+   verticale), puis s'arrête. Un indice discret : « Encore un clic : il tombe. ».
+2. **Second clic** : le clou lâche, le bouton **tombe de scène en scène** pendant que la page
+   défile avec lui (5,5 à 9 s selon la longueur du trajet), rebondit sur les éléments marqués
+   `data-rebond` (titres, textes, cartes), s'écrase à chaque choc, fait un tour sur lui-même quand
+   il est assez haut, et **se pose à côté de l'ordinateur, sur la dernière image du ciel**, réduit
+   de moitié (la falaise est loin). Un repère « Faites défiler » apparaît : on entre dans
+   l'ordinateur en défilant, ou en cliquant sur le bouton, qui emmène à la fenêtre de discussion.
+   Le visiteur peut passer la chute (molette, doigt, Échap, bouton « Passer »).
+3. Le bouton posé s'efface sur les premiers pixels de la plongée ; en remontant, il reste là où il est
+   tombé (« le bouton reste en bas », J).
+- **Réglages** : `MOUVEMENT.bouton` dans `lib/mouvement.ts` (durées, gravité, rebonds, échelles).
+  **Calcul** : `lib/chute.ts` (pur, déterministe : balancement, arcs de parabole, caméra monotone).
+  **Où il atterrit** : `POSE_BOUTON` dans `lib/ciel.ts` (en fractions de l'image entière).
+  **Défilement** : la page suit le bouton par l'instance de Lenis du site (`lib/defilement.ts`).
+- **`data-rebond`** : un élément qui porte cet attribut sert d'appui. Vide : il tressaille au choc.
+  `sec` : il sert d'appui sans bouger (ce que GSAP anime déjà : les cartes de la cascade). Posé
+  aujourd'hui sur le texte du hero, les titres et textes des trois scènes, les cartes de « Utile »
+  et la maquette de « La relecture ».
+- **Accessibilité** : le vrai lien reste dans le hero (clavier, lecteurs d'écran : deux Entrées font
+  le même parcours, avec annonces) ; la copie qui voyage est décorative. **Mouvement réduit, écran
+  de moins de 520 px de haut, défilement fluide absent, ou sans JavaScript : un simple lien vers
+  `/contact`.**
+- **Pas encore fait (deuxième étape), reportée par J le 2026-10-02 : elle attend qu'il ait retravaillé
+  toutes les sections, qui vont beaucoup bouger (les repères `data-rebond` devront les suivre).**
+  Si le visiteur ne clique pas, le bouton descend quand même
+  de section en section : 1,5 s après qu'il s'est arrêté sur une section, le bouton y trouve un
+  endroit où s'accrocher (par un coin, il se balance puis s'arrête), reste cliquable (un clic le
+  fait tomber et emmène à l'ordinateur), ne remonte jamais, et finit près de l'ordinateur sur la
+  dernière image. Décisions de J : coin haut gauche, balancement de quelques secondes puis arrêt,
+  indice discret, le bouton reste en bas quand on remonte.
 
 ## §1 · La barre de direction
 

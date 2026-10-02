@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import { gsap, ScrollTrigger, mouvementReduit } from "@/lib/gsap";
+import { poserDefilement } from "@/lib/defilement";
 
 /* ---------------------------------------------------------------------------
    Défilement fluide et inertiel.
@@ -43,8 +44,10 @@ export function DefilementFluide() {
     const pas = (temps: number) => lenis.raf(temps * 1000);
     gsap.ticker.add(pas);
     gsap.ticker.lagSmoothing(0);
+    poserDefilement(lenis);
 
     return () => {
+      poserDefilement(null);
       gsap.ticker.remove(pas);
       lenis.destroy();
     };

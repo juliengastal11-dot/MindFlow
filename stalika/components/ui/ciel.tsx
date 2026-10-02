@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { ScrollTrigger, mouvementReduit } from "@/lib/gsap";
 import { VideoAdaptative, type SourcesVideo } from "@/components/ui/video-adaptative";
+import { RAPPORT_CIEL as RAPPORT } from "@/lib/ciel"; // largeur / hauteur des images entières
 
 /* ---------------------------------------------------------------------------
    Ciel : un seul plan, du hero jusqu'à la discussion, dont l'heure avance
@@ -79,7 +80,6 @@ export type CielProps = {
 
 const chemin = (s: SerieCiel, i: number) => `${s.dossier}/${String(i + 1).padStart(3, "0")}.webp`;
 const ENTIER: Rectangle = { x: 0, y: 0, l: 1, h: 1 };
-const RAPPORT = 1924 / 1076; // largeur / hauteur des images entières
 const borne = (x: number) => Math.min(1, Math.max(0, x));
 const douce = (x: number) => x * x * (3 - 2 * x);
 
@@ -357,7 +357,7 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
           Ordre d'empilement explicite (plan en 0, sections en 10) : sans lui,
           Safari sur iPhone peut peindre le plan collant au-dessus des textes. */}
       <div className="pointer-events-none sticky top-0 z-0 -mb-[100svh] h-svh p-2 sm:p-3">
-        <div ref={cadre} className="relative h-full overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]">
+        <div ref={cadre} data-ciel-cadre="" className="relative h-full overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]">
           {/* Sans JavaScript, et jusqu'au premier dessin : la première image. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

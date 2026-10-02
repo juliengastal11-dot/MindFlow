@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LogoBrouille } from "@/components/ui/logo-brouille";
 import { EntreeHero } from "@/components/ui/entree-hero";
-import { SITE } from "@/lib/site";
+import { BoutonChute } from "@/components/ui/bouton-chute";
 
 /* ---------------------------------------------------------------------------
    Le hero de l'accueil : un grand cadre arrondi, une vidéo plein cadre, et
@@ -9,7 +9,7 @@ import { SITE } from "@/lib/site";
 
    Mise en page reprise d'un hero repéré par J sur 21st (la forme seulement :
    cadre arrondi sur fond sombre, menu en onglet accroché au bord haut, nom
-   géant en bas à gauche, texte court et bouton pilule en bas à droite). Rien
+   géant en bas à gauche, texte court et bouton en bas à droite). Rien
    de son code, de son image ni de ses textes : la vidéo est la nôtre
    (image Flux Pro Ultra, animée par Kling 3.0, générées le 2026-09-30),
    montée en aller-retour adouci : le zoom avance 10 s, ralentit jusqu'à
@@ -42,14 +42,6 @@ const LIENS = [
   { href: "#relecture", libelle: "La relecture" },
   { href: "#livre", libelle: "Livré" },
 ] as const;
-
-function Fleche() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 16 16" width="14" height="14" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="stroke-current">
-      <path d="M3 8h10M9 4l4 4-4 4" />
-    </svg>
-  );
-}
 
 export function Hero() {
   return (
@@ -104,17 +96,16 @@ export function Hero() {
             <span className="sr-only"> · sites sur mesure pour restaurants, coachs, artisans et commerces</span>
           </h1>
 
-          <EntreeHero delai={1.2} className="max-w-sm pb-2 lg:pb-5">
-            <p className="text-sm leading-relaxed text-foreground/85 sm:text-base">{SITE.description}</p>
-            <Link
-              href="/contact"
-              className="group mt-5 inline-flex cursor-pointer items-center gap-3 rounded-full bg-foreground py-1.5 pl-5 pr-1.5 text-sm font-medium text-background transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-            >
-              Parlons de votre site
-              <span className="grid size-8 place-items-center rounded-full bg-background text-foreground transition-transform group-hover:translate-x-0.5">
-                <Fleche />
-              </span>
-            </Link>
+          <EntreeHero delai={1.2} className="max-w-md pb-2 lg:pb-5">
+            {/* Les deux lignes de J (overlay, 2026-10-02), telles qu'il les a écrites. */}
+            <p data-rebond="" className="text-sm leading-relaxed text-foreground/85 sm:text-base">
+              Votre site sur mesure, dessiné pour vous en accord avec vos besoins. Tout type de profession libérale ou entreprise, première maquette en 72h
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-foreground/85 sm:text-base">Audit de besoin IA en entreprise, création et accompagnement, avec vous</p>
+            {/* Le bouton : un Cyber Button (21st) qui se décroche et tombe jusqu'à l'ordinateur au fil des clics. */}
+            <BoutonChute href="/contact" className="mt-7">
+              Parlons projet
+            </BoutonChute>
           </EntreeHero>
         </div>
       </div>
