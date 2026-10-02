@@ -63,6 +63,7 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 - Point 1 : `Selon vos envies` · `couleurs, ton, animations : on choisit ensemble, rien n'est imposé.`
 - Point 2 : `Beaucoup d'échanges` · `vous me racontez votre métier, je vous montre, vous réagissez.`
 - Point 3 : `Un lien pour corriger` · `vous cliquez sur ce que vous voulez changer, à votre guise, et j'applique.`
+- Point 4 (ajouté à la demande de J, 2026-10-02) : `Au-delà du site` · `création de logiciels et d'applications personnalisés pour votre activité.`
 - Invitation : `Attrapez la roue : aucun site ne ressemble au voisin.`
 - La roue (2026-10-01, remplace le champ de neuf cartes), libellé accessible `Trois sites, trois styles`. Une carte par site, avec son nom et son sous-titre :
   - `La Pizzeria des Allées` · `pizzeria · Béziers`

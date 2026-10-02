@@ -27,6 +27,8 @@ const POINTS = [
   { titre: "Selon vos envies", texte: "couleurs, ton, animations : on choisit ensemble, rien n'est imposé." },
   { titre: "Beaucoup d'échanges", texte: "vous me racontez votre métier, je vous montre, vous réagissez." },
   { titre: "Un lien pour corriger", texte: "vous cliquez sur ce que vous voulez changer, à votre guise, et j'applique." },
+  // Ajouté à la demande de J (2026-10-02) : le sur mesure ne s'arrête pas au site.
+  { titre: "Au-delà du site", texte: "création de logiciels et d'applications personnalisés pour votre activité." },
 ] as const;
 
 /** Un bloc qui arrive en montant, à la position `de` de la chronologie. */
@@ -94,7 +96,7 @@ export function SceneModele() {
                 </li>
               ))}
             </ul>
-            <Arrivee de={0.84}>
+            <Arrivee de={0.87}>
               <p className="mt-4 text-[0.6875rem] font-medium uppercase tracking-[0.14em] text-accent/90 md:mt-9 md:text-xs">
                 Attrapez la roue : aucun site ne ressemble au voisin.
               </p>
