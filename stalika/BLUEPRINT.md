@@ -29,7 +29,7 @@ camel en texte. La nuit reprend la version sombre de la même palette.
 ## Mise à jour du 2026-10-01 : la roue des sites (scène « Sur mesure »)
 
 À la demande de J, le champ de neuf cartes dessinées (`Champ3D`) laisse la place à une **roue** :
-les trois sites de Julien sur un cylindre couché (`components/ui/roue.tsx`), à gauche, et le texte
+les sites de Julien (trois, puis quatre le 2026-10-04) sur un cylindre couché (`components/ui/roue.tsx`), à gauche, et le texte
 du sur mesure à droite, **sur téléphone comme sur ordinateur**. Idée tirée de 21st
 (« vertical-image-stack », fourni par J), avec la géométrie de « Cylinder Carousel » et l'inertie
 de « Wheel Carousel » ; aucun code repris.
@@ -61,7 +61,8 @@ de « Wheel Carousel » ; aucun code repris.
   navigateur prend la couche de défilement pour la carte et fait défiler la page (la page, très
   haute, est projetée en 3D) : essais de bandes de garde et de `clip-path` sans effet.
 - **Les cartes** montrent le haut de chaque site sur téléphone, **en action** : la devanture de
-  la pizzeria en boucle ; l'arrivée sur Popec puis sa bande qui défile. Aucun lien.
+  la pizzeria en boucle ; l'arrivée sur Popec puis sa bande qui défile ; l'arrivée sur AR
+  Transfert (la berline sort du noir, phares allumés) puis ses appels de phares. Aucun lien.
 - **VTBON, en calques** : le site a un fond fixe derrière toute la page, un film (cuir surpiqué,
   puis le chauffeur et son téléphone, puis la route de nuit) que le défilement fait avancer, avec
   un voile qui s'assombrit. La première version de la carte l'avait perdu : la capture masquait les
@@ -75,6 +76,11 @@ de « Wheel Carousel » ; aucun code repris.
   tranches de la page se chargent au fil du défilement ; la roue attend 6 s après la lecture.
 - **Les sites** (`lib/realisations.ts`) : la Pizzeria des Allées, VTBON et Popec, capturés en
   ligne le 2026-10-01. Deux sites d'exemple imaginés le même jour ont été retirés à la demande de J.
+  Le 2026-10-04, AR Transfert (chauffeur VTC à Béziers, `ar-transfert-apercu.vercel.app`) est
+  ajouté **en tête**, à la demande de J : quatre cartes, 45° entre deux. Sa page a des parties
+  blanches, qui ont montré un filet sombre entre les bandes (la dernière ligne de chaque canevas
+  n'était peinte qu'en partie) : chaque bande se peint maintenant sur toute la hauteur de son
+  canevas.
 - **Les outils** pour refaire les captures : `outils/realisations/` à la racine du dépôt (non
   publié).
 

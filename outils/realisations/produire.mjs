@@ -17,6 +17,12 @@ const SITES = {
   // couture [boucle[0], boucle[1]] ; la carte reprend la lecture au début de la
   // boucle (instant affiché, à reporter dans `reprise`).
   popec: { video: { type: "entree-boucle", de: 0.68, boucle: [1.8, 5.3], fondu: 0.8 }, affiche: 2.6 },
+  // L'arrivée : le titre monte, la voiture sort du noir et ses phares s'allument (le
+  // site lance son entrée à 0,37 s ; on part de 0,7 s, juste avant que le titre ne
+  // bouge). Puis la boucle de 8 s, le rythme du site : un appel de phares toutes les
+  // 4 s, un sur deux suivi du reflet sur le pare-brise. Ses deux bouts tombent entre
+  // deux appels, au calme.
+  "ar-transfert": { video: { type: "entree-boucle", de: 0.7, boucle: [5.0, 13.8], fondu: 0.8 }, affiche: 7.0 },
 };
 const ff = (...args) => execFileSync("ffmpeg", ["-v", "error", "-y", ...args], { stdio: "inherit" });
 const ko = (f) => `${Math.round(fs.statSync(f).size / 1024)} ko`;

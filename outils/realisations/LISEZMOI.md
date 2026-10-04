@@ -1,16 +1,17 @@
 # Les médias de la roue des sites
 
-La scène « Sur mesure » de Stalika montre trois sites sur une roue en forme de cylindre
+La scène « Sur mesure » de Stalika montre quatre sites sur une roue en forme de cylindre
 (`stalika/components/ui/roue.tsx`, `stalika/components/sections/carte-realisation.tsx`).
-Chaque carte vient d'une capture faite avec les scripts de ce dossier, le 2026-10-01.
+Chaque carte vient d'une capture faite avec les scripts de ce dossier, le 2026-10-01, et le
+2026-10-04 pour AR Transfert.
 Le résultat est dans `stalika/public/realisations/<id>/`, et la liste des sites dans `stalika/lib/realisations.ts`.
 
 Ce dossier n'est pas publié : la construction (Vercel) ne prend que `stalika/`.
 
 ## Deux façons de composer un site
 
-- **« Plat »** (pizzeria, Popec) : une affiche, une vidéo du haut de page (capturée en images du
-  compositeur), et la page entière en tranches opaques.
+- **« Plat »** (pizzeria, Popec, AR Transfert) : une affiche, une vidéo du haut de page (capturée
+  en images du compositeur), et la page entière en tranches opaques.
 - **« Calques »** (VTBON) : le site a un fond fixe derrière toute la page, un film que le défilement
   fait avancer. La capture « à plat » le perdait (elle masque les éléments fixes). On le capture donc
   à part : le film en images, la page en tranches TRANSPARENTES, et les mesures du héros pour
@@ -39,8 +40,9 @@ Il faut Node, Chrome et ffmpeg. Depuis ce dossier :
 npm init -y
 npm install playwright-core
 
-# un site « plat »
+# un site « plat » ; la vidéo brute se monte d'abord à partir des images capturées
 node capturer.mjs popec https://popec-run.vercel.app 5 --pleine-page
+cd sorties/popec && ffmpeg -f concat -safe 0 -i images.ffconcat -fps_mode cfr -r 30 -c:v libx264 -crf 8 -preset fast -pix_fmt yuv420p brut.mp4 && cd ../..
 node produire.mjs ../../stalika/public/realisations popec
 
 # un site « en calques » : le film du fond doit être téléchargé à part
@@ -59,4 +61,12 @@ Le film de VTBON : `https://vtbon.fr/video/hero-portrait.mp4` (720 × 1280, 18,6
 d'avancement et son voile sont ceux du site (`components/video/fond-video.tsx` et
 `lib/mouvement.ts` du dépôt `vtbon-site`), recopiés dans `stalika/lib/realisations.ts`.
 
-Captures du 2026-10-01 : pizzeria-des-allees.vercel.app, vtbon.fr et popec-run.vercel.app.
+AR Transfert (2026-10-04) : `node capturer.mjs ar-transfert https://ar-transfert-apercu.vercel.app 22
+--pleine-page`. Le site remet ses apparitions à zéro quand elles quittent l'écran et n'allume que le
+chapitre qu'on lit : `capturer.mjs` les fige pour la page entière (`MASQUES`), avec la barre de trajet
+pleine, et attend 5,5 s en haut de page que le héros ait rejoué son entrée (`ATTENTE_HAUT`). Les
+instants de la vidéo viennent de la luminosité des images (un appel de phares toutes les 4 s, à
+partir de 3,6 s après l'entrée) : voir `produire.mjs`.
+
+Captures du 2026-10-01 : pizzeria-des-allees.vercel.app, vtbon.fr et popec-run.vercel.app ; du
+2026-10-04 : ar-transfert-apercu.vercel.app.

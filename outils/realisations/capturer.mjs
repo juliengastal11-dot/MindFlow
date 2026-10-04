@@ -25,10 +25,26 @@ fs.rmSync(path.join(dossier, "images"), { recursive: true, force: true });
 fs.mkdirSync(path.join(dossier, "images"), { recursive: true });
 
 // Ce qui n'appartient pas au site : outils d'essai, bandeaux de consentement.
+// Et ce qui ne vit qu'au défilement, qu'une page figée montrerait à moitié. Chez
+// AR Transfert : les apparitions, remises à zéro quand elles sortent de l'écran ;
+// les chapitres des récits, dont seul celui qu'on lit est allumé ; la barre de
+// trajet, prise pleine (son état final, celui du mouvement réduit). Rien de tout
+// cela n'est dans le haut de page filmé.
 const MASQUES = {
   pizzeria: "[data-bandeau-essai]{display:none!important}",
+  "ar-transfert": [
+    '[data-m="reveal"],[data-m="fact"]{opacity:1!important;transform:none!important}',
+    '[data-m="chapter"],[data-m="chapter2"]{opacity:1!important}',
+    '[data-m="routeFill"]{transform:none!important;opacity:1!important}',
+    '[data-m="routeDot"]{left:100%!important;opacity:1!important}[data-m="routeSparks"]{display:none!important}',
+  ].join(""),
 };
 const css = MASQUES[nom] ?? "";
+// De retour en haut de page, le temps que le héros se rejoue (en ms). AR Transfert
+// rejoue son entrée : les phares sont allumés à 3,9 s, le premier appel de phares
+// finit à 4,4 s et le suivant part à 7,6 s.
+const ATTENTE_HAUT = { "ar-transfert": 5500 };
+const attenteHaut = ATTENTE_HAUT[nom];
 
 const navigateur = await chromium.launch({
   channel: "chrome",
@@ -116,7 +132,7 @@ if (!sansPage) {
   const tuiles = [];
   for (let y = 0, i = 0; y < hauteurFinale; y += H, i++) {
     await page.evaluate((v) => window.scrollTo(0, v), y);
-    await page.waitForTimeout(900);
+    await page.waitForTimeout(y === 0 && attenteHaut ? attenteHaut : 900);
     await masquerFixes();
     await page.waitForTimeout(60);
     const reel = await page.evaluate(() => window.scrollY);
@@ -131,7 +147,7 @@ if (!sansPage) {
   fs.rmSync(pleine, { force: true });
   if (pleinePage) {
     await page.evaluate(() => window.scrollTo(0, 0));
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(attenteHaut ?? 1500);
     await masquerFixes();
     await page.screenshot({ path: pleine, fullPage: true });
     console.log(`[${nom}] page entière d'un seul tenant`);

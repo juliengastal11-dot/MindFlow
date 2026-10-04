@@ -1,6 +1,6 @@
 /* ---------------------------------------------------------------------------
-   Les sites de la roue (scène « Sur mesure ») : trois réalisations de Julien
-   (demande de J, 2026-10-01).
+   Les sites de la roue (scène « Sur mesure ») : quatre réalisations de Julien
+   (demande de J, 2026-10-01 ; AR Transfert ajouté en tête le 2026-10-04).
 
    Chaque carte montre le haut du site sur téléphone (fenêtre de 390 × 650 px,
    capturée en densité 2), puis la page entière jusqu'au pied de page quand on
@@ -21,9 +21,10 @@
      L'entrée du héros est rejouée bloc par bloc (`calques.hero`).
 
    Captures du 2026-10-01, sur les sites en ligne : pizzeria-des-allees.vercel.app,
-   vtbon.fr, popec-run.vercel.app. Les outils d'essai (le bandeau des couleurs de
-   la pizzeria) et les barres fixes sont masqués. Pour refaire une capture :
-   `outils/realisations/` à la racine du dépôt.
+   vtbon.fr, popec-run.vercel.app ; et du 2026-10-04 : ar-transfert-apercu.vercel.app.
+   Les outils d'essai (le bandeau des couleurs de la pizzeria) et les barres fixes
+   sont masqués. Pour refaire une capture : `outils/realisations/` à la racine du
+   dépôt.
 --------------------------------------------------------------------------- */
 
 /** Une courbe en points : (abscisse, ordonnée), abscisses croissantes. */
@@ -67,6 +68,18 @@ export type Realisation = {
 };
 
 export const REALISATIONS: Realisation[] = [
+  {
+    // En tête de la roue, à la demande de J : la première carte qu'on voit.
+    id: "ar-transfert",
+    nom: "AR Transfert",
+    sous: "chauffeur VTC · Béziers",
+    mode: "plat",
+    video: "entree-boucle",
+    reprise: 5.1,
+    alt: "Le haut du site d'AR Transfert sur téléphone : une berline noire qui sort de la nuit, phares allumés, le titre « Chauffeur privé à Béziers » et la mention Disponible 24h/24, 7j/7.",
+    fond: "#000000",
+    tranches: [3000, 3000, 3000, 2512],
+  },
   {
     id: "pizzeria",
     nom: "La Pizzeria des Allées",

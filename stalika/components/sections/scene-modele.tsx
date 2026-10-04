@@ -12,8 +12,8 @@ import { REALISATIONS } from "@/lib/realisations";
 /* ---------------------------------------------------------------------------
    Scène 2 · Sur mesure (le crépuscule, sur le ciel commun).
 
-   À gauche, la roue des sites (demande de J, 2026-10-01) : trois sites de
-   Julien, chacun en action. Elle tourne seule, on l'attrape, on la lance ; le
+   À gauche, la roue des sites (demande de J, 2026-10-01) : quatre sites de
+   Julien, chacun en action, AR Transfert en tête (2026-10-04). Elle tourne seule, on l'attrape, on la lance ; le
    site de face défile dans sa carte, au doigt sur téléphone, après un clic à
    la souris. À droite, ce que « sur mesure » veut dire. Même disposition sur
    téléphone : la roue à gauche, le texte à droite.
@@ -67,7 +67,7 @@ export function SceneModele() {
       <div className="relative z-10 mx-auto w-full max-w-6xl px-3.5 py-3 sm:px-6 md:py-6">
         <div className="grid grid-cols-[minmax(0,43fr)_minmax(0,57fr)] items-center gap-3 sm:gap-6 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:gap-10">
           <Roue
-            label="Trois sites, trois styles"
+            label="Quatre sites, quatre styles"
             legendes={REALISATIONS.map((r) => ({ titre: r.nom, sous: r.sous }))}
             visitable
             className="h-[min(80svh,660px)] [--roue-ext-d:30px] [--roue-ext-g:14px] [--roue-h:calc(var(--roue-l)/0.6)] [--roue-l:min(38vw,200px)] md:h-[min(90svh,880px)] md:[--roue-ext-d:28px] md:[--roue-ext-g:28px] md:[--roue-l:clamp(220px,22vw,290px)] md:[--roue-x:36%]"
