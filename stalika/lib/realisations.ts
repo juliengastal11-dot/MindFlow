@@ -78,7 +78,7 @@ export const REALISATIONS: Realisation[] = [
     reprise: 6.05,
     alt: "Le haut du site d'AR Transfert sur téléphone : son logo, une berline noire qui sort de la nuit, phares allumés, plaque AR TRANSFERT, le titre « Chauffeur Privé », « Béziers » en lettres calligraphiées, et la mention Disponible 24h/24, 7j/7.",
     fond: "#000000",
-    tranches: [3000, 3000, 3000, 1658],
+    tranches: [3000, 3000, 3000, 1944],
   },
   {
     id: "pizzeria",

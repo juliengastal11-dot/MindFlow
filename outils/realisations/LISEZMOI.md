@@ -65,9 +65,10 @@ AR Transfert (2026-10-04, refaite à 16 h 15 après l'arrivée du logo et des bo
 `node capturer.mjs ar-transfert https://ar-transfert-apercu.vercel.app 30 --pleine-page`. Le site
 remet ses apparitions à zéro quand elles quittent l'écran et n'allume que le chapitre qu'on lit :
 `capturer.mjs` les fige pour la page entière (`MASQUES`), avec la barre de trajet pleine ; il pose le
-reflet des boutons au repos (`FIGES_PAGE`), garde le bandeau photo des récits, collant mais plus bas
-que le seuil des barres (`GARDES`), et attend 5,5 s en haut de page que le héros ait rejoué son
-entrée (`ATTENTE_HAUT`). Pour ne refaire que la page sans refilmer le haut (et garder les instants
+reflet des boutons au repos et la carte de note Google dans son état final (`FIGES_PAGE`, et
+`FIGES_JS` pour la note et le nombre d'avis, que la carte remet à zéro hors de l'écran), garde le
+bandeau photo des récits, collant mais plus bas que le seuil des barres (`GARDES`), et attend 5,5 s
+en haut de page que le héros ait rejoué son entrée (`ATTENTE_HAUT`). Pour ne refaire que la page sans refilmer le haut (et garder les instants
 de boucle déjà relevés) : `--page-seule`. La boucle vit sur deux rythmes qui ne se recalent jamais (les appels de
 phares, le reflet du bouton de l'en-tête) : ses deux bouts se prennent là où les deux sont au repos,
 trouvés en mesurant l'écart d'une image à la suivante, zone par zone, sur les images décodées

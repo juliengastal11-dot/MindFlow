@@ -46,10 +46,28 @@ const MASQUES = {
 };
 const css = MASQUES[nom] ?? "";
 // Pour la page entière seulement, une fois le haut de page filmé : ce qui bouge en
-// boucle et qu'une image prise au hasard saisirait en plein passage. Chez AR
-// Transfert, le reflet des boutons « Shiny », posé au repos comme le fait le site en
-// mouvement réduit.
-const FIGES_PAGE = { "ar-transfert": ".shiny{--x:-100%!important;transform:none!important}" };
+// boucle et qu'une image prise au hasard saisirait en plein passage, ou ce qui se
+// remet à zéro hors de l'écran. Chez AR Transfert : le reflet des boutons « Shiny »,
+// posé au repos comme le fait le site en mouvement réduit ; la carte de note Google,
+// prise dans son état final (visible, étoiles et phares allumés).
+const FIGES_PAGE = {
+  "ar-transfert": [
+    ".shiny{--x:-100%!important;transform:none!important}",
+    "[data-review],[data-rv-star]{opacity:1!important;transform:none!important}",
+    "[data-rv-led]{opacity:1!important}[data-rv-spill]{opacity:.8!important}",
+    "[data-rv-bloom]{opacity:.75!important;transform:none!important}[data-rv-flare]{opacity:.5!important;transform:none!important}",
+  ].join(""),
+};
+// Ce que la CSS ne peut pas figer, écrit juste avant chaque image de la page : chez AR
+// Transfert, la note et le nombre d'avis, que la carte remet à zéro hors de l'écran.
+const FIGES_JS = {
+  "ar-transfert": `document.querySelectorAll("[data-review]").forEach((c) => {
+    const note = c.querySelector("[data-rv-rating]");
+    const avis = c.querySelector("[data-rv-count]");
+    if (note) note.textContent = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(Number(c.dataset.rating));
+    if (avis) avis.textContent = new Intl.NumberFormat("fr-FR").format(Number(c.dataset.count));
+  })`,
+};
 // De retour en haut de page, le temps que le héros se rejoue (en ms). AR Transfert
 // rejoue son entrée : les phares sont allumés à 3,9 s, le premier appel de phares
 // finit à 4,4 s et le suivant part à 7,6 s.
@@ -140,8 +158,8 @@ if (!sansPage) {
   // En tuiles d'un écran : ce que l'œil voit vraiment en descendant. Les barres
   // fixes ou collantes (en-tête, barre d'actions, bouton WhatsApp) et les fonds
   // fixes sont masqués : bout à bout, ils se répéteraient à chaque écran.
-  const masquerFixes = () =>
-    page.evaluate((garde) => {
+  const masquerFixes = async () => {
+    await page.evaluate((garde) => {
       for (const e of document.querySelectorAll("body *")) {
         if (garde && e.matches(garde)) continue;
         const cs = getComputedStyle(e);
@@ -150,6 +168,8 @@ if (!sansPage) {
         }
       }
     }, GARDES[nom] ?? "");
+    if (FIGES_JS[nom]) await page.evaluate(FIGES_JS[nom]);
+  };
   const hauteurFinale = await page.evaluate(() => document.documentElement.scrollHeight);
   const tuiles = [];
   for (let y = 0, i = 0; y < hauteurFinale; y += H, i++) {
