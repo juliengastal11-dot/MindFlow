@@ -10,8 +10,11 @@ import type { Ton } from "@/lib/demos";
    (barre du haut, barre latérale, curseur), les pastilles d'état, les cases,
    les avatars, les boutons, les barres de progression et la notification.
 
-   Le clair des fenêtres vient de `.jour` ; la couleur du logiciel, de
-   `--color-produit`, posée par la carte. Les tailles suivent celles d'une
+   Dans un téléphone, les couleurs, les coins et les ombres viennent du thème
+   du logiciel (`.appli-grise`, `.appli-or`, `.appli-sombre`, app/globals.css),
+   posé par la carte ; hors d'un téléphone, du clair (`.jour`). Les repères
+   `data-etat`, `data-barre`, `data-marque` et `data-pastille` permettent à un
+   thème d'aller au-delà des jetons. Les tailles suivent celles d'une
    vraie application réduite à la taille d'une carte : 12 px pour le texte
    courant, 11 px pour les méta-données, 10,5 px pour les pastilles.
 
@@ -35,7 +38,7 @@ export const EcranTelephone = createContext<{ heure: string } | null>(null);
 /** La barre d'état d'un iPhone : l'heure à gauche de l'île, le réseau et la batterie à droite. */
 function BarreEtat({ heure }: { heure: string }) {
   return (
-    <div className="flex h-11 shrink-0 items-center justify-between pl-7 pr-6 pt-0.5 text-[13px] font-semibold tracking-normal">
+    <div data-etat="" className="flex h-11 shrink-0 items-center justify-between pl-7 pr-6 pt-0.5 text-[13px] font-semibold tracking-normal">
       <span className="tabular-nums">{heure}</span>
       <span className="flex items-center gap-1">
         <Signal className="size-3.5" strokeWidth={2.75} />
@@ -66,13 +69,14 @@ export function Fenetre({ nom, marque: Marque, entreprise, utilisateur, nav, ico
       data-fenetre=""
       data-telephone={telephone ? "" : undefined}
       className={cn(
-        "jour relative flex size-full select-none flex-col overflow-hidden bg-card text-[12px] leading-snug text-foreground",
-        !telephone && "rounded-[0.7rem] shadow-fenetre",
+        "relative flex size-full select-none flex-col overflow-hidden bg-card text-[12px] leading-snug text-foreground",
+        // Dans un téléphone, le thème du logiciel vient de la carte (`.appli-*`) ; ailleurs, le clair.
+        !telephone && "jour rounded-[0.7rem] shadow-fenetre",
       )}
     >
       {telephone && <BarreEtat heure={telephone.heure} />}
-      <div className="flex h-9 shrink-0 items-center gap-2 border-b border-border/80 px-3 @lg:h-10 @lg:px-3.5">
-        <span className="grid size-5 shrink-0 place-items-center rounded-[5px] bg-produit text-on-produit">
+      <div data-barre="" className="flex h-9 shrink-0 items-center gap-2 border-b border-border/80 px-3 @lg:h-10 @lg:px-3.5">
+        <span data-marque="" className="grid size-5 shrink-0 place-items-center rounded-[5px] bg-produit text-on-produit">
           <Marque className="size-3" strokeWidth={2.25} />
         </span>
         <span className="font-semibold tracking-tight">{nom}</span>
@@ -153,6 +157,7 @@ export function Pastille({
 }: { ton?: Ton; icone?: LucideIcon } & React.ComponentProps<"span">) {
   return (
     <span
+      data-pastille=""
       className={cn(
         "inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full px-1.5 py-[1.5px] text-[10.5px] font-medium ring-1 ring-inset",
         TONS[ton],
