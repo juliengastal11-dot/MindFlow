@@ -40,6 +40,11 @@ const MASQUES = {
   ].join(""),
 };
 const css = MASQUES[nom] ?? "";
+// Pour la page entière seulement, une fois le haut de page filmé : ce qui bouge en
+// boucle et qu'une image prise au hasard saisirait en plein passage. Chez AR
+// Transfert, le reflet des boutons « Shiny », posé au repos comme le fait le site en
+// mouvement réduit.
+const FIGES_PAGE = { "ar-transfert": ".shiny{--x:-100%!important;transform:none!important}" };
 // De retour en haut de page, le temps que le héros se rejoue (en ms). AR Transfert
 // rejoue son entrée : les phares sont allumés à 3,9 s, le premier appel de phares
 // finit à 4,4 s et le suivant part à 7,6 s.
@@ -108,6 +113,7 @@ fs.writeFileSync(
 console.log(`[${nom}] ${images.length} images en ${(images.at(-1)?.t - t0 || 0).toFixed(1)} s`);
 
 if (!sansPage) {
+  if (FIGES_PAGE[nom]) await page.addStyleTag({ content: FIGES_PAGE[nom] });
   // Premier passage, lent, pour déclencher tout ce qui apparaît au défilement.
   const hauteur = await page.evaluate(() => document.documentElement.scrollHeight);
   for (let y = 0; y <= hauteur; y += 300) {
