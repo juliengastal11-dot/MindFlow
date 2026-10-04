@@ -8,7 +8,9 @@
 //      seul tenant, la page est figée en haut, mais un hero fixe peut s'y répéter
 //      en bas (la pizzeria). `produire.mjs` prend la pleine page quand elle existe.
 //
-// node capturer.mjs <nom> <url> <duree en s> [--sans-page] [--pleine-page]
+// node capturer.mjs <nom> <url> <duree en s> [--sans-page] [--pleine-page] [--page-seule]
+// `--page-seule` : refait la page sans refilmer le haut de page (les images d'une capture
+// précédente restent, avec les instants de la boucle déjà relevés sur elles).
 import { chromium } from "playwright-core";
 import fs from "node:fs";
 import path from "node:path";
@@ -17,12 +19,15 @@ const [nom, url, dureeTexte = "8", ...options] = process.argv.slice(2);
 const duree = Number(dureeTexte) * 1000;
 const sansPage = options.includes("--sans-page");
 const pleinePage = options.includes("--pleine-page");
+const pageSeule = options.includes("--page-seule");
 const L = 390;
 const H = 650;
 
 const dossier = path.resolve("sorties", nom);
-fs.rmSync(path.join(dossier, "images"), { recursive: true, force: true });
-fs.mkdirSync(path.join(dossier, "images"), { recursive: true });
+if (!pageSeule) {
+  fs.rmSync(path.join(dossier, "images"), { recursive: true, force: true });
+  fs.mkdirSync(path.join(dossier, "images"), { recursive: true });
+}
 
 // Ce qui n'appartient pas au site : outils d'essai, bandeaux de consentement.
 // Et ce qui ne vit qu'au défilement, qu'une page figée montrerait à moitié. Chez
@@ -50,6 +55,10 @@ const FIGES_PAGE = { "ar-transfert": ".shiny{--x:-100%!important;transform:none!
 // finit à 4,4 s et le suivant part à 7,6 s.
 const ATTENTE_HAUT = { "ar-transfert": 5500 };
 const attenteHaut = ATTENTE_HAUT[nom];
+// Ce qui est collant sans être une barre, à ne pas masquer dans la page : chez AR
+// Transfert, le bandeau photo des récits (120 px de haut sur téléphone, sous le seuil
+// des barres).
+const GARDES = { "ar-transfert": '[data-m="stack"]' };
 
 const navigateur = await chromium.launch({
   channel: "chrome",
@@ -78,39 +87,45 @@ if (css) {
 }
 
 const page = await contexte.newPage();
-const cdp = await contexte.newCDPSession(page);
-const images = [];
-let debut = null;
-cdp.on("Page.screencastFrame", async ({ data, metadata, sessionId }) => {
-  images.push({ data, t: metadata.timestamp });
-  await cdp.send("Page.screencastFrameAck", { sessionId }).catch(() => {});
-});
+if (pageSeule) {
+  await page.goto(url, { waitUntil: "commit", timeout: 60000 });
+  await page.waitForLoadState("load", { timeout: 60000 }).catch(() => {});
+  await page.waitForTimeout(duree);
+} else {
+  const cdp = await contexte.newCDPSession(page);
+  const images = [];
+  let debut = null;
+  cdp.on("Page.screencastFrame", async ({ data, metadata, sessionId }) => {
+    images.push({ data, t: metadata.timestamp });
+    await cdp.send("Page.screencastFrameAck", { sessionId }).catch(() => {});
+  });
 
-await cdp.send("Page.startScreencast", { format: "jpeg", quality: 92, maxWidth: L * 2, maxHeight: H * 2, everyNthFrame: 1 });
-const tAvant = Date.now() / 1000;
-await page.goto(url, { waitUntil: "commit", timeout: 60000 });
-debut = Date.now() / 1000;
-await page.waitForLoadState("load", { timeout: 60000 }).catch(() => {});
-await page.waitForTimeout(duree);
-await cdp.send("Page.stopScreencast");
+  await cdp.send("Page.startScreencast", { format: "jpeg", quality: 92, maxWidth: L * 2, maxHeight: H * 2, everyNthFrame: 1 });
+  const tAvant = Date.now() / 1000;
+  await page.goto(url, { waitUntil: "commit", timeout: 60000 });
+  debut = Date.now() / 1000;
+  await page.waitForLoadState("load", { timeout: 60000 }).catch(() => {});
+  await page.waitForTimeout(duree);
+  await cdp.send("Page.stopScreencast");
 
-// Les images, et leur durée réelle d'affichage (écart avec la suivante).
-const lignes = ["ffconcat version 1.0"];
-images.forEach((im, i) => {
-  const fichier = `images/${String(i).padStart(5, "0")}.jpg`;
-  fs.writeFileSync(path.join(dossier, fichier), Buffer.from(im.data, "base64"));
-  const suivante = images[i + 1]?.t ?? im.t + 1 / 30;
-  lignes.push(`file '${fichier}'`, `duration ${Math.max(0.001, suivante - im.t).toFixed(4)}`);
-});
-// ffconcat ignore la durée de la dernière entrée : on la répète.
-if (images.length) lignes.push(`file 'images/${String(images.length - 1).padStart(5, "0")}.jpg'`);
-fs.writeFileSync(path.join(dossier, "images.ffconcat"), lignes.join("\n"));
-const t0 = images[0]?.t ?? 0;
-fs.writeFileSync(
-  path.join(dossier, "temps.json"),
-  JSON.stringify({ premiere: t0, ouverture: debut, avantNavigation: tAvant, horodatages: images.map((im) => +(im.t - t0).toFixed(3)) }),
-);
-console.log(`[${nom}] ${images.length} images en ${(images.at(-1)?.t - t0 || 0).toFixed(1)} s`);
+  // Les images, et leur durée réelle d'affichage (écart avec la suivante).
+  const lignes = ["ffconcat version 1.0"];
+  images.forEach((im, i) => {
+    const fichier = `images/${String(i).padStart(5, "0")}.jpg`;
+    fs.writeFileSync(path.join(dossier, fichier), Buffer.from(im.data, "base64"));
+    const suivante = images[i + 1]?.t ?? im.t + 1 / 30;
+    lignes.push(`file '${fichier}'`, `duration ${Math.max(0.001, suivante - im.t).toFixed(4)}`);
+  });
+  // ffconcat ignore la durée de la dernière entrée : on la répète.
+  if (images.length) lignes.push(`file 'images/${String(images.length - 1).padStart(5, "0")}.jpg'`);
+  fs.writeFileSync(path.join(dossier, "images.ffconcat"), lignes.join("\n"));
+  const t0 = images[0]?.t ?? 0;
+  fs.writeFileSync(
+    path.join(dossier, "temps.json"),
+    JSON.stringify({ premiere: t0, ouverture: debut, avantNavigation: tAvant, horodatages: images.map((im) => +(im.t - t0).toFixed(3)) }),
+  );
+  console.log(`[${nom}] ${images.length} images en ${(images.at(-1)?.t - t0 || 0).toFixed(1)} s`);
+}
 
 if (!sansPage) {
   if (FIGES_PAGE[nom]) await page.addStyleTag({ content: FIGES_PAGE[nom] });
@@ -126,14 +141,15 @@ if (!sansPage) {
   // fixes ou collantes (en-tête, barre d'actions, bouton WhatsApp) et les fonds
   // fixes sont masqués : bout à bout, ils se répéteraient à chaque écran.
   const masquerFixes = () =>
-    page.evaluate(() => {
+    page.evaluate((garde) => {
       for (const e of document.querySelectorAll("body *")) {
+        if (garde && e.matches(garde)) continue;
         const cs = getComputedStyle(e);
         if (cs.position === "fixed" || (cs.position === "sticky" && e.getBoundingClientRect().height < 160)) {
           e.style.setProperty("visibility", "hidden", "important");
         }
       }
-    });
+    }, GARDES[nom] ?? "");
   const hauteurFinale = await page.evaluate(() => document.documentElement.scrollHeight);
   const tuiles = [];
   for (let y = 0, i = 0; y < hauteurFinale; y += H, i++) {

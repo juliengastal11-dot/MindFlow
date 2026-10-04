@@ -18,14 +18,15 @@ const SITES = {
   // boucle (instant affiché, à reporter dans `reprise`).
   popec: { video: { type: "entree-boucle", de: 0.68, boucle: [1.8, 5.3], fondu: 0.8 }, affiche: 2.6 },
   // L'arrivée : le titre monte, la voiture sort du noir et ses phares s'allument (on
-  // part de 0,7 s, juste avant que le titre ne bouge). Puis la boucle, sur deux rythmes
-  // qui ne se recalent jamais : un appel de phares toutes les 4 s environ, un sur deux
-  // suivi du reflet sur le pare-brise, et le reflet du bouton « Réserver » de l'en-tête
-  // toutes les 4,5 s environ (capture du 2026-10-04, 16 h 15). Ses deux bouts tombent
-  // quand les deux sont au repos, dans le même état : un fondu court suffit. Instants
-  // relevés image par image sur la vidéo brute (écart d'une image à la suivante, par
-  // zone : la voiture, le bouton).
-  "ar-transfert": { video: { type: "entree-boucle", de: 0.7, boucle: [4.95, 14.6], fondu: 0.15 }, affiche: 7.5 },
+  // part juste avant que le titre ne bouge). Puis la boucle, sur deux rythmes qui ne se
+  // recalent jamais : un appel de phares toutes les 4 s, un sur deux suivi du reflet sur
+  // le pare-brise, et le reflet du bouton « Réserver » de l'en-tête toutes les 4,4 s
+  // environ. Ses deux bouts tombent quand les deux sont au repos, dans le même état : un
+  // fondu court suffit. Instants relevés image par image sur la vidéo brute (écart d'une
+  // image à la suivante, par zone : la voiture, le bouton) ; ils changent à chaque
+  // capture, la page ne s'affichant pas toujours au même instant (capture du 2026-10-04,
+  // 18 h 30 : page blanche jusqu'à 0,7 s, titre à 1,0 s, appels à 4,1 · 8,0 · 12,1 · 16,1 s).
+  "ar-transfert": { video: { type: "entree-boucle", de: 0.95, boucle: [6.7, 16.0], fondu: 0.3 }, affiche: 7.5 },
 };
 const ff = (...args) => execFileSync("ffmpeg", ["-v", "error", "-y", ...args], { stdio: "inherit" });
 const ko = (f) => `${Math.round(fs.statSync(f).size / 1024)} ko`;

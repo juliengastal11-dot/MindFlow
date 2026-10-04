@@ -75,10 +75,10 @@ export const REALISATIONS: Realisation[] = [
     sous: "chauffeur VTC · Béziers",
     mode: "plat",
     video: "entree-boucle",
-    reprise: 4.4,
-    alt: "Le haut du site d'AR Transfert sur téléphone : son logo, une berline noire qui sort de la nuit, phares allumés, le titre « Chauffeur privé à Béziers » et la mention Disponible 24h/24, 7j/7.",
+    reprise: 6.05,
+    alt: "Le haut du site d'AR Transfert sur téléphone : son logo, une berline noire qui sort de la nuit, phares allumés, plaque AR TRANSFERT, le titre « Chauffeur Privé », « Béziers » en lettres calligraphiées, et la mention Disponible 24h/24, 7j/7.",
     fond: "#000000",
-    tranches: [3000, 3000, 3000, 2496],
+    tranches: [3000, 3000, 3000, 1658],
   },
   {
     id: "pizzeria",
