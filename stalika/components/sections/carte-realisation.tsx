@@ -133,7 +133,11 @@ export function CarteRealisation({ site, etat, actions }: { site: Realisation; e
       const ctx = c?.getContext("2d");
       if (!c || !ctx) return;
       const y0 = Math.max(0, j * pas - recouvrement / 2);
-      const y1 = Math.min(e.h, (j + 1) * pas + recouvrement / 2);
+      // Jusqu'au bas du canevas, dont la hauteur est arrondie au pixel supérieur : peinte
+      // jusqu'au bas de la bande seulement, sa dernière ligne restait en partie
+      // transparente, et un filet sombre passait entre deux bandes sur les pages claires
+      // (AR Transfert, 2026-10-04).
+      const y1 = y0 + c.height / e.dpr;
       ctx.setTransform(e.dpr, 0, 0, e.dpr, 0, -y0 * e.dpr);
       peindreBande(ctx, scene, y0, y1);
     });

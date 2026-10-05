@@ -147,14 +147,146 @@
   --border: var(--color-border);
 }
 
-/* Les couleurs des trois logiciels des démos : chaque carte en fait sa
-   couleur `produit` (style en ligne). Terre cuite pour le chantier, bleu
-   d'encre pour la facture, bleu pétrole pour le contrôle. Sur le blanc de
-   leurs fenêtres : 5,0:1, 6,5:1 et 5,1:1. */
+/* Les couleurs des trois logiciels dans la légende du carrousel, sur le fond
+   sombre de la scène : argent pour Carnet, or pour RelancePro, turquoise pour
+   Contrôle (6,8:1, 10,6:1 et 9,4:1 sur le fond), chacune avec la couleur de
+   l'icône posée dessus (de 6,9:1 à 12,8:1). Dans leurs écrans, chaque
+   logiciel a son thème complet : `.appli-*`, juste après. */
 :root {
-  --produit-carnet: #b4532a;
-  --produit-relance: #3b5ba5;
-  --produit-controle: #1f7a7a;
+  --produit-carnet: #a1a1aa;
+  --produit-relance: #ffc000;
+  --produit-controle: #2dd4bf;
+  --sur-produit-carnet: #18181b;
+  --sur-produit-relance: #000000;
+  --sur-produit-controle: #042f2a;
+}
+
+/* Les trois logiciels des démos, chacun avec son design (demande de J du
+   2026-10-04 : « une sombre, une Gold et une grise »). Un thème est un jeu
+   complet de jetons, posé sur l'écran du téléphone par la carte
+   (components/demos/saas-preview-card.tsx) : l'interface et son film ne
+   changent pas. Contrastes relevés : texte courant de 16 à 19:1, gris
+   secondaire de 5 à 6,5:1, couleurs d'état de 4,8 à 11:1.
+
+   Carnet, gris, d'après le DESIGN.md de Cal.com : un gris clair et des cartes
+   blanches, l'encre presque noire, les boutons graphite, des coins de 8 à
+   16 px et des ombres légères. */
+.appli-grise {
+  --color-background: #ffffff;
+  --color-foreground: #111214;
+  --color-card: #eef0f3;
+  --color-card-foreground: #111214;
+  --color-secondary: #e3e6ea;
+  --color-on-secondary: #111214;
+  --color-muted: #e1e4e9;
+  --color-muted-foreground: #5f6672;
+  --color-border: #d3d7dd;
+  --color-produit: #1f2125;
+  --color-on-produit: #ffffff;
+  --color-succes: #047857;
+  --color-on-succes: #ffffff;
+  --color-attente: #92400e;
+  --color-destructive: #c62828;
+  --color-on-destructive: #ffffff;
+  --shadow-panneau: -16px 0 30px -20px rgb(17 18 20 / 0.25);
+  --shadow-flottant: 0 1px 2px rgb(17 18 20 / 0.06), 0 6px 16px -4px rgb(17 18 20 / 0.14);
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  color-scheme: light;
+}
+
+/* RelancePro, or, d'après le DESIGN.md de Lamborghini : le noir absolu, l'or
+   (#ffc000) pour les actions, les montants et les repères, du texte noir sur
+   l'or, des angles vifs, des étiquettes en capitales espacées. Le cyan de la
+   marque pour ce qui attend, un rouge franc pour le retard. */
+.appli-or {
+  --color-background: #161616;
+  --color-foreground: #f5f5f5;
+  --color-card: #050505;
+  --color-card-foreground: #f5f5f5;
+  --color-secondary: #262626;
+  --color-on-secondary: #f5f5f5;
+  --color-muted: #1c1c1c;
+  --color-muted-foreground: #8c8c8c;
+  --color-border: #2b2b2b;
+  --color-produit: #ffc000;
+  --color-on-produit: #000000;
+  --color-succes: #3dd68c;
+  --color-on-succes: #00140a;
+  --color-attente: #29abe2;
+  --color-destructive: #ff5a5f;
+  --color-on-destructive: #000000;
+  --shadow-panneau: -18px 0 32px -18px rgb(0 0 0 / 0.9);
+  --shadow-flottant: 0 0 0 1px rgb(255 192 0 / 0.22), 0 18px 40px -12px rgb(0 0 0 / 0.9);
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 2px;
+  color-scheme: dark;
+}
+
+/* Contrôle, sombre, d'après le DESIGN.md de Linear : un bleu nuit presque
+   noir, une échelle de surfaces plutôt que des ombres, des filets d'un pixel,
+   un seul accent (turquoise), des coins de 8 et 12 px. */
+.appli-sombre {
+  --color-background: #121a27;
+  --color-foreground: #e6edf6;
+  --color-card: #0b1018;
+  --color-card-foreground: #e6edf6;
+  --color-secondary: #1b2534;
+  --color-on-secondary: #e6edf6;
+  --color-muted: #18212f;
+  --color-muted-foreground: #8b98ab;
+  --color-border: #222d3d;
+  --color-produit: #2dd4bf;
+  --color-on-produit: #042f2a;
+  --color-succes: #34d399;
+  --color-on-succes: #022c22;
+  --color-attente: #fbbf24;
+  --color-destructive: #f87171;
+  --color-on-destructive: #2a0b0b;
+  --shadow-panneau: -1px 0 0 rgb(255 255 255 / 0.05), -18px 0 32px -16px rgb(0 0 0 / 0.75);
+  --shadow-flottant: 0 0 0 1px rgb(255 255 255 / 0.08), 0 16px 32px -10px rgb(0 0 0 / 0.75);
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  color-scheme: dark;
+}
+
+/* Ce que chaque thème change au-delà des jetons, par les repères des pièces
+   communes (components/demos/interface.tsx). Hors des couches : ces règles
+   l'emportent sur les utilitaires posés sur les mêmes éléments. */
+/* Gris : la barre d'état et la barre de l'appli en blanc, sur le gris. */
+.appli-grise [data-etat],
+.appli-grise [data-barre] {
+  background: var(--color-background);
+}
+/* Or : un filet d'or sous la barre de l'appli ; des étiquettes aux angles vifs,
+   en capitales espacées ; la notification en or, comme un bouton de la marque. */
+.appli-or [data-barre] {
+  border-color: rgb(255 192 0 / 0.35);
+}
+.appli-or [data-marque] {
+  border-radius: 0;
+}
+.appli-or [data-pastille] {
+  border-radius: 1px;
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.appli-or [data-d="notification"] {
+  background: var(--color-produit);
+  color: var(--color-on-produit);
+}
+.appli-or [data-d="notification"] > span:first-child {
+  background: var(--color-on-produit);
+  color: var(--color-produit);
+}
+/* Sombre : la notification reste une surface sombre, bordée d'un filet. */
+.appli-sombre [data-d="notification"] {
+  background: var(--color-secondary);
+  color: var(--color-foreground);
 }
 
 /* Les « photos » des démos : des matières en dégradés, assez justes à la

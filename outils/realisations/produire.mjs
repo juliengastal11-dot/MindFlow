@@ -17,6 +17,20 @@ const SITES = {
   // couture [boucle[0], boucle[1]] ; la carte reprend la lecture au début de la
   // boucle (instant affiché, à reporter dans `reprise`).
   popec: { video: { type: "entree-boucle", de: 0.68, boucle: [1.8, 5.3], fondu: 0.8 }, affiche: 2.6 },
+  // L'arrivée : l'ouverture du site en trois temps (les phares seuls, avec le logo qui
+  // s'écrit, puis la voiture qui sort de l'ombre, le titre qui s'écrit et le reste, 3,7 s
+  // en tout). Puis la boucle, sur deux rythmes qui ne se recalent jamais : un appel de
+  // phares toutes les 4 s, un sur deux suivi du reflet sur le pare-brise, et le reflet du
+  // bouton « Réserver » de l'en-tête toutes les 4,3 s environ. Ses deux bouts tombent quand
+  // les deux sont au repos, dans le même état : un fondu court suffit. Instants relevés image
+  // par image sur la vidéo brute (écart d'une image à la suivante, par zone : la voiture, le
+  // bouton, avec `mesurer.cjs` ; puis `couture.cjs` pour les bouts) ; ils changent à chaque capture, la page ne
+  // s'affichant pas toujours au même instant (capture du 2026-10-05 : première lueur à 0,47 s,
+  // ouverture finie à 3,9 s, appels de phares à 6,4 · 10,4 · 14,4 · 18,4 s).
+  // `hautAffiche` : le haut de la page prend l'affiche (la voiture au repos) : la capture de la
+  // page entière tombe à un moment quelconque de la boucle de phares, et ce haut de page est ce
+  // qu'on voit quand la vidéo ne joue pas.
+  "ar-transfert": { video: { type: "entree-boucle", de: 0.4, boucle: [4.1, 17.1], fondu: 0.3 }, affiche: 7.6, hautAffiche: true },
 };
 const ff = (...args) => execFileSync("ffmpeg", ["-v", "error", "-y", ...args], { stdio: "inherit" });
 const ko = (f) => `${Math.round(fs.statSync(f).size / 1024)} ko`;
@@ -95,6 +109,12 @@ for (const [nom, cfg] of Object.entries(SITES)) {
     });
     const n = morceaux.length;
     ff(...entrees, "-filter_complex", `${morceaux.join(";")};${Array.from({ length: n }, (_, k) => `[m${k}]`).join("")}vstack=inputs=${n},scale=600:-2:flags=lanczos[o]`, "-map", "[o]", longue);
+  }
+  // Le haut de la page, remplacé par l'affiche : 600 × 1000 px, la hauteur d'une carte.
+  if (cfg.hautAffiche) {
+    const recouverte = path.join(src, "page-longue-affiche.png");
+    ff("-i", longue, "-ss", String(cfg.affiche), "-i", brut, "-filter_complex", "[1:v]scale=600:1000:flags=lanczos[h];[0:v][h]overlay=0:0", "-frames:v", "1", recouverte);
+    fs.copyFileSync(recouverte, longue);
   }
   // En tranches de 3000 px : un fichier par tranche, chargé au besoin.
   const hLongue = Number(execFileSync("ffprobe", ["-v", "error", "-show_entries", "stream=height", "-of", "csv=p=0", longue]).toString().trim());

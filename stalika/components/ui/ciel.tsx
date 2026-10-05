@@ -17,12 +17,15 @@ import { RAPPORT_CIEL as RAPPORT } from "@/lib/ciel"; // largeur / hauteur des i
    sections défilent par-dessus : rien n'est épinglé, le plan reste en place
    par `position: sticky`.
 
-   En haut de page, c'est la vidéo du hero qui joue (son aller-retour de
-   20 s, la caméra s'approche de la falaise). Au premier défilement, elle se
-   met en pause et s'efface dans le plan dessiné, à la même image : on sait
-   où elle en est à chaque instant (courbe en cosinus du montage). Le plan
-   rejoue alors ses images à l'envers (`video.retour`) : la caméra recule
-   vraiment jusqu'au plan large, sans agrandir d'image fixe.
+   En haut de page, c'est la vidéo du hero qui joue : une boucle de 20 s,
+   deux plans joués vers l'avant (la caméra s'approche de la falaise, un nuage
+   arrive de la gauche et se déverse dans le vide ; puis elle recule). Au
+   premier défilement, elle se met en pause et s'efface dans le plan dessiné,
+   à la même image : on sait où elle en est à chaque instant (courbe en
+   cosinus du montage, `outils/hero/monter.mjs`). Le plan rejoue alors les
+   images du plan retour (`video.retour`), vers l'avant : la caméra recule
+   vraiment jusqu'au plan large, sans agrandir d'image fixe, et rien de ce
+   qui bouge dans l'image ne repart à l'envers.
 
    Le plan dessiné : une suite d'images (`jalons` : quelle image à quelle
    heure), tirées de cinq passages en accéléré à caméra fixe (Kling 3.0 Pro),
@@ -64,7 +67,8 @@ export type CielProps = {
     mobile?: SourcesVideo;
     /** Durée de l'aller-retour, en secondes. */
     duree: number;
-    /** Les images de l'aller, réparties régulièrement (même cadrage que le plan, mobile compris). */
+    /** Les images du plan retour (la caméra recule), réparties régulièrement : la première au
+        plan large, la dernière au plus près (même cadrage que le plan, mobile compris). */
     retour: { bureau: SerieCiel; mobile?: SerieCiel };
     /** Heure à laquelle le recul est fini et le plan reprend la main. */
     recul: number;
@@ -102,7 +106,7 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
     const lecteur = video && !reduit ? cadre.current.querySelector("video") : null;
     const images: HTMLImageElement[] = [];
     const prete = (i: number) => images[i]?.complete && images[i].naturalWidth > 0;
-    // Les images de l'aller de la vidéo, pour le recul.
+    // Les images du plan retour de la vidéo, pour le recul.
     const serieRetour = video ? (video.retour.mobile && surMobile ? video.retour.mobile : video.retour.bureau) : null;
     const retour: HTMLImageElement[] = [];
     const preteRetour = (i: number) => retour[i]?.complete && retour[i].naturalWidth > 0;
@@ -222,8 +226,9 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
         ctx2d.drawImage(images[j], x0, y0, dw, dh);
         ctx2d.globalAlpha = 1;
       }
-      // Le recul : les images de l'aller de la vidéo, à l'envers, par-dessus le plan,
-      // qui s'effacent juste avant la fin du recul (même image de départ des deux côtés).
+      // Le recul : les images du plan retour, de l'endroit où en était la caméra jusqu'au
+      // plan large, par-dessus le plan, qui s'effacent juste avant la fin du recul (même
+      // image de départ des deux côtés).
       if (video && serieRetour && !reduit && t < video.recul) {
         const n = serieRetour.nombre;
         const g = avanceePause * (n - 1) * (1 - douce(borne(t / (video.recul * 0.85))));

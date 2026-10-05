@@ -10,6 +10,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { CONTROLE } from "@/lib/demos";
 import { Avatar, Barre, Case, Fenetre, Notification, Pastille } from "./interface";
 
@@ -19,7 +20,14 @@ import { Avatar, Barre, Case, Fenetre, Notification, Pastille } from "./interfac
 
    Deux plans : la checklist de fermeture, et la fiche d'incident qui glisse
    par-dessus (photo, commentaire, responsable, historique).
+
+   Son design est le sombre (`.appli-sombre`, app/globals.css) : les blocs se
+   détachent d'un cran de surface et d'un filet de lumière sur leur bord haut,
+   plutôt que d'une ombre.
 --------------------------------------------------------------------------- */
+
+/** Un bloc relevé d'un cran : la surface suivante, et un filet de lumière en haut. */
+const RELEVE = "bg-background shadow-[inset_0_1px_0_rgb(255_255_255/0.05)]";
 
 const ICONES_NAV = [CalendarCheck, ListChecks, TriangleAlert, Users, History];
 
@@ -60,7 +68,7 @@ function Checklist() {
           {l.avancement}
         </span>
       </div>
-      <ul className="mt-3 flex flex-col rounded-lg ring-1 ring-inset ring-border/80">
+      <ul className={cn("mt-3 flex flex-col rounded-lg ring-1 ring-inset ring-border/80", RELEVE)}>
         {l.points.map((p) => (
           <li key={p.label} className="flex items-center gap-2.5 border-b border-border/60 px-2.5 py-[7px]">
             <Case fait />
@@ -144,7 +152,7 @@ function Incident() {
           <X className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
         </div>
 
-        <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 ring-1 ring-inset ring-border/80">
+        <div className={cn("flex items-center gap-2.5 rounded-lg px-2.5 py-2 ring-1 ring-inset ring-border/80", RELEVE)}>
           <span className="grid size-7 shrink-0 place-items-center rounded-md bg-destructive/10 text-destructive">
             <Thermometer className="size-3.5" strokeWidth={2} />
           </span>

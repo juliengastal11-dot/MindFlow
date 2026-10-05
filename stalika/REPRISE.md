@@ -25,9 +25,11 @@
 ## Structure actuelle de l'accueil (`app/page.tsx`)
 
 1. `Ciel` (`components/ui/ciel.tsx`) : un seul plan du haut de page jusqu'à la discussion.
-   - En haut, la vidéo du hero (`public/hero/video*.webm|mp4`, aller-retour 20 s, la caméra
-     s'approche, rafale de poussière au début). Au premier défilement elle se met en pause et
-     la caméra recule vraiment (30 images `public/hero/recul/`).
+   - En haut, la vidéo du hero (`public/hero/video*.webm|mp4`, boucle de 20 s : la caméra
+     s'approche, un nuage arrive de la gauche, traverse le plateau et se déverse dans le vide,
+     puis elle recule ; deux plans joués vers l'avant, montés par `outils/hero/monter.mjs`).
+     Au premier défilement elle se met en pause et la caméra recule vraiment (30 images
+     `public/hero/recul/`, tirées du plan retour).
    - Puis 111 images (`public/ciel/bureau|mobile`) : lumière du hero → crépuscule → nuit →
      nuit où le personnage s'étire → aube → lumière dorée. Heure linéaire avec le défilement.
      Étoiles filantes dessinées en code la nuit.
@@ -52,22 +54,27 @@
 - Assistant de discussion (API Claude, agenda, RGPD, transparence IA) : plus tard, voir `BLUEPRINT.md`.
 - Mentions légales et données marquées `[[À CONFIRMER PAR L'UTILISATEUR : …]]`.
 
-## Médias générés (Higgsfield, compte de J, 62,67 crédits restants)
+## Médias générés (Higgsfield, compte de J, 27,67 crédits restants au 2026-10-04)
 
 Les fichiers bruts de la session précédente sont perdus avec son conteneur ; ils restent
 téléchargeables depuis Higgsfield par leur identifiant de tâche :
 
 | Plan | Tâche Higgsfield |
 |---|---|
-| Hero 10 s (plan large → image B) | `c0a43cd4-bfba-4632-ac7d-d315b8564518` |
+| Hero 10 s (plan large → image B), remplacé le 2026-10-04 : une bouffée de poussière y jaillissait du sol | `c0a43cd4-bfba-4632-ac7d-d315b8564518` |
+| Hero, aller (plan large → image B, un nuage arrive de la gauche et se déverse dans le vide), Kling 3.0 Pro, 17,5 crédits | `56f637b9-1d4d-4d58-9ed4-e9ec3887cc65` |
+| Hero, retour (image B → plan large, plateau dégagé), Kling 3.0 Pro, 17,5 crédits | `597187a2-e38a-4586-b785-a74a2ce6c2d6` |
 | Lumière du hero → crépuscule | `2455a96d-7484-4fbc-9bf2-64db9afd98e5` |
 | Crépuscule → nuit | `f7f1aabb-2eee-4247-9af6-3eb6a689b3e1` |
 | Nuit, le personnage s'étire | `1760f812-3716-45cc-bea1-ac238e55ef20` |
 | Nuit → aube | `a41b3f0a-20c1-4c1b-84f9-7795cd23c463` |
 | Aube → lumière dorée (fin = 1re image de la plongée) | `0c2f7efb-c6bd-4933-9d38-b7ca5fa6a7f8` |
 
-Montage : la vidéo du hero suit une courbe cosinus (aller 10 s, retour 10 s) ; version mobile
-recadrée à 600/1924 de large depuis 277/1924, pleine hauteur, comme la série mobile du ciel.
+Montage (`outils/hero/monter.mjs`, depuis le 2026-10-04) : l'aller puis le retour, chacun
+ralenti en cosinus, raccordés par des fondus de 0,4 s, la fin retombant sur le début ; version
+mobile : le bandeau de 600 px pris à x = 278 de l'image de 1928, agrandi en 840 × 1506, comme
+la série mobile du ciel. Les images clés données à Kling (plan large, image B) sont la première
+et la dernière image du plan d'origine.
 
 ## Règles de travail avec J (à respecter)
 

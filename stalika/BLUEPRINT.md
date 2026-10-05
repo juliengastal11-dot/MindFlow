@@ -29,7 +29,7 @@ camel en texte. La nuit reprend la version sombre de la même palette.
 ## Mise à jour du 2026-10-01 : la roue des sites (scène « Sur mesure »)
 
 À la demande de J, le champ de neuf cartes dessinées (`Champ3D`) laisse la place à une **roue** :
-les trois sites de Julien sur un cylindre couché (`components/ui/roue.tsx`), à gauche, et le texte
+les sites de Julien (trois, puis quatre le 2026-10-04) sur un cylindre couché (`components/ui/roue.tsx`), à gauche, et le texte
 du sur mesure à droite, **sur téléphone comme sur ordinateur**. Idée tirée de 21st
 (« vertical-image-stack », fourni par J), avec la géométrie de « Cylinder Carousel » et l'inertie
 de « Wheel Carousel » ; aucun code repris.
@@ -61,7 +61,8 @@ de « Wheel Carousel » ; aucun code repris.
   navigateur prend la couche de défilement pour la carte et fait défiler la page (la page, très
   haute, est projetée en 3D) : essais de bandes de garde et de `clip-path` sans effet.
 - **Les cartes** montrent le haut de chaque site sur téléphone, **en action** : la devanture de
-  la pizzeria en boucle ; l'arrivée sur Popec puis sa bande qui défile. Aucun lien.
+  la pizzeria en boucle ; l'arrivée sur Popec puis sa bande qui défile ; l'arrivée sur AR
+  Transfert (la berline sort du noir, phares allumés) puis ses appels de phares. Aucun lien.
 - **VTBON, en calques** : le site a un fond fixe derrière toute la page, un film (cuir surpiqué,
   puis le chauffeur et son téléphone, puis la route de nuit) que le défilement fait avancer, avec
   un voile qui s'assombrit. La première version de la carte l'avait perdu : la capture masquait les
@@ -75,6 +76,11 @@ de « Wheel Carousel » ; aucun code repris.
   tranches de la page se chargent au fil du défilement ; la roue attend 6 s après la lecture.
 - **Les sites** (`lib/realisations.ts`) : la Pizzeria des Allées, VTBON et Popec, capturés en
   ligne le 2026-10-01. Deux sites d'exemple imaginés le même jour ont été retirés à la demande de J.
+  Le 2026-10-04, AR Transfert (chauffeur VTC à Béziers, `ar-transfert-apercu.vercel.app`) est
+  ajouté **en tête**, à la demande de J : quatre cartes, 45° entre deux. Sa page a des parties
+  blanches, qui ont montré un filet sombre entre les bandes (la dernière ligne de chaque canevas
+  n'était peinte qu'en partie) : chaque bande se peint maintenant sur toute la hauteur de son
+  canevas.
 - **Les outils** pour refaire les captures : `outils/realisations/` à la racine du dépôt (non
   publié).
 
@@ -227,7 +233,7 @@ Cinq champs : nom, hauteur (`bandeau`, `normal`, `grand`, `plein`), fond, conten
 Nav | bandeau | background | Monogramme + Stalika, bouton Contact, lien WhatsApp, lien d'évitement
 Scène 1 · Ils vous cherchent | plein | background (jour, illustration en calques) | Eyebrow, H1, texte, barre de recherche qui se tape, suggestions, 2 boutons, indice de défilement | EntreeHero, Paysage, Scene, Frappe
 Scène 2 · Pas un modèle | plein | background **nuit** | Eyebrow 01, H2, mot qui se décode, texte · neuf cartes en perspective, d'abord identiques, qui deviennent différentes | Scene, Decode, Champ3D
-Scène 3 · Utile | plein | primary **nuit** | Eyebrow 02, H2, texte · trois logiciels en démonstration (Carnet, RelancePro, Contrôle), chacun une application vivante sur l'écran d'un iPhone du carrousel de Solace UI ; à côté (dessous sur téléphone), la légende du logiciel de face | Scene, Reveal, SaaSCarousel, SaaSPreviewCard (components/demos), PhoneCarousel (components/ui/phone-mockups-1-utils)
+Scène 3 · Utile | plein | primary **nuit** | Eyebrow 02, H2, texte · trois logiciels en démonstration (Carnet, RelancePro, Contrôle), chacun une application vivante sur l'écran d'un iPhone du carrousel de Solace UI, chacune avec son design depuis le 2026-10-04 (demande de J) : Carnet gris d'après le DESIGN.md de Cal.com, RelancePro noir et or d'après celui de Lamborghini, Contrôle sombre d'après celui de Linear (thèmes `.appli-*` dans app/globals.css) ; à côté (dessous sur téléphone), la légende du logiciel de face | Scene, Reveal, SaaSCarousel, SaaSPreviewCard (components/demos), PhoneCarousel (components/ui/phone-mockups-1-utils)
 Scène 4 · La relecture | plein | background **nuit** | Eyebrow 03, H2, texte · maquette client : surlignage, bulle, ligne barrée puis réécrite, tampon | Scene, Frappe, Barre
 Scène 5 · Livré | plein | background (jour) | Eyebrow 04, H2, 4 coches · carte d'offre : 300 €, plusieurs fois, 72 h en rouleaux, France, bouton | Scene, Rouleaux
 Ils m'ont fait confiance | bandeau | muted | Trois noms et leur sous-titre, en défilement, liens | Defilant

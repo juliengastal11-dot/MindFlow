@@ -66,7 +66,8 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 - Point 3 : `Un lien pour corriger` · `une fois la première maquette élaborée, vous recevez un lien de visualisation qui vous permet aussi d'éditer. Je reçois vos commentaires et je mets à jour à votre guise.` (mots de J, overlay du 2026-10-02, orthographe corrigée)
 - Le point « Au-delà du site » est passé dans la section 02 (demande de J, overlay du 2026-10-02) : voir son texte.
 - Invitation `Attrapez la roue : aucun site ne ressemble au voisin.` : supprimée (J, overlay, 2026-10-02). Le nom et le sous-titre de la carte de face sous la roue (téléphone), le bouton pause et les points sont retirés de l'affichage ; ils ne subsistent que pour le clavier et les lecteurs d'écran.
-- La roue (2026-10-01, remplace le champ de neuf cartes), libellé accessible `Trois sites, trois styles`. Une carte par site, avec son nom et son sous-titre :
+- La roue (2026-10-01, remplace le champ de neuf cartes), libellé accessible `Quatre sites, quatre styles` (AR Transfert ajouté en tête le 2026-10-04, demande de J). Une carte par site, avec son nom et son sous-titre, dans l'ordre :
+  - `AR Transfert` · `chauffeur VTC · Béziers`
   - `La Pizzeria des Allées` · `pizzeria · Béziers`
   - `VTBON` · `application des chauffeurs VTC`
   - `Popec` · `coach sportif · Béziers`

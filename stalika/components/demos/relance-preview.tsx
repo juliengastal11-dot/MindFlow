@@ -23,7 +23,13 @@ import { Avatar, Bouton, Fenetre, Notification, Pastille } from "./interface";
 
    Trois plans : le tableau de bord, la fiche d'une facture qui glisse
    par-dessus, et la fenêtre du message de relance, au centre.
+
+   Son design est l'or (`.appli-or`, app/globals.css) : des tuiles charbon
+   sur le noir, des étiquettes en capitales espacées, le montant en or.
 --------------------------------------------------------------------------- */
+
+/** Une petite étiquette en capitales espacées, à la façon des marques de luxe. */
+const ETIQUETTE = "text-[9.5px] uppercase tracking-[0.1em] text-muted-foreground";
 
 const ICONES_NAV = [LayoutDashboard, Receipt, FileText, Users, BellRing];
 
@@ -53,8 +59,8 @@ function Tableau() {
     <div data-d="tableau" className="absolute inset-0 flex flex-col p-3 @lg:p-4">
       <div className="grid grid-cols-2 gap-2 @lg:grid-cols-3">
         {d.indicateurs.map((k, i) => (
-          <div key={k.label} className={cn("rounded-lg px-2.5 py-2 ring-1 ring-inset ring-border/80", i === 2 && "hidden @lg:block")}>
-            <p className="truncate text-[10.5px] text-muted-foreground">{k.label}</p>
+          <div key={k.label} className={cn("rounded-lg bg-background px-2.5 py-2 ring-1 ring-inset ring-border/80", i === 2 && "hidden @lg:block")}>
+            <p className={cn("truncate", ETIQUETTE)}>{k.label}</p>
             <p
               className={cn(
                 "mt-0.5 text-[15px] font-semibold tabular-nums tracking-tight",
@@ -68,7 +74,7 @@ function Tableau() {
         ))}
       </div>
       <div className="mt-4 flex items-center gap-2">
-        <span className="text-[13px] font-semibold tracking-tight">{d.titreListe}</span>
+        <span className="text-[11px] font-semibold uppercase tracking-[0.08em]">{d.titreListe}</span>
         <Pastille>{d.aRelancer.length}</Pastille>
       </div>
       <ul className="mt-1.5 flex flex-col">
@@ -122,7 +128,7 @@ function Fiche() {
           </div>
           <X className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
         </div>
-        <p className="text-[20px] font-semibold leading-none tabular-nums tracking-tight">{f.montant}</p>
+        <p className="text-[20px] font-semibold leading-none tabular-nums tracking-tight text-produit">{f.montant}</p>
         <p
           data-d="fiche-alerte"
           className="flex items-center gap-2 rounded-md bg-destructive/[0.07] px-2.5 py-1.5 text-[11px] font-medium text-destructive ring-1 ring-inset ring-destructive/15"
@@ -133,7 +139,7 @@ function Fiche() {
         <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px]">
           {f.details.map((x) => (
             <div key={x.label} className="min-w-0">
-              <dt className="text-muted-foreground">{x.label}</dt>
+              <dt className={ETIQUETTE}>{x.label}</dt>
               <dd className="truncate font-medium">{x.valeur}</dd>
             </div>
           ))}
@@ -145,7 +151,7 @@ function Fiche() {
           <Bouton variante="contour">{f.payee}</Bouton>
         </div>
         <div className="border-t border-border/70 pt-2.5">
-          <p className="text-[11.5px] font-semibold">{h.titre}</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.08em]">{h.titre}</p>
           <ol className="mt-1">
             {h.lignes.map((l, i) => (
               <li
@@ -172,7 +178,7 @@ function Message() {
   const m = RELANCE.message;
   return (
     <>
-      <div data-d="voile" className="absolute inset-0 z-20 bg-foreground/25 opacity-0" />
+      <div data-d="voile" className="absolute inset-0 z-20 bg-card/70 opacity-0" />
       <div className="pointer-events-none absolute inset-0 z-20 grid place-items-center p-3">
         <div data-d="message" className="w-full max-w-[25rem] rounded-xl bg-card opacity-0 shadow-flottant">
           <div className="flex items-center justify-between border-b border-border/70 px-3 py-2.5">

@@ -34,8 +34,9 @@ export default function Accueil() {
     <>
       <main id="contenu">
         {/* Un seul plan du hero jusqu'à la discussion (demande de J) : la vidéo
-            du hero en haut de page (la caméra s'approche, une rafale soulève la
-            poussière dès le début), puis la même falaise dont l'heure avance au
+            du hero en haut de page (la caméra s'approche, un nuage arrive de la
+            gauche, traverse le plateau et se déverse dans le vide, puis elle
+            recule), puis la même falaise dont l'heure avance au
             défilement, en un seul mouvement régulier. 111 images tirées de cinq
             passages Kling bout à bout : lumière du hero → crépuscule (1 à 21),
             → nuit (22 à 41), la nuit où le personnage s'étire (42 à 71),

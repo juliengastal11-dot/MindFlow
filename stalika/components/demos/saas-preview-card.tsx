@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 import { gsap, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
 import { creerOutils, type AnimationDemo } from "./moteur";
@@ -10,10 +11,11 @@ import { EcranTelephone } from "./interface";
    SaaSPreviewCard : un logiciel, vivant, sur l'écran d'un iPhone du carrousel
    (components/ui/phone-mockups-1-utils, choisi par J le 2026-10-02).
 
-   La carte pose sa couleur (`accent`, en `--color-produit`), dessine
-   l'écran à la taille qu'il a dans un iPhone de 350 px (315 × 682) puis le
-   met à l'échelle du téléphone réel, et fait tourner le film de `animation`
-   sur sa fenêtre. L'application occupe le haut de l'écran : le carrousel
+   La carte pose le thème du logiciel (`theme` : `appli-grise`, `appli-or`,
+   `appli-sombre`, dans app/globals.css : ses couleurs, ses coins, ses
+   ombres), dessine l'écran à la taille qu'il a dans un iPhone de 350 px
+   (315 × 682) puis le met à l'échelle du téléphone réel, et fait tourner le
+   film de `animation` sur sa fenêtre. L'application occupe le haut de l'écran : le carrousel
    coupe ses téléphones au bas de la scène et pose ses boutons par-dessus.
 
    `etat` vient du carrousel : `joue` (le téléphone de face), `pause` (le
@@ -42,8 +44,8 @@ export type SaaSPreviewCardProps = {
   description: string;
   /** Ce que la démo montre, en une phrase : l'écran le dit aux lecteurs d'écran. */
   resume?: string;
-  /** La couleur du logiciel : une valeur CSS, en général `var(--produit-…)`. */
-  accent: string;
+  /** Le thème du logiciel : la classe qui pose ses jetons (`appli-grise`…). */
+  theme: string;
   /** Une étiquette à côté du nom : « Démo », « Disponible »… */
   statut?: string;
   /** L'heure de la barre d'état du téléphone. */
@@ -55,7 +57,7 @@ export type SaaSPreviewCardProps = {
   children: React.ReactNode;
 };
 
-export function SaaSPreviewCard({ nom, description, resume, accent, statut, heure, animation, etat, children }: SaaSPreviewCardProps) {
+export function SaaSPreviewCard({ nom, description, resume, theme, statut, heure, animation, etat, children }: SaaSPreviewCardProps) {
   const ecran = useRef<HTMLDivElement>(null);
   const film = useRef<gsap.core.Timeline | null>(null);
   const etatRef = useRef(etat);
@@ -136,19 +138,12 @@ export function SaaSPreviewCard({ nom, description, resume, accent, statut, heur
       ref={ecran}
       role="img"
       aria-label={`${nom}${statut ? ` (${statut})` : ""} : ${resume ?? description}`}
-      className="jour absolute inset-0 bg-card"
+      className={cn(theme, "absolute inset-0 bg-card")}
     >
       <div
         aria-hidden="true"
         className="absolute left-0 top-0 origin-top-left"
-        style={
-          {
-            width: ECRAN.largeur,
-            height: HAUTEUR_APPLI,
-            transform: `scale(${echelle})`,
-            "--color-produit": accent,
-          } as React.CSSProperties
-        }
+        style={{ width: ECRAN.largeur, height: HAUTEUR_APPLI, transform: `scale(${echelle})` }}
       >
         <EcranTelephone.Provider value={{ heure }}>{children}</EcranTelephone.Provider>
       </div>

@@ -65,7 +65,7 @@ export function SaaSCarousel({ demos = DEMOS, className }: { demos?: readonly De
         nom={d.nom}
         description={d.description}
         resume={d.resume}
-        accent={d.accent}
+        theme={d.theme}
         statut={d.statut}
         heure={d.heure}
         animation={d.animation}
@@ -160,7 +160,7 @@ function Legende({
 
       <div
         ref={bloc}
-        style={{ "--color-produit": d.accent } as React.CSSProperties}
+        style={{ "--color-produit": d.accent, "--color-on-produit": d.surAccent } as React.CSSProperties}
         className="flex flex-col items-center gap-3.5 text-center lg:items-start lg:text-left"
       >
         <div className="flex items-center gap-3 text-left">

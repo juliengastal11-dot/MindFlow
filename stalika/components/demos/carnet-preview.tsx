@@ -25,6 +25,9 @@ import { Avatar, Barre, Bouton, Case, Fenetre, Notification, Pastille } from "./
 
    Deux plans : la liste des chantiers, et la fiche d'un chantier qui glisse
    par-dessus (tâches, photos, compte-rendu, en onglets).
+
+   Son design est le gris (`.appli-grise`, app/globals.css) : des cartes
+   blanches à l'ombre légère sur un gris clair.
 --------------------------------------------------------------------------- */
 
 const ICONES_NAV = [HardHat, CalendarDays, Users, FolderOpen];
@@ -82,7 +85,7 @@ function Liste() {
             <li
               key={c.client}
               data-d="chantier"
-              className="relative grid grid-cols-[1fr_auto] items-center gap-3 rounded-lg px-2 py-2 ring-1 ring-inset ring-border/80 @lg:grid-cols-[1fr_7rem_5.25rem_4.25rem] @lg:rounded-none @lg:border-b @lg:border-border/60 @lg:py-2.5 @lg:ring-0"
+              className="relative grid grid-cols-[1fr_auto] items-center gap-3 rounded-lg bg-background px-2 py-2 shadow-[0_1px_2px_rgb(17_18_20/0.06)] ring-1 ring-inset ring-border/50 @lg:grid-cols-[1fr_7rem_5.25rem_4.25rem] @lg:rounded-none @lg:border-b @lg:border-border/60 @lg:bg-transparent @lg:py-2.5 @lg:shadow-none @lg:ring-0"
             >
               <span
                 data-d="chantier-survol"
@@ -265,7 +268,7 @@ function VoletCompteRendu() {
           </span>
         </Bouton>
       </div>
-      <div data-d="cr-doc" className="invisible absolute inset-x-3 top-2.5 rounded-lg bg-card p-3 shadow-flottant @lg:inset-x-4">
+      <div data-d="cr-doc" className="invisible absolute inset-x-3 top-2.5 rounded-lg bg-background p-3 shadow-flottant @lg:inset-x-4">
         <div data-d="cr-ligne" className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="truncate text-[12.5px] font-semibold">{c.titre}</p>
