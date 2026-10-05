@@ -61,7 +61,8 @@ Le film de VTBON : `https://vtbon.fr/video/hero-portrait.mp4` (720 × 1280, 18,6
 d'avancement et son voile sont ceux du site (`components/video/fond-video.tsx` et
 `lib/mouvement.ts` du dépôt `vtbon-site`), recopiés dans `stalika/lib/realisations.ts`.
 
-AR Transfert (2026-10-04, refaite à 16 h 15 après l'arrivée du logo et des boutons « Shiny ») :
+AR Transfert (2026-10-04, refaite plusieurs fois ; dernière capture le 2026-10-05 après sa nouvelle
+ouverture en trois temps, les phares seuls, le logo qui s'écrit, puis le titre) :
 `node capturer.mjs ar-transfert https://ar-transfert-apercu.vercel.app 30 --pleine-page`. Le site
 remet ses apparitions à zéro quand elles quittent l'écran et n'allume que le chapitre qu'on lit :
 `capturer.mjs` les fige pour la page entière (`MASQUES`), avec la barre de trajet pleine ; il pose le
@@ -72,7 +73,10 @@ en haut de page que le héros ait rejoué son entrée (`ATTENTE_HAUT`). Pour ne 
 de boucle déjà relevés) : `--page-seule`. La boucle vit sur deux rythmes qui ne se recalent jamais (les appels de
 phares, le reflet du bouton de l'en-tête) : ses deux bouts se prennent là où les deux sont au repos,
 trouvés en mesurant l'écart d'une image à la suivante, zone par zone, sur les images décodées
-(`ffmpeg -f rawvideo`, puis un petit script). Les filtres `signalstats` (YDIF) et `tblend` de ffmpeg
+(`mesurer.cjs <brut.mp4> <sortie.json>`, qui lit `ffmpeg -f rawvideo` ; puis `couture.cjs` compare
+les images des deux bouts pour choisir le couple de reprise). Le haut de la page prend l'affiche au
+repos (`hautAffiche` dans `produire.mjs`) : la capture de la page entière tombe au hasard dans la
+boucle de phares. Les filtres `signalstats` (YDIF) et `tblend` de ffmpeg
 ont signalé ici des écarts qu'on ne voyait pas sur les images : ne pas s'y fier. Voir `produire.mjs`.
 
 Captures du 2026-10-01 : pizzeria-des-allees.vercel.app, vtbon.fr et popec-run.vercel.app ; du
