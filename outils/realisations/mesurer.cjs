@@ -1,16 +1,18 @@
-// Pour AR Transfert (zones à adapter à un autre site). Mesure, image par image, ce qui bouge dans la vidéo brute d'AR Transfert, sur les
-// images décodées (niveaux de gris, demi-taille 390 × 650) : la voiture et le bouton
-// « Réserver » de l'en-tête. Écrit mesure.json : [{ t, voiture, bouton, vAvg }].
-// node mesure.cjs <brut.mp4> <sortie.json>
+// Mesure, image par image, ce qui bouge dans la vidéo brute d'une capture, sur les images
+// décodées (niveaux de gris, demi-taille 390 × 650), dans deux zones à surveiller.
+// Écrit un JSON : [{ t, a, b, aAvg, bAvg }] : l'écart avec l'image d'avant et la luminosité
+// moyenne de chaque zone.
+//
+// node mesurer.cjs <brut.mp4> <sortie.json> [zoneA] [zoneB]
+//   zones : "x,y,l,h" en pixels CSS de la capture. Par défaut, celles d'AR Transfert :
+//   A = la voiture (sous l'en-tête), B = le bouton « Réserver » de l'en-tête.
+//   Pour la pizzeria : A = la devanture (0,470,390,180), B = le titre (0,40,390,60).
 const { spawn } = require("child_process");
 const fs = require("fs");
-const [video, sortie] = process.argv.slice(2);
+const [video, sortie, zA = "0,66,390,334", zB = "248,13,122,37"] = process.argv.slice(2);
 const L = 390, H = 650, TAILLE = L * H;
-// Zones en pixels de la demi-taille (= pixels CSS de la capture).
-const ZONES = {
-  voiture: { x: 0, y: 66, l: 390, h: 334 },  // sous l'en-tête, jusqu'aux mentions
-  bouton: { x: 248, y: 13, l: 122, h: 37 },  // « Réserver », en haut à droite
-};
+const zone = (t) => { const [x, y, l, h] = t.split(",").map(Number); return { x, y, l, h }; };
+const ZA = zone(zA), ZB = zone(zB);
 const ff = spawn("ffmpeg", ["-v", "error", "-i", video, "-vf", `scale=${L}:${H}:flags=area,format=gray`, "-f", "rawvideo", "-"]);
 let tampon = Buffer.alloc(0);
 let prec = null;
@@ -29,15 +31,19 @@ const moyenne = (a, z) => {
 ff.stdout.on("data", (d) => {
   tampon = Buffer.concat([tampon, d]);
   while (tampon.length >= TAILLE) {
-    const img = tampon.subarray(0, TAILLE);
+    const copie = Buffer.from(tampon.subarray(0, TAILLE));
     tampon = tampon.subarray(TAILLE);
-    const copie = Buffer.from(img);
     res.push({
       t: +(n / 30).toFixed(3),
-      voiture: prec ? +ecart(copie, prec, ZONES.voiture).toFixed(4) : 0,
-      bouton: prec ? +ecart(copie, prec, ZONES.bouton).toFixed(4) : 0,
-      vAvg: +moyenne(copie, ZONES.voiture).toFixed(3),
-      bAvg: +moyenne(copie, ZONES.bouton).toFixed(3),
+      a: prec ? +ecart(copie, prec, ZA).toFixed(4) : 0,
+      b: prec ? +ecart(copie, prec, ZB).toFixed(4) : 0,
+      aAvg: +moyenne(copie, ZA).toFixed(3),
+      bAvg: +moyenne(copie, ZB).toFixed(3),
+      // Pour l'ancien format (AR Transfert) : voiture, bouton, vAvg.
+      voiture: prec ? +ecart(copie, prec, ZA).toFixed(4) : 0,
+      bouton: prec ? +ecart(copie, prec, ZB).toFixed(4) : 0,
+      vAvg: +moyenne(copie, ZA).toFixed(3),
+      bAvg2: +moyenne(copie, ZB).toFixed(3),
     });
     prec = copie;
     n++;
