@@ -11,7 +11,11 @@ import path from "node:path";
 const [SORTIE, ...seuls] = process.argv.slice(2);
 const SITES = {
   // boucle : segment [de, a], fondu de `fondu` s avec ce qui précède `de`.
-  pizzeria: { video: { type: "boucle", de: 3.0, a: 11.0, fondu: 1.0 }, affiche: 3.0 },
+  // Capture du 2026-10-06 (le site refait en Astro, style ElevenLabs) : la page arrive à 0,47 s, le
+  // titre monte jusqu'à 2,6 s, la devanture (photo) entre à 1,5 s et sa vidéo démarre vers 2,7 s,
+  // en boucle. Deux bouts distants d'un tour de la vidéo (9,7 s dans la capture), au fondu d'une
+  // seconde : les halos de couleur du fond dérivent lentement (34 à 47 s) et ne se recalent pas.
+  pizzeria: { video: { type: "entree-boucle", de: 0.47, boucle: [3.733, 13.433], fondu: 1.0 }, affiche: 5.0, hautAffiche: true },
   // (une entrée seule, jouée une fois puis tenue : `{ type: "entree", de, a }`)
   // entrée puis boucle : l'arrivée [de, boucle[0] + fondu], puis la boucle sans
   // couture [boucle[0], boucle[1]] ; la carte reprend la lecture au début de la

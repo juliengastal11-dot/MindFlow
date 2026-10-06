@@ -80,4 +80,17 @@ boucle de phares. Les filtres `signalstats` (YDIF) et `tblend` de ffmpeg
 ont signalé ici des écarts qu'on ne voyait pas sur les images : ne pas s'y fier. Voir `produire.mjs`.
 
 Captures du 2026-10-01 : pizzeria-des-allees.vercel.app, vtbon.fr et popec-run.vercel.app ; du
-2026-10-04 : ar-transfert-apercu.vercel.app.
+2026-10-04 : ar-transfert-apercu.vercel.app ; du 2026-10-06 : la pizzeria et VTBON, refaits.
+
+- **Pizzeria** (2026-10-06, le site refait en Astro) : `node capturer.mjs pizzeria https://pizzeria-des-allees.vercel.app 36 --pleine-page`,
+  la vidéo brute montée comme ci-dessus, `node produire.mjs ../../stalika/public/realisations pizzeria`. L'entrée
+  (la page, puis la devanture qui entre et sa vidéo qui démarre vers 2,7 s) suivie d'une boucle : la devanture
+  tourne sur 9,7 s dans la capture ; ses deux bouts sont trouvés avec `couture.cjs` (fondu d'une seconde, les
+  halos de couleur du fond dérivent lentement). `mesurer.cjs` prend des zones en paramètres (devanture, titre).
+- **VTBON** (2026-10-06) : le film de fond n'avait pas changé (même empreinte que celui du 2026-10-01) : ses 40
+  images ont été gardées en l'état. À refaire : `node capturer-calques.mjs vtbon https://vtbon.fr`, puis
+  `node produire-calques.mjs ../../stalika/public/realisations vtbon <film.mp4> 40`, et reporter dans
+  `lib/realisations.ts` la hauteur des tranches, `finPage` et les boîtes du héros (`sorties/vtbon/calques.json`).
+  Avant de réutiliser le film : comparer son empreinte (`md5sum`) à celui de `vtbon.fr/video/hero-portrait.mp4`,
+  et relire `components/video/fond-video.tsx` et `lib/mouvement.ts` du dépôt `vtbon-site` (courbe, voile et
+  entrée du héros : copiés dans `lib/realisations.ts`).

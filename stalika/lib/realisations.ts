@@ -21,7 +21,9 @@
      L'entrée du héros est rejouée bloc par bloc (`calques.hero`).
 
    Captures du 2026-10-01, sur les sites en ligne : pizzeria-des-allees.vercel.app,
-   vtbon.fr, popec-run.vercel.app ; et du 2026-10-04 : ar-transfert-apercu.vercel.app.
+   vtbon.fr, popec-run.vercel.app ; du 2026-10-04 : ar-transfert-apercu.vercel.app ;
+   et du 2026-10-06, après leur refonte : la pizzeria (refaite en Astro, page claire,
+   devanture en vidéo) et vtbon.fr (même film de fond, nouvelle page).
    Les outils d'essai (le bandeau des couleurs de la pizzeria) et les barres fixes
    sont masqués. Pour refaire une capture : `outils/realisations/` à la racine du
    dépôt.
@@ -85,10 +87,11 @@ export const REALISATIONS: Realisation[] = [
     nom: "La Pizzeria des Allées",
     sous: "pizzeria · Béziers",
     mode: "plat",
-    video: "boucle",
-    alt: "Le haut du site de la Pizzeria des Allées sur téléphone : la devanture bleu nuit et or, des convives en terrasse, les boutons Commander et Réserver.",
-    fond: "#0b1a44",
-    tranches: [3000, 3000, 3000, 3000, 1650],
+    video: "entree-boucle",
+    reprise: 4.263,
+    alt: "Le haut du site de la Pizzeria des Allées sur téléphone : une page claire aux halos pêche et menthe, le titre « La Pizzeria des Allées », les boutons Réserver une table et Commander, et, en bas, la devanture bleu nuit et or avec des convives en terrasse.",
+    fond: "#f5f5f5",
+    tranches: [3000, 3000, 3000, 3000, 446],
   },
   {
     id: "vtbon",
@@ -96,12 +99,12 @@ export const REALISATIONS: Realisation[] = [
     sous: "application des chauffeurs VTC",
     mode: "calques",
     video: null,
-    alt: "Le haut du site VTBON sur téléphone : fond de cuir surpiqué d'or, le titre « Vos bons de transport VTC, à la voix. En quelques secondes. »",
+    alt: "Le haut du site VTBON sur téléphone : fond de cuir surpiqué d'or, le titre « Le bon de transport VTC, dicté à la voix. » et le bouton Me prévenir du lancement.",
     fond: "#000000",
-    tranches: [3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 2802],
+    tranches: [3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 3000, 1174],
     calques: {
       images: 40,
-      finPage: 18036.1,
+      finPage: 16987,
       // `MOUVEMENT.video.courbe` et `VOILE` de vtbon-site (components/video/fond-video.tsx).
       courbe: [
         [0, 0],
@@ -118,11 +121,11 @@ export const REALISATIONS: Realisation[] = [
         [1, 0.76],
       ],
       hero: [
-        { rang: 0, x0: 24, y0: 84, x1: 321.8, y1: 118.4 },
-        { rang: 1, x0: 24, y0: 138.4, x1: 366, y1: 298.4 },
-        { rang: 2, x0: 24, y0: 314.4, x1: 366, y1: 410.4 },
-        { rang: 3, x0: 24, y0: 438.4, x1: 366, y1: 486.4 },
-        { rang: 4, x0: 24, y0: 506.4, x1: 366, y1: 569.8 },
+        { rang: 0, x0: 24, y0: 86, x1: 179.1, y1: 108.4 },
+        { rang: 1, x0: 24, y0: 129.6, x1: 366, y1: 209.6 },
+        { rang: 2, x0: 24, y0: 225.6, x1: 366, y1: 297.6 },
+        { rang: 3, x0: 24, y0: 325.6, x1: 366, y1: 373.6 },
+        { rang: 4, x0: 24, y0: 393.6, x1: 366, y1: 468.8 },
       ],
       // `MOUVEMENT.hero` et `mv-hero-entree` de vtbon-site.
       entree: { delai: 0.2, decalage: 0.16, duree: 0.7, distance: 28, courbe: [0.22, 1, 0.36, 1] },
