@@ -39,9 +39,6 @@ const POINTS = [
 export function SceneModele() {
   return (
     <Scene id="sur-mesure" nuit className="min-h-0 bg-transparent" src="components/sections/scene-modele.tsx" aria-labelledby="modele-titre">
-      {/* Voile sur le ciel commun : partout sur téléphone ; sur ordinateur, plus
-          dense à droite, sous le texte, pour laisser la roue dans le ciel. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-2 inset-y-0 bg-background/60 sm:inset-x-3 md:bg-transparent md:bg-linear-to-l md:from-background/90 md:via-background/50 md:to-background/10" />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-3.5 py-3 sm:px-6 md:py-6">
         <div className="grid grid-cols-[minmax(0,43fr)_minmax(0,57fr)] items-center gap-3 sm:gap-6 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:gap-10">
           <Roue
@@ -52,7 +49,7 @@ export function SceneModele() {
             rendu={(i, etat, actions) => <CarteRealisation site={REALISATIONS[i]} etat={etat} actions={actions} />}
           />
 
-          <div className="min-w-0">
+          <div className="sur-ciel min-w-0">
             <p className="eyebrow text-accent">01 · Sur mesure</p>
             <h2 id="modele-titre" data-rebond="" className="mt-2.5 font-display text-[1.1875rem] leading-[1.15] sm:text-3xl md:mt-4 md:text-4xl md:leading-[1.1]">
               Pas un modèle rempli à la chaîne
@@ -70,7 +67,7 @@ export function SceneModele() {
                 <li key={point.titre}>
                   <Arrivee de={0.56 + i * 0.08} className="flex gap-2.5 md:gap-3.5">
                     <point.icone aria-hidden="true" strokeWidth={1.75} className="mt-[0.12em] size-3.5 shrink-0 text-accent md:size-[1.15rem]" />
-                    <p className="text-[0.75rem] leading-snug text-muted-foreground sm:text-sm md:text-base">
+                    <p className="text-[0.75rem] leading-snug text-foreground/80 sm:text-sm md:text-base">
                       <strong className="font-semibold text-foreground">{point.titre}</strong> : {point.texte}
                     </p>
                   </Arrivee>

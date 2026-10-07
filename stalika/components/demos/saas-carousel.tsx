@@ -144,7 +144,7 @@ function Legende({
   }, [courant]);
 
   return (
-    <div className={cn("flex flex-col gap-5", className)}>
+    <div className={cn("sur-ciel flex flex-col gap-5", className)}>
       <div className="flex flex-wrap items-center justify-center gap-1 lg:justify-start">
         {demos.map((x, i) => (
           <button
@@ -155,7 +155,7 @@ function Legende({
             style={{ "--color-produit": x.accent } as React.CSSProperties}
             className={cn(
               "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring",
-              i === courant ? "bg-foreground/10 text-foreground" : "text-muted-foreground hover:text-foreground",
+              i === courant ? "bg-foreground/10 text-foreground" : "text-foreground/70 hover:text-foreground",
             )}
           >
             <span aria-hidden="true" className="size-1.5 rounded-full bg-produit" />

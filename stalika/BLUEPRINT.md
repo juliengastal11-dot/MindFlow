@@ -171,8 +171,39 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   n'a plus la même place une fois la piste engagée, et le bouton mesure la page au départ de sa chute).
   À reprendre avec la deuxième étape du bouton (les perchoirs).
 - **Le ciel** : il avance toujours linéairement avec le défilement ; la piste plus longue ralentit son
-  changement d'heure, et la scène se termine à l'aube. Le voile à gauche du texte a été renforcé pour
-  que la fin reste lisible.
+  changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
+  le jour même : voir la mise à jour suivante.)
+
+## Mise à jour du 2026-10-07 : plus de voiles sombres sur les scènes 01 à 03
+
+À la demande de J (« retire les fonds assombris qui prennent toute la section, regarde s'il y en a d'autres
+ailleurs et supprime aussi »), les voiles qui couvraient chaque scène de nuit sont retirés : `scene-modele.tsx`
+(01), `scene-utile.tsx` (02) et `scene-relecture.tsx` (03). C'étaient des `bg-background` à 55 ou 60 % sur
+téléphone, et un dégradé de 90 % à 10 ou 25 % sur ordinateur, posés sur le ciel commun : ils cachaient le paysage.
+**Le ciel se voit maintenant en entier derrière le texte.**
+
+Ce que ça coûte, mesuré (luminosité du fond sous chaque bloc de texte, texte masqué, 5 positions par scène, téléphone
+et ordinateur) : sans voile, le texte clair tombe à 1 ou 2 contre 1 à plusieurs endroits (la lueur de l'horizon au
+crépuscule, les nuages à l'aube) ; avec voile, ce n'était déjà que de 3 à 5 contre 1. Pour que le texte reste lisible
+sans fond sombre :
+- **une ombre douce sur les lettres** (`sur-ciel`, dans `app/globals.css`) : de la couleur du fond de la scène, elle
+  suit les lettres et ne dessine aucun rectangle ; posée sur les blocs de texte des scènes 01 à 03, la légende du
+  carrousel et la légende sous la fenêtre de « La relecture » ;
+- **les paragraphes qui étaient « sourds »** (`text-muted-foreground`, un gris doré qui se perd sur un ciel clair)
+  passent en `text-foreground` à 80 ou 85 % : les points de la scène 01, le paragraphe des scènes 02 et 03, la
+  légende de la fenêtre, les noms de logiciels non choisis du carrousel.
+**À regarder sur téléphone** : à l'aube (fin de la scène 03) et au crépuscule (début de la 01), le texte repose
+sur un ciel clair ; l'ombre le tient, mais ce n'est pas un contraste de 4,5. Si cela gêne, le remède n'est pas un
+voile sur toute la section : décaler la courbe du ciel (`reperes`), ou un dégradé local sous le seul bloc de texte.
+
+**Gardés, et pourquoi** : le dégradé du héros (`hero.tsx`) : sur ordinateur, le texte blanc est posé sur les nuages
+clairs de la vidéo, il ne se lirait plus ; le voile **clair** de « On en parle ? » (`appel.tsx`, un `bg-background`
+sur la photo du matin : il éclaircit, il n'assombrit pas, et le texte est sombre) ; l'ombre derrière la fenêtre de
+discussion (`plongee.tsx`, elle fait ressortir la fenêtre à son ouverture, comme le fond d'une boîte de dialogue).
+
+Dans la même demande : le menu en île dit `Tarif` au lieu de `Livré` (il mène toujours à la section 04, dont
+l'étiquette dit encore `04 · Livré`), et la ligne du héros se termine par « première maquette en 72h, à partir de
+300 € ».
 
 ## Mise à jour du 2026-10-07 : « Livré » parle d'hébergement
 
@@ -197,22 +228,14 @@ au client avec un accompagnement pour la mise en ligne, et le nom de domaine tou
 `scene-modele.tsx` pour servir aussi ici (`components/ui/arrivee.tsx`). La scène dure 3,4 s (`duree`), au lieu de
 2,6 s, pour que les arrivées ne se pressent pas.
 
-**Le fond de la section** : un fond en points qui s'efface vers les bords (masque elliptique), extrait collé par
-J le 2026-10-07 (`components/ui/fond-points.tsx`, posé derrière le contenu). Repris d'abord à l'identique ; puis
-passé aux jetons du thème, parce que le garde-fou refuse le blanc pur (`bg-white`) et les teintes hors palette.
-La copie exacte est dans l'historique git (commit « copie exacte de son extrait ») : pour la retrouver, blanc
-pur et gris `#e5e7eb`. Même jour, à la demande de J (« un peu plus visible, et qu'il suive les mouvements du
-téléphone ») : les points sont de l'`encre` du thème à 30 %, de 1,25 px de rayon (au lieu de la bordure, à 1 px),
-et **le motif glisse un peu sous le masque** (jamais plus de 14 px, le motif dépassant d'un pas de chaque côté) :
-- **sur téléphone**, avec l'inclinaison (`deviceorientation`) : les points glissent du côté où l'on penche ; la
-  position de repos suit le téléphone en 4 s environ, donc ce sont les mouvements qui comptent, pas la façon
-  de le tenir ;
-- **sur ordinateur**, avec la souris (10 px au plus) ; **mouvement réduit** : rien ne bouge ;
-- **iPhone et iPad** : Apple ne donne les capteurs qu'après une autorisation demandée par un appui. Plutôt que
-  d'ouvrir sa fenêtre de force à chaque visite, un petit bouton, « Faire bouger le fond », la demande ; il
-  n'apparaît que si aucune mesure n'arrive d'elle-même (Android, ou autorisation déjà donnée dans la session
-  de Safari : pas de bouton). **Jamais essayé sur un vrai téléphone** : testé avec des mesures simulées (Chrome,
-  mesures toutes les 16 ms), pas sur Safari ; à faire par J.
+**Le fond en points : essayé, puis retiré le même jour.** J avait collé un fond en points qui s'efface vers les
+bords (masque elliptique) pour la section 04. Posé d'abord à l'identique, puis aux jetons du thème (le garde-fou
+refuse `bg-white`), puis plus visible et mobile : le motif glissait un peu avec l'inclinaison du téléphone
+(`deviceorientation`, avec un bouton « Faire bouger le fond » sur iPhone et iPad pour l'autorisation d'Apple), ou
+avec la souris. Après un essai sur son téléphone, J l'a retiré : « ça gêne la lecture ». Le composant
+(`components/ui/fond-points.tsx`) est supprimé ; il reste dans l'historique git, commits `4b89553` (copie exacte de
+son extrait), `c7b197d` (aux couleurs du thème) et `906e689` (plus visible, et mobile avec le téléphone). Si l'on
+veut un jour un motif derrière du texte, le garder beaucoup plus léger, ou le réserver aux marges.
 
 ## §1 · La barre de direction
 

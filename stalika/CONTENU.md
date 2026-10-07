@@ -38,7 +38,8 @@ Textes de J, posés par l'overlay le 2026-10-02, tels qu'il les a écrits (à dr
 
 - Ligne 1 : `Votre site sur mesure, dessiné et pensé pour vous, en accord avec vos besoins.`
 - Ligne 2 : `Audit de besoin IA en entreprise, création de logiciels personnalisés et accompagnement` (J a ajouté « de logiciels personnalisés » et retiré « , avec vous », overlay du 2026-10-02)
-- Ligne 3 : `Tout type de profession libérale ou entreprise, première maquette en 72h` (c'était la seconde phrase de sa première ligne ; il l'a fait passer après la ligne de l'audit, overlay du 2026-10-02)
+- Ligne 3 : `Tout type de profession libérale ou entreprise, première maquette en 72h, à partir de 300 €` (c'était la seconde phrase de sa première ligne ; il l'a fait passer après la ligne de l'audit, overlay du 2026-10-02 ; le prix est ajouté le 2026-10-07, à sa demande : « après 72h écris juste : à partir de 300 € » ; espace insécable avant le €)
+- Menu en île, en haut du héros : `Sur mesure` · `Utile` · `La relecture` · `Tarif` · bouton `Contact`. `Tarif` mène à la section 04 (`#livre`) ; il s'appelait `Livré` jusqu'au 2026-10-07 (demande de J : « remplace Livré par Tarif dans la dynamic island »).
 - Bouton : `Parlons projet` → `/contact` (demande de J, 2026-10-02 : « écris juste dans le bouton : Parlons projet »). C'est un Cyber Button de 21st (capitales en police mono, flèche) : premier clic, il se décroche et se balance au menu ; second clic, il tombe de scène en scène jusqu'à l'ordinateur (`components/ui/bouton-chute.tsx`). Sans JavaScript ou en mouvement réduit, c'est un simple lien vers `/contact`.
 
 La description des moteurs de recherche (`Description` plus haut) ne change pas.
@@ -118,7 +119,6 @@ Refaite le 2026-10-07 (J) : la scène montre le client qui a la main, sur le sit
 - Voie 1, titre : `Chez vous` · texte : `Vous avez déjà un hébergeur, ou vous préférez garder la main. Je vous livre le site prêt à publier et je vous accompagne pour le mettre en ligne.`
 - Voie 2, titre : `Chez moi` · texte : `Je m'occupe de l'hébergement et de la maintenance : mises à jour, surveillance. Vous demandez une modification, je la fais, dans la limite du raisonnable. En échange, un petit abonnement mensuel.`
 - Ligne commune aux deux voies : `Dans les deux cas, le nom de domaine est à votre nom. Chaque projet se règle avec vous, un par un, et c'est écrit dans le devis.`
-- Bouton du fond, en bas à droite de la section, sur iPhone et iPad seulement (il demande à Apple l'accès aux capteurs de mouvement) : `Faire bouger le fond`
 - Les faits des deux voies (J, 2026-10-07) : l'hébergement et la maintenance chez J sont facturés par un petit abonnement mensuel, sans montant sur la page ; modifications à la demande, dans la limite du raisonnable ; le nom de domaine est toujours au nom du client ; chez le client, J livre le site prêt à publier et l'accompagne pour la mise en ligne.
 - Offre, grand chiffre : `À partir de 300 €`
 - Offre, sous le chiffre : `payable en plusieurs fois, sans frais`

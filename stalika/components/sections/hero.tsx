@@ -41,7 +41,7 @@ const LIENS = [
   { href: "#sur-mesure", libelle: "Sur mesure" },
   { href: "#utile", libelle: "Utile" },
   { href: "#relecture", libelle: "La relecture" },
-  { href: "#livre", libelle: "Livré" },
+  { href: "#livre", libelle: "Tarif" },
 ] as const;
 
 export function Hero() {
@@ -108,7 +108,7 @@ export function Hero() {
             <p className="mt-3 text-sm leading-relaxed text-foreground/85 sm:text-base">
               Audit de besoin IA en entreprise, création de logiciels personnalisés et accompagnement
             </p>
-            <p className="mt-3 text-sm leading-relaxed text-foreground/85 sm:text-base">Tout type de profession libérale ou entreprise, première maquette en 72h</p>
+            <p className="mt-3 text-sm leading-relaxed text-foreground/85 sm:text-base">Tout type de profession libérale ou entreprise, première maquette en 72h, à partir de 300&nbsp;€</p>
             {/* Le bouton : un Cyber Button (21st) qui se décroche et tombe jusqu'à l'ordinateur au fil des clics. */}
             <BoutonChute href="/contact" className="mt-7">
               Parlons projet
