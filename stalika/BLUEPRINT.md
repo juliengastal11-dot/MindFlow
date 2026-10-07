@@ -174,6 +174,27 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. Le voile à gauche du texte a été renforcé pour
   que la fin reste lisible.
 
+## Mise à jour du 2026-10-07 : « Livré » parle d'hébergement
+
+À la demande de J (« il faut qu'on parle de l'hébergement, dire qu'ils peuvent héberger ou que je le gère,
+que c'est un travail qui se fait de manière personnelle pour chaque projet ») : la scène 5
+(`components/sections/scene-livre.tsx`) change de titre et de texte, **la carte « à partir de 300 € » ne
+bouge pas**. Titre : « Livré propre, *hébergé comme vous voulez* ». Les quatre coches restent (« il vous
+appartient » vit dans la quatrième). Dessous, deux voies qui arrivent l'une après l'autre, puis une ligne
+qui vaut pour les deux :
+- **Chez vous** : le client a déjà un hébergeur, ou veut garder la main ; J livre le site prêt à publier et
+  l'accompagne pour la mise en ligne.
+- **Chez moi** : J s'occupe de l'hébergement et de la maintenance (mises à jour, surveillance) et fait les
+  modifications demandées, dans la limite du raisonnable, **contre un petit abonnement mensuel**. Aucun montant
+  n'est écrit sur la page, comme la FAQ (« c'est écrit dans le devis ») : à décider avec J si l'on veut un
+  « à partir de » plus tard.
+- **Dans les deux cas** : le nom de domaine est au nom du client ; chaque projet se règle avec lui, un par
+  un, et c'est écrit dans le devis.
+Faits donnés par J le 2026-10-07. La FAQ (« Et l'hébergement, le nom de domaine ? ») n'a pas été retouchée :
+elle ne parle pas de l'abonnement. `Arrivee` est sorti de `scene-modele.tsx` pour servir aussi ici
+(`components/ui/arrivee.tsx`). La scène dure 3,4 s (`duree`), au lieu de 2,6 s, pour que les arrivées ne
+se pressent pas.
+
 ## §1 · La barre de direction
 
 | | Décidé |
@@ -277,7 +298,7 @@ Scène 1 · Ils vous cherchent | plein | background (jour, illustration en calqu
 Scène 2 · Pas un modèle | plein | background **nuit** | Eyebrow 01, H2, mot qui se décode, texte · neuf cartes en perspective, d'abord identiques, qui deviennent différentes | Scene, Decode, Champ3D
 Scène 3 · Utile | plein | primary **nuit** | Eyebrow 02, H2, texte · trois logiciels en démonstration (VTBON, Carnet, Contrôle, dans cet ordre : VTBON s'affiche en premier), chacun une application vivante sur l'écran d'un iPhone du carrousel de Solace UI, chacune avec son design depuis le 2026-10-04 (demande de J) : Carnet gris d'après le DESIGN.md de Cal.com, Contrôle sombre d'après celui de Linear (thèmes `.appli-*` dans app/globals.css). Le 2026-10-07, VTBON, l'application de J, a pris la place de RelancePro : son écran est celui des deux maquettes animées de vtbon.fr (le bon dicté à la voix, puis la facture et sa relance), jouées l'une après l'autre en 45 s (`components/demos/vtbon/`, `vtbon-ecran.tsx`), sa palette est celle de l'application (noir et or) ; à côté (dessous sur téléphone), la légende du logiciel de face : ses trois noms, sa description et son lien (l'icône, le nom en titre, le statut et la ligne « pour qui » ont été retirés le 2026-10-07, à la demande de J) | Scene, Reveal, SaaSCarousel, SaaSPreviewCard, VtbonEcran (components/demos), PhoneCarousel (components/ui/phone-mockups-1-utils)
 Scène 4 · La relecture | plein (une piste de 3,6 écrans, contenu collé) | background **nuit** | Eyebrow 03, H2, texte, les trois retouches qui se cochent · fenêtre du vrai site d'AR Transfert : barre d'édition simplifiée, curseur du client et curseur de Julien, texte réécrit, animation retirée, photo commentée, tampon | Scene (au défilement), FenetreRelecture
-Scène 5 · Livré | plein | background (jour) | Eyebrow 04, H2, 4 coches · carte d'offre : 300 €, plusieurs fois, 72 h en rouleaux, France, bouton | Scene, Rouleaux
+Scène 5 · Livré | plein | background (jour) | Eyebrow 04, H2, 4 coches, deux voies d'hébergement (« Chez vous », « Chez moi ») et la ligne commune · carte d'offre : 300 €, plusieurs fois, 72 h en rouleaux, France, bouton | Scene, Arrivee, Trace, Rouleaux
 Ils m'ont fait confiance | bandeau | muted | Trois noms et leur sous-titre, en défilement, liens | Defilant
 Julien | normal | background | Eyebrow, H2, un paragraphe | Reveal
 Questions fréquentes | normal | background | Eyebrow, H2, six questions en accordéon | Reveal
@@ -318,7 +339,7 @@ scène et retiré à la sortie.
 | 2 · Pas un modèle | Le champ de neuf cartes identiques s'incline et la caméra glisse (`Champ3D`) ; une carte sur deux devient son métier, puis les autres ; le mot en accent se décode trois fois (`Decode`) ; le texte arrive en dernier | rien : les cartes ne mènent nulle part, elles ne réagissent pas au curseur |
 | 3 · Utile | Le carrousel apparaît (`Reveal`). Le téléphone de face joue sa démo (12 s, scénarios de J) : un doigt touche, ouvre une fiche, coche, envoie ; l'écran revient à son départ sans saut. Toutes les 12 s, le carrousel passe au téléphone suivant, dont la démo repart du début ; la rotation s'arrête au survol et quand le clavier y entre. Les voisins restent sur leur premier écran. Hors de l'écran, tout s'arrête. Valeurs dans `MOUVEMENT.demos` | précédent, pause (rotation et démo, WCAG 2.2.2), suivant ; glisser au doigt ou à la souris ; les noms de la légende ; « Parlons de votre outil » mène à `/contact` |
 | 4 · La relecture | Au défilement (voir la mise à jour du 2026-10-07) : le client passe la barre en Édition et coche « Changement immédiat » ; il survole le paragraphe (contour pointillé), le saisit (contour plein), sélectionne sa dernière ligne et la réécrit lettre à lettre ; Julien, qui regarde, a son curseur ; la première retouche se coche. Les phares clignotent, le client les retire (« Garder » ou « Retirer »). Il épingle un commentaire sur la photo, Julien répond, la photo s'éclaircit. Le tampon se pose, la légende apparaît | rien |
-| 5 · Livré | Les quatre coches se cochent une à une ; la carte d'offre glisse, « 300 € » apparaît immobile, « 72 h » roule de 00 à 72 (`Rouleaux`), la zone et le bouton arrivent | le bouton (accent) |
+| 5 · Livré | Les quatre coches se cochent une à une ; la carte d'offre glisse, « 300 € » apparaît immobile, « 72 h » roule de 00 à 72 (`Rouleaux`) ; les deux voies d'hébergement arrivent l'une après l'autre, puis la ligne commune ; la zone et le bouton arrivent (3,4 s en tout) | le bouton (accent) |
 | Fin calme | `Defilant` pour le bandeau, `Reveal` sur Julien, la FAQ et l'appel ; les orbites terminent leur rotation | les trois noms du bandeau (liens, `lien-fleche`) ; l'accordéon (`<details>`, focus visible) ; les deux boutons |
 
 **L'arc jour, nuit, jour.** La scène 1 est le jour : l'illustration, le papier. Entre la scène 1
