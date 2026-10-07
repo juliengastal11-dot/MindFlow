@@ -38,6 +38,16 @@ import { MOUVEMENT } from "@/lib/mouvement";
    n'existe ; la scène la construit ensuite et rejoue les inscriptions dans
    l'ordre du document. Une primitive montée plus tard s'ajoute au vol.
 
+   Les inscriptions gardent les éléments qu'elles ont trouvés au montage. Si
+   ces éléments sont remplacés ensuite, la chronologie anime des éléments qui
+   ne sont plus à l'écran : la scène reste à sa place, le défilement la
+   suit, et plus rien ne bouge. En production, cela n'arrive pas. En
+   développement, le rechargement à chaud de React remplace des éléments sans
+   toujours relancer les effets (constaté le 2026-10-07, sur la fenêtre de
+   « La relecture »). Une primitive qui s'en protège appelle `rebatir()` :
+   la scène défait sa chronologie et la refait depuis ses inscriptions, qui
+   cherchent alors leurs éléments à l'écran.
+
    Ce qui est marqué `data-film-cache` est masqué par la feuille de style tant
    que la chronologie n'est pas construite (`html.js [data-film-cache]`), puis
    révélé dans son état de départ.
@@ -54,6 +64,9 @@ type Contexte = {
   /** Reçoit la progression de la chronologie (de 0 à 1) à chaque image où elle
       change, et une fois à la création. Renvoie de quoi se désinscrire. */
   surProgres: (fn: (progres: number) => void) => () => void;
+  /** Défait la chronologie et la refait depuis les inscriptions, qui reprennent alors les
+      éléments affichés. Pour une primitive dont les éléments ont été remplacés (voir l'en-tête). */
+  rebatir: () => void;
 };
 
 const SceneContexte = createContext<Contexte | null>(null);
@@ -92,6 +105,8 @@ export function Scene({
   const inscriptions = useRef<Inscription[]>([]);
   const abonnes = useRef<Set<(progres: number) => void>>(new Set());
   const chrono = useRef<gsap.core.Timeline | null>(null);
+  // Change à chaque demande de `rebatir` : l'effet qui construit la chronologie se relance.
+  const [version, setVersion] = useState(0);
 
   const [contexte] = useState<Contexte>(() => ({
     inscrire(fn) {
@@ -107,6 +122,9 @@ export function Scene({
       return () => {
         abonnes.current.delete(fn);
       };
+    },
+    rebatir() {
+      setVersion((v) => v + 1);
     },
   }));
 
@@ -172,7 +190,7 @@ export function Scene({
       ctx.revert();
       chrono.current = null;
     };
-  }, [duree, defilement, declencheur]);
+  }, [duree, defilement, declencheur, version]);
 
   return (
     <SceneContexte.Provider value={contexte}>

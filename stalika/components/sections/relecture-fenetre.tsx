@@ -323,40 +323,51 @@ function Barre() {
   );
 }
 
+/** Neuf à chaque évaluation du module, donc à chaque rechargement à chaud : voir l'effet de `FenetreRelecture`. */
+const EVALUATION = {};
+
+const T = (u: number) => u / 100;
+
 /** `pied` : ce qui se pose sous la fenêtre et sa légende (la liste des retouches, sur un écran étroit). */
 export function FenetreRelecture({ pied }: { pied?: React.ReactNode }) {
   const scene = useScene();
   const ref = useRef<HTMLDivElement>(null);
+  const evaluation = EVALUATION;
+  const affiches = useRef<Element[] | null>(null);
 
+  /* Le film cherche ses éléments chaque fois que la scène construit sa chronologie, pas une fois au montage :
+     si elle la refait (`rebatir`), il retrouve ceux qui sont à l'écran. Et `evaluation` relance l'effet à chaque
+     rechargement à chaud de ce fichier : React ne le fait pas toujours, et le film resterait alors celui d'avant
+     la modification, accroché à des éléments qui ne sont plus affichés. */
   useEffect(() => {
-    const racine = ref.current;
-    if (!racine || !scene) return;
-    const section = racine.closest<HTMLElement>("[data-scene]") ?? racine;
-    const surface = racine.querySelector<HTMLElement>("[data-surface]");
-    const un = <T extends HTMLElement>(s: string) => racine.querySelector<T>(s);
-    const tous = (s: string) => Array.from(racine.querySelectorAll<HTMLElement>(s));
-    const curseur = un("[data-curseur]");
-    const julien = un("[data-julien]");
-    const pilule = un("[data-pilule]");
-    const coche = un("[data-coche]");
-    const tampon = un("[data-tampon]");
-    const legende = un("[data-legende]");
-    if (!surface || !curseur || !julien || !pilule || !coche || !tampon || !legende) return;
-
-    /* Où est un élément de la page, en pixels dans la surface (le calque des curseurs). Les deux mises en page
-       existent dans le document ; seule la visible compte. `fx` et `fy` : la part de la boîte (0,5 : le centre). */
-    const pt = (nom: string, dx = 0, dy = 0, fx = 0.5, fy = 0.5) => {
-      const e = tous(`[data-ancre="${nom}"]`).find((n) => n.offsetParent !== null);
-      if (!e) return { x: 0, y: 0 };
-      const r = e.getBoundingClientRect();
-      const s = surface.getBoundingClientRect();
-      return { x: r.left - s.left + r.width * fx + dx, y: r.top - s.top + r.height * fy + dy };
-    };
-
-    const rangs = Array.from(section.querySelectorAll<HTMLElement>("[data-rang]"));
-    const T = (u: number) => u / 100;
+    if (!scene) return;
 
     const desinscrire = scene.inscrire((tl) => {
+      const racine = ref.current;
+      if (!racine) return;
+      const section = racine.closest<HTMLElement>("[data-scene]") ?? racine;
+      const surface = racine.querySelector<HTMLElement>("[data-surface]");
+      const un = <T extends HTMLElement>(s: string) => racine.querySelector<T>(s);
+      const tous = (s: string) => Array.from(racine.querySelectorAll<HTMLElement>(s));
+      const curseur = un("[data-curseur]");
+      const julien = un("[data-julien]");
+      const pilule = un("[data-pilule]");
+      const coche = un("[data-coche]");
+      const tampon = un("[data-tampon]");
+      const legende = un("[data-legende]");
+      if (!surface || !curseur || !julien || !pilule || !coche || !tampon || !legende) return;
+
+      /* Où est un élément de la page, en pixels dans la surface (le calque des curseurs). Les deux mises en page
+         existent dans le document ; seule la visible compte. `fx` et `fy` : la part de la boîte (0,5 : le centre). */
+      const pt = (nom: string, dx = 0, dy = 0, fx = 0.5, fy = 0.5) => {
+        const e = tous(`[data-ancre="${nom}"]`).find((n) => n.offsetParent !== null);
+        if (!e) return { x: 0, y: 0 };
+        const r = e.getBoundingClientRect();
+        const s = surface.getBoundingClientRect();
+        return { x: r.left - s.left + r.width * fx + dx, y: r.top - s.top + r.height * fy + dy };
+      };
+
+      const rangs = Array.from(section.querySelectorAll<HTMLElement>("[data-rang]"));
       const eC = (sel: string) => tous(sel);
       const ancien = eC("[data-ancien]");
       const selection = eC("[data-selection]");
@@ -501,6 +512,8 @@ export function FenetreRelecture({ pied }: { pied?: React.ReactNode }) {
 
     /* Ce qui bascule à un seuil plutôt que de se tweener : le mode de la barre et les phares qui clignotent. */
     const delSeuils = scene.surProgres((p) => {
+      const racine = ref.current;
+      if (!racine) return;
       racine.dataset.mode = p >= T(11.8) ? "edition" : "navigation";
       racine.dataset.phares = p < T(47) ? "attente" : p < T(57.8) ? "clignote" : "fixe";
     });
@@ -508,8 +521,24 @@ export function FenetreRelecture({ pied }: { pied?: React.ReactNode }) {
     return () => {
       desinscrire();
       delSeuils();
+      scene.rebatir();
     };
-  }, [scene]);
+  }, [scene, evaluation]);
+
+  /* Développement seulement : le rechargement à chaud peut aussi remplacer les éléments du film sans que ce fichier
+     change (la liste des retouches, dans `scene-relecture.tsx`, ou `Card`). Après chaque rendu, on compare les
+     éléments affichés à ceux de la fois d'avant ; s'ils ne sont plus les mêmes, la scène refait sa chronologie.
+     En production, ils ne changent jamais et rien ne se passe. */
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "development" || !scene) return;
+    const racine = ref.current;
+    if (!racine) return;
+    const section = racine.closest<HTMLElement>("[data-scene]") ?? racine;
+    const maintenant = [...racine.querySelectorAll("*"), ...section.querySelectorAll("[data-rang], [data-rang-plein], [data-rang-label]")];
+    const avant = affiches.current;
+    affiches.current = maintenant;
+    if (avant && (avant.length !== maintenant.length || avant.some((n, i) => n !== maintenant[i]))) scene.rebatir();
+  });
 
   return (
     <div

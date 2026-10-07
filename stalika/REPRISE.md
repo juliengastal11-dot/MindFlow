@@ -51,6 +51,12 @@
   section, vérifier que les `data-rebond` suivent. À tester par J sur iPhone (fluidité de la chute).
 - Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion.
 - Mode « animations réduites » non revérifié après les derniers changements.
+- Rechargement à chaud et films des scènes (développement seulement, constaté le 2026-10-07) : React peut remplacer les
+  éléments d'une scène sans relancer les effets des primitives qui les animent ; la scène reste en place, le défilement la
+  suit, et plus rien ne bouge. `Scene` expose `rebatir()` (voir son en-tête) : la fenêtre de « La relecture »
+  (`relecture-fenetre.tsx`) s'en sert d'elle-même et se remet à jour toute seule. Les autres primitives (`Frappe`, `Decode`,
+  `Trace`…) gardent les éléments trouvés au montage : si une modification de leur fichier fige une scène, recharger la page.
+  Aucun effet en production.
 - Assistant de discussion (API Claude, agenda, RGPD, transparence IA) : plus tard, voir `BLUEPRINT.md`.
 - Mentions légales et données marquées `[[À CONFIRMER PAR L'UTILISATEUR : …]]`.
 
