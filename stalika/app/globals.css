@@ -148,21 +148,20 @@
 }
 
 /* Les couleurs des trois logiciels dans la légende du carrousel, sur le fond
-   sombre de la scène : argent pour Carnet, or pour RelancePro, turquoise pour
-   Contrôle (6,8:1, 10,6:1 et 9,4:1 sur le fond), chacune avec la couleur de
-   l'icône posée dessus (de 6,9:1 à 12,8:1). Dans leurs écrans, chaque
-   logiciel a son thème complet : `.appli-*`, juste après. */
+   sombre de la scène : argent pour Carnet, l'or de VTBON (celui de son
+   application, #c9a84c), turquoise pour Contrôle (6,8:1, 7,6:1 et 9,4:1 sur le
+   fond). Dans leurs écrans, Carnet et Contrôle ont leur thème complet :
+   `.appli-*`, juste après ; VTBON porte celui de son application (components/demos/vtbon). */
 :root {
   --produit-carnet: #a1a1aa;
-  --produit-relance: #ffc000;
+  --produit-vtbon: #c9a84c;
   --produit-controle: #2dd4bf;
-  --sur-produit-carnet: #18181b;
-  --sur-produit-relance: #000000;
-  --sur-produit-controle: #042f2a;
 }
 
-/* Les trois logiciels des démos, chacun avec son design (demande de J du
-   2026-10-04 : « une sombre, une Gold et une grise »). Un thème est un jeu
+/* Les logiciels des démos, chacun avec son design (demande de J du
+   2026-10-04 : « une sombre, une Gold et une grise » ; la Gold, RelancePro,
+   a cédé la place à VTBON le 2026-10-07 : l'application de J a son propre
+   écran, noir et or, et n'a pas besoin d'un thème). Un thème est un jeu
    complet de jetons, posé sur l'écran du téléphone par la carte
    (components/demos/saas-preview-card.tsx) : l'interface et son film ne
    changent pas. Contrastes relevés : texte courant de 16 à 19:1, gris
@@ -194,35 +193,6 @@
   --radius-lg: 12px;
   --radius-xl: 16px;
   color-scheme: light;
-}
-
-/* RelancePro, or, d'après le DESIGN.md de Lamborghini : le noir absolu, l'or
-   (#ffc000) pour les actions, les montants et les repères, du texte noir sur
-   l'or, des angles vifs, des étiquettes en capitales espacées. Le cyan de la
-   marque pour ce qui attend, un rouge franc pour le retard. */
-.appli-or {
-  --color-background: #161616;
-  --color-foreground: #f5f5f5;
-  --color-card: #050505;
-  --color-card-foreground: #f5f5f5;
-  --color-secondary: #262626;
-  --color-on-secondary: #f5f5f5;
-  --color-muted: #1c1c1c;
-  --color-muted-foreground: #8c8c8c;
-  --color-border: #2b2b2b;
-  --color-produit: #ffc000;
-  --color-on-produit: #000000;
-  --color-succes: #3dd68c;
-  --color-on-succes: #00140a;
-  --color-attente: #29abe2;
-  --color-destructive: #ff5a5f;
-  --color-on-destructive: #000000;
-  --shadow-panneau: -18px 0 32px -18px rgb(0 0 0 / 0.9);
-  --shadow-flottant: 0 0 0 1px rgb(255 192 0 / 0.22), 0 18px 40px -12px rgb(0 0 0 / 0.9);
-  --radius-md: 0px;
-  --radius-lg: 0px;
-  --radius-xl: 2px;
-  color-scheme: dark;
 }
 
 /* Contrôle, sombre, d'après le DESIGN.md de Linear : un bleu nuit presque
@@ -260,28 +230,6 @@
 .appli-grise [data-etat],
 .appli-grise [data-barre] {
   background: var(--color-background);
-}
-/* Or : un filet d'or sous la barre de l'appli ; des étiquettes aux angles vifs,
-   en capitales espacées ; la notification en or, comme un bouton de la marque. */
-.appli-or [data-barre] {
-  border-color: rgb(255 192 0 / 0.35);
-}
-.appli-or [data-marque] {
-  border-radius: 0;
-}
-.appli-or [data-pastille] {
-  border-radius: 1px;
-  font-size: 9.5px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.appli-or [data-d="notification"] {
-  background: var(--color-produit);
-  color: var(--color-on-produit);
-}
-.appli-or [data-d="notification"] > span:first-child {
-  background: var(--color-on-produit);
-  color: var(--color-produit);
 }
 /* Sombre : la notification reste une surface sombre, bordée d'un filet. */
 .appli-sombre [data-d="notification"] {
@@ -619,4 +567,127 @@ html.js .logo-anime[data-etat="attente"] img {
 }
 @media (prefers-reduced-motion: reduce) {
   [class*="animate-[bouton-"] { animation: none; }
+}
+
+/* La relecture (components/sections/relecture-fenetre.tsx) : ce que le film, qui suit le
+   défilement, ne peut pas tweener. Sans JavaScript, ce qui n'existe que le temps du film
+   n'existe pas : curseurs, contours, bulles. */
+html:not(.js) [data-transitoire] {
+  display: none;
+}
+/* Sans JavaScript, pas de film : la piste n'a plus lieu d'être plus haute que son contenu. */
+html:not(.js) [data-piste] {
+  min-height: 0 !important;
+}
+html:not(.js) [data-piste] > * {
+  position: static !important;
+}
+
+/* La barre d'édition : le segment actif porte le texte sombre de l'accent, l'autre reste clair.
+   Le mode est posé sur la fenêtre (`data-mode`) par la progression du film. */
+.rel-seg {
+  color: color-mix(in oklab, var(--color-foreground) 72%, transparent);
+  transition: color 0.2s;
+}
+[data-mode="navigation"] .rel-seg[data-seg="navigation"],
+[data-mode="edition"] .rel-seg[data-seg="edition"] {
+  color: var(--color-on-accent);
+}
+
+/* Les phares : l'appel de phares du site d'AR Transfert (deux éclats de suite), tant que le
+   client ne l'a pas retiré. `data-phares` : attente (pas encore), clignote, fixe (retiré).
+   Leur taille est posée en ligne, dans l'unité du dessin de la page (`--u`). */
+.rel-phare {
+  position: absolute;
+  translate: -50% -50%;
+  border-radius: 9999px;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0;
+  background: radial-gradient(closest-side, rgb(255 255 255 / 0.95), rgb(205 215 255 / 0.4) 52%, rgb(255 255 255 / 0));
+}
+[data-phares="clignote"] .rel-phare {
+  animation: rel-phare 2.2s ease-in-out infinite;
+}
+@keyframes rel-phare {
+  0%,
+  100% {
+    opacity: 0;
+    scale: 0.7;
+  }
+  12% {
+    opacity: 1;
+    scale: 1.15;
+  }
+  30% {
+    opacity: 0;
+    scale: 1.5;
+  }
+  46% {
+    opacity: 0.9;
+    scale: 1.1;
+  }
+  66% {
+    opacity: 0;
+    scale: 1.45;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rel-phare {
+    animation: none !important;
+  }
+}
+
+/* La fenêtre de « La relecture » prend la place qui lui reste dans l'écran
+   (components/sections/relecture-fenetre.tsx). `.rel-place` est un conteneur de requête, nommé,
+   qui prend toute la hauteur laissée libre dans la zone collée ; `.rel-fenetre` en prend la largeur,
+   sans dépasser ce que la hauteur permet (5 rem pour la barre de titre et la légende, et la liste
+   des retouches quand elle est dessous), ni 35 rem
+   (26 pour la page de téléphone, qui flouterait au-delà). La page se compose alors selon la forme
+   de la place : celle d'un ordinateur quand elle est large (36 rem), ou assez large (24 rem) et
+   pas plus haute que large ; celle d'un téléphone sinon. Jusqu'au 2026-10-07 la fenêtre ne suivait
+   que la largeur : sur un écran large mais court, la page de téléphone, étirée, dépassait la zone
+   collée et recouvrait le titre. */
+.rel-place {
+  container: rel-place / size;
+}
+.rel-fenetre {
+  --rel-aspect: 0.696;
+  --rel-max: 26rem;
+  --rel-pied: 6.5rem;
+  container-type: inline-size;
+  width: max(12rem, min(100cqw, var(--rel-max), calc((100cqh - 5rem - var(--rel-pied)) * var(--rel-aspect))));
+}
+/* Sous la fenêtre, sur un écran étroit : les trois retouches. Sur un écran large elles sont dans la colonne
+   du texte ; sur un écran court (moins de 720 px), il n'y a plus la place. Leur hauteur compte dans celle
+   de la fenêtre (`--rel-pied`). */
+.rel-pied {
+  display: block;
+  margin-top: 1.25rem;
+}
+@media (min-width: 768px), (max-height: 720px) {
+  .rel-fenetre {
+    --rel-pied: 0rem;
+  }
+  .rel-pied {
+    display: none;
+  }
+}
+.rel-page-bureau {
+  display: none;
+}
+.rel-page-mobile {
+  display: block;
+}
+@container rel-place (min-width: 36rem) or ((min-width: 24rem) and (min-aspect-ratio: 9/10)) {
+  .rel-fenetre {
+    --rel-aspect: 1.463;
+    --rel-max: 35rem;
+  }
+  .rel-page-bureau {
+    display: block;
+  }
+  .rel-page-mobile {
+    display: none;
+  }
 }

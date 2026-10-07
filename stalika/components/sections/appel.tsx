@@ -14,7 +14,7 @@ export function Appel() {
       largeur="prose"
       src="components/sections/appel.tsx"
       eyebrow="On en parle ?"
-      titre="Dix questions, cinq minutes, et je vous réponds avec une première idée."
+      titre="Dix questions, cinq minutes, et je vous réponds avec une première idée"
     >
       {/* Le matin : la même falaise, deux heures après le lever du soleil. */}
       <Decor image="/decors/matin.webp" voile="bg-linear-to-b from-background/80 via-background/60 to-background/85" className="-z-10" />

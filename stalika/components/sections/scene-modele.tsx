@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { Link2, MessagesSquare, Palette } from "lucide-react";
 import { CarteRealisation } from "@/components/sections/carte-realisation";
+import { Arrivee } from "@/components/ui/arrivee";
 import { Decode } from "@/components/ui/decode";
 import { Roue } from "@/components/ui/roue";
-import { Scene, useScene } from "@/components/ui/scene";
-import { gsap } from "@/lib/gsap";
+import { Scene } from "@/components/ui/scene";
 import { REALISATIONS } from "@/lib/realisations";
 
 /* ---------------------------------------------------------------------------
@@ -37,27 +36,6 @@ const POINTS = [
   // « Au-delà du site » (logiciels et applications) est passé dans la section 02, à la demande de J (2026-10-02).
 ] as const;
 
-/** Un bloc qui arrive en montant, à la position `de` de la chronologie. */
-function Arrivee({ de, className, children }: { de: number; className?: string; children: React.ReactNode }) {
-  const scene = useScene();
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!scene || !el) return;
-    return scene.inscrire((tl) => {
-      gsap.set(el, { autoAlpha: 0, y: 16 });
-      tl.to(el, { autoAlpha: 1, y: 0, duration: 0.13, ease: "power2.out" }, de);
-    });
-  }, [scene, de]);
-
-  return (
-    <div ref={ref} data-film-cache className={className}>
-      {children}
-    </div>
-  );
-}
-
 export function SceneModele() {
   return (
     <Scene id="sur-mesure" nuit className="min-h-0 bg-transparent" src="components/sections/scene-modele.tsx" aria-labelledby="modele-titre">
@@ -77,12 +55,9 @@ export function SceneModele() {
           <div className="min-w-0">
             <p className="eyebrow text-accent">01 · Sur mesure</p>
             <h2 id="modele-titre" data-rebond="" className="mt-2.5 font-display text-[1.1875rem] leading-[1.15] sm:text-3xl md:mt-4 md:text-4xl md:leading-[1.1]">
-              Pas un modèle rempli à la chaîne.
+              Pas un modèle rempli à la chaîne
               <span className="mt-1.5 block md:mt-2">
-                Un site dessiné{" "}
-                {/* Le point vit dans chaque mot : la largeur est réservée sur le plus
-                    long, un point posé après resterait loin du mot court. */}
-                <Decode mots={["pour vous.", "pour votre métier.", "pour vos clients."]} de={0.3} a={0.85} className="text-accent" />
+                Un site dessiné <Decode mots={["pour vous", "pour votre métier", "pour vos clients"]} de={0.3} a={0.85} className="text-accent" />
               </span>
             </h2>
             <Arrivee de={0.42}>

@@ -28,7 +28,7 @@ import { lienWhatsApp } from "@/lib/site";
    sans frappe ni attente.
 --------------------------------------------------------------------------- */
 
-const PREMIER = "Hey, salut ! J'ai un projet de site et j'aimerais qu'on en discute.";
+const PREMIER = "Hey, salut ! J'ai un projet et j'aimerais qu'on en discute.";
 const REPONSE = [
   "Salut ! Bien sûr, je t'écoute.",
   "Déjà, comment tu t'appelles ? Et tu préfères qu'on se tutoie ou qu'on se vouvoie ?",

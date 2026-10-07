@@ -11,15 +11,15 @@ import { EcranTelephone } from "./interface";
    SaaSPreviewCard : un logiciel, vivant, sur l'écran d'un iPhone du carrousel
    (components/ui/phone-mockups-1-utils, choisi par J le 2026-10-02).
 
-   La carte pose le thème du logiciel (`theme` : `appli-grise`, `appli-or`,
+   La carte pose le thème du logiciel (`theme` : `appli-grise`,
    `appli-sombre`, dans app/globals.css : ses couleurs, ses coins, ses
    ombres), dessine l'écran à la taille qu'il a dans un iPhone de 350 px
    (315 × 682) puis le met à l'échelle du téléphone réel, et fait tourner le
    film de `animation` sur sa fenêtre. L'application occupe le haut de l'écran : le carrousel
-   coupe ses téléphones au bas de la scène et pose ses boutons par-dessus.
+   coupe ses téléphones au bas de la scène et les fond dans la page.
 
-   `etat` vient du carrousel : `joue` (le téléphone de face), `pause` (le
-   bouton pause, ou le carrousel hors de l'écran : le film s'arrête là où il
+   `etat` vient du carrousel : `joue` (le téléphone de face), `pause` (un appui
+   sur le téléphone, ou le carrousel hors de l'écran : le film s'arrête là où il
    en est), `repos` (un téléphone de côté : le film revient à son départ, et
    repartira du début quand il passera de face).
 
@@ -34,7 +34,7 @@ const M = MOUVEMENT.demos;
 
 /** L'écran d'un iPhone de 350 px dans le dessin du carrousel. */
 const ECRAN = { largeur: 315, hauteur: 682 };
-/** La part de l'écran que la scène laisse voir au-dessus des boutons du carrousel. */
+/** La part de l'écran que la scène laisse voir avant que le bas des téléphones ne s'estompe. */
 const HAUTEUR_APPLI = 420;
 
 export type EtatDemo = "joue" | "pause" | "repos";
@@ -142,7 +142,7 @@ export function SaaSPreviewCard({ nom, description, resume, theme, statut, heure
     >
       <div
         aria-hidden="true"
-        className="absolute left-0 top-0 origin-top-left"
+        className="pointer-events-none absolute left-0 top-0 origin-top-left"
         style={{ width: ECRAN.largeur, height: HAUTEUR_APPLI, transform: `scale(${echelle})` }}
       >
         <EcranTelephone.Provider value={{ heure }}>{children}</EcranTelephone.Provider>

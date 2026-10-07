@@ -25,7 +25,14 @@ import { useIsMobile } from "./use-mobile";
    - le carrousel peut être piloté de l'extérieur (`index`, `onIndexChange`,
      `onPauseChange`, `suspendu`) et tourner à un autre rythme (`interval`) ;
      un changement de téléphone relance le compte à rebours ;
-   - un glissé du doigt ou de la souris change de téléphone ;
+   - un glissé du doigt ou de la souris change de téléphone, et un appui sur
+     le téléphone met en pause ou relance (J, 2026-10-07 : « enlève ces
+     boutons, un appui sur la vidéo fera pause et un swipe changera
+     l'app ») ; une icône Lecture au centre dit que c'est en pause. Les trois
+     boutons (précédent, pause, suivant) ne se voient plus : ils restent pour
+     le clavier et les lecteurs d'écran, transparents, et apparaissent
+     quand on y arrive au clavier (critère WCAG 2.2.2 : pouvoir arrêter ce qui
+     bouge), comme la commande de la roue des sites ;
    - sur le fond sombre du site, les téléphones se fondent dans la page en bas
      et sur les côtés (un masque), comme sur le fond blanc d'origine ;
    - `height="auto"` n'est plus écrit sur le `<svg>`, qui le refusait ;
@@ -233,7 +240,7 @@ export const PhoneCarousel: React.FC<PhoneCarouselProps> = ({
     const [isPaused, setIsPaused] = useState<boolean>(false);
     const [isHovering, setIsHovering] = useState<boolean>(false);
     const carouselRef = useRef<HTMLDivElement>(null);
-    const glisse = useRef<{ x: number; y: number } | null>(null);
+    const glisse = useRef<{ x: number; y: number; t: number } | null>(null);
     const isMobile = useIsMobile();
 
     // Adaptation Stalika : l'index peut venir de l'extérieur.
@@ -366,7 +373,8 @@ export const PhoneCarousel: React.FC<PhoneCarouselProps> = ({
         setIsPaused((prev) => !prev);
     };
 
-    // Adaptation Stalika : un glissé franc, plus horizontal que vertical, change de téléphone.
+    // Adaptation Stalika : un glissé franc, plus horizontal que vertical, change de téléphone ;
+    // un appui bref, sans glissé, met en pause ou relance.
     const finGlisse = (e: React.PointerEvent) => {
         const g = glisse.current;
         glisse.current = null;
@@ -376,6 +384,8 @@ export const PhoneCarousel: React.FC<PhoneCarouselProps> = ({
         if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.2) {
             if (dx < 0) handleNext();
             else handlePrevious();
+        } else if (Math.hypot(dx, dy) < 10 && performance.now() - g.t < 600) {
+            togglePause();
         }
     };
 
@@ -391,11 +401,12 @@ export const PhoneCarousel: React.FC<PhoneCarouselProps> = ({
                         comme ils le font sur le fond blanc d'origine. */}
                     <div
                         ref={carouselRef}
-                        className="flex justify-center items-start h-[410px] md:h-[510px] lg:h-[520px] touch-pan-y [mask-composite:intersect] [mask-image:linear-gradient(to_right,transparent,black_13%,black_87%,transparent),linear-gradient(to_bottom,black_84%,transparent)] [mask-repeat:no-repeat]"
+                        className="flex justify-center items-start h-[410px] md:h-[510px] lg:h-[520px] cursor-pointer select-none touch-pan-y [mask-composite:intersect] [mask-image:linear-gradient(to_right,transparent,black_13%,black_87%,transparent),linear-gradient(to_bottom,black_84%,transparent)] [mask-repeat:no-repeat]"
                         onMouseEnter={() => setIsHovering(true)}
                         onMouseLeave={() => setIsHovering(false)}
                         onPointerDown={(e) => {
-                            glisse.current = { x: e.clientX, y: e.clientY };
+                            if (e.button !== 0) return;
+                            glisse.current = { x: e.clientX, y: e.clientY, t: performance.now() };
                         }}
                         onPointerUp={finGlisse}
                         onPointerCancel={() => {
@@ -450,8 +461,22 @@ export const PhoneCarousel: React.FC<PhoneCarouselProps> = ({
                         </div>
                     </div>
 
-                    {/* Controls */}
-                    <div className="absolute bottom-8 left-0 right-0 flex justify-center items-center gap-4 z-30">
+                    {/* Adaptation Stalika : l'icône Lecture, au centre du téléphone, dit que tout est en pause ;
+                        un nouvel appui relance. */}
+                    <div
+                        aria-hidden="true"
+                        className={cn(
+                            "pointer-events-none absolute left-1/2 top-[42%] z-30 grid size-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-foreground/20 bg-background/60 shadow-md backdrop-blur-sm transition-all duration-200",
+                            isPaused ? "scale-100 opacity-100" : "scale-75 opacity-0"
+                        )}
+                    >
+                        <Play className="ml-0.5 size-7 text-foreground" />
+                    </div>
+
+                    {/* Controls. Adaptation Stalika : ils ne se voient plus (J, 2026-10-07), mais restent pour le
+                        clavier et les lecteurs d'écran : transparents, sans prise à la souris ni au doigt (l'appui
+                        passe au téléphone dessous), et visibles dès qu'on y arrive au clavier. */}
+                    <div className="pointer-events-none absolute bottom-8 left-0 right-0 flex justify-center items-center gap-4 z-30 opacity-0 focus-within:pointer-events-auto focus-within:opacity-100">
                         <Button
                             variant="outline"
                             size="icon"

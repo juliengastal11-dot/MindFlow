@@ -16,16 +16,20 @@ import { DEMOS, type Demo } from "./produits";
    le 2026-10-02), et la légende du logiciel de face.
 
    Le carrousel garde son allure et ses gestes : le téléphone de face, ses
-   voisins estompés de part et d'autre, les trois boutons posés dessus
-   (précédent, pause, suivant), la rotation qui s'arrête au survol. Il tourne
+   voisins estompés de part et d'autre, la rotation qui s'arrête au survol.
+   Depuis le 2026-10-07 (J), les trois boutons (précédent, pause, suivant) ne se
+   voient plus : un appui sur le téléphone met en pause, un glissé change de
+   logiciel (ils restent pour le clavier, voir `phone-carousel.tsx`). Il tourne
    ici au rythme des démos : un téléphone reste de face le temps de sa boucle
-   (12 s), et sa démo repart du début quand il arrive. La pause arrête la
+   (12 s ; VTBON, dont les deux maquettes s'enchaînent, y reste plus longtemps :
+   `duree` dans `produits.tsx`), et sa démo repart du début quand il arrive. La pause arrête la
    rotation et la démo (critère WCAG 2.2.2) ; la rotation s'arrête aussi
    quand le clavier entre dans le carrousel. Hors de l'écran, tout s'arrête.
    Mouvement réduit : pas de rotation, des écrans arrêtés sur leur étape la
    plus parlante.
 
-   La légende dit ce que fait le logiciel de face et pour qui ; ses noms
+   La légende dit ce que fait le logiciel de face et pour qui (plus de pastilles
+   de fonctions dessous : J les a retirées le 2026-10-07) ; ses noms
    servent d'indicateur de position et se cliquent. Sur ordinateur, elle est
    à gauche des téléphones ; sur téléphone, dessous.
 --------------------------------------------------------------------------- */
@@ -57,23 +61,26 @@ export function SaaSCarousel({ demos = DEMOS, className }: { demos?: readonly De
 
   const etatDe = (i: number): EtatDemo => (i !== courant ? "repos" : pause || !enVue ? "pause" : "joue");
 
+  // Chaque logiciel sur son écran : une interface de Stalika jouée par GSAP, ou un écran qui se joue seul (VTBON).
   const ecrans: ImageItem[] = demos.map((d, i) => ({
     src: "",
     alt: d.nom,
-    content: (
+    content: d.Ecran ? (
+      <d.Ecran nom={d.nom} description={d.description} resume={d.resume} statut={d.statut} etat={etatDe(i)} />
+    ) : d.Apercu && d.animation ? (
       <SaaSPreviewCard
         nom={d.nom}
         description={d.description}
         resume={d.resume}
-        theme={d.theme}
+        theme={d.theme ?? ""}
         statut={d.statut}
-        heure={d.heure}
+        heure={d.heure ?? ""}
         animation={d.animation}
         etat={etatDe(i)}
       >
         <d.Apercu />
       </SaaSPreviewCard>
-    ),
+    ) : null,
   }));
 
   return (
@@ -93,7 +100,7 @@ export function SaaSCarousel({ demos = DEMOS, className }: { demos?: readonly De
           onIndexChange={setCourant}
           onPauseChange={surPause}
           suspendu={!enVue || focus || reduit}
-          interval={M.boucle * 1000}
+          interval={(demos[courant]?.duree ?? M.boucle) * 1000}
           className="py-2 md:py-4"
         />
       </div>
@@ -102,7 +109,7 @@ export function SaaSCarousel({ demos = DEMOS, className }: { demos?: readonly De
   );
 }
 
-/** Ce que fait le logiciel de face, pour qui, et le lien ; au-dessus, les trois noms. */
+/** Ce que fait le logiciel de face, et le lien ; au-dessus, les trois noms. */
 function Legende({
   demos,
   courant,
@@ -115,7 +122,6 @@ function Legende({
   className?: string;
 }) {
   const d = demos[courant];
-  const Icone = d.icone;
   const bloc = useRef<HTMLDivElement>(null);
   const premier = useRef(true);
 
@@ -158,33 +164,8 @@ function Legende({
         ))}
       </div>
 
-      <div
-        ref={bloc}
-        style={{ "--color-produit": d.accent, "--color-on-produit": d.surAccent } as React.CSSProperties}
-        className="flex flex-col items-center gap-3.5 text-center lg:items-start lg:text-left"
-      >
-        <div className="flex items-center gap-3 text-left">
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-produit text-on-produit shadow-[inset_0_1px_0_rgb(255_255_255/0.2)]">
-            <Icone aria-hidden="true" className="size-5" strokeWidth={2} />
-          </span>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="text-xl font-semibold leading-tight tracking-tight">{d.nom}</h3>
-              <span className="rounded-full border border-foreground/15 px-1.5 text-[11px] font-medium leading-4 text-muted-foreground">
-                {d.statut}
-              </span>
-            </div>
-            <p className="mt-0.5 text-[13px] leading-snug text-muted-foreground">{d.pourQui}</p>
-          </div>
-        </div>
+      <div ref={bloc} className="flex flex-col items-center gap-3.5 text-center lg:items-start lg:text-left">
         <p className="max-w-md text-[15px] leading-relaxed text-foreground/85">{d.description}</p>
-        <ul aria-label={`Ce que fait ${d.nom}`} className="flex max-w-md flex-wrap justify-center gap-1.5 lg:justify-start">
-          {d.fonctions.map((f) => (
-            <li key={f} className="rounded-md bg-foreground/[0.07] px-2 py-0.5 text-[12px] text-muted-foreground">
-              {f}
-            </li>
-          ))}
-        </ul>
         <Link
           href={d.lien?.href ?? "/contact"}
           className="lien-fleche mt-1 inline-flex items-center gap-1.5 rounded-sm text-[14px] font-medium text-foreground transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"

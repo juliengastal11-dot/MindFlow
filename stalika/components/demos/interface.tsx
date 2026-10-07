@@ -11,7 +11,7 @@ import type { Ton } from "@/lib/demos";
    les avatars, les boutons, les barres de progression et la notification.
 
    Dans un téléphone, les couleurs, les coins et les ombres viennent du thème
-   du logiciel (`.appli-grise`, `.appli-or`, `.appli-sombre`, app/globals.css),
+   du logiciel (`.appli-grise`, `.appli-sombre`, app/globals.css),
    posé par la carte ; hors d'un téléphone, du clair (`.jour`). Les repères
    `data-etat`, `data-barre`, `data-marque` et `data-pastille` permettent à un
    thème d'aller au-delà des jetons. Les tailles suivent celles d'une

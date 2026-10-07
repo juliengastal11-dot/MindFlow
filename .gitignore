@@ -17,3 +17,6 @@ Thumbs.db
 # Sortie du build Netlify local
 .netlify/
 stalika/.netlify/
+
+# Captures de la scène « La relecture » (outils/relecture)
+outils/relecture/sortie/

@@ -132,6 +132,88 @@ survol sont ceux de l'original ; la lueur est camel (`primary`).
   dernière image. Décisions de J : coin haut gauche, balancement de quelques secondes puis arrêt,
   indice discret, le bouton reste en bas quand on remonte.
 
+## Mise à jour du 2026-10-07 : « La relecture » au défilement, sur le vrai site d'AR Transfert
+
+À la demande de J : « le plus de STALIKA, c'est vous qui décidez et avez la main. Vous recevez un lien,
+vous éditez votre site à votre guise, je regarde, j'écoute, j'échange avec vous et je mets en place
+rapidement. » La scène (`components/sections/scene-relecture.tsx`, `relecture-fenetre.tsx`) le montre
+sur le site d'AR Transfert, en deux temps voulus par J :
+- **A.** le client passe la barre d'édition en « Édition », coche « Changement immédiat », clique le
+  paragraphe, sélectionne sa dernière ligne (« et soirées. ») et la réécrit (« et événements
+  d'entreprise. ») ; Julien a son propre curseur, comme un collègue qui regarde.
+- **B.** il retire l'animation des phares (l'appel de phares du site : « Garder » ou « Retirer »), puis
+  épingle un commentaire sur la photo (« Une photo plus claire ? ») ; Julien répond (« Bien sûr, c'est
+  fait. ») et la photo s'éclaircit. Les trois retouches se cochent dans la liste à côté ; le tampon
+  « Appliqué · publié » clôt.
+- **Au défilement, sans épinglage JavaScript.** J avait refusé l'épinglage le 2026-10-01 (la page « s'arrêtait
+  et repartait » sur son téléphone) ; ici : « avec le défilement, on change si ce n'est pas bien », et le film doit
+  partir « quand l'animation arrive à mi-hauteur d'écran ». La scène contient une piste (`data-piste`) de
+  3,6 écrans ; son contenu y reste collé (`position: sticky`, donc par le navigateur), centré dans l'écran ;
+  le film avance avec la piste, de l'instant où il se colle (la fenêtre est alors au milieu de l'écran)
+  jusqu'à celui où il se décolle. Réglages : `MOUVEMENT.relecture` (`ecrans`, `lissage`). `Scene` a pour
+  cela une option `defilement` ; l'abandonner (la retirer, et la piste) rend à la scène son film joué
+  une fois à l'arrivée (`declencheur`). Sur téléphone, le texte défile avant la piste et seule la
+  fenêtre reste collée. Mouvement réduit et sans JavaScript : pas de piste, l'état final.
+- **La page n'est pas refaite** : c'est une capture du site en ligne (`outils/relecture/`), posée sur un
+  dessin à l'échelle de la fenêtre (unités `cqw`, aucune mesure en JavaScript). Seul le paragraphe est du
+  vrai texte (Jost, comme sur le site). Deux mises en page, comme le site : ordinateur (1024 px) quand la
+  place est large (36 rem), ou assez large (24 rem) et pas plus haute que large ; téléphone (390 px,
+  recadré) sinon. **La fenêtre prend la place qui lui reste dans l'écran, hauteur comprise** (`.rel-place`,
+  conteneur de requête nommé, et `.rel-fenetre`, dans `app/globals.css`) : jamais plus haute que la zone
+  collée, ni plus large que 35 rem (26 pour la page de téléphone). Retouche du 2026-10-07 (J : « le texte
+  du titre est en dessous de la vidéo, recadre le site pour qu'il prenne un peu moins de place ») : dans le
+  panneau de navigateur de J (614 × 600), la page de téléphone, étirée à 566 px, faisait 850 px de haut et
+  recouvrait le titre. Vérifié de 360 × 640 à 1920 × 1080, téléphone couché compris (la colonne de texte y
+  perd sa suite : titre réduit, paragraphe et liste effacés). L'outil (barre, curseurs,
+  étiquettes, bulles) garde sa taille réelle ; les points où va le curseur sont mesurés dans la page au
+  moment de construire le film, et remesurés au redimensionnement (`invalidateOnRefresh`).
+- **Le bouton qui tombe** : les éléments de cette scène ne portent plus `data-rebond` (un contenu collé
+  n'a plus la même place une fois la piste engagée, et le bouton mesure la page au départ de sa chute).
+  À reprendre avec la deuxième étape du bouton (les perchoirs).
+- **Le ciel** : il avance toujours linéairement avec le défilement ; la piste plus longue ralentit son
+  changement d'heure, et la scène se termine à l'aube. Le voile à gauche du texte a été renforcé pour
+  que la fin reste lisible.
+
+## Mise à jour du 2026-10-07 : « Livré » parle d'hébergement
+
+À la demande de J (« il faut qu'on parle de l'hébergement, dire qu'ils peuvent héberger ou que je le gère,
+que c'est un travail qui se fait de manière personnelle pour chaque projet ») : la scène 5
+(`components/sections/scene-livre.tsx`) change de titre et de texte, **la carte « à partir de 300 € » ne
+bouge pas**. Titre : « Livré propre, *hébergé comme vous voulez* ». Les quatre coches restent (« il vous
+appartient » vit dans la quatrième). Dessous, deux voies qui arrivent l'une après l'autre, puis une ligne
+qui vaut pour les deux :
+- **Chez vous** : le client a déjà un hébergeur, ou veut garder la main ; J livre le site prêt à publier et
+  l'accompagne pour la mise en ligne.
+- **Chez moi** : J s'occupe de l'hébergement et de la maintenance (mises à jour, surveillance) et fait les
+  modifications demandées, dans la limite du raisonnable, **contre un petit abonnement mensuel**. Aucun montant
+  n'est écrit sur la page, comme la FAQ (« c'est écrit dans le devis ») : à décider avec J si l'on veut un
+  « à partir de » plus tard.
+- **Dans les deux cas** : le nom de domaine est au nom du client ; chaque projet se règle avec lui, un par
+  un, et c'est écrit dans le devis.
+Faits donnés par J le 2026-10-07. **La FAQ** (« Et l'hébergement, le nom de domaine ? ») dit la même chose,
+le même jour, à la demande de J : l'abonnement mensuel pour l'hébergement et la maintenance, ou la main laissée
+au client avec un accompagnement pour la mise en ligne, et le nom de domaine toujours à son nom. La question
+« Combien ça coûte, vraiment ? » ne parle pas de l'abonnement : à voir avec J. `Arrivee` est sorti de
+`scene-modele.tsx` pour servir aussi ici (`components/ui/arrivee.tsx`). La scène dure 3,4 s (`duree`), au lieu de
+2,6 s, pour que les arrivées ne se pressent pas.
+
+**Le fond de la section** : un fond en points qui s'efface vers les bords (masque elliptique), extrait collé par
+J le 2026-10-07 (`components/ui/fond-points.tsx`, posé derrière le contenu). Repris d'abord à l'identique ; puis
+passé aux jetons du thème, parce que le garde-fou refuse le blanc pur (`bg-white`) et les teintes hors palette.
+La copie exacte est dans l'historique git (commit « copie exacte de son extrait ») : pour la retrouver, blanc
+pur et gris `#e5e7eb`. Même jour, à la demande de J (« un peu plus visible, et qu'il suive les mouvements du
+téléphone ») : les points sont de l'`encre` du thème à 30 %, de 1,25 px de rayon (au lieu de la bordure, à 1 px),
+et **le motif glisse un peu sous le masque** (jamais plus de 14 px, le motif dépassant d'un pas de chaque côté) :
+- **sur téléphone**, avec l'inclinaison (`deviceorientation`) : les points glissent du côté où l'on penche ; la
+  position de repos suit le téléphone en 4 s environ, donc ce sont les mouvements qui comptent, pas la façon
+  de le tenir ;
+- **sur ordinateur**, avec la souris (10 px au plus) ; **mouvement réduit** : rien ne bouge ;
+- **iPhone et iPad** : Apple ne donne les capteurs qu'après une autorisation demandée par un appui. Plutôt que
+  d'ouvrir sa fenêtre de force à chaque visite, un petit bouton, « Faire bouger le fond », la demande ; il
+  n'apparaît que si aucune mesure n'arrive d'elle-même (Android, ou autorisation déjà donnée dans la session
+  de Safari : pas de bouton). **Jamais essayé sur un vrai téléphone** : testé avec des mesures simulées (Chrome,
+  mesures toutes les 16 ms), pas sur Safari ; à faire par J.
+
 ## §1 · La barre de direction
 
 | | Décidé |
@@ -233,9 +315,9 @@ Cinq champs : nom, hauteur (`bandeau`, `normal`, `grand`, `plein`), fond, conten
 Nav | bandeau | background | Monogramme + Stalika, bouton Contact, lien WhatsApp, lien d'évitement
 Scène 1 · Ils vous cherchent | plein | background (jour, illustration en calques) | Eyebrow, H1, texte, barre de recherche qui se tape, suggestions, 2 boutons, indice de défilement | EntreeHero, Paysage, Scene, Frappe
 Scène 2 · Pas un modèle | plein | background **nuit** | Eyebrow 01, H2, mot qui se décode, texte · neuf cartes en perspective, d'abord identiques, qui deviennent différentes | Scene, Decode, Champ3D
-Scène 3 · Utile | plein | primary **nuit** | Eyebrow 02, H2, texte · trois logiciels en démonstration (Carnet, RelancePro, Contrôle), chacun une application vivante sur l'écran d'un iPhone du carrousel de Solace UI, chacune avec son design depuis le 2026-10-04 (demande de J) : Carnet gris d'après le DESIGN.md de Cal.com, RelancePro noir et or d'après celui de Lamborghini, Contrôle sombre d'après celui de Linear (thèmes `.appli-*` dans app/globals.css) ; à côté (dessous sur téléphone), la légende du logiciel de face | Scene, Reveal, SaaSCarousel, SaaSPreviewCard (components/demos), PhoneCarousel (components/ui/phone-mockups-1-utils)
-Scène 4 · La relecture | plein | background **nuit** | Eyebrow 03, H2, texte · maquette client : surlignage, bulle, ligne barrée puis réécrite, tampon | Scene, Frappe, Barre
-Scène 5 · Livré | plein | background (jour) | Eyebrow 04, H2, 4 coches · carte d'offre : 300 €, plusieurs fois, 72 h en rouleaux, France, bouton | Scene, Rouleaux
+Scène 3 · Utile | plein | primary **nuit** | Eyebrow 02, H2, texte · trois logiciels en démonstration (VTBON, Carnet, Contrôle, dans cet ordre : VTBON s'affiche en premier), chacun une application vivante sur l'écran d'un iPhone du carrousel de Solace UI, chacune avec son design depuis le 2026-10-04 (demande de J) : Carnet gris d'après le DESIGN.md de Cal.com, Contrôle sombre d'après celui de Linear (thèmes `.appli-*` dans app/globals.css). Le 2026-10-07, VTBON, l'application de J, a pris la place de RelancePro : son écran est celui des deux maquettes animées de vtbon.fr (le bon dicté à la voix, puis la facture et sa relance), jouées l'une après l'autre en 45 s (`components/demos/vtbon/`, `vtbon-ecran.tsx`), sa palette est celle de l'application (noir et or) ; à côté (dessous sur téléphone), la légende du logiciel de face : ses trois noms, sa description et son lien (l'icône, le nom en titre, le statut et la ligne « pour qui » ont été retirés le 2026-10-07, à la demande de J) | Scene, Reveal, SaaSCarousel, SaaSPreviewCard, VtbonEcran (components/demos), PhoneCarousel (components/ui/phone-mockups-1-utils)
+Scène 4 · La relecture | plein (une piste de 3,6 écrans, contenu collé) | background **nuit** | Eyebrow 03, H2, texte, les trois retouches qui se cochent · fenêtre du vrai site d'AR Transfert : barre d'édition simplifiée, curseur du client et curseur de Julien, texte réécrit, animation retirée, photo commentée, tampon | Scene (au défilement), FenetreRelecture
+Scène 5 · Livré | plein | background (jour) | Eyebrow 04, H2, 4 coches, deux voies d'hébergement (« Chez vous », « Chez moi ») et la ligne commune · carte d'offre : 300 €, plusieurs fois, 72 h en rouleaux, France, bouton | Scene, Arrivee, Trace, Rouleaux
 Ils m'ont fait confiance | bandeau | muted | Trois noms et leur sous-titre, en défilement, liens | Defilant
 Julien | normal | background | Eyebrow, H2, un paragraphe | Reveal
 Questions fréquentes | normal | background | Eyebrow, H2, six questions en accordéon | Reveal
@@ -275,8 +357,8 @@ scène et retiré à la sortie.
 | 1 · Ils vous cherchent | Au chargement : `EntreeHero` sur eyebrow, H1, texte, boutons, l'illustration déjà là. Au défilement : les calques de l'illustration glissent à des vitesses différentes (`Paysage` : ciel lent, collines, terrasse au premier plan plus vite) et le voile monte ; la barre se tape lettre à lettre (`Frappe`), les trois suggestions se déplient, la première se surligne, la barre glisse vers le haut et la phrase de fin apparaît | les deux boutons (accent, contour) ; le lien WhatsApp |
 | 2 · Pas un modèle | Le champ de neuf cartes identiques s'incline et la caméra glisse (`Champ3D`) ; une carte sur deux devient son métier, puis les autres ; le mot en accent se décode trois fois (`Decode`) ; le texte arrive en dernier | rien : les cartes ne mènent nulle part, elles ne réagissent pas au curseur |
 | 3 · Utile | Le carrousel apparaît (`Reveal`). Le téléphone de face joue sa démo (12 s, scénarios de J) : un doigt touche, ouvre une fiche, coche, envoie ; l'écran revient à son départ sans saut. Toutes les 12 s, le carrousel passe au téléphone suivant, dont la démo repart du début ; la rotation s'arrête au survol et quand le clavier y entre. Les voisins restent sur leur premier écran. Hors de l'écran, tout s'arrête. Valeurs dans `MOUVEMENT.demos` | précédent, pause (rotation et démo, WCAG 2.2.2), suivant ; glisser au doigt ou à la souris ; les noms de la légende ; « Parlons de votre outil » mène à `/contact` |
-| 4 · La relecture | La maquette se pose ; un pointeur glisse vers la ligne d'horaires, contour pointillé puis plein ; la bulle s'ouvre et se tape (`Frappe`) ; la ligne d'origine se barre (`Barre`) et la nouvelle se tape à sa place ; le tampon se pose ; la légende apparaît | rien |
-| 5 · Livré | Les quatre coches se cochent une à une ; la carte d'offre glisse, « 300 € » apparaît immobile, « 72 h » roule de 00 à 72 (`Rouleaux`), la zone et le bouton arrivent | le bouton (accent) |
+| 4 · La relecture | Au défilement (voir la mise à jour du 2026-10-07) : le client passe la barre en Édition et coche « Changement immédiat » ; il survole le paragraphe (contour pointillé), le saisit (contour plein), sélectionne sa dernière ligne et la réécrit lettre à lettre ; Julien, qui regarde, a son curseur ; la première retouche se coche. Les phares clignotent, le client les retire (« Garder » ou « Retirer »). Il épingle un commentaire sur la photo, Julien répond, la photo s'éclaircit. Le tampon se pose, la légende apparaît | rien |
+| 5 · Livré | Les quatre coches se cochent une à une ; la carte d'offre glisse, « 300 € » apparaît immobile, « 72 h » roule de 00 à 72 (`Rouleaux`) ; les deux voies d'hébergement arrivent l'une après l'autre, puis la ligne commune ; la zone et le bouton arrivent (3,4 s en tout) | le bouton (accent) |
 | Fin calme | `Defilant` pour le bandeau, `Reveal` sur Julien, la FAQ et l'appel ; les orbites terminent leur rotation | les trois noms du bandeau (liens, `lien-fleche`) ; l'accordéon (`<details>`, focus visible) ; les deux boutons |
 
 **L'arc jour, nuit, jour.** La scène 1 est le jour : l'illustration, le papier. Entre la scène 1
@@ -404,7 +486,7 @@ débit limité sur l'envoi public ; aucune requête construite depuis une entré
 - **H5** Le champ 3D montre neuf cartes de métiers dessinées en code, jamais les sites des clients. *Abandonnée le 2026-10-01 : la roue montre les sites, voir la mise à jour en tête.*
 - **H6** Statistiques : Google Analytics 4 après consentement (H de mise en œuvre : bandeau, cookie de choix, chargement conditionnel) et Search Console à côté. Un outil sans cookie éviterait le bandeau ; J a demandé les cookies.
 - **H7** La section « Julien » dit ce qu'il fait aujourd'hui (sites et applications pour des commerces, depuis Béziers, pour toute la France, du dessin à la mise en ligne) et ne parle pas de son passé en restauration : demandé par J.
-- **H8** La scène 4 cite la Pizzeria des Allées comme exemple de relecture, avec l'accord du client dit obtenu.
+- **H8** La scène 4 cite AR Transfert (le chauffeur VTC de Béziers, un des sites de la roue) comme exemple de relecture, avec l'accord du client dit obtenu. *Remplace la Pizzeria des Allées (2026-10-07) ; à confirmer par J : le client a-t-il bien relu son site ainsi, et accepte-t-il d'être cité ?*
 - **H9** Contact : WhatsApp seul. L'e-mail viendra plus tard ; la page des mentions légales le marque à confirmer en attendant.
 - **H10** Le questionnaire compte dix questions, celles de `CONTENU.md`, dans cet ordre ; les réponses vont en base et se lisent dans `/admin` ; aucune alerte par e-mail, aucun service d'envoi n'est branché.
 - **H11** Compte administrateur : `ADMIN_EMAIL` et `ADMIN_PASSWORD` dans `.env` ; en développement, `admin@stalika.local` / `stalika-dev`.
@@ -440,7 +522,7 @@ Validées par J le 2026-09-30 avec le reste du blueprint, dans le sens proposé 
 La fenêtre qui s'ouvre au bout de la plongée est une discussion. Le design est en place avec un déroulé scripté ; le branchement viendra quand J l'aura décidé.
 
 - **Moteur** : l'API Claude (compte console.anthropic.com, clé côté serveur uniquement, jamais dans le dépôt public ; plafond de dépense). Ce n'est pas l'abonnement Claude de J ni cette session. Modèle à choisir par J : Opus 5.5 (4 $ / 20 $ par million de tokens), Sonnet 5.5 (2 $ / 10 $), Haiku 4.5 (1 $ / 5 $), grille Anthropic du 2026-09-25. Estimation : 0,05 à 0,22 $ par conversation de dix échanges, à mesurer.
-- **Déroulé voulu par J** : premier message du visiteur écrit tout seul (« Hey, salut ! J'ai un projet de site et j'aimerais qu'on en discute »), première réponse toujours la même (prénom, tutoiement ou vouvoiement, description du projet), puis Claude prend la suite, relance, personnalise (utilise le prénom). En fin d'échange : choisir un créneau (calendrier + créneaux) ou passer sur WhatsApp.
+- **Déroulé voulu par J** : premier message du visiteur écrit tout seul (« Hey, salut ! J'ai un projet et j'aimerais qu'on en discute », sans « de site » depuis le 2026-10-07), première réponse toujours la même (prénom, tutoiement ou vouvoiement, description du projet), puis Claude prend la suite, relance, personnalise (utilise le prénom). En fin d'échange : choisir un créneau (calendrier + créneaux) ou passer sur WhatsApp.
 - **Transparence** : l'assistant dit qu'il est l'assistant IA de Julien (règlement (UE) 2024/1689, art. 50, applicable depuis le 2026-08-02, cité de mémoire, à vérifier). Il ne se fait jamais passer pour J. Passage de relais vers J (résumé par e-mail ou WhatsApp).
 - **Agenda** : accès propre au site (Google Agenda autorisé par J), lecture des créneaux libres uniquement, aucun détail des rendez-vous. Réservation directe ou demande validée par J : à décider.
 - **Garde-fous** : sujet limité à l'offre, seuls les prix publiés, résistance aux détournements, messages et échanges plafonnés par visiteur, plafond de dépense.

@@ -1,0 +1,636 @@
+/* ---------------------------------------------------------------------------
+   L'écran de l'application VTBON dans le téléphone de la section 02 (demande de
+   J, 2026-10-07 : « change l'application RelancePro par l'application VTBON que
+   j'ai faite »).
+
+   CSS repris tel quel des deux maquettes du site vtbon.fr (dépôt vtbon-site,
+   `components/maquettes/maquettes.css` et `palettes-app.css`, état du
+   2026-10-07), sans le châssis d'iPhone ni le retournement : le téléphone est
+   celui du carrousel. Tout est sous `.vtui-root`, la racine de l'écran : rien
+   ne fuit vers le site. Seule la palette par défaut est gardée (Or, mode nuit,
+   la charte de VTBON) ; ses neuf autres palettes n'ont pas d'objet ici.
+   Les couleurs sont celles de l'application, pas celles de Stalika : c'est
+   l'interface d'un autre logiciel, montrée telle qu'elle est.
+--------------------------------------------------------------------------- */
+
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/demos/vtbon/inter-variable-wght-normal-latin.woff2) format('woff2-variations');
+}
+
+/* Palette Or, mode nuit (palettes-app.css), et deux jetons que le site de VTBON
+   définit dans son thème : la courbe de ses animations et le bleu nuit des
+   documents. */
+.vtui-root {
+      --bg:       #060610;
+      --bg-rgb:   6,6,16;
+      --s1:       #0F0F1E;
+      --s1-rgb:   15,15,30;
+      --s2:       #181828;
+      --s2-rgb:   24,24,40;
+      --gold:     #C9A84C;
+      --gold2:    #E8C56A;
+      --gold-rgb: 201,168,76;
+      --goldbg:   rgba(var(--gold-rgb),0.10);
+      --goldbr:   rgba(var(--gold-rgb),0.25);
+      --t1:       #FFFFFF;
+      --t2:       rgba(255,255,255,0.52);
+      --t3:       rgba(255,255,255,0.22);
+      /* Alphas de --t2 / --t3 isolés : une icône faite de segments séparés ne
+         peut pas être atténuée par la couleur (cf. « croisements de traits »
+         plus bas), il lui faut l'opacité de l'élément, même valeur, autre
+         support. À garder synchronisés avec les deux couleurs ci-dessus. */
+      --t2-a:     .52;
+      --t3-a:     .22;
+      --br:       rgba(255,255,255,0.07);
+      --glass-border: rgba(255,255,255,0.12);
+      /* Liquid Glass (charte Apple) : flou+saturation forts, reflet spéculaire
+         en haut de surface (inset), ombre portée douce multicouche. Chaque
+         surface combine : box-shadow: var(--glass-shadow), var(--glass-specular) */
+      --glass-blur: blur(28px) saturate(1.8);
+      --glass-shadow: 0 20px 45px rgba(0,0,0,.55), 0 6px 14px rgba(0,0,0,.32);
+      --glass-specular: inset 0 1px 0 rgba(255,255,255,.16), inset 0 0 0 .5px rgba(255,255,255,.05);
+      --card-shadow: 0 10px 28px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.05);
+      --red:      #FF4757;
+      --green:    #2ECC71;
+      /* Triplets des deux couleurs SÉMANTIQUES (elles ne suivent pas la
+         palette : un « refusé » reste rouge en Turquoise comme en Espresso).
+         Même règle que --gold-rgb : tout voile translucide passe par le
+         triplet, jamais par un rgba(46,204,113,X) écrit en dur, c'est ce
+         qui a déjà silencieusement figé des couleurs (commit 8bc7b0d). */
+      --red-rgb:   255,71,87;
+      --green-rgb: 46,204,113;
+      /* ── BOTTOM NAV, source de vérité unique de la géométrie. Avant, --nav
+         recopiait en dur le height:60px de .bnav sans aucun lien entre les
+         deux : ils devaient être maintenus à la main. Tout en dérive. ── */
+      --bnav-h:    60px;   /* hauteur de la barre déployée */
+      --bnav-fab:  68px;   /* Ø du bouton central */
+      --bnav-hole: 78px;   /* Ø du trou = FAB + 5px d'anneau transparent autour */
+      --bnav-over: 4px;    /* = (68 − 60)/2 : ce dont le FAB déborde, en haut ET en bas */
+      /* Le creux sous la bnav (zone du home indicator, iPhone sans bouton) est
+         respecté mais réduit de 15px : la pilule flottante n'a pas besoin de
+         la même marge qu'un contenu edge-to-edge, et cette marge complète
+         laissait un espace vide visible en bas d'écran sur device réel.
+         Puis remonté de --bnav-over : le bas du FAB retombe exactement là où
+         était le bas de la barre avant la refonte, donc le dégagement du home
+         indicator reste celui qui a été validé sur device. */
+      --bnav-bottom: calc(max(10px, calc(env(safe-area-inset-bottom, 10px) - 15px)) + var(--bnav-over));
+      /* Réserve sous les écrans (barre CTA, selbar, padding de fin de liste),
+         mesurée depuis le SOMMET DU FAB, l'élément le plus haut de la nav -
+         plus 14px de respiration. */
+      --nav:      calc(var(--bnav-bottom) + var(--bnav-h) / 2 + var(--bnav-fab) / 2 + 14px);
+      --r:        24px;
+      --rsm:      16px;
+    }
+.vtui-root {
+  --ease-app: cubic-bezier(0.34, 1.22, 0.64, 1);
+  --navy: #0a1132;
+}
+
+/* ── GABARIT DE LA MAQUETTE, plus spécifique que `.vtui-root` nu, donc
+   insensible à l'ordre d'import avec palettes-app.css. ── */
+.vtui-root.vt-scale {
+  font-family: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 13.5px;
+  line-height: 1.35;
+  color: var(--t1);
+  --vr: var(--r);
+  --vrsm: var(--rsm);
+  /* Bottom nav à l'échelle du gabarit (≈ 0,83 de l'app réelle) : barre 50,
+     bouton central 56, trou 64, repris tel quel de la maquette d'origine. */
+  --bnav-h: 50px;
+  --bnav-fab: 56px;
+  --bnav-hole: 64px;
+  --bnav-bottom: 10px;
+  --nav: calc(var(--bnav-bottom) + var(--bnav-h) / 2 + var(--bnav-fab) / 2 + 12px);
+}
+.vtui-root {
+  position: relative;
+  isolation: isolate;
+}
+.vtui-root * { box-sizing: border-box; }
+
+/* ── ÉCRAN, `.vtui-root` contient la Surpiqûre (non clippée) ET un viewport
+   interne qui, lui, est `overflow:hidden` (écrans qui glissent/fondent). ── */
+.vt-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  border-radius: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+.vtui-root .statusbar { height: 30px; display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 0; color: var(--t1); flex-shrink: 0; }
+.vtui-root .statusbar__time { font-size: 12px; font-weight: 700; letter-spacing: .2px; }
+.vtui-root .statusbar__icons { display: flex; align-items: center; gap: 5px; }
+.vtui-root .statusbar__icons svg { fill: var(--t1); }
+
+.vtui-root .vt-screen { position: absolute; top: 30px; right: 0; bottom: 0; left: 0; overflow: hidden; display: none; flex-direction: column; background: var(--bg); }
+.vtui-root .vt-screen.is-active { display: flex; animation: vtFade .42s var(--ease-app); }
+@keyframes vtFade { 0% { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Topbar */
+.vtui-root .topbar { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px 8px; flex-shrink: 0; background: var(--bg); position: relative; z-index: 2; }
+.vtui-root .brand-mark { height: 16px; width: auto; display: block; }
+.vtui-root .logo { font-size: 21px; font-weight: 900; letter-spacing: -.8px; }
+.vtui-root .tbr { display: flex; gap: 4px; }
+.vtui-root .ibtn { width: 36px; height: 36px; border-radius: 50%; background: rgba(var(--s1-rgb), .65); backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4); border: 1px solid var(--glass-border); box-shadow: var(--glass-specular); color: var(--t2); display: flex; align-items: center; justify-content: center; }
+.vtui-root .ibtn .ic { width: 15px; height: 15px; }
+.vtui-root .ibtn.gold { color: var(--gold); }
+.vtui-root .ibtn.is-press { transform: scale(.94); opacity: .65; transition: transform .12s var(--ease-app), opacity .12s; }
+
+/* Cartes */
+.vtui-root .card { background: var(--s1); border: 1px solid var(--br); border-radius: var(--vr); padding: 13px; margin: 0 14px 9px; box-shadow: var(--card-shadow); flex-shrink: 0; }
+.vtui-root .ctitle { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--gold); margin-bottom: 12px; }
+.vtui-root .chead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.vtui-root .chead .ctitle { margin-bottom: 0; }
+.vtui-root .trip-type { display: flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 600; color: var(--t2); white-space: nowrap; }
+.vtui-root .trip-type svg { opacity: .7; flex-shrink: 0; }
+
+/* Champs */
+.vtui-root .f { margin-bottom: 9px; }
+.vtui-root .f:last-child { margin-bottom: 0; }
+.vtui-root .f label { display: block; font-size: 10.5px; font-weight: 600; color: var(--t2); margin-bottom: 5px; }
+.vtui-root .req { color: var(--gold); }
+.vtui-root .iw { position: relative; }
+.vtui-root .iw input { width: 100%; padding: 10px 15px; min-height: 38px; background: rgba(var(--s2-rgb), .55); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3); border: 1.5px solid var(--glass-border); border-radius: 999px; box-shadow: var(--glass-specular); font: inherit; font-size: 12.5px; font-weight: 500; color: var(--t1); outline: none; transition: border-color .2s; }
+.vtui-root .iw.vm input { padding-right: 40px; }
+.vtui-root .iw.vm.geo input { padding-right: 76px; }
+.vtui-root .iw input::placeholder { color: var(--t3); font-weight: 400; }
+.vtui-root .iw.is-filling input { border-color: var(--gold); }
+.vtui-root .fakeselect { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 10px 13px 10px 15px; min-height: 38px; background: rgba(var(--s2-rgb), .55); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3); border: 1.5px solid var(--glass-border); border-radius: 999px; box-shadow: var(--glass-specular); font-size: 12.5px; font-weight: 500; color: var(--t1); white-space: nowrap; }
+.vtui-root .fakeselect .ic { width: 13px; height: 13px; flex-shrink: 0; opacity: .85; }
+.vtui-root .fakeselect .ic.chev { width: 11px; height: 11px; opacity: .7; }
+.vtui-root .r2 { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.vtui-root .vbtn { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border-radius: 50%; background: none; color: var(--gold); display: flex; align-items: center; justify-content: center; transition: background-color .2s, color .2s; }
+.vtui-root .vbtn .ic { width: 14px; height: 14px; }
+.vtui-root .vbtn.geo { right: 38px; }
+.vtui-root .pf input { padding-right: 78px; font-size: 17px; font-weight: 700; }
+.vtui-root .eur { position: absolute; right: 46px; top: 50%; transform: translateY(-50%); font-size: 14px; font-weight: 700; color: var(--gold); }
+.vtui-root .stop-add { display: flex; align-items: center; gap: 9px; margin: 0 0 9px 2px; font-size: 11px; font-weight: 500; color: var(--t2); }
+.vtui-root .stop-add__btn { width: 24px; height: 24px; border-radius: 7px; border: 1.5px dashed rgba(var(--gold-rgb), .6); background: rgba(var(--gold-rgb), .08); color: var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.vtui-root .stop-add__btn .ic { width: 12px; height: 12px; }
+.vtui-root .paybox { display: flex; align-items: center; gap: 8px; background: rgba(var(--s2-rgb), .55); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3); border: 1.5px solid var(--glass-border); border-radius: 999px; box-shadow: var(--glass-specular); padding: 9px 12px; font-size: 11px; font-weight: 600; color: var(--t1); line-height: 1.25; }
+.vtui-root .paybox.on { border-color: var(--gold); background: var(--goldbg); }
+.vtui-root .paygrid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.vtui-root .paycol { display: flex; flex-direction: column; gap: 7px; }
+.vtui-root .cbx { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--t3); flex-shrink: 0; position: relative; }
+.vtui-root .cbx.on { background: var(--gold); border-color: var(--gold); }
+.vtui-root .cbx.on::after { content: ""; position: absolute; left: 4px; top: 1.5px; width: 3.5px; height: 7px; border: solid var(--bg); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.vtui-root .rdo { width: 14px; height: 14px; border-radius: 50%; background: #fff; flex-shrink: 0; }
+.vtui-root .rdo.on { box-shadow: inset 0 0 0 4px #2F7CF6; }
+.vtui-root .paymodal { padding: 0 14px 12px; overflow: hidden; }
+.vtui-root .paymodal .ctitle { margin-bottom: 9px; }
+.vtui-root .paymodal .f { margin: 9px 0; }
+.vtui-root .paymodal .cta { width: 100%; margin: 0; }
+.vtui-root .paymodal .cta + .cta { margin-top: 8px; }
+
+/* CTA, verre partout */
+.vtui-root .cta { display: flex; align-items: center; justify-content: center; padding: 13px; background: rgba(var(--gold-rgb), .16); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3); color: var(--gold); border: 1.5px solid rgba(var(--gold-rgb), .5); border-radius: 999px; box-shadow: var(--glass-specular); font-size: 13px; font-weight: 800; letter-spacing: .2px; transition: transform .12s var(--ease-app), filter .12s; cursor: pointer; }
+.vtui-root .cta .ic-btn { margin-right: 6px; width: 1.05em; height: 1.05em; }
+.vtui-root .cta.sec, .vtui-root .glass-pill { background: rgba(var(--s1-rgb), .78); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 999px; box-shadow: var(--glass-shadow), var(--glass-specular); color: rgba(var(--gold-rgb), .72); }
+.vtui-root .cta.sec.save { color: var(--t1); }
+[data-theme="light"] .vtui-root .cta.sec.save { color: var(--bg); }
+/* Rouge d'ÉTAT (retard), littéral, pas de palette : même règle que .hbadge. */
+.vtui-root .cta.danger, .vtui-root .cta.retard { background: rgba(255, 71, 87, .12); color: var(--red); border-color: rgba(255, 71, 87, .45); }
+.vtui-root .cta.is-press { transform: scale(.97); filter: brightness(.9); }
+.vtui-root .home-scroll { flex: 1; min-height: 0; overflow: hidden; padding-top: 1px; }
+.vtui-root .home-scroll::after { content: ""; display: block; height: var(--nav); }
+
+/* Listes */
+.vtui-root .hlist { flex: 1; overflow: hidden; padding-top: 4px; }
+.vtui-root .hitem { background: var(--s1); border: 1px solid var(--br); border-radius: var(--vr); padding: 13px; margin: 0 14px 8px; box-shadow: var(--card-shadow); animation: vtFade .4s var(--ease-app); transition: transform .15s, border-color .15s; }
+.vtui-root .hitem[data-status="reglee"] { border-color: rgba(46, 204, 113, .5); }
+.vtui-root .hitem[data-status="annulee"] { border-color: rgba(139, 90, 43, .5); }
+/* Retard : liseré rouge, contrepartie visible du chiffre du bandeau. */
+.vtui-root .hitem[data-retard] { border-color: rgba(255, 71, 87, .55); }
+.vtui-root .hr1 { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 3px; }
+.vtui-root .hcli { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 5px; min-width: 0; padding-top: 2px; }
+.vtui-root .hcli .ic { color: var(--t1); width: 13px; height: 13px; flex-shrink: 0; }
+.vtui-root .hdoctype { display: inline-block; font-size: 8.5px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; color: var(--gold); background: rgba(var(--gold-rgb), .12); border: 1px solid rgba(var(--gold-rgb), .3); border-radius: 4px; padding: 1px 5px; margin-left: 6px; vertical-align: middle; }
+.vtui-root .hprix-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
+.vtui-root .hprix { font-size: 15px; font-weight: 900; color: var(--gold); flex-shrink: 0; }
+.vtui-root .hfav { display: flex; color: var(--t3); padding: 2px 0; }
+.vtui-root .hfav .ic { width: 14px; height: 14px; }
+.vtui-root .hfav.on { color: var(--gold); }
+.vtui-root .hfav.on .ic { fill: var(--gold); }
+.vtui-root .hr2 { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 3px; }
+.vtui-root .hdt { font-size: 12.5px; font-weight: 600; color: var(--t2); display: flex; align-items: center; gap: 5px; }
+.vtui-root .hdt .ic { width: 11px; height: 11px; }
+.vtui-root .hr3 { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+.vtui-root .htraj { flex: 1 1 auto; min-width: 0; font-size: 11.5px; color: var(--t2); display: flex; align-items: center; gap: 5px; margin-bottom: 0; }
+.vtui-root .htraj .ic { color: var(--t2); width: 11px; height: 11px; flex-shrink: 0; }
+.vtui-root .htraj span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.35; }
+/* Badges du cycle de vie de la facture, palette figée à quatre couleurs. */
+.vtui-root .hbadge { font-size: 8.5px; font-weight: 800; padding: 3px 8px; border-radius: 50px; white-space: nowrap; letter-spacing: .2px; flex-shrink: 0; }
+.vtui-root .hbadge.attente { background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .28); color: #FFFFFF; }
+.vtui-root .hbadge.reglee { background: rgba(46, 204, 113, .14); border: 1px solid rgba(46, 204, 113, .35); color: var(--green); }
+.vtui-root .hbadge.retard { background: rgba(255, 71, 87, .14); border: 1px solid rgba(255, 71, 87, .45); color: var(--red); }
+[data-theme="light"] .vtui-root .hbadge.attente { background: rgba(0, 0, 0, .06); border: 1px solid rgba(0, 0, 0, .22); color: var(--bg); }
+[data-theme="light"] .vtui-root .hbadge.retard { background: rgba(255, 71, 87, .10); color: #D62839; }
+/* Pas un badge : ça ne dit pas un état, ça compte des jours, verre neutre. */
+.vtui-root .hdelai { flex-shrink: 0; font-size: 10px; font-weight: 800; letter-spacing: .2px; color: var(--t2); background: rgba(var(--s1-rgb), .55); backdrop-filter: blur(10px) saturate(1.4); -webkit-backdrop-filter: blur(10px) saturate(1.4); border: 1px solid var(--glass-border); border-radius: 50px; padding: 2px 8px; white-space: nowrap; }
+.vtui-root .hdelai.proche { color: var(--t1); background: rgba(var(--s1-rgb), .85); }
+.vtui-root .hdelai.relancee { color: var(--t2); }
+.vtui-root .hcheck { width: 18px; height: 18px; border-radius: 50%; background: rgba(46, 204, 113, .16); border: 1px solid rgba(46, 204, 113, .4); color: var(--green); font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+.vtui-root .hitem.is-press { transform: scale(.98); filter: brightness(.9); }
+
+/* Onglets Factures, pilule concentrique */
+.vtui-root .fact-tabs { position: relative; display: flex; background: rgba(var(--bg-rgb), .72); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); border-radius: 12px; box-shadow: var(--glass-specular); padding: 3px; overflow: hidden; }
+.vtui-root .ftab-pill { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc((100% - 6px) / 2); border-radius: 9px; background: rgba(var(--gold-rgb), .10); border: 1px solid rgba(var(--gold-rgb), .22); box-shadow: 0 0 16px rgba(var(--gold-rgb), .14); transition: left .32s cubic-bezier(.34, 1.22, .64, 1), opacity .2s; pointer-events: none; z-index: 0; }
+.vtui-root .ftab-pill.q4 { width: calc((100% - 6px) / 4); }
+.vtui-root .ftab-pill.off { opacity: 0; }
+.vtui-root .ftab-pill::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 44%; height: 2px; border-radius: 0 0 3px 3px; background: var(--gold); box-shadow: 0 0 10px rgba(var(--gold-rgb), .9), 0 0 4px rgba(var(--gold-rgb), .5); }
+.vtui-root .ftab { flex: 1; position: relative; z-index: 1; text-align: center; border-radius: 9px; padding: 7px 2px; font-size: 10px; font-weight: 600; color: var(--t2); transition: color .25s; white-space: nowrap; }
+.vtui-root .ftab.on { color: var(--gold); }
+.vtui-root .ca-chips .ftab { font-size: 9.5px; padding: 6px 2px; }
+.vtui-root .hist-ca { padding: 0 14px 8px; flex-shrink: 0; }
+.vtui-root .ca-figs { display: flex; gap: 8px; margin-top: 8px; }
+.vtui-root .cafig { flex: 1; background: var(--s1); border: 1px solid var(--br); border-radius: var(--vr); padding: 9px 8px; text-align: center; box-shadow: var(--card-shadow); }
+.vtui-root .cafig-v { display: block; font-size: 13.5px; font-weight: 800; color: var(--t1); letter-spacing: -.2px; }
+.vtui-root .cafig.paid .cafig-v { color: var(--green); }
+.vtui-root .cafig.late .cafig-v { color: var(--red); }
+.vtui-root .cafig-l { display: block; font-size: 9.5px; font-weight: 600; color: var(--t2); margin-top: 2px; }
+.vtui-root .hist-tools { background: var(--s1); border: 1px solid var(--br); border-radius: var(--vr); padding: 12px; margin: 0 14px 9px; display: none; box-shadow: var(--card-shadow); }
+.vtui-root .hist-tools.is-open { display: block; animation: vtFade .35s var(--ease-app); }
+
+/* ── Nav basse, pilule de verre flottante percée, deux faces. ── */
+.vtui-root .vt-screen[data-screen="home"] { bottom: 0; }
+.vtui-root.hide-nav .bnav { display: none; }
+.vtui-root .bnav { position: absolute; left: 12px; right: 12px; bottom: var(--bnav-bottom); height: var(--bnav-h); z-index: 30; display: flex; align-items: center; }
+.vtui-root .bnav-glass {
+  position: absolute; inset: 0; background: none;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-border); border-radius: calc(var(--bnav-h) / 2);
+  box-shadow: var(--glass-specular); pointer-events: none;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) calc(var(--bnav-hole) / 2 - .5px), #000 calc(var(--bnav-hole) / 2 + .5px));
+  mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) calc(var(--bnav-hole) / 2 - .5px), #000 calc(var(--bnav-hole) / 2 + .5px));
+}
+.vtui-root .bnav-clip { position: absolute; inset: 0; border-radius: calc(var(--bnav-h) / 2); overflow: hidden; pointer-events: none; box-shadow: var(--glass-shadow); }
+.vtui-root .bnav-ring { position: absolute; left: 50%; top: 50%; width: calc(var(--bnav-hole) + 1px); height: calc(var(--bnav-hole) + 1px); transform: translate(-50%, -50%); border-radius: 50%; border: 1px solid var(--glass-border); }
+.vtui-root .bnav-pill { position: absolute; left: 0; top: 4px; bottom: 4px; width: calc((100% - var(--bnav-hole)) / 4); border-radius: 21px; background: rgba(var(--gold-rgb), .10); border: 1px solid rgba(var(--gold-rgb), .22); box-shadow: 0 0 18px rgba(var(--gold-rgb), .15); transition: transform .34s cubic-bezier(.34, 1.22, .64, 1), opacity .2s ease; pointer-events: none; will-change: transform; }
+.vtui-root .bnav-pill.off { opacity: 0; }
+.vtui-root .bnav-pill::before { content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 44%; height: 2px; border-radius: 0 0 3px 3px; background: var(--gold); box-shadow: 0 0 12px rgba(var(--gold-rgb), .9), 0 0 4px rgba(var(--gold-rgb), .6); }
+.vtui-root .bnav-layer { position: absolute; inset: 0; display: flex; align-items: center; transition: opacity .2s ease, transform .28s cubic-bezier(.34, 1.22, .64, 1); }
+.vtui-root .bnav-layer.out { opacity: 0; pointer-events: none; }
+.vtui-root .bnav-layer.nav-layer.out { transform: translateY(-9px); }
+.vtui-root .bnav-layer.act-layer.out { transform: translateY(9px); }
+.vtui-root .bnav-hole { flex: 0 0 var(--bnav-hole); }
+.vtui-root .ni { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; position: relative; z-index: 1; color: var(--t3); transition: color .25s; }
+.vtui-root .ni .ico { display: flex; color: var(--t1); }
+.vtui-root .ni .ico .ic { width: 17px; height: 17px; opacity: var(--t3-a); transition: opacity .25s; }
+.vtui-root .ni.on { color: var(--gold); }
+.vtui-root .ni.on .ico { color: var(--gold); animation: navIconBounce .42s cubic-bezier(.34, 1.22, .64, 1); }
+.vtui-root .ni.on .ico .ic { opacity: 1; }
+@keyframes navIconBounce { 0% { transform: translateX(0) scale(1); } 35% { transform: translateX(3px) scale(1.08); } 65% { transform: translateX(-1px) scale(.98); } 100% { transform: translateX(0) scale(1); } }
+.vtui-root .ni .lbl { font-size: 8.5px; font-weight: 600; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.vtui-root .ni.is-press { opacity: .6; transition: opacity .12s; }
+.vtui-root .ni.is-listening { color: var(--gold); }
+.vtui-root .ni.is-listening .ico { color: var(--gold); animation: dicteeIconPulse 1.8s ease-in-out infinite; }
+.vtui-root .ni.is-listening .ico .ic { opacity: 1; }
+@keyframes dicteeIconPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+.vtui-root .bnav-fab { position: absolute; left: calc(50% - var(--bnav-fab) / 2); top: calc(50% - var(--bnav-fab) / 2); width: var(--bnav-fab); height: var(--bnav-fab); border-radius: 50%; z-index: 2; display: flex; align-items: center; justify-content: center; background: rgba(var(--gold-rgb), .16); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3); border: 1.5px solid rgba(var(--gold-rgb), .5); color: var(--gold); box-shadow: var(--glass-shadow), var(--glass-specular); transition: transform .15s, box-shadow .25s, background-color .25s, border-color .25s, color .25s; }
+.vtui-root .bnav-fab::before { content: ''; position: absolute; inset: -2px; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--gold); filter: drop-shadow(0 0 6px rgba(var(--gold-rgb), .9)); opacity: .45; transition: opacity .25s; pointer-events: none; }
+.vtui-root .bnav-fab .fico { position: absolute; display: flex; align-items: center; justify-content: center; transition: opacity .2s ease, transform .3s cubic-bezier(.34, 1.22, .64, 1); }
+.vtui-root .bnav-fab .fico .ico { display: flex; }
+.vtui-root .bnav-fab .fico .ic { width: 22px; height: 22px; display: block; }
+.vtui-root .bnav-fab .fico.hide { opacity: 0; transform: scale(.55) rotate(-28deg); }
+.vtui-root .bnav-fab.fab-pale { background: rgba(var(--s1-rgb), .72); border-color: var(--glass-border); color: var(--t1); }
+.vtui-root .bnav-fab.fab-pale .ic { opacity: var(--t2-a); }
+.vtui-root .bnav-fab.fab-pale::before { opacity: .18; }
+.vtui-root .bnav-fab.fab-ready { background: rgba(var(--gold-rgb), .34); border-color: rgba(var(--gold-rgb), .9); color: var(--gold); }
+.vtui-root .bnav-fab.fab-ready::before { opacity: 0; }
+@keyframes fabRingSpin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+.vtui-root .bnav-fab.fab-working::before { opacity: .9; animation: fabRingSpin 3.4s linear infinite; }
+@supports ((-webkit-mask: radial-gradient(#000, #000)) or (mask: radial-gradient(#000, #000))) {
+  .vtui-root .bnav-fab::after { content: ''; position: absolute; inset: -2px; border-radius: 50%; background: conic-gradient(rgba(var(--gold-rgb), .95) 0deg, rgba(var(--gold-rgb), .10) 8deg, rgba(var(--gold-rgb), .10) 250deg, rgba(var(--gold-rgb), .95) 360deg); -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 2px), #000 calc(100% - 2px)); mask: radial-gradient(closest-side, transparent calc(100% - 2px), #000 calc(100% - 2px)); filter: drop-shadow(0 0 6px rgba(var(--gold-rgb), .7)); opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .vtui-root .bnav-fab.fab-working::after { opacity: 1; animation: fabRingSpin 3.4s linear infinite; }
+  .vtui-root .bnav-fab.fab-working::before { opacity: 0; animation: none; }
+}
+.vtui-root .bnav-fab .ic-check { stroke-dasharray: 24; stroke-dashoffset: 0; }
+.vtui-root .bnav-fab.fab-draw .ic-check { animation: checkDraw .44s cubic-bezier(.34, 1.22, .64, 1) both; }
+@keyframes checkDraw { from { stroke-dashoffset: 24; } to { stroke-dashoffset: 0; } }
+.vtui-root .bnav-fab .fab-pulse { position: absolute; inset: -3px; border-radius: 50%; border: 2px solid var(--gold); opacity: 0; pointer-events: none; }
+.vtui-root .bnav-fab.fab-draw .fab-pulse { animation: fabPulse .62s cubic-bezier(.34, 1.22, .64, 1); }
+@keyframes fabPulse { 0% { opacity: .9; transform: scale(1); } 100% { opacity: 0; transform: scale(1.55); } }
+.vtui-root .bnav-fab.is-press { transform: scale(.94); }
+.vtui-root .vt-screen[data-screen="list"] .hlist,
+.vtui-root .vt-screen[data-screen="list2"] .hlist,
+.vtui-root .vt-screen[data-screen="factlist"] .hlist { padding-bottom: calc(var(--nav) + 6px); }
+
+/* Feuille (sheet) */
+.vtui-root .vt-overlay { position: absolute; top: 30px; right: 0; bottom: 0; left: 0; z-index: 40; background: rgba(0, 0, 0, .65); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: none; align-items: flex-end; }
+.vtui-root .vt-overlay.is-active { display: flex; }
+.vtui-root .vt-sheet { position: relative; width: 100%; max-height: 94%; background: var(--bg); border-radius: 23px 23px 0 0; display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); transition: transform .42s var(--ease-app); box-shadow: 0 -12px 40px rgba(0, 0, 0, .35), var(--glass-specular); }
+.vtui-root .vt-overlay.is-active .vt-sheet { transform: translateY(0); }
+.vtui-root .vt-sheet--modal { max-height: 95%; }
+.vtui-root .shandle { width: 32px; height: 4px; border-radius: 2px; background: var(--br); margin: 9px auto 14px; flex-shrink: 0; }
+.vtui-root .sheet-x, .vtui-root .sheet-star { position: absolute; top: 8px; z-index: 5; width: 50px; height: 36px; border-radius: 999px; background: rgba(var(--s1-rgb), .42); backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4); border: 1px solid var(--glass-border); box-shadow: var(--glass-specular); display: flex; align-items: center; justify-content: center; }
+.vtui-root .sheet-x { right: 12px; color: var(--t1); }
+.vtui-root .sheet-star { left: 12px; color: var(--gold); }
+.vtui-root .sheet-x .ic, .vtui-root .sheet-star .ic { width: 14px; height: 14px; }
+.vtui-root .sheet-preview { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+.vtui-root .sheet-preview::-webkit-scrollbar { display: none; }
+.vtui-root .sheet-actions { flex-shrink: 0; border-top: 1px solid var(--br); padding: 2px 0 12px; }
+.vtui-root .sheet-actions .cta { padding: 11px; font-size: 12.5px; }
+.vtui-root .sheet-btns { margin: 9px 14px 0; display: flex; flex-direction: column; gap: 8px; }
+
+/* Aperçu du bon */
+.vtui-root .bon-wrap { margin: 0 14px 4px; border-radius: var(--vr); overflow: hidden; border: 1px solid var(--br); box-shadow: var(--card-shadow); }
+.vtui-root .bon-head { background: var(--navy, #0A1132); padding: 15px 15px 13px; position: relative; }
+/* Le logo d'entreprise, tel que l'application le pose sur ses documents
+   (Profil › « Logo de l'entreprise »). Un monogramme SIMPLE, inventé pour la
+   démo : voile or + liseré, jamais un aplat, la règle de la charte. */
+.vtui-root .bon-brand-ar { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.vtui-root .bar-logo { flex-shrink: 0; width: 34px; height: 34px; border-radius: 9px; border: 1.5px solid var(--gold); background: rgba(var(--gold-rgb), .10); color: var(--gold); font-size: 12.5px; font-weight: 800; letter-spacing: .6px; display: flex; align-items: center; justify-content: center; }
+.vtui-root .bar-id { min-width: 0; }
+.vtui-root .bar-name { font-size: 17px; font-weight: 800; color: var(--gold); letter-spacing: 2.5px; text-transform: uppercase; line-height: 1; }
+.vtui-root .bar-driver { font-size: 9.5px; font-weight: 600; color: rgba(255, 255, 255, .68); letter-spacing: .5px; margin-top: 4px; }
+.vtui-root .bon-sub { font-size: 9.5px; color: rgba(255, 255, 255, .55); letter-spacing: .3px; }
+.vtui-root .bon-gold { height: 2px; background: linear-gradient(90deg, var(--gold), transparent 80%); }
+.vtui-root .bon-body { background-color: var(--s1); background-image: linear-gradient(180deg, rgba(10, 17, 50, .32) 0%, transparent 33%); padding: 12px; }
+.vtui-root .bsec { margin-bottom: 10px; }
+.vtui-root .bsec:last-child { margin-bottom: 0; }
+.vtui-root .bsec-lbl { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--gold); margin-bottom: 6px; }
+.vtui-root .tblock { display: flex; align-items: center; gap: 9px; background: var(--s2); border-radius: var(--vrsm); padding: 8px 11px; margin-bottom: 4px; }
+.vtui-root .tdot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.vtui-root .tdot.s { background: var(--gold); }
+.vtui-root .tdot.e { background: var(--t3); }
+.vtui-root .ttxt { font-size: 11px; font-weight: 500; }
+.vtui-root .ttxt small { font-size: 8.5px; color: var(--t2); display: block; margin-bottom: 2px; }
+.vtui-root .tline { width: 1px; height: 8px; background: var(--br); margin: 0 0 4px 15px; }
+.vtui-root .brow { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; font-size: 11px; }
+.vtui-root .brow:last-child { margin-bottom: 0; }
+.vtui-root .brow .k { color: var(--t2); margin-right: 10px; flex-shrink: 0; }
+.vtui-root .brow .v { color: var(--t1); font-weight: 600; text-align: right; }
+.vtui-root .bon-price { margin: 4px 14px 0; background: var(--navy, #0A1132); border: 1px solid rgba(var(--gold-rgb), .22); border-radius: var(--vrsm); padding: 11px 14px; display: flex; justify-content: space-between; align-items: center; }
+.vtui-root .bon-price .pl { font-size: 9.5px; font-weight: 700; color: rgba(var(--gold-rgb), .65); }
+.vtui-root .bon-price .pa { font-size: 19px; font-weight: 900; color: var(--gold); letter-spacing: -.3px; }
+.vtui-root .bon-legal { padding: 9px 14px 6px; font-size: 8px; color: var(--t3); text-align: center; line-height: 1.6; }
+
+/* Partage d'un bon, pilule à QUATRE segments : Pancarte (neutre) · SMS
+   (bleu) · Ticket/Image (or) · WhatsApp (vert). La pancarte est en TÊTE et
+   reste neutre : elle sert AVANT les trois canaux (on accueille le client
+   avant de lui envoyer son bon) et n'envoie rien, lui donner une couleur de
+   canal romprait le code au lieu de s'y ranger (règle vérifiée sur l'app
+   réelle, `.spill-seg.pancarte .si{color:var(--t1)}`). */
+.vtui-root .spill { display: flex; align-items: stretch; background: var(--s1); border: 1.5px solid var(--br); border-radius: 999px; margin: 12px 14px 0; overflow: hidden; box-shadow: var(--card-shadow); }
+.vtui-root .spill-seg { flex: 1; display: flex; align-items: center; justify-content: center; padding: 12px 0; transition: background .15s; cursor: pointer; }
+.vtui-root .spill-seg.is-press { background: rgba(255, 255, 255, .06); }
+.vtui-root .spill-seg .si { display: flex; }
+.vtui-root .spill-seg .si .ic, .vtui-root .spill-seg .si svg { width: 18px; height: 18px; }
+.vtui-root .spill-div { width: 1px; background: var(--br); margin: 9px 0; flex-shrink: 0; }
+.vtui-root .spill-seg.pancarte .si { color: var(--t1); }
+.vtui-root .spill-seg.sms .si { color: #2E86FF; }
+.vtui-root .spill-seg.ticket .si { color: var(--gold); }
+.vtui-root .spill-seg.wa .si { color: #25D366; }
+
+/* PDF facture */
+.vtui-root .vt-screen.facpdf { background: #2a2c33; }
+.vtui-root .pdf-scroll { flex: 1; overflow: hidden; padding: 12px 12px calc(var(--nav) + 6px); }
+.vtui-root .pdf-doc { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 14px 30px rgba(0, 0, 0, .5); animation: vtFade .5s var(--ease-app); }
+.vtui-root .pdf-head { background: var(--navy, #0A1132); padding: 13px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--gold); }
+.vtui-root .pdf-head__l { color: var(--gold); font-size: 13px; font-weight: 900; letter-spacing: -.3px; }
+.vtui-root .pdf-head__r { text-align: right; }
+.vtui-root .pdf-title { color: var(--gold); font-size: 13px; font-weight: 900; letter-spacing: .3px; }
+.vtui-root .pdf-num { color: #fff; font-size: 8.5px; font-weight: 700; margin-top: 2px; }
+.vtui-root .pdf-sub { color: #b4c3e1; font-size: 7px; margin-top: 1px; }
+.vtui-root .pdf-sect { background: #ecf2ff; border-left: 2px solid var(--gold); border-radius: 4px; padding: 7px 9px; margin: 9px 11px 0; }
+.vtui-root .pdf-sect__t { color: #788cb9; font-size: 8px; font-weight: 700; letter-spacing: .5px; margin-bottom: 4px; }
+.vtui-root .pdf-row { display: flex; justify-content: space-between; gap: 10px; font-size: 9px; margin-bottom: 2px; }
+.vtui-root .pdf-row span { color: #506591; }
+.vtui-root .pdf-row b { color: #0c1437; font-weight: 700; text-align: right; }
+.vtui-root .pdf-total { margin: 10px 11px 0; background: var(--navy, #0A1132); border: 1px solid rgba(var(--gold-rgb), .4); border-radius: 6px; padding: 9px 12px; display: flex; justify-content: space-between; align-items: center; }
+.vtui-root .pdf-total__l { color: #8c9cbd; font-size: 9px; font-weight: 700; }
+.vtui-root .pdf-total__a { color: var(--gold); font-size: 17px; font-weight: 900; }
+.vtui-root .pdf-legal { color: #787c8c; font-size: 6.5px; font-style: italic; text-align: center; padding: 6px 13px 0; line-height: 1.5; }
+
+/* Écran d'accueil iPhone (springboard) */
+.vtui-root .vt-screen.sb { background: radial-gradient(120% 60% at 50% -10%, rgba(var(--gold-rgb), .09), transparent 62%), linear-gradient(180deg, #0c0c16, #050509 72%); }
+.vtui-root .sb-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 6px; padding: 26px 14px 0; }
+.vtui-root .sb-app { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.vtui-root .sb-ic { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: rgba(var(--s1-rgb), .65); backdrop-filter: blur(16px) saturate(1.4); -webkit-backdrop-filter: blur(16px) saturate(1.4); border: 1px solid var(--glass-border); box-shadow: var(--glass-specular); color: var(--t2); }
+.vtui-root .sb-ic .ic { width: 21px; height: 21px; }
+.vtui-root .sb-lbl { font-size: 9px; font-weight: 500; color: rgba(255, 255, 255, .72); max-width: 60px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vtui-root .sb-app.is-vtbon .sb-ic { background: linear-gradient(155deg, #23232f, #050509 60%); border: 1px solid rgba(var(--gold-rgb), .55); box-shadow: 0 0 0 1px rgba(var(--gold-rgb), .12), 0 0 18px rgba(var(--gold-rgb), .3); }
+.vtui-root .sb-app.is-vtbon .sb-ic img { width: 32px; height: auto; display: block; }
+.vtui-root .sb-app.is-vtbon .sb-lbl { color: var(--gold); font-weight: 700; }
+.vtui-root .sb-home-ind { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); width: 110px; height: 4px; border-radius: 3px; background: rgba(255, 255, 255, .32); }
+
+/* Curseur simulé, toast */
+.vtui-root .cursor { position: absolute; left: 0; top: 0; z-index: 60; pointer-events: none; opacity: 0; transform-origin: 8px 2px; transition: transform .55s var(--ease-app), opacity .3s; filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .5)); }
+.vtui-root .cursor svg { fill: #fff; stroke: #000; stroke-width: 1; stroke-linejoin: round; }
+.vtui-root .cursor.is-on { opacity: 1; }
+.vtui-root .vt-toast { position: absolute; left: 50%; top: 68px; transform: translateX(-50%) translateY(-14px); z-index: 70; background: rgba(var(--s1-rgb), .85); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); color: var(--t1); border: 1px solid var(--glass-border); padding: 8px 15px; border-radius: var(--vrsm); font-size: 11.5px; font-weight: 600; white-space: nowrap; opacity: 0; transition: opacity .3s var(--ease-app), transform .3s var(--ease-app); box-shadow: var(--glass-shadow); }
+.vtui-root .vt-toast.is-on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ══════════════════════ PANNEAU DE DICTÉE (« Le Rétroviseur ») ══════════════
+   Porté de #dictee-retro : une plaque de verre qui remonte de sous l'écran,
+   passe DERRIÈRE la barre du bas. Écart assumé avec l'app (à signaler) : l'app
+   réelle n'y affiche QUE ce que le chauffeur a dit (jamais la question posée,
+   pour ne pas figer du français sous une barre traduisible) ; ici, pour un
+   visiteur qui découvre le geste, le bandeau nomme aussi le champ demandé,
+   la maquette reste TOUJOURS en français (H9), la contrainte d'i18n qui a
+   dicté cette règle dans l'app ne s'y applique donc pas. ═══════════════════ */
+.vtui-root .vt-dictee { position: absolute; left: 14px; right: 14px; bottom: calc(var(--bnav-bottom) + 6px); height: 108px; border-radius: var(--vr); overflow: hidden; z-index: 25; pointer-events: none; transform: translateY(calc(100% + var(--bnav-bottom) + 8px)); transition: transform .28s cubic-bezier(.4, 0, .9, .4); visibility: hidden; }
+.vtui-root .vt-dictee.on { transform: translateY(0); visibility: visible; transition: transform .38s cubic-bezier(.34, 1.22, .64, 1); }
+.vtui-root .vt-dictee-glass { position: absolute; inset: 0; border-radius: var(--vr); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); background: rgba(var(--s1-rgb), .60); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow), var(--glass-specular); }
+.vtui-root .vt-dictee-body { position: absolute; inset: 0; padding: 0 16px; }
+/* Le rail : voile qui s'éteint + liseré vif, jamais un aplat plein. La lueur
+   est portée par la BOÎTE elle-même (border-top), pas par un enfant : un
+   `overflow:hidden` (indispensable pour clipper le balayage) rognerait le
+   box-shadow d'un pseudo-élément. */
+.vtui-root .vt-rail { position: absolute; top: 0; left: 20px; right: 20px; height: 8px; border-top: 2px solid var(--gold); border-radius: 0 0 6px 6px; background: linear-gradient(180deg, rgba(var(--gold-rgb), .30), rgba(var(--gold-rgb), .04)); box-shadow: 0 0 12px rgba(var(--gold-rgb), .55); overflow: hidden; }
+[data-theme="light"] .vtui-root .vt-rail { box-shadow: none; opacity: .9; }
+.vtui-root .vt-rail-sweep { position: absolute; inset: 0; width: 34%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .85), transparent); opacity: 0; }
+.vtui-root .vt-rail.balayage .vt-rail-sweep { opacity: 1; animation: retroSweep 2.2s linear infinite; }
+@keyframes retroSweep { from { transform: translateX(-120%); } to { transform: translateX(420%); } }
+.vtui-root .vt-dictee-q { padding-top: 20px; font-size: 13.5px; font-weight: 700; color: var(--t1); line-height: 1.4; min-height: 19px; }
+.vtui-root .vt-dictee-a { margin-top: 8px; font-size: 12.5px; color: var(--gold); font-weight: 600; min-height: 17px; }
+
+/* Relance : bandeau au-dessus du dépliant, historique sous le bouton (jamais
+   une couleur, c'est une note de suivi, pas une alerte). */
+.vtui-root .relance-flag { display: flex; align-items: center; justify-content: center; gap: 7px; margin: 0 14px 8px; padding: 8px 12px; border: 1px solid rgba(255, 71, 87, .4); border-radius: var(--vrsm); background: rgba(255, 71, 87, .08); color: var(--red); font-size: 12.5px; font-weight: 700; letter-spacing: .2px; }
+.vtui-root .relance-flag .ic { width: 15px; height: 15px; flex: none; }
+[data-theme="light"] .vtui-root .relance-flag { color: var(--t1); }
+[data-theme="light"] .vtui-root .relance-flag .ic { color: #D62839; }
+.vtui-root .relance-hist { margin: -4px 14px 9px; padding: 0 4px; font-size: 11.5px; color: var(--t2); text-align: center; }
+
+/* ══════════════════════ LA VITRE, question unique, trois locataires ═══════
+   Une SEULE plaque pour toute question posée au chauffeur (`confirmSheet`
+   dans l'app réelle) : ici, elle sert deux fois, la confirmation qui rend la
+   facture définitive, et la petite fenêtre de saisie de la pancarte (le
+   champ `#cs-saisie` de l'app EST ce que la consigne décrivait comme une
+   fenêtre « Votre pancarte » à part ; il n'en existe pas d'autre dans le
+   code réel, c'est la MÊME vitre qui s'allume avec son champ). ══════════════ */
+.vtui-root .vitre-voile { position: absolute; inset: 0; z-index: 90; background: rgba(var(--bg-rgb), .62); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); opacity: 0; transition: opacity .22s ease; pointer-events: none; }
+.vtui-root .vitre-voile.on { opacity: 1; pointer-events: auto; }
+.vtui-root .vitre { --vitre-top: 64px; position: absolute; left: 14px; right: 14px; bottom: calc(var(--bnav-bottom) + 6px); top: auto; max-height: calc(100% - var(--vitre-top)); display: flex; flex-direction: column; border-radius: var(--vr); z-index: 91; transform: translateY(calc(100% + var(--bnav-bottom) + 12px)); transition: transform .26s cubic-bezier(.4, 0, .9, .4); visibility: hidden; }
+.vtui-root .vitre.on { transform: translateY(0); visibility: visible; transition: transform .40s cubic-bezier(.34, 1.22, .64, 1); }
+.vtui-root .vitre-glass { position: absolute; inset: 0; border-radius: var(--vr); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); background: rgba(var(--s1-rgb), .72); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow), var(--glass-specular); pointer-events: none; }
+.vtui-root .vitre-body { position: relative; display: flex; flex-direction: column; flex: 1; min-height: 0; padding: 13px 6px 0; }
+.vtui-root .vitre-head { display: flex; align-items: center; gap: 9px; padding: 0 6px 9px 14px; flex-shrink: 0; }
+.vtui-root .vitre-head-ic { display: flex; align-items: center; color: var(--gold); flex-shrink: 0; }
+.vtui-root .vitre-head-ic .ic { width: 18px; height: 18px; }
+.vtui-root .vitre-head h2 { flex: 1; min-width: 0; font-size: 15px; font-weight: 700; letter-spacing: -.01em; color: var(--t1); margin: 0; }
+.vtui-root .vitre-scroll { overflow-y: auto; padding: 2px 14px 18px; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+.vtui-root .vitre-scroll p { font-size: 12.5px; line-height: 1.55; color: var(--t2); margin: 0; white-space: pre-line; }
+.vtui-root .vitre-pied { position: relative; flex-shrink: 0; display: flex; flex-direction: column; gap: 5px; padding: 9px 2px 12px; }
+.vtui-root .vitre-pied .cta { width: calc(100% - 20px); margin: 0 10px; }
+.vtui-root .cs-renonce { display: block; width: calc(100% - 20px); margin: 0 10px; min-height: 40px; padding: 9px; background: none; border: none; text-align: center; cursor: pointer; color: var(--t2); font-family: inherit; font-size: 13px; font-weight: 600; transition: color .15s; }
+.vtui-root .cs-renonce:active { color: var(--t1); }
+
+/* ══════════════════════ LA PANCARTE ═══════════════════════════════════════
+   Fond PLEIN (pas de flou, surface lue à dix mètres), le nom en Inter 900,
+   qui défile dans le sens de la longueur, donc dans un châssis basculé en
+   paysage (`.vt-chassis.vt-rotated`, porté par `telephone.tsx`). ═══════════ */
+.vtui-root .pancarte-overlay { position: absolute; inset: 0; z-index: 80; display: none; align-items: center; justify-content: center; background: var(--bg); }
+.vtui-root .pancarte-overlay.is-active { display: flex; }
+.vtui-root .pancarte-stage { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+/* `--pc-fs` : dans l'app réelle, calculée en JS (recherche par dichotomie,
+   core/pancarte.js) et posée en pixels. Cette maquette n'a pas ce calcul,
+   simple repli FIXE, ~45 % de la hauteur d'une scène tournée (≈175px mobile,
+   ≈183px desktop après la mise à l'échelle de la rotation) : `20%` (un
+   pourcentage de la police du PARENT, la seule lecture qu'un `font-size` sait
+   faire, jamais de la hauteur d'un bloc) rendait le nom illisible, mesuré à
+   l'écran. */
+.vtui-root .pancarte-bande { width: 100%; overflow: hidden; border-top: 1.5px solid rgba(var(--gold-rgb), .38); border-bottom: 1.5px solid rgba(var(--gold-rgb), .38); padding: calc(var(--pc-fs, 58px) * .35) 0; }
+.vtui-root .pancarte-ruban { display: flex; width: max-content; will-change: transform; animation: pancarteDefile var(--pc-duree, 7s) linear infinite; }
+.vtui-root .pancarte-mot { font-size: var(--pc-fs, 58px); font-weight: 900; line-height: 1; letter-spacing: -.02em; white-space: nowrap; text-transform: uppercase; color: var(--t1); padding-right: .7em; }
+@keyframes pancarteDefile { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-50%, 0, 0); } }
+.vtui-root .pancarte-close, .vtui-root .pancarte-flip { position: absolute; top: 12px; }
+.vtui-root .pancarte-close { right: 12px; }
+.vtui-root .pancarte-flip { left: 12px; }
+/* Les deux boutons restent debout : ils sont contre-tournés (-90°) dans le
+   cadre RÉEL de l'appareil, jamais couchés avec le texte, un bouton qu'on
+   doit lire de travers ne se trouve pas sous le pouce dans l'urgence. */
+@supports selector(:has(*)) {
+  .vt-chassis:has(.pancarte-overlay.is-active) .pancarte-close,
+  .vt-chassis:has(.pancarte-overlay.is-active) .pancarte-flip { transform: rotate(-90deg); }
+}
+
+/* ══════════════════════ WHATSAPP, l'écran d'une AUTRE app ═══════════════
+   Le bon vient d'être partagé « en image » : le téléphone montre la
+   conversation WhatsApp où il part, jusqu'aux coches (2026-09-05). Aucune
+   variable de palette ici, c'est WhatsApp, pas VTBON ; seul Nuit/Jour
+   bascule ses deux modes. L'image du bon est un fac-similé FIXE (navy + or),
+   comme le PDF. La barre du bas de VTBON est masquée pendant cet écran
+   (`.hide-nav` posée par le moteur). ═══════════════════════════════════════ */
+.vtui-root .vt-screen.wa { background: #0B141A; color: #E9EDEF; }
+.vtui-root .wa-head { display: flex; align-items: center; gap: 9px; padding: 8px 12px 9px 8px; background: #1F2C34; flex-shrink: 0; }
+.vtui-root .wa-head .ic { width: 20px; height: 20px; }
+.vtui-root .wa-back, .vtui-root .wa-hico { display: flex; color: #AEBAC1; }
+.vtui-root .wa-avatar { width: 34px; height: 34px; border-radius: 50%; background: #6B7B85; color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.vtui-root .wa-who { flex: 1; min-width: 0; line-height: 1.2; }
+.vtui-root .wa-name { font-size: 14px; font-weight: 600; color: #E9EDEF; }
+.vtui-root .wa-status { font-size: 10.5px; color: #8696A0; margin-top: 1px; }
+.vtui-root .wa-chat { flex: 1; min-height: 0; overflow: hidden; padding: 10px 10px 0; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; background-color: #0B141A; background-image: radial-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px); background-size: 14px 14px; }
+.vtui-root .wa-day { align-self: center; font-size: 10px; font-weight: 600; letter-spacing: .3px; text-transform: uppercase; color: #8696A0; background: #182229; border-radius: 7px; padding: 4px 9px; margin-bottom: 4px; }
+.vtui-root .wa-bubble { position: relative; max-width: 86%; border-radius: 9px; padding: 4px; font-size: 12px; line-height: 1.35; box-shadow: 0 1px .5px rgba(0, 0, 0, .25); }
+.vtui-root .wa-bubble.out { background: #005C4B; color: #E9EDEF; border-top-right-radius: 2px; opacity: 0; transform: translateY(10px) scale(.96); transition: opacity .3s var(--ease-app), transform .3s var(--ease-app); }
+.vtui-root .wa-bubble.out.is-on { opacity: 1; transform: none; }
+.vtui-root .wa-caption { padding: 5px 46px 3px 4px; font-size: 11.5px; }
+.vtui-root .wa-meta { position: absolute; right: 7px; bottom: 4px; display: flex; align-items: center; gap: 3px; font-size: 9.5px; color: rgba(233, 237, 239, .6); }
+.vtui-root .wa-ticks { display: none; align-items: center; color: rgba(233, 237, 239, .6); }
+.vtui-root .wa-ticks .ic { width: 13px; height: 13px; }
+.vtui-root .wa-ticks [data-tick] { display: none; }
+.vtui-root .wa-ticks[data-etat="envoye"], .vtui-root .wa-ticks[data-etat="remis"], .vtui-root .wa-ticks[data-etat="lu"] { display: flex; }
+.vtui-root .wa-ticks[data-etat="envoye"] [data-tick="1"] { display: block; }
+.vtui-root .wa-ticks[data-etat="remis"] [data-tick="2"], .vtui-root .wa-ticks[data-etat="lu"] [data-tick="2"] { display: block; }
+.vtui-root .wa-ticks[data-etat="lu"] { color: #53BDEB; }
+/* L'image du bon, telle que l'app la produit : fond blanc, en-tête navy, or. */
+.vtui-root .wa-img { position: relative; width: 100%; border-radius: 6px; overflow: hidden; background: #fff; color: #0c1437; }
+.vtui-root .wai-head { background: #0A1132; padding: 9px 10px 8px; display: flex; flex-direction: column; gap: 2px; }
+.vtui-root .wai-brand { color: #C9A84C; font-size: 11px; font-weight: 800; letter-spacing: 2px; }
+.vtui-root .wai-sub { color: rgba(255, 255, 255, .6); font-size: 7.5px; letter-spacing: .3px; }
+.vtui-root .wai-gold { height: 2px; background: linear-gradient(90deg, #C9A84C, transparent 80%); }
+.vtui-root .wai-body { padding: 8px 10px 9px; }
+.vtui-root .wai-row { display: flex; justify-content: space-between; gap: 10px; font-size: 8.5px; margin-bottom: 3px; }
+.vtui-root .wai-row span { color: #506591; flex-shrink: 0; }
+.vtui-root .wai-row b { color: #0c1437; font-weight: 700; text-align: right; }
+.vtui-root .wai-total { margin-top: 6px; background: #0A1132; border-radius: 5px; padding: 6px 9px; display: flex; justify-content: space-between; align-items: center; }
+.vtui-root .wai-total span { color: #8c9cbd; font-size: 8px; font-weight: 700; }
+.vtui-root .wai-total b { color: #C9A84C; font-size: 13px; font-weight: 900; }
+.vtui-root .wa-upload { position: absolute; inset: 0; background: rgba(0, 0, 0, .45); display: flex; align-items: center; justify-content: center; transition: opacity .25s ease; }
+.vtui-root .wa-upload.off { opacity: 0; }
+.vtui-root .wa-spin { width: 34px; height: 34px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, .35); border-top-color: #fff; animation: waSpin .9s linear infinite; }
+@keyframes waSpin { to { transform: rotate(360deg); } }
+.vtui-root .wa-bar { flex-shrink: 0; display: flex; align-items: center; gap: 7px; padding: 7px 8px calc(var(--bnav-bottom) + 6px); background: #0B141A; }
+.vtui-root .wa-input { flex: 1; display: flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 12px; border-radius: 999px; background: #1F2C34; color: #8696A0; font-size: 12.5px; }
+.vtui-root .wa-input .ic { width: 18px; height: 18px; color: #8696A0; }
+.vtui-root .wa-plus, .vtui-root .wa-cam { display: flex; }
+.vtui-root .wa-cam { margin-left: auto; }
+.vtui-root .wa-mic { width: 38px; height: 38px; border-radius: 50%; background: #00A884; color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.vtui-root .wa-mic .ic { width: 18px; height: 18px; }
+/* Mode Jour : les couleurs claires de WhatsApp. */
+[data-theme="light"] .vtui-root .vt-screen.wa { background: #EFEAE2; color: #111B21; }
+[data-theme="light"] .vtui-root .wa-head { background: #008069; }
+[data-theme="light"] .vtui-root .wa-name, [data-theme="light"] .vtui-root .wa-back, [data-theme="light"] .vtui-root .wa-hico { color: #fff; }
+[data-theme="light"] .vtui-root .wa-status { color: rgba(255, 255, 255, .8); }
+[data-theme="light"] .vtui-root .wa-chat { background-color: #EFEAE2; background-image: radial-gradient(rgba(0, 0, 0, .05) 1px, transparent 1px); }
+[data-theme="light"] .vtui-root .wa-day { background: #fff; color: #54656F; }
+[data-theme="light"] .vtui-root .wa-bubble.out { background: #D9FDD3; color: #111B21; }
+[data-theme="light"] .vtui-root .wa-meta { color: rgba(17, 27, 33, .5); }
+[data-theme="light"] .vtui-root .wa-ticks { color: rgba(17, 27, 33, .45); }
+[data-theme="light"] .vtui-root .wa-ticks[data-etat="lu"] { color: #53BDEB; }
+[data-theme="light"] .vtui-root .wa-bar { background: #F0F2F5; }
+[data-theme="light"] .vtui-root .wa-input { background: #fff; color: #54656F; }
+
+/* ══════════════════════ ÉCRAN BONS, favoris + liste ═══════════════════════
+   La ROUE de favoris de l'app (`.favwheel`, sélecteur vertical façon réveil),
+   portée à l'échelle du gabarit, rangée 38 px, tambour 152 px, espaceurs
+   (152 − 38) / 2, et FIGÉE sur son troisième favori : la maquette ne
+   défile pas, elle montre l'état (les échelles que `initFavWheel` pose au
+   défilement dans l'app sont ici trois classes). La liste dessous défile
+   lentement, par un `transform` que le moteur mesure (jamais un scrollTop
+   animé). ══════════════════════════════════════════════════════════════════ */
+.vtui-root .favwheel { position: relative; margin: 2px 14px 8px; flex-shrink: 0; }
+.vtui-root .favwheel-close { position: absolute; top: 0; right: 2px; z-index: 3; width: 28px; height: 28px; border-radius: 50%; background: var(--goldbg); border: 1px solid var(--goldbr); color: var(--gold); display: flex; align-items: center; justify-content: center; }
+.vtui-root .favwheel-close .ic { width: 12px; height: 12px; transform: rotate(180deg); }
+.vtui-root .favwheel-band { position: absolute; left: 0; right: 0; top: 57px; height: 38px; z-index: 1; border-top: 1px solid var(--goldbr); border-bottom: 1px solid var(--goldbr); background: var(--goldbg); border-radius: var(--vrsm); pointer-events: none; }
+.vtui-root .favwheel-scroll { position: relative; z-index: 2; height: 152px; overflow: hidden; -webkit-mask-image: linear-gradient(180deg, transparent, #000 34%, #000 66%, transparent); mask-image: linear-gradient(180deg, transparent, #000 34%, #000 66%, transparent); }
+.vtui-root .favwheel-rows { transform: translateY(-76px); }
+.vtui-root .favwheel-pad { height: 57px; }
+.vtui-root .favwheel-row { height: 38px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+.vtui-root .favwheel-row.near { transform: scale(.94); opacity: .55; }
+.vtui-root .favwheel-row.far { transform: scale(.88); opacity: .3; }
+.vtui-root .fw-name { font-size: 13px; font-weight: 700; color: var(--t1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vtui-root .fw-prix { font-size: 13px; font-weight: 900; color: var(--gold); flex-shrink: 0; margin-left: 10px; }
+.vtui-root .vt-screen[data-screen="bons"] .hlist { padding-bottom: 0; }
+.vtui-root .hlist-defile { will-change: transform; padding-bottom: calc(var(--nav) + 6px); }
+.vtui-root .hcheck .ic { width: 10px; height: 10px; }
+
+
+/* Mouvement réduit : l'écran reste sur son étape la plus parlante, sans les entrées. */
+@media (prefers-reduced-motion: reduce) {
+  .vtui-root .vt-screen.is-active { animation: none; }
+  .vtui-root .hitem { animation: none; }
+  .vtui-root .pdf-doc { animation: none; }
+  .vtui-root .pancarte-ruban { animation: none; }
+  .vtui-root .vt-rail-sweep { animation: none; }
+  .vtui-root .wa-spin { animation: none; }
+  .vtui-root .hlist-defile { transition: none !important; }
+  .vtui-root .bnav-fab::before, .vtui-root .bnav-fab::after { animation: none; }
+  .vtui-root .ni.on .ico, .vtui-root .ni.is-listening .ico { animation: none; }
+}
+
+/* ── Ce que Stalika ajoute autour de l'écran ──────────────────────────────── */
+
+/* Le fond de l'écran du téléphone, sous et autour de l'écran de l'application. */
+.vt-fond { background: #060610; }
+
+/* Le fondu entre les deux maquettes : l'écran s'éteint, le markup change, il se rallume. */
+.vt-viewport { transition: opacity .42s ease; }
+.vt-viewport.vt-fondu { opacity: 0; }
+
+/* La pause du carrousel gèle aussi les animations qui tournent en boucle : le trait du
+   bouton central, le balayage de la dictée, le disque d'attente de WhatsApp. */
+.vtui-root.est-en-pause *,
+.vtui-root.est-en-pause *::before,
+.vtui-root.est-en-pause *::after { animation-play-state: paused !important; }

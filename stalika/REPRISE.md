@@ -35,7 +35,7 @@
      Étoiles filantes dessinées en code la nuit.
    - Par-dessus : `Hero` (section transparente), `SceneModele` (#sur-mesure, la roue des trois
      sites de Julien : `components/ui/roue.tsx`, voir `BLUEPRINT.md`), `SceneUtile`
-     (#utile), `SceneRelecture` (#relecture), puis `Plongee` (`components/ui/plongee.tsx`) :
+     (#utile), `SceneRelecture` (#relecture : une piste de 3,6 écrans où le contenu reste collé et où le film suit le défilement, voir `BLUEPRINT.md`, mise à jour du 2026-10-07), puis `Plongee` (`components/ui/plongee.tsx`) :
      zoom dans l'ordinateur (61 images `public/hero/plongee/`), logo Stalika qui scintille sur
      l'écran (`lib/plongee-ecran.ts`), puis la fenêtre de discussion qui s'ouvre en « feuille ».
 2. `Discussion` (`components/ui/discussion.tsx`) : premier message écrit tout seul, réponse
@@ -49,8 +49,14 @@
   (2026-10-02), jusqu'à ce qu'il ait retravaillé toutes les sections** : les perchoirs de section quand
   le visiteur ne clique pas (voir `BLUEPRINT.md`, mise à jour du 2026-10-02). Après chaque retouche de
   section, vérifier que les `data-rebond` suivent. À tester par J sur iPhone (fluidité de la chute).
-- Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion.
+- Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion, et le fond en points de la section 04 qui suit l'inclinaison du téléphone (bouton « Faire bouger le fond » et fenêtre d'autorisation d'Apple ; sur Android, aucun bouton) : jusqu'ici essayé avec des mesures simulées seulement.
 - Mode « animations réduites » non revérifié après les derniers changements.
+- Rechargement à chaud et films des scènes (développement seulement, constaté le 2026-10-07) : React peut remplacer les
+  éléments d'une scène sans relancer les effets des primitives qui les animent ; la scène reste en place, le défilement la
+  suit, et plus rien ne bouge. `Scene` expose `rebatir()` (voir son en-tête) : la fenêtre de « La relecture »
+  (`relecture-fenetre.tsx`) s'en sert d'elle-même et se remet à jour toute seule. Les autres primitives (`Frappe`, `Decode`,
+  `Trace`…) gardent les éléments trouvés au montage : si une modification de leur fichier fige une scène, recharger la page.
+  Aucun effet en production.
 - Assistant de discussion (API Claude, agenda, RGPD, transparence IA) : plus tard, voir `BLUEPRINT.md`.
 - Mentions légales et données marquées `[[À CONFIRMER PAR L'UTILISATEUR : …]]`.
 

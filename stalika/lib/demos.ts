@@ -1,8 +1,9 @@
 /* ---------------------------------------------------------------------------
    Les trois logiciels montrés en démonstration dans la section 02 (demande de
-   J, 2026-10-02) : tous leurs textes, à part des interfaces
-   (`components/demos/*-preview.tsx`) et de leurs animations
-   (`components/demos/*-animation.ts`).
+   J, 2026-10-02 ; VTBON a remplacé RelancePro le 2026-10-07) : tous leurs
+   textes, à part des interfaces (`components/demos/*-preview.tsx`) et de leurs
+   animations (`components/demos/*-animation.ts`). VTBON a son propre écran :
+   les deux maquettes de son site (`components/demos/vtbon/`).
 
    Des données fictives, écrites pour paraître vraies : des noms courants, des
    montants ronds sans l'être trop, des dates qui se suivent jusqu'au jour de
@@ -17,30 +18,27 @@
 export const PRODUITS = {
   carnet: {
     nom: "Carnet",
-    pourQui: "Pour les artisans et les entreprises du bâtiment",
     description: "Le suivi de vos chantiers : tâches, photos, réserves et compte-rendu, au même endroit.",
-    fonctions: ["Chantiers", "Tâches", "Photos", "Comptes-rendus", "Réserves", "Planning"],
     statut: "Démo",
     /** L'heure de la barre d'état du téléphone : celle de la scène. */
     heure: "10:24",
     resume:
       "Démonstration de Carnet : on ouvre le chantier Dupont, deux tâches passent à Terminé, une photo s'ajoute, puis le compte-rendu se crée à partir du chantier.",
   },
-  relance: {
-    nom: "RelancePro",
-    pourQui: "Pour les TPE, les indépendants et les petites entreprises",
-    description: "Vos devis et vos factures suivis jusqu'au paiement, et des relances qui partent à temps.",
-    fonctions: ["Factures", "Devis", "Échéances", "Relances", "Paiements", "Historique"],
-    statut: "Démo",
-    heure: "9:41",
+  /* VTBON : l'application de J (le 2026-10-07, à la place de RelancePro). Ses textes sont ceux
+     de vtbon.fr (`lib/i18n/fr.ts` du dépôt vtbon-site) : « bon », « facture », « relance »,
+     le vouvoiement, ni tiret long ni point d'exclamation. L'écran de son téléphone est celui
+     de ses deux maquettes (`components/demos/vtbon/`), qui portent leurs propres données. */
+  vtbon: {
+    nom: "VTBON",
+    description: "Le bon de transport dicté à la voix, la facture qui suit, et la relance quand un paiement tarde.",
+    statut: "Bientôt disponible",
     resume:
-      "Démonstration de RelancePro : la facture n°124 de M. Martin a dépassé son échéance ; on ouvre le message de relance, on l'envoie, et l'historique de la facture se complète.",
+      "Démonstration de VTBON : le chauffeur dicte sa course, les champs du bon se remplissent et le bon part en image sur WhatsApp ; puis une facture est générée, passe en retard et reçoit sa lettre de relance.",
   },
   controle: {
     nom: "Contrôle",
-    pourQui: "Pour les restaurants, les commerces et les hôtels",
     description: "Les contrôles de vos équipes, et chaque anomalie suivie jusqu'à ce qu'elle soit réglée.",
-    fonctions: ["Checklists", "Contrôles", "Incidents", "Photos", "Responsables", "Historique"],
     statut: "Démo",
     heure: "22:41",
     resume:
@@ -107,66 +105,6 @@ export const CARNET = {
     envoyer: "Envoyer au client",
   },
   notification: "Compte-rendu prêt",
-} as const;
-
-/* --- RelancePro : le suivi des devis et des factures ------------------------ */
-
-export const RELANCE = {
-  entreprise: "Lenoir & Fils",
-  utilisateur: "SL",
-  nav: ["Tableau de bord", "Factures", "Devis", "Clients", "Relances"],
-  vue: "Tableau de bord",
-  indicateurs: [
-    { label: "À encaisser", valeur: "4 490 €", ton: "neutre" },
-    { label: "En retard", valeur: "1 240 €", ton: "retard" },
-    { label: "Payé en septembre", valeur: "8 920 €", ton: "succes" },
-  ],
-  titreListe: "À relancer aujourd'hui",
-  aRelancer: [
-    { client: "Martin", initiales: "M", piece: "Facture #124", montant: "1 240 €", statut: "En retard · 7 j", ton: "retard" },
-    { client: "Dupont", initiales: "D", piece: "Facture #131", montant: "2 800 €", statut: "Échéance demain", ton: "attente" },
-    { client: "Garcia", initiales: "G", piece: "Devis D-087", montant: "450 €", statut: "Devis sans réponse", ton: "neutre" },
-  ],
-  facture: {
-    numero: "Facture #124",
-    client: "Martin",
-    montant: "1 240,00 €",
-    retard: "Échéance dépassée",
-    alerte: "7 jours de retard · échéance le 25/09",
-    details: [
-      { label: "Émise le", valeur: "15/09/2026" },
-      { label: "Échéance", valeur: "25/09/2026" },
-      { label: "Règlement", valeur: "Virement" },
-      { label: "Pièce", valeur: "Facture-124.pdf" },
-    ],
-    relancer: "Relancer",
-    payee: "Marquer payée",
-    relancee: "Relance envoyée",
-  },
-  message: {
-    titre: "Message de relance",
-    a: "M. Martin",
-    objet: "Facture n°124 en attente de règlement",
-    corps: [
-      "Bonjour Monsieur Martin,",
-      "Sauf erreur de notre part, la facture n°124 reste en attente de règlement.",
-    ],
-    signature: ["Bien cordialement,", "Sophie Lenoir"],
-    piece: "Facture-124.pdf",
-    annuler: "Annuler",
-    envoyer: "Envoyer la relance",
-    envoi: "Envoi…",
-    envoye: "Relance envoyée",
-  },
-  historique: {
-    titre: "Historique",
-    lignes: [
-      { date: "02/10", texte: "Relance envoyée" },
-      { date: "28/09", texte: "Premier rappel" },
-      { date: "15/09", texte: "Facture créée" },
-    ],
-  },
-  notification: "Relance envoyée à M. Martin",
 } as const;
 
 /* --- Contrôle : les checklists et les incidents ----------------------------- */

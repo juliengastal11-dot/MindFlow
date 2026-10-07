@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import { Arrivee } from "@/components/ui/arrivee";
+import { FondPoints } from "@/components/ui/fond-points";
 import { Scene, useScene } from "@/components/ui/scene";
 import { Trace } from "@/components/ui/trace";
 import { Rouleaux } from "@/components/ui/rouleaux";
@@ -13,6 +15,18 @@ import { gsap } from "@/lib/gsap";
    Scène 5 · Livré (retour au jour). Quatre coches qui se cochent, puis la
    carte d'offre qui glisse en place : le prix reste immobile, seul le délai
    roule. Chronologie : blueprint §6.
+
+   Refaite le 2026-10-07 à la demande de J : la scène parle aussi de
+   l'hébergement. Sous les coches, deux voies, « Chez vous » et « Chez moi »,
+   arrivent l'une après l'autre, puis la ligne qui vaut pour les deux. La carte
+   « à partir de 300 € » n'a pas bougé.
+
+   Les faits sont ceux de J, donnés le même jour : chez lui, l'hébergement et
+   la maintenance (mises à jour, surveillance, modifications à la demande dans
+   la limite du raisonnable) se facturent par un petit abonnement mensuel, sans
+   montant sur la page, comme la FAQ (« c'est écrit dans le devis ») ; chez le
+   client, J livre le site prêt à publier et l'accompagne pour la mise en
+   ligne ; dans les deux cas, le nom de domaine est au nom du client.
 --------------------------------------------------------------------------- */
 
 const COCHES = [
@@ -21,7 +35,21 @@ const COCHES = [
   "Référencement soigné : titres, descriptions, plan du site, fiche Google",
   "Le code est à vous : vous partez quand vous voulez, avec votre site",
 ] as const;
-const DEPARTS = [0.1, 0.22, 0.34, 0.46] as const;
+const DEPARTS = [0.06, 0.15, 0.24, 0.33] as const;
+
+const VOIES = [
+  {
+    titre: "Chez vous",
+    texte: "Vous avez déjà un hébergeur, ou vous préférez garder la main. Je vous livre le site prêt à publier et je vous accompagne pour le mettre en ligne.",
+    de: 0.46,
+  },
+  {
+    titre: "Chez moi",
+    texte:
+      "Je m'occupe de l'hébergement et de la maintenance : mises à jour, surveillance. Vous demandez une modification, je la fais, dans la limite du raisonnable. En échange, un petit abonnement mensuel.",
+    de: 0.57,
+  },
+] as const;
 
 function Offre() {
   const scene = useScene();
@@ -71,13 +99,15 @@ function Offre() {
 
 export function SceneLivre() {
   return (
-    <Scene id="livre" src="components/sections/scene-livre.tsx" aria-labelledby="livre-titre">
+    <Scene id="livre" duree={3.4} src="components/sections/scene-livre.tsx" aria-labelledby="livre-titre">
+      {/* Le fond en points de J (2026-10-07), derrière tout le contenu ; il bouge un peu avec le téléphone ou la souris. */}
+      <FondPoints />
       <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12 md:py-16">
         <div className="space-y-8 md:grid md:grid-cols-2 md:items-center md:gap-12 md:space-y-0">
           <div>
             <p className="eyebrow text-encre">04 · Livré</p>
             <h2 id="livre-titre" className="mt-3 text-2xl sm:text-3xl md:text-4xl">
-              Livré propre. Et il <span className="text-encre">vous appartient</span>.
+              Livré propre, <span className="block text-encre">hébergé comme vous voulez</span>
             </h2>
             <ul className="mt-6 space-y-4">
               {COCHES.map((texte, i) => (
@@ -95,6 +125,19 @@ export function SceneLivre() {
                 </li>
               ))}
             </ul>
+            <div className="mt-8 space-y-5">
+              {VOIES.map((v) => (
+                <Arrivee key={v.titre} de={v.de} className="border-t border-foreground/15 pt-3">
+                  <h3 className="eyebrow font-sans text-encre">{v.titre}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-foreground/85 md:text-base">{v.texte}</p>
+                </Arrivee>
+              ))}
+              <Arrivee de={0.68}>
+                <p className="text-sm text-muted-foreground">
+                  Dans les deux cas, le nom de domaine est à votre nom. Chaque projet se règle avec vous, un par un, et c&apos;est écrit dans le devis.
+                </p>
+              </Arrivee>
+            </div>
           </div>
           <Offre />
         </div>
