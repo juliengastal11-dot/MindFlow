@@ -28,6 +28,10 @@ import { gsap, mouvementReduit } from "@/lib/gsap";
    Le décalage vertical est rendu avant que ce bouton ne soit atteignable.
    La capsule porte `transition: none` le temps du film : sa transition de
    `transform` (le léger enfoncement à l'appui) ferait traîner le décalage.
+   Une fois le film fini, les deux calques de lumière sont retirés (`display: none`) :
+   le reflet reste décalé à droite de la capsule, invisible, et un élément invisible
+   élargit quand même la page (sur téléphone, elle se mettait à défiler à droite ; vu
+   le 2026-10-07).
    Mouvement réduit : la capsule est là, entière, d'emblée, sans les deux
    calques de lumière (ils restent invisibles).
 --------------------------------------------------------------------------- */
@@ -60,6 +64,9 @@ export function IleMenu({ children, className, ...props }: React.ComponentProps<
         onComplete: () => {
           gsap.set(el, { clearProps: PROPRIETES });
           gsap.set(liens, { clearProps: "filter,transform" });
+          // Les deux calques de lumière n'ont plus d'usage : transparents, mais le reflet est resté décalé à droite de la
+          // capsule, et un élément invisible élargit quand même la page (sur téléphone, elle se mettait à défiler à droite).
+          gsap.set([trace, reflet].filter(Boolean), { display: "none" });
         },
       });
       const apres = 0.18 + 0.07 * (liens.length - 1);
