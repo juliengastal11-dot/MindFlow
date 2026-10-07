@@ -16,8 +16,10 @@ import { DEMOS, type Demo } from "./produits";
    le 2026-10-02), et la légende du logiciel de face.
 
    Le carrousel garde son allure et ses gestes : le téléphone de face, ses
-   voisins estompés de part et d'autre, les trois boutons posés dessus
-   (précédent, pause, suivant), la rotation qui s'arrête au survol. Il tourne
+   voisins estompés de part et d'autre, la rotation qui s'arrête au survol.
+   Depuis le 2026-10-07 (J), les trois boutons (précédent, pause, suivant) ne se
+   voient plus : un appui sur le téléphone met en pause, un glissé change de
+   logiciel (ils restent pour le clavier, voir `phone-carousel.tsx`). Il tourne
    ici au rythme des démos : un téléphone reste de face le temps de sa boucle
    (12 s ; VTBON, dont les deux maquettes s'enchaînent, y reste plus longtemps :
    `duree` dans `produits.tsx`), et sa démo repart du début quand il arrive. La pause arrête la
@@ -26,7 +28,8 @@ import { DEMOS, type Demo } from "./produits";
    Mouvement réduit : pas de rotation, des écrans arrêtés sur leur étape la
    plus parlante.
 
-   La légende dit ce que fait le logiciel de face et pour qui ; ses noms
+   La légende dit ce que fait le logiciel de face et pour qui (plus de pastilles
+   de fonctions dessous : J les a retirées le 2026-10-07) ; ses noms
    servent d'indicateur de position et se cliquent. Sur ordinateur, elle est
    à gauche des téléphones ; sur téléphone, dessous.
 --------------------------------------------------------------------------- */
@@ -182,13 +185,6 @@ function Legende({
           </div>
         </div>
         <p className="max-w-md text-[15px] leading-relaxed text-foreground/85">{d.description}</p>
-        <ul aria-label={`Ce que fait ${d.nom}`} className="flex max-w-md flex-wrap justify-center gap-1.5 lg:justify-start">
-          {d.fonctions.map((f) => (
-            <li key={f} className="rounded-md bg-foreground/[0.07] px-2 py-0.5 text-[12px] text-muted-foreground">
-              {f}
-            </li>
-          ))}
-        </ul>
         <Link
           href={d.lien?.href ?? "/contact"}
           className="lien-fleche mt-1 inline-flex items-center gap-1.5 rounded-sm text-[14px] font-medium text-foreground transition-colors hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"

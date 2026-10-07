@@ -35,7 +35,6 @@ export type Demo = {
   nom: string;
   pourQui: string;
   description: string;
-  fonctions: readonly string[];
   statut: string;
   resume: string;
   /** L'heure de la barre d'état du téléphone (les démos dessinées par Stalika ; VTBON porte la sienne). */

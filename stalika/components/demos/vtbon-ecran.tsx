@@ -18,13 +18,13 @@ import "./vtbon/vtbon.css";
 
    L'écran est dessiné à la taille qu'il a dans le téléphone de vtbon.fr
    (276 px de large), puis mis à l'échelle du téléphone du carrousel. Sa
-   hauteur est celle que le carrousel laisse voir au-dessus de ses boutons
+   hauteur est celle que le carrousel laisse voir avant que le bas ne s'estompe
    (les autres logiciels font de même : `HAUTEUR_APPLI` dans
    `saas-preview-card.tsx`, 420 px pour 315 de large) ; la barre du bas et les
    feuilles qui montent restent donc dans le cadre.
 
    `etat` vient du carrousel, comme pour les autres démos : `joue` (le
-   téléphone de face), `pause` (le bouton pause, ou le carrousel hors de
+   téléphone de face), `pause` (un appui sur le téléphone, ou le carrousel hors de
    l'écran : tout se gèle là où il en est), `repos` (un téléphone de côté :
    retour au départ). Mouvement réduit : l'écran montre le bon prêt à être
    partagé, sans rien qui bouge.
@@ -100,7 +100,7 @@ export function VtbonEcran({ nom, description, resume, statut, etat }: VtbonEcra
     >
       <div
         aria-hidden="true"
-        className="absolute left-0 top-0 origin-top-left"
+        className="pointer-events-none absolute left-0 top-0 origin-top-left"
         style={{ width: ECRAN.largeur, height: ECRAN.hauteur, transform: `scale(${echelle})` }}
       >
         <div ref={racine} className="vtui-root vt-scale size-full" data-theme="dark">

@@ -20,7 +20,6 @@ export const PRODUITS = {
     nom: "Carnet",
     pourQui: "Pour les artisans et les entreprises du bâtiment",
     description: "Le suivi de vos chantiers : tâches, photos, réserves et compte-rendu, au même endroit.",
-    fonctions: ["Chantiers", "Tâches", "Photos", "Comptes-rendus", "Réserves", "Planning"],
     statut: "Démo",
     /** L'heure de la barre d'état du téléphone : celle de la scène. */
     heure: "10:24",
@@ -35,7 +34,6 @@ export const PRODUITS = {
     nom: "VTBON",
     pourQui: "Pour les chauffeurs VTC et les taxis",
     description: "Le bon de transport dicté à la voix, la facture qui suit, et la relance quand un paiement tarde.",
-    fonctions: ["Dictée vocale", "Bons de transport", "Factures", "Relances", "Partage WhatsApp", "Historique"],
     statut: "Bientôt disponible",
     resume:
       "Démonstration de VTBON : le chauffeur dicte sa course, les champs du bon se remplissent et le bon part en image sur WhatsApp ; puis une facture est générée, passe en retard et reçoit sa lettre de relance.",
@@ -44,7 +42,6 @@ export const PRODUITS = {
     nom: "Contrôle",
     pourQui: "Pour les restaurants, les commerces et les hôtels",
     description: "Les contrôles de vos équipes, et chaque anomalie suivie jusqu'à ce qu'elle soit réglée.",
-    fonctions: ["Checklists", "Contrôles", "Incidents", "Photos", "Responsables", "Historique"],
     statut: "Démo",
     heure: "22:41",
     resume:
