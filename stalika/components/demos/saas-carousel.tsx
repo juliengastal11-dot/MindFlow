@@ -19,7 +19,8 @@ import { DEMOS, type Demo } from "./produits";
    voisins estompés de part et d'autre, les trois boutons posés dessus
    (précédent, pause, suivant), la rotation qui s'arrête au survol. Il tourne
    ici au rythme des démos : un téléphone reste de face le temps de sa boucle
-   (12 s), et sa démo repart du début quand il arrive. La pause arrête la
+   (12 s ; VTBON, dont les deux maquettes s'enchaînent, y reste plus longtemps :
+   `duree` dans `produits.tsx`), et sa démo repart du début quand il arrive. La pause arrête la
    rotation et la démo (critère WCAG 2.2.2) ; la rotation s'arrête aussi
    quand le clavier entre dans le carrousel. Hors de l'écran, tout s'arrête.
    Mouvement réduit : pas de rotation, des écrans arrêtés sur leur étape la
@@ -57,23 +58,26 @@ export function SaaSCarousel({ demos = DEMOS, className }: { demos?: readonly De
 
   const etatDe = (i: number): EtatDemo => (i !== courant ? "repos" : pause || !enVue ? "pause" : "joue");
 
+  // Chaque logiciel sur son écran : une interface de Stalika jouée par GSAP, ou un écran qui se joue seul (VTBON).
   const ecrans: ImageItem[] = demos.map((d, i) => ({
     src: "",
     alt: d.nom,
-    content: (
+    content: d.Ecran ? (
+      <d.Ecran nom={d.nom} description={d.description} resume={d.resume} statut={d.statut} etat={etatDe(i)} />
+    ) : d.Apercu && d.animation ? (
       <SaaSPreviewCard
         nom={d.nom}
         description={d.description}
         resume={d.resume}
-        theme={d.theme}
+        theme={d.theme ?? ""}
         statut={d.statut}
-        heure={d.heure}
+        heure={d.heure ?? ""}
         animation={d.animation}
         etat={etatDe(i)}
       >
         <d.Apercu />
       </SaaSPreviewCard>
-    ),
+    ) : null,
   }));
 
   return (
@@ -93,7 +97,7 @@ export function SaaSCarousel({ demos = DEMOS, className }: { demos?: readonly De
           onIndexChange={setCourant}
           onPauseChange={surPause}
           suspendu={!enVue || focus || reduit}
-          interval={M.boucle * 1000}
+          interval={(demos[courant]?.duree ?? M.boucle) * 1000}
           className="py-2 md:py-4"
         />
       </div>

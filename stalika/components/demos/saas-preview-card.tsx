@@ -11,7 +11,7 @@ import { EcranTelephone } from "./interface";
    SaaSPreviewCard : un logiciel, vivant, sur l'écran d'un iPhone du carrousel
    (components/ui/phone-mockups-1-utils, choisi par J le 2026-10-02).
 
-   La carte pose le thème du logiciel (`theme` : `appli-grise`, `appli-or`,
+   La carte pose le thème du logiciel (`theme` : `appli-grise`,
    `appli-sombre`, dans app/globals.css : ses couleurs, ses coins, ses
    ombres), dessine l'écran à la taille qu'il a dans un iPhone de 350 px
    (315 × 682) puis le met à l'échelle du téléphone réel, et fait tourner le
