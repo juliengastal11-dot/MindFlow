@@ -56,7 +56,17 @@ export type Demo = {
   lien?: { href: string; libelle: string };
 };
 
+/* VTBON en tête : c'est lui que le carrousel montre en premier (demande de J, 2026-10-07). */
 export const DEMOS: readonly Demo[] = [
+  {
+    id: "vtbon",
+    ...PRODUITS.vtbon,
+    accent: "var(--produit-vtbon)",
+    surAccent: "var(--sur-produit-vtbon)",
+    icone: Mic,
+    Ecran: VtbonEcran,
+    duree: 45,
+  },
   {
     id: "carnet",
     ...PRODUITS.carnet,
@@ -66,15 +76,6 @@ export const DEMOS: readonly Demo[] = [
     icone: NotebookPen,
     animation: animerCarnet,
     Apercu: CarnetPreview,
-  },
-  {
-    id: "vtbon",
-    ...PRODUITS.vtbon,
-    accent: "var(--produit-vtbon)",
-    surAccent: "var(--sur-produit-vtbon)",
-    icone: Mic,
-    Ecran: VtbonEcran,
-    duree: 45,
   },
   {
     id: "controle",

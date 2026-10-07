@@ -9,9 +9,9 @@ import { SaaSCarousel } from "@/components/demos/saas-carousel";
    logiciels et d'applications.
 
    Sous le titre, un carrousel de trois logiciels en démonstration (demande
-   de J, 2026-10-02) : Carnet (chantiers), VTBON (l'application de J, le bon
-   de transport dicté à la voix, puis la facture ; elle a remplacé RelancePro le
-   2026-10-07) et Contrôle (checklists et incidents). Chaque carte montre une
+   de J, 2026-10-02) : VTBON (l'application de J, le bon de transport dicté à la
+   voix, puis la facture ; elle a remplacé RelancePro le 2026-10-07 et s'affiche
+   en premier), Carnet (chantiers) et Contrôle (checklists et incidents). Chaque carte montre une
    vraie interface qui se sert toute seule, en boucle (components/demos). Il
    remplace le bento de quatre cartes (agenda, espace client, contrat, avis),
    qui parlait de sites.
