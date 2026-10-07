@@ -118,6 +118,7 @@ Refaite le 2026-10-07 (J) : la scène montre le client qui a la main, sur le sit
 - Voie 1, titre : `Chez vous` · texte : `Vous avez déjà un hébergeur, ou vous préférez garder la main. Je vous livre le site prêt à publier et je vous accompagne pour le mettre en ligne.`
 - Voie 2, titre : `Chez moi` · texte : `Je m'occupe de l'hébergement et de la maintenance : mises à jour, surveillance. Vous demandez une modification, je la fais, dans la limite du raisonnable. En échange, un petit abonnement mensuel.`
 - Ligne commune aux deux voies : `Dans les deux cas, le nom de domaine est à votre nom. Chaque projet se règle avec vous, un par un, et c'est écrit dans le devis.`
+- Bouton du fond, en bas à droite de la section, sur iPhone et iPad seulement (il demande à Apple l'accès aux capteurs de mouvement) : `Faire bouger le fond`
 - Les faits des deux voies (J, 2026-10-07) : l'hébergement et la maintenance chez J sont facturés par un petit abonnement mensuel, sans montant sur la page ; modifications à la demande, dans la limite du raisonnable ; le nom de domaine est toujours au nom du client ; chez le client, J livre le site prêt à publier et l'accompagne pour la mise en ligne.
 - Offre, grand chiffre : `À partir de 300 €`
 - Offre, sous le chiffre : `payable en plusieurs fois, sans frais`

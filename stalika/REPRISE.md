@@ -49,7 +49,7 @@
   (2026-10-02), jusqu'à ce qu'il ait retravaillé toutes les sections** : les perchoirs de section quand
   le visiteur ne clique pas (voir `BLUEPRINT.md`, mise à jour du 2026-10-02). Après chaque retouche de
   section, vérifier que les `data-rebond` suivent. À tester par J sur iPhone (fluidité de la chute).
-- Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion.
+- Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion, et le fond en points de la section 04 qui suit l'inclinaison du téléphone (bouton « Faire bouger le fond » et fenêtre d'autorisation d'Apple ; sur Android, aucun bouton) : jusqu'ici essayé avec des mesures simulées seulement.
 - Mode « animations réduites » non revérifié après les derniers changements.
 - Rechargement à chaud et films des scènes (développement seulement, constaté le 2026-10-07) : React peut remplacer les
   éléments d'une scène sans relancer les effets des primitives qui les animent ; la scène reste en place, le défilement la

@@ -199,9 +199,20 @@ au client avec un accompagnement pour la mise en ligne, et le nom de domaine tou
 
 **Le fond de la section** : un fond en points qui s'efface vers les bords (masque elliptique), extrait collé par
 J le 2026-10-07 (`components/ui/fond-points.tsx`, posé derrière le contenu). Repris d'abord à l'identique ; puis
-passé aux jetons du thème (fond `background`, points `border`), parce que le garde-fou refuse le blanc pur
-(`bg-white`) et les teintes hors palette. La copie exacte est dans l'historique git (commit « copie exacte de son
-extrait ») : pour la retrouver, blanc pur et gris `#e5e7eb`.
+passé aux jetons du thème, parce que le garde-fou refuse le blanc pur (`bg-white`) et les teintes hors palette.
+La copie exacte est dans l'historique git (commit « copie exacte de son extrait ») : pour la retrouver, blanc
+pur et gris `#e5e7eb`. Même jour, à la demande de J (« un peu plus visible, et qu'il suive les mouvements du
+téléphone ») : les points sont de l'`encre` du thème à 30 %, de 1,25 px de rayon (au lieu de la bordure, à 1 px),
+et **le motif glisse un peu sous le masque** (jamais plus de 14 px, le motif dépassant d'un pas de chaque côté) :
+- **sur téléphone**, avec l'inclinaison (`deviceorientation`) : les points glissent du côté où l'on penche ; la
+  position de repos suit le téléphone en 4 s environ, donc ce sont les mouvements qui comptent, pas la façon
+  de le tenir ;
+- **sur ordinateur**, avec la souris (10 px au plus) ; **mouvement réduit** : rien ne bouge ;
+- **iPhone et iPad** : Apple ne donne les capteurs qu'après une autorisation demandée par un appui. Plutôt que
+  d'ouvrir sa fenêtre de force à chaque visite, un petit bouton, « Faire bouger le fond », la demande ; il
+  n'apparaît que si aucune mesure n'arrive d'elle-même (Android, ou autorisation déjà donnée dans la session
+  de Safari : pas de bouton). **Jamais essayé sur un vrai téléphone** : testé avec des mesures simulées (Chrome,
+  mesures toutes les 16 ms), pas sur Safari ; à faire par J.
 
 ## §1 · La barre de direction
 
