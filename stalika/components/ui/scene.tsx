@@ -15,10 +15,23 @@ import { MOUVEMENT } from "@/lib/mouvement";
    normalement ; chaque scène joue son animation en `film.duree` secondes, au
    moment où elle entre dans l'écran, et ne la rejoue pas.
 
+   Une scène peut pourtant suivre le défilement (`defilement`) : « La
+   relecture », refaite le 2026-10-07 à la demande de J (« avec le
+   défilement, on change si ce n'est pas bien »). Cette fois sans épinglage
+   par JavaScript : la scène contient une piste (`[data-piste]`), plus haute
+   que l'écran, dans laquelle son contenu reste collé par `position: sticky`,
+   donc par le navigateur, sans à-coup. La chronologie avance avec le
+   défilement de la piste, de l'instant où le contenu se colle, au milieu de
+   l'écran, jusqu'à celui où il se décolle. Pour revenir au déclenchement à
+   l'arrivée, retirer `defilement` : la scène reprend sa hauteur d'un écran
+   (`declencheur` règle alors le moment où elle se lance).
+
    Les primitives du film (`Frappe`, `Decode`, `Barre`, `Trace`, `Roue`,
    `Rouleaux`) s'inscrivent sur cette chronologie par le contexte
    `useScene()` : elles y posent leurs tweens entre deux positions, `de` et
-   `a`, en fraction de la chronologie (0 = le début, 1 = la fin).
+   `a`, en fraction de la chronologie (0 = le début, 1 = la fin). Ce qui ne
+   se tween pas (un état qui bascule à un seuil) lit la progression par
+   `surProgres`.
 
    Ordre d'exécution, à connaître : les effets des enfants courent avant celui
    du parent. Les primitives s'inscrivent donc AVANT que la chronologie
@@ -38,6 +51,9 @@ export type Inscription = (chrono: gsap.core.Timeline) => void;
 type Contexte = {
   /** Ajoute des tweens à la chronologie. Renvoie de quoi se désinscrire. */
   inscrire: (fn: Inscription) => () => void;
+  /** Reçoit la progression de la chronologie (de 0 à 1) à chaque image où elle
+      change, et une fois à la création. Renvoie de quoi se désinscrire. */
+  surProgres: (fn: (progres: number) => void) => () => void;
 };
 
 const SceneContexte = createContext<Contexte | null>(null);
@@ -54,18 +70,27 @@ export type SceneProps = React.ComponentProps<"section"> & {
   nuit?: boolean;
   /** Durée de la chronologie, en secondes. Par défaut `MOUVEMENT.film.duree`. */
   duree?: number;
+  /** La chronologie suit le défilement de la piste `[data-piste]` que la scène contient,
+      au lieu de se jouer seule. La scène n'a plus de hauteur propre : c'est la piste qui
+      la fait, et son contenu s'y colle (voir l'en-tête). */
+  defilement?: boolean;
+  /** Lecture à l'arrivée : la position (ScrollTrigger) qui la lance. Par défaut `MOUVEMENT.film.declencheur`. */
+  declencheur?: string;
 };
 
 export function Scene({
   src,
   nuit = false,
   duree = MOUVEMENT.film.duree,
+  defilement = false,
+  declencheur = MOUVEMENT.film.declencheur,
   className,
   children,
   ...props
 }: SceneProps) {
   const ref = useRef<HTMLElement>(null);
   const inscriptions = useRef<Inscription[]>([]);
+  const abonnes = useRef<Set<(progres: number) => void>>(new Set());
   const chrono = useRef<gsap.core.Timeline | null>(null);
 
   const [contexte] = useState<Contexte>(() => ({
@@ -74,6 +99,13 @@ export function Scene({
       if (chrono.current) fn(chrono.current);
       return () => {
         inscriptions.current = inscriptions.current.filter((f) => f !== fn);
+      };
+    },
+    surProgres(fn) {
+      abonnes.current.add(fn);
+      if (chrono.current) fn(chrono.current.progress());
+      return () => {
+        abonnes.current.delete(fn);
       };
     },
   }));
@@ -90,8 +122,34 @@ export function Scene({
       const caches = section.querySelectorAll<HTMLElement>("[data-film-cache]");
       if (caches.length) gsap.set(caches, { visibility: "inherit" });
 
+      // La progression, pour ce qui bascule à un seuil plutôt que de se tweener.
+      const emettre = () => {
+        const p = tl.progress();
+        abonnes.current.forEach((f) => f(p));
+      };
+      tl.eventCallback("onUpdate", emettre);
+      emettre();
+
+      // En développement : la chronologie accrochée à la scène, pour l'avancer à la main depuis un test.
+      if (process.env.NODE_ENV === "development") (section as HTMLElement & { __film?: gsap.core.Timeline }).__film = tl;
+
       if (mouvementReduit()) {
         tl.progress(1);
+        return;
+      }
+
+      const piste = defilement ? section.querySelector<HTMLElement>("[data-piste]") : null;
+      if (piste) {
+        // Au défilement : la chronologie dure exactement 1, et suit la piste d'un bout à l'autre.
+        tl.set({}, {}, 1);
+        ScrollTrigger.create({
+          trigger: piste,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: MOUVEMENT.relecture.lissage,
+          animation: tl,
+          invalidateOnRefresh: true,
+        });
         return;
       }
 
@@ -104,7 +162,7 @@ export function Scene({
       }
       ScrollTrigger.create({
         trigger: section,
-        start: MOUVEMENT.film.declencheur,
+        start: declencheur,
         once: true,
         onEnter: () => tl.play(),
       });
@@ -114,7 +172,7 @@ export function Scene({
       ctx.revert();
       chrono.current = null;
     };
-  }, [duree]);
+  }, [duree, defilement, declencheur]);
 
   return (
     <SceneContexte.Provider value={contexte}>
@@ -123,7 +181,8 @@ export function Scene({
         data-src={src}
         data-scene=""
         className={cn(
-          "relative flex min-h-svh items-center overflow-hidden bg-background text-foreground",
+          "relative bg-background text-foreground",
+          !defilement && "flex min-h-svh items-center overflow-hidden",
           nuit && "nuit",
           className,
         )}

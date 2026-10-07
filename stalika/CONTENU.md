@@ -90,16 +90,20 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 
 ### Scène 4 · La relecture
 
+Refaite le 2026-10-07 (J) : la scène montre le client qui a la main, sur le site d'AR Transfert.
+
 - Eyebrow : `03 · La relecture`
-- H2 : `Un mot à changer ? *Changez-le sur la page.*`
-- Texte : `Vous recevez un lien. Vous relisez votre site en vrai, vous réécrivez un texte à sa place, vous gardez ou retirez une animation, vous commentez une photo. Puis j'applique, et je publie. Rien ne casse.`
-- Maquette client, titre de la page fictive : `Votre restaurant`
-- Maquette, ligne d'origine : `Ouvert du mardi au samedi`
-- Maquette, bulle de la personne : `Ajoute le dimanche midi`
-- Maquette, ligne réécrite : `Ouvert du mardi au dimanche midi`
-- Maquette, tampon final : `Appliqué · publié`
-- Légende sous la maquette : `C'est comme ça que la Pizzeria des Allées a relu son site.`
-- Libellé accessible de la maquette : `Exemple de relecture, animé au défilement`
+- H2 : `Le plus de STALIKA, c'est vous qui décidez *et avez la main.*` (J : « le plus de STALIKA, c'est vous qui décidez et avez la main »)
+- Texte : `Vous recevez un lien et vous éditez votre site à votre guise. De mon côté, je regarde, j'écoute, j'échange avec vous et je mets en place rapidement.` (J : « vous recevez un lien, vous éditez votre site à votre guise, je regarde, écoute, échange avec vous et mets en place rapidement »)
+- Les trois retouches, qui se cochent au fil du film : `Réécrire un texte` · `Garder ou retirer une animation` · `Commenter une photo`
+- Fenêtre : adresse `ar-transfert-apercu.vercel.app`. Barre d'édition (simplifiée) : `Navigation` · `Édition` · `Changement immédiat`
+- Le paragraphe du site d'AR Transfert, réécrit : dernière ligne `et soirées.` → `et événements d'entreprise.` ; étiquette `Texte`, puis `Appliqué`
+- L'animation : étiquette `Animation`, fenêtre `Appels de phares` · `Garder` · `Retirer`, puis `Retirée`
+- La photo : épingle `1`, le client `Vous` : `Une photo plus claire ?`, Julien : `Bien sûr, c'est fait.`, puis `Appliquée`
+- Curseur de Julien : `Julien`
+- Tampon final : `Appliqué · publié`
+- Légende sous la maquette : `C'est comme ça qu'AR Transfert a relu son site.` (à confirmer par J : voir H8)
+- Libellé accessible de la maquette : `Exemple de relecture sur le site d'AR Transfert, chauffeur VTC à Béziers : le client passe en mode Édition, réécrit un texte, retire une animation et commente une photo ; Julien répond, applique et publie.` Liste : `Ce que le client peut retoucher`
 
 ### Scène 5 · Livré
 

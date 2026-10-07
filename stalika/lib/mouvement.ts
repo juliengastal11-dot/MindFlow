@@ -246,4 +246,16 @@ export const MOUVEMENT = {
         à peine visibles au bord du carrousel, restent à l'arrêt. */
     seuilVisible: 0.35,
   },
+
+  /* --- La relecture (scène 4, refaite le 2026-10-07 à la demande de J) : la
+     maquette suit le défilement, sur une piste plus haute que l'écran dans
+     laquelle le contenu reste collé (`Scene`, option `defilement`). La page
+     défile toujours normalement ; seul le contenu reste en place le temps du
+     film. J : « avec le défilement, on change si ce n'est pas bien ». */
+  relecture: {
+    /** Longueur de la piste, en hauteurs d'écran, en plus de l'écran qui la porte. */
+    ecrans: 2.6,
+    /** Lissage de la lecture derrière la molette, en secondes (0 : collée au doigt). */
+    lissage: 0.45,
+  },
 } as const;

@@ -572,3 +572,74 @@ html.js .logo-anime[data-etat="attente"] img {
 @media (prefers-reduced-motion: reduce) {
   [class*="animate-[bouton-"] { animation: none; }
 }
+
+/* La relecture (components/sections/relecture-fenetre.tsx) : ce que le film, qui suit le
+   défilement, ne peut pas tweener. Sans JavaScript, ce qui n'existe que le temps du film
+   n'existe pas : curseurs, contours, bulles. */
+html:not(.js) [data-transitoire] {
+  display: none;
+}
+/* Sans JavaScript, pas de film : la piste n'a plus lieu d'être plus haute que son contenu. */
+html:not(.js) [data-piste] {
+  min-height: 0 !important;
+}
+html:not(.js) [data-piste] > * {
+  position: static !important;
+  height: auto !important;
+  padding-block: 3rem;
+}
+
+/* La barre d'édition : le segment actif porte le texte sombre de l'accent, l'autre reste clair.
+   Le mode est posé sur la fenêtre (`data-mode`) par la progression du film. */
+.rel-seg {
+  color: color-mix(in oklab, var(--color-foreground) 72%, transparent);
+  transition: color 0.2s;
+}
+[data-mode="navigation"] .rel-seg[data-seg="navigation"],
+[data-mode="edition"] .rel-seg[data-seg="edition"] {
+  color: var(--color-on-accent);
+}
+
+/* Les phares : l'appel de phares du site d'AR Transfert (deux éclats de suite), tant que le
+   client ne l'a pas retiré. `data-phares` : attente (pas encore), clignote, fixe (retiré).
+   Leur taille est posée en ligne, dans l'unité du dessin de la page (`--u`). */
+.rel-phare {
+  position: absolute;
+  translate: -50% -50%;
+  border-radius: 9999px;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0;
+  background: radial-gradient(closest-side, rgb(255 255 255 / 0.95), rgb(205 215 255 / 0.4) 52%, rgb(255 255 255 / 0));
+}
+[data-phares="clignote"] .rel-phare {
+  animation: rel-phare 2.2s ease-in-out infinite;
+}
+@keyframes rel-phare {
+  0%,
+  100% {
+    opacity: 0;
+    scale: 0.7;
+  }
+  12% {
+    opacity: 1;
+    scale: 1.15;
+  }
+  30% {
+    opacity: 0;
+    scale: 1.5;
+  }
+  46% {
+    opacity: 0.9;
+    scale: 1.1;
+  }
+  66% {
+    opacity: 0;
+    scale: 1.45;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rel-phare {
+    animation: none !important;
+  }
+}

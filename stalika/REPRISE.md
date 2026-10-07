@@ -35,7 +35,7 @@
      Étoiles filantes dessinées en code la nuit.
    - Par-dessus : `Hero` (section transparente), `SceneModele` (#sur-mesure, la roue des trois
      sites de Julien : `components/ui/roue.tsx`, voir `BLUEPRINT.md`), `SceneUtile`
-     (#utile), `SceneRelecture` (#relecture), puis `Plongee` (`components/ui/plongee.tsx`) :
+     (#utile), `SceneRelecture` (#relecture : une piste de 3,6 écrans où le contenu reste collé et où le film suit le défilement, voir `BLUEPRINT.md`, mise à jour du 2026-10-07), puis `Plongee` (`components/ui/plongee.tsx`) :
      zoom dans l'ordinateur (61 images `public/hero/plongee/`), logo Stalika qui scintille sur
      l'écran (`lib/plongee-ecran.ts`), puis la fenêtre de discussion qui s'ouvre en « feuille ».
 2. `Discussion` (`components/ui/discussion.tsx`) : premier message écrit tout seul, réponse

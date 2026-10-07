@@ -1,131 +1,68 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { Scene, useScene } from "@/components/ui/scene";
-import { Frappe } from "@/components/ui/frappe";
-import { Barre } from "@/components/ui/barre";
-import { Card } from "@/components/ui/card";
-import { gsap } from "@/lib/gsap";
+import { Check } from "lucide-react";
+import { Scene } from "@/components/ui/scene";
+import { MOUVEMENT } from "@/lib/mouvement";
+import { cn } from "@/lib/utils";
+import { FenetreRelecture } from "./relecture-fenetre";
 
 /* ---------------------------------------------------------------------------
-   Scène 4 · La relecture (la nuit). Une maquette de site sur laquelle un
-   pointeur désigne une ligne, une bulle demande le changement, la ligne se
-   barre et se réécrit, un tampon dit « appliqué ». Chronologie : blueprint §6.
+   Scène 4 · La relecture (la nuit), refaite le 2026-10-07 à la demande de J.
+
+   Le plus de STALIKA : c'est le client qui décide et qui a la main. Il reçoit
+   un lien, il édite son site à sa guise ; Julien regarde, écoute, échange, et
+   met en place vite. La scène le montre sur le vrai site d'AR Transfert, le
+   chauffeur VTC de Béziers : le client passe en mode Édition, réécrit un
+   texte, retire une animation, commente une photo (`relecture-fenetre.tsx`).
+
+   La scène suit le défilement : une piste plus haute que l'écran, dans
+   laquelle le contenu reste collé (`position: sticky`, donc par le
+   navigateur) ; le film avance avec le défilement, de l'instant où la fenêtre
+   se colle au milieu de l'écran jusqu'à celui où elle se décolle. Sur
+   ordinateur, le texte reste collé à côté de la fenêtre ; sur téléphone, il
+   défile avant la piste, et la fenêtre seule reste collée. La longueur de la
+   piste et le lissage sont dans `MOUVEMENT.relecture`. Pour revenir à un film
+   qui se joue seul à l'arrivée : retirer `defilement` de la scène, et la
+   piste (`data-piste`) de la mise en page.
+
+   Les éléments de cette scène ne portent plus `data-rebond` : le bouton qui
+   tombe mesure les positions de la page au départ de sa chute, et un contenu
+   collé n'a plus la même place une fois la piste engagée.
 --------------------------------------------------------------------------- */
 
-function Maquette() {
-  const scene = useScene();
-  const ref = useRef<HTMLDivElement>(null);
+const RETOUCHES = ["Réécrire un texte", "Garder ou retirer une animation", "Commenter une photo"] as const;
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || !scene) return;
-    const q = <T extends HTMLElement>(s: string) => el.querySelector<T>(s);
-    const pointeur = q("[data-pointeur]");
-    const pointille = q("[data-pointille]");
-    const plein = q("[data-plein]");
-    const bulle = q("[data-bulle]");
-    const origine = q("[data-origine]");
-    const tampon = q("[data-tampon]");
-    const legende = q("[data-legende]");
-    if (!pointeur || !pointille || !plein || !bulle || !origine || !tampon || !legende) return;
-
-    return scene.inscrire((tl) => {
-      gsap.set(pointeur, { x: 160, y: 140, autoAlpha: 0 });
-      tl.to(pointeur, { x: 0, y: 0, autoAlpha: 1, duration: 0.12 }, 0.1);
-
-      gsap.set(pointille, { autoAlpha: 0 });
-      gsap.set(plein, { autoAlpha: 0 });
-      tl.to(pointille, { autoAlpha: 1, duration: 0.08 }, 0.22);
-      tl.to(plein, { autoAlpha: 1, duration: 0.04 }, 0.3);
-      tl.to(pointille, { autoAlpha: 0, duration: 0.04 }, 0.3);
-
-      gsap.set(bulle, { autoAlpha: 0, scale: 0.9, transformOrigin: "12% 0%" });
-      tl.to(bulle, { autoAlpha: 1, scale: 1, duration: 0.1 }, 0.36);
-
-      tl.to(origine, { autoAlpha: 0.5, duration: 0.04 }, 0.7);
-
-      gsap.set(tampon, { autoAlpha: 0, scale: 1.4 });
-      tl.to(tampon, { autoAlpha: 1, scale: 1, duration: 0.06 }, 0.9);
-
-      gsap.set(legende, { autoAlpha: 0 });
-      tl.to(legende, { autoAlpha: 1, duration: 0.06 }, 0.94);
-    });
-  }, [scene]);
-
+/** Les trois retouches du film, qui se cochent à mesure qu'elles sont appliquées. */
+function Retouches({ className }: { className?: string }) {
   return (
-    <div ref={ref} role="img" aria-label="Exemple de relecture, animé au défilement">
-      <Card data-rebond="" className="relative overflow-hidden">
-        <div className="flex items-center gap-1.5 border-b px-4 py-3" aria-hidden="true">
-          <span className="size-2.5 rounded-full bg-muted" />
-          <span className="size-2.5 rounded-full bg-muted" />
-          <span className="size-2.5 rounded-full bg-muted" />
-        </div>
-
-        <div className="relative space-y-3 p-5 text-sm md:p-6">
-          <p className="font-display text-xl md:text-2xl">Votre restaurant</p>
-          <div className="space-y-2" aria-hidden="true">
-            <div className="h-2 w-full rounded-full bg-muted" />
-            <div className="h-2 w-4/5 rounded-full bg-muted" />
-          </div>
-
-          <div className="relative pt-2">
-            <div className="relative px-1 py-1">
-              <span
-                aria-hidden="true"
-                data-pointille
-                className="pointer-events-none absolute -inset-1 rounded-md opacity-0 outline-dashed outline-2 outline-accent"
-              />
-              <span
-                aria-hidden="true"
-                data-plein
-                data-film-cache
-                className="pointer-events-none absolute -inset-1 rounded-md outline outline-2 outline-accent"
-              />
-              <p data-origine className="relative">
-                <Barre de={0.62} a={0.7}>
-                  Ouvert du mardi au samedi
-                </Barre>
-              </p>
-              <p className="relative min-h-[1.5em]">
-                <Frappe texte="Ouvert du mardi au dimanche midi" de={0.72} a={0.88} />
-              </p>
-              <svg
-                aria-hidden="true"
-                data-pointeur
-                data-film-cache
-                viewBox="0 0 24 24"
-                className="pointer-events-none absolute -bottom-2 right-6 size-6 fill-foreground"
-              >
-                <path d="M4 2l15 9-6.5 1.8L9.5 19z" />
-              </svg>
-            </div>
-
-            <div
-              data-bulle
-              data-film-cache
-              className="relative mt-4 w-fit max-w-full rounded-card bg-accent px-4 py-2.5 text-on-accent"
-            >
-              <span
-                aria-hidden="true"
-                className="absolute -top-1.5 left-5 size-3 rotate-45 rounded-[2px] bg-accent"
-              />
-              <Frappe texte="Ajoute le dimanche midi" de={0.4} a={0.58} />
-            </div>
-          </div>
-
-          <span
-            aria-hidden="true"
-            data-tampon
-            data-film-cache
-            className="eyebrow absolute bottom-4 right-4 -rotate-6 rounded-md border-2 border-accent px-2 py-1 text-accent"
-          >
-            Appliqué · publié
+    <ol aria-label="Ce que le client peut retoucher" className={cn("space-y-2.5", className)}>
+      {RETOUCHES.map((t, i) => (
+        <li key={t} data-rang={i} className="flex items-center gap-3 text-sm">
+          <span aria-hidden="true" className="relative grid size-5 shrink-0 place-items-center rounded-full ring-1 ring-foreground/30">
+            <span data-film-cache data-rang-plein className="absolute inset-0 grid place-items-center rounded-full bg-accent text-on-accent">
+              <Check className="size-3" strokeWidth={3} />
+            </span>
           </span>
-        </div>
-      </Card>
-      <p data-legende data-film-cache className="mt-3 text-sm text-muted-foreground">
-        C&apos;est comme ça que la Pizzeria des Allées a relu son site.
+          <span data-rang-label className="text-foreground">
+            {t}
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+/** Le titre et le texte, une fois sur téléphone (avant la piste) et une fois sur ordinateur (dans la colonne collée). */
+function Texte({ avecId = false }: { avecId?: boolean }) {
+  return (
+    <div>
+      <p className="eyebrow text-accent">03 · La relecture</p>
+      <h2 id={avecId ? "relecture-titre" : undefined} className="mt-3 text-2xl sm:text-3xl md:text-4xl">
+        Le plus de STALIKA, c&apos;est vous qui décidez <span className="block text-accent">et avez la main.</span>
+      </h2>
+      <p className="mt-4 text-sm text-muted-foreground md:text-base">
+        Vous recevez un lien et vous éditez votre site à votre guise. De mon côté, je regarde, j&apos;écoute, j&apos;échange avec
+        vous et je mets en place rapidement.
       </p>
     </div>
   );
@@ -133,22 +70,26 @@ function Maquette() {
 
 export function SceneRelecture() {
   return (
-    <Scene id="relecture" nuit className="bg-transparent" src="components/sections/scene-relecture.tsx" aria-labelledby="relecture-titre">
+    <Scene id="relecture" nuit defilement className="bg-transparent" src="components/sections/scene-relecture.tsx" aria-labelledby="relecture-titre">
       {/* Voile sur le ciel commun (composant Ciel, dans la page) : horizontal, pour que deux sections de nuit se raccordent sans couture. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-2 inset-y-0 bg-background/55 sm:inset-x-3 md:bg-transparent md:bg-linear-to-r md:from-background/85 md:via-background/40 md:to-background/15" />
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-12 md:py-16">
-        <div className="space-y-8 md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-center md:gap-12 md:space-y-0">
-          <div>
-            <p className="eyebrow text-accent">03 · La relecture</p>
-            <h2 id="relecture-titre" data-rebond="" className="mt-3 text-2xl sm:text-3xl md:text-4xl">
-              Un mot à changer ? <span className="block text-accent">Changez-le sur la page.</span>
-            </h2>
-            <p className="mt-4 text-sm text-muted-foreground md:text-base">
-              Vous recevez un lien. Vous relisez votre site en vrai, vous réécrivez un texte à sa place, vous gardez
-              ou retirez une animation, vous commentez une photo. Puis j&apos;applique, et je publie. Rien ne casse.
-            </p>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-2 inset-y-0 bg-background/55 sm:inset-x-3 md:bg-transparent md:bg-linear-to-r md:from-background/90 md:via-background/55 md:to-background/25" />
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-6">
+        <div className="pb-6 pt-12 md:hidden">
+          <Texte />
+        </div>
+        <div
+          data-piste
+          className="grid items-start md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-12 motion-reduce:min-h-0!"
+          style={{ minHeight: `${(1 + MOUVEMENT.relecture.ecrans) * 100}svh` }}
+        >
+          <div className="sticky top-0 hidden h-svh flex-col justify-center md:flex motion-reduce:static motion-reduce:h-auto motion-reduce:py-12">
+            <Texte avecId />
+            <Retouches className="mt-8" />
           </div>
-          <Maquette />
+          <div className="sticky top-0 flex h-svh flex-col justify-center motion-reduce:static motion-reduce:h-auto motion-reduce:pb-12">
+            <FenetreRelecture />
+            <Retouches className="mt-5 md:hidden [@media(max-height:720px)]:hidden" />
+          </div>
         </div>
       </div>
     </Scene>

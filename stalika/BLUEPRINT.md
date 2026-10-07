@@ -132,6 +132,41 @@ survol sont ceux de l'original ; la lueur est camel (`primary`).
   dernière image. Décisions de J : coin haut gauche, balancement de quelques secondes puis arrêt,
   indice discret, le bouton reste en bas quand on remonte.
 
+## Mise à jour du 2026-10-07 : « La relecture » au défilement, sur le vrai site d'AR Transfert
+
+À la demande de J : « le plus de STALIKA, c'est vous qui décidez et avez la main. Vous recevez un lien,
+vous éditez votre site à votre guise, je regarde, j'écoute, j'échange avec vous et je mets en place
+rapidement. » La scène (`components/sections/scene-relecture.tsx`, `relecture-fenetre.tsx`) le montre
+sur le site d'AR Transfert, en deux temps voulus par J :
+- **A.** le client passe la barre d'édition en « Édition », coche « Changement immédiat », clique le
+  paragraphe, sélectionne sa dernière ligne (« et soirées. ») et la réécrit (« et événements
+  d'entreprise. ») ; Julien a son propre curseur, comme un collègue qui regarde.
+- **B.** il retire l'animation des phares (l'appel de phares du site : « Garder » ou « Retirer »), puis
+  épingle un commentaire sur la photo (« Une photo plus claire ? ») ; Julien répond (« Bien sûr, c'est
+  fait. ») et la photo s'éclaircit. Les trois retouches se cochent dans la liste à côté ; le tampon
+  « Appliqué · publié » clôt.
+- **Au défilement, sans épinglage JavaScript.** J avait refusé l'épinglage le 2026-10-01 (la page « s'arrêtait
+  et repartait » sur son téléphone) ; ici : « avec le défilement, on change si ce n'est pas bien », et le film doit
+  partir « quand l'animation arrive à mi-hauteur d'écran ». La scène contient une piste (`data-piste`) de
+  3,6 écrans ; son contenu y reste collé (`position: sticky`, donc par le navigateur), centré dans l'écran ;
+  le film avance avec la piste, de l'instant où il se colle (la fenêtre est alors au milieu de l'écran)
+  jusqu'à celui où il se décolle. Réglages : `MOUVEMENT.relecture` (`ecrans`, `lissage`). `Scene` a pour
+  cela une option `defilement` ; l'abandonner (la retirer, et la piste) rend à la scène son film joué
+  une fois à l'arrivée (`declencheur`). Sur téléphone, le texte défile avant la piste et seule la
+  fenêtre reste collée. Mouvement réduit et sans JavaScript : pas de piste, l'état final.
+- **La page n'est pas refaite** : c'est une capture du site en ligne (`outils/relecture/`), posée sur un
+  dessin à l'échelle de la fenêtre (unités `cqw`, aucune mesure en JavaScript). Seul le paragraphe est du
+  vrai texte (Jost, comme sur le site). Deux mises en page, comme le site : ordinateur (1024 px) quand la
+  fenêtre fait au moins 576 px (`@xl`), téléphone (390 px, recadré) sinon. L'outil (barre, curseurs,
+  étiquettes, bulles) garde sa taille réelle ; les points où va le curseur sont mesurés dans la page au
+  moment de construire le film, et remesurés au redimensionnement (`invalidateOnRefresh`).
+- **Le bouton qui tombe** : les éléments de cette scène ne portent plus `data-rebond` (un contenu collé
+  n'a plus la même place une fois la piste engagée, et le bouton mesure la page au départ de sa chute).
+  À reprendre avec la deuxième étape du bouton (les perchoirs).
+- **Le ciel** : il avance toujours linéairement avec le défilement ; la piste plus longue ralentit son
+  changement d'heure, et la scène se termine à l'aube. Le voile à gauche du texte a été renforcé pour
+  que la fin reste lisible.
+
 ## §1 · La barre de direction
 
 | | Décidé |
@@ -234,7 +269,7 @@ Nav | bandeau | background | Monogramme + Stalika, bouton Contact, lien WhatsApp
 Scène 1 · Ils vous cherchent | plein | background (jour, illustration en calques) | Eyebrow, H1, texte, barre de recherche qui se tape, suggestions, 2 boutons, indice de défilement | EntreeHero, Paysage, Scene, Frappe
 Scène 2 · Pas un modèle | plein | background **nuit** | Eyebrow 01, H2, mot qui se décode, texte · neuf cartes en perspective, d'abord identiques, qui deviennent différentes | Scene, Decode, Champ3D
 Scène 3 · Utile | plein | primary **nuit** | Eyebrow 02, H2, texte · trois logiciels en démonstration (VTBON, Carnet, Contrôle, dans cet ordre : VTBON s'affiche en premier), chacun une application vivante sur l'écran d'un iPhone du carrousel de Solace UI, chacune avec son design depuis le 2026-10-04 (demande de J) : Carnet gris d'après le DESIGN.md de Cal.com, Contrôle sombre d'après celui de Linear (thèmes `.appli-*` dans app/globals.css). Le 2026-10-07, VTBON, l'application de J, a pris la place de RelancePro : son écran est celui des deux maquettes animées de vtbon.fr (le bon dicté à la voix, puis la facture et sa relance), jouées l'une après l'autre en 45 s (`components/demos/vtbon/`, `vtbon-ecran.tsx`), sa palette est celle de l'application (noir et or) ; à côté (dessous sur téléphone), la légende du logiciel de face | Scene, Reveal, SaaSCarousel, SaaSPreviewCard, VtbonEcran (components/demos), PhoneCarousel (components/ui/phone-mockups-1-utils)
-Scène 4 · La relecture | plein | background **nuit** | Eyebrow 03, H2, texte · maquette client : surlignage, bulle, ligne barrée puis réécrite, tampon | Scene, Frappe, Barre
+Scène 4 · La relecture | plein (une piste de 3,6 écrans, contenu collé) | background **nuit** | Eyebrow 03, H2, texte, les trois retouches qui se cochent · fenêtre du vrai site d'AR Transfert : barre d'édition simplifiée, curseur du client et curseur de Julien, texte réécrit, animation retirée, photo commentée, tampon | Scene (au défilement), FenetreRelecture
 Scène 5 · Livré | plein | background (jour) | Eyebrow 04, H2, 4 coches · carte d'offre : 300 €, plusieurs fois, 72 h en rouleaux, France, bouton | Scene, Rouleaux
 Ils m'ont fait confiance | bandeau | muted | Trois noms et leur sous-titre, en défilement, liens | Defilant
 Julien | normal | background | Eyebrow, H2, un paragraphe | Reveal
@@ -275,7 +310,7 @@ scène et retiré à la sortie.
 | 1 · Ils vous cherchent | Au chargement : `EntreeHero` sur eyebrow, H1, texte, boutons, l'illustration déjà là. Au défilement : les calques de l'illustration glissent à des vitesses différentes (`Paysage` : ciel lent, collines, terrasse au premier plan plus vite) et le voile monte ; la barre se tape lettre à lettre (`Frappe`), les trois suggestions se déplient, la première se surligne, la barre glisse vers le haut et la phrase de fin apparaît | les deux boutons (accent, contour) ; le lien WhatsApp |
 | 2 · Pas un modèle | Le champ de neuf cartes identiques s'incline et la caméra glisse (`Champ3D`) ; une carte sur deux devient son métier, puis les autres ; le mot en accent se décode trois fois (`Decode`) ; le texte arrive en dernier | rien : les cartes ne mènent nulle part, elles ne réagissent pas au curseur |
 | 3 · Utile | Le carrousel apparaît (`Reveal`). Le téléphone de face joue sa démo (12 s, scénarios de J) : un doigt touche, ouvre une fiche, coche, envoie ; l'écran revient à son départ sans saut. Toutes les 12 s, le carrousel passe au téléphone suivant, dont la démo repart du début ; la rotation s'arrête au survol et quand le clavier y entre. Les voisins restent sur leur premier écran. Hors de l'écran, tout s'arrête. Valeurs dans `MOUVEMENT.demos` | précédent, pause (rotation et démo, WCAG 2.2.2), suivant ; glisser au doigt ou à la souris ; les noms de la légende ; « Parlons de votre outil » mène à `/contact` |
-| 4 · La relecture | La maquette se pose ; un pointeur glisse vers la ligne d'horaires, contour pointillé puis plein ; la bulle s'ouvre et se tape (`Frappe`) ; la ligne d'origine se barre (`Barre`) et la nouvelle se tape à sa place ; le tampon se pose ; la légende apparaît | rien |
+| 4 · La relecture | Au défilement (voir la mise à jour du 2026-10-07) : le client passe la barre en Édition et coche « Changement immédiat » ; il survole le paragraphe (contour pointillé), le saisit (contour plein), sélectionne sa dernière ligne et la réécrit lettre à lettre ; Julien, qui regarde, a son curseur ; la première retouche se coche. Les phares clignotent, le client les retire (« Garder » ou « Retirer »). Il épingle un commentaire sur la photo, Julien répond, la photo s'éclaircit. Le tampon se pose, la légende apparaît | rien |
 | 5 · Livré | Les quatre coches se cochent une à une ; la carte d'offre glisse, « 300 € » apparaît immobile, « 72 h » roule de 00 à 72 (`Rouleaux`), la zone et le bouton arrivent | le bouton (accent) |
 | Fin calme | `Defilant` pour le bandeau, `Reveal` sur Julien, la FAQ et l'appel ; les orbites terminent leur rotation | les trois noms du bandeau (liens, `lien-fleche`) ; l'accordéon (`<details>`, focus visible) ; les deux boutons |
 
@@ -404,7 +439,7 @@ débit limité sur l'envoi public ; aucune requête construite depuis une entré
 - **H5** Le champ 3D montre neuf cartes de métiers dessinées en code, jamais les sites des clients. *Abandonnée le 2026-10-01 : la roue montre les sites, voir la mise à jour en tête.*
 - **H6** Statistiques : Google Analytics 4 après consentement (H de mise en œuvre : bandeau, cookie de choix, chargement conditionnel) et Search Console à côté. Un outil sans cookie éviterait le bandeau ; J a demandé les cookies.
 - **H7** La section « Julien » dit ce qu'il fait aujourd'hui (sites et applications pour des commerces, depuis Béziers, pour toute la France, du dessin à la mise en ligne) et ne parle pas de son passé en restauration : demandé par J.
-- **H8** La scène 4 cite la Pizzeria des Allées comme exemple de relecture, avec l'accord du client dit obtenu.
+- **H8** La scène 4 cite AR Transfert (le chauffeur VTC de Béziers, un des sites de la roue) comme exemple de relecture, avec l'accord du client dit obtenu. *Remplace la Pizzeria des Allées (2026-10-07) ; à confirmer par J : le client a-t-il bien relu son site ainsi, et accepte-t-il d'être cité ?*
 - **H9** Contact : WhatsApp seul. L'e-mail viendra plus tard ; la page des mentions légales le marque à confirmer en attendant.
 - **H10** Le questionnaire compte dix questions, celles de `CONTENU.md`, dans cet ordre ; les réponses vont en base et se lisent dans `/admin` ; aucune alerte par e-mail, aucun service d'envoi n'est branché.
 - **H11** Compte administrateur : `ADMIN_EMAIL` et `ADMIN_PASSWORD` dans `.env` ; en développement, `admin@stalika.local` / `stalika-dev`.
