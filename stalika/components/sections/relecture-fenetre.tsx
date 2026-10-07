@@ -578,7 +578,7 @@ export function FenetreRelecture({ pied }: { pied?: React.ReactNode }) {
           </span>
         </div>
       </Card>
-      <p data-legende data-film-cache className="mt-3 text-sm text-muted-foreground">
+      <p data-legende data-film-cache className="sur-ciel mt-3 text-sm text-foreground/80">
         C&apos;est comme ça qu&apos;AR Transfert a relu son site.
       </p>
       {pied}

@@ -51,6 +51,7 @@
   section, vérifier que les `data-rebond` suivent. À tester par J sur iPhone (fluidité de la chute).
 - Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion.
 - Mode « animations réduites » non revérifié après les derniers changements.
+- Plus de voiles sombres sur les scènes 01 à 03 (2026-10-07, demande de J) : le texte tient par une ombre douce (`sur-ciel`). À regarder sur téléphone au crépuscule (début de la 01) et à l'aube (fin de la 03), voir `BLUEPRINT.md`.
 - Rechargement à chaud et films des scènes (développement seulement, constaté le 2026-10-07) : React peut remplacer les
   éléments d'une scène sans relancer les effets des primitives qui les animent ; la scène reste en place, le défilement la
   suit, et plus rien ne bouge. `Scene` expose `rebatir()` (voir son en-tête) : la fenêtre de « La relecture »

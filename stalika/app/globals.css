@@ -333,6 +333,17 @@
   text-transform: uppercase;
 }
 
+/* Du texte posé directement sur le ciel, sans voile derrière (J, 2026-10-07 : plus
+   de fonds assombris sur toute la section). L'ombre, de la couleur du fond de la
+   scène, le garde lisible là où le ciel s'éclaircit (lueur de l'horizon, nuages).
+   Elle suit les lettres : elle ne dessine aucun rectangle. */
+@utility sur-ciel {
+  text-shadow:
+    0 0 1px color-mix(in oklab, var(--color-background) 70%, transparent),
+    0 1px 9px color-mix(in oklab, var(--color-background) 85%, transparent),
+    0 0 26px color-mix(in oklab, var(--color-background) 65%, transparent);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
