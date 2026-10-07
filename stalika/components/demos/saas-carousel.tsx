@@ -109,7 +109,7 @@ export function SaaSCarousel({ demos = DEMOS, className }: { demos?: readonly De
   );
 }
 
-/** Ce que fait le logiciel de face, pour qui, et le lien ; au-dessus, les trois noms. */
+/** Ce que fait le logiciel de face, et le lien ; au-dessus, les trois noms. */
 function Legende({
   demos,
   courant,
@@ -122,7 +122,6 @@ function Legende({
   className?: string;
 }) {
   const d = demos[courant];
-  const Icone = d.icone;
   const bloc = useRef<HTMLDivElement>(null);
   const premier = useRef(true);
 
@@ -165,25 +164,7 @@ function Legende({
         ))}
       </div>
 
-      <div
-        ref={bloc}
-        style={{ "--color-produit": d.accent, "--color-on-produit": d.surAccent } as React.CSSProperties}
-        className="flex flex-col items-center gap-3.5 text-center lg:items-start lg:text-left"
-      >
-        <div className="flex items-center gap-3 text-left">
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-produit text-on-produit shadow-[inset_0_1px_0_rgb(255_255_255/0.2)]">
-            <Icone aria-hidden="true" className="size-5" strokeWidth={2} />
-          </span>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h3 className="text-xl font-semibold leading-tight tracking-tight">{d.nom}</h3>
-              <span className="rounded-full border border-foreground/15 px-1.5 text-[11px] font-medium leading-4 text-muted-foreground">
-                {d.statut}
-              </span>
-            </div>
-            <p className="mt-0.5 text-[13px] leading-snug text-muted-foreground">{d.pourQui}</p>
-          </div>
-        </div>
+      <div ref={bloc} className="flex flex-col items-center gap-3.5 text-center lg:items-start lg:text-left">
         <p className="max-w-md text-[15px] leading-relaxed text-foreground/85">{d.description}</p>
         <Link
           href={d.lien?.href ?? "/contact"}

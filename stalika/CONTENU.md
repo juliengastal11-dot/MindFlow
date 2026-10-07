@@ -5,7 +5,8 @@ quelles : aucune reformulation, aucun texte de leur cru. Une ligne qui manque s'
 `[[À CONFIRMER PAR L'UTILISATEUR : …]]` et se signale dans le rapport.
 
 Voix : Julien parle en son nom (« je »), et vouvoie le visiteur. Ton familier, phrases courtes,
-aucun tiret long. Le mot en accent d'un titre est indiqué entre `*astérisques*`.
+aucun tiret long. Le mot en accent d'un titre est indiqué entre `*astérisques*`. Aucun titre de
+section ne se termine par un point (demande de J, 2026-10-07) ; seul un point du milieu, entre deux phrases, reste.
 
 ---
 
@@ -58,8 +59,8 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 ### Scène 2 · Pas un modèle
 
 - Eyebrow : `01 · Sur mesure`
-- H2 : `Pas un modèle rempli à la chaîne.`
-- Ligne 2, le mot se décode : `Un site dessiné *pour vous*.` → `*pour votre métier*` → `*pour vos clients*`
+- H2 : `Pas un modèle rempli à la chaîne`
+- Ligne 2, le mot se décode : `Un site dessiné *pour vous*` → `*pour votre métier*` → `*pour vos clients*`
 - Texte : `Chaque site part d'une page blanche et naît de nos échanges et réflexions. Votre métier, vos clients, vos envies. Tout est modifiable à volonté, jusqu'à satisfaction.` (mots de J, overlay du 2026-10-02, orthographe corrigée)
 - Point 1 : `Selon vos envies` · `couleurs, ton, animations : on choisit ensemble, rien n'est imposé.`
 - Point 2 : `Beaucoup d'échanges` · `vous me racontez votre métier, je vous montre, vous réagissez.`
@@ -81,10 +82,11 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 - H2 : `Création de logiciels et applications *personnalisés*` (titre de J, overlay du 2026-10-02 ; avant : « Un site qui travaille, pas une plaquette. »)
 - Texte (demande de J, overlay du 2026-10-02 : SaaS, CRM, logiciels sur mesure, une phrase choc, quatre lignes ; la phrase choc est en gras) : `**Vous avez un problème, il y a forcément une solution.** Je crée des SaaS, des CRM et des logiciels sur mesure : l'outil qui automatise vos tâches et vous fait gagner des heures, pensé pour votre activité.`
 - Sous le texte, trois logiciels en démonstration, chacun sur l'écran d'un iPhone du carrousel « Phone Mockups 1 » (demande de J, 2026-10-02, scénarios et textes d'interface de J), et la légende du logiciel de face. Ils remplacent le bento de quatre cartes (agenda, espace client, contrat, avis). Tous les textes, légendes et interfaces, sont dans `lib/demos.ts` ; ce qui suit en est le résumé.
-- Légende 1 · `VTBON` · `Bientôt disponible` · `Pour les chauffeurs VTC et les taxis` · `Le bon de transport dicté à la voix, la facture qui suit, et la relance quand un paiement tarde.`(l'application de J, qui a remplacé RelancePro le 2026-10-07 ; l'écran du téléphone est celui de ses deux maquettes, avec leurs textes : voir le CONTENU de vtbon-site) ; c'est le premier téléphone que le carrousel montre (demande de J, 2026-10-07), et il reste de face 45 s, le temps de ses deux maquettes
-- Légende 2 · `Carnet` · `Démo` · `Pour les artisans et les entreprises du bâtiment` · `Le suivi de vos chantiers : tâches, photos, réserves et compte-rendu, au même endroit.`· heure du téléphone `10:24`
-- Légende 3 · `Contrôle` · `Démo` · `Pour les restaurants, les commerces et les hôtels` · `Les contrôles de vos équipes, et chaque anomalie suivie jusqu'à ce qu'elle soit réglée.`· heure `22:41`
+- Légende 1 · `VTBON` · `Le bon de transport dicté à la voix, la facture qui suit, et la relance quand un paiement tarde.`(l'application de J, qui a remplacé RelancePro le 2026-10-07 ; l'écran du téléphone est celui de ses deux maquettes, avec leurs textes : voir le CONTENU de vtbon-site) ; c'est le premier téléphone que le carrousel montre (demande de J, 2026-10-07), et il reste de face 45 s, le temps de ses deux maquettes
+- Légende 2 · `Carnet` · `Le suivi de vos chantiers : tâches, photos, réserves et compte-rendu, au même endroit.`· heure du téléphone `10:24`
+- Légende 3 · `Contrôle` · `Les contrôles de vos équipes, et chaque anomalie suivie jusqu'à ce qu'elle soit réglée.`· heure `22:41`
 - Lien de chaque légende : `Parlons de votre outil` → `/contact`
+- Retiré de la légende (demande de J, 2026-10-07 : « retire ça ») : l'icône, le nom en titre, le statut (`Bientôt disponible` pour VTBON, `Démo` pour les deux autres) et la ligne « pour qui » (`Pour les chauffeurs VTC et les taxis` ; `Pour les artisans et les entreprises du bâtiment` ; `Pour les restaurants, les commerces et les hôtels`). Il ne reste que les trois noms au-dessus, la description et le lien. Le statut se lit encore dans le libellé accessible de l'écran du téléphone.
 - Commandes du carrousel (demande de J, 2026-10-07 : « enlève ces boutons, un appui sur la vidéo fera pause et un swipe changera l'app ») : plus aucun bouton à l'écran. Un appui sur le téléphone met en pause (une icône Lecture apparaît au centre), un second appui relance ; un glissé du doigt ou de la souris change de logiciel ; les trois noms au-dessus de la légende (position) se cliquent aussi. Pour le clavier et les lecteurs d'écran, les trois boutons restent, transparents, et apparaissent quand on y arrive au clavier : `Logiciel précédent`, `Mettre en pause le défilement et les démos` / `Relancer le défilement et les démos`, `Logiciel suivant` ; nom du carrousel pour les lecteurs d'écran : `Les logiciels, sur iPhone`. Les pastilles de fonctions sous la description (Checklists, Contrôles, Incidents…) sont retirées.
 - Dans les interfaces, les données de J : `Mes chantiers` · Dupont, `Rénovation salle de bain` · Martin, `Terrasse bois` · Entreprise Garcia, `Local commercial` · `Progression 72 %` · tâches `Pose carrelage`, `Installation douche`, `Raccordement plomberie` · `Compte-rendu du chantier` ; `Contrôle fermeture` · `Frigos` `Nettoyage` `Caisse` `Sols` `Température frigo n°2` · `9,2 °C` · `Incident #248` · `Température trop élevée.` · `Thomas` · `Vérifier le frigo` · échéance `Demain à 10:00` (J avait écrit l'heure après un tiret long, un tic de texte généré que le garde-fou relève).
 
@@ -93,7 +95,7 @@ La description des moteurs de recherche (`Description` plus haut) ne change pas.
 Refaite le 2026-10-07 (J) : la scène montre le client qui a la main, sur le site d'AR Transfert.
 
 - Eyebrow : `03 · La relecture`
-- H2 : `Le plus de STALIKA, c'est vous qui décidez *et avez la main.*` (J : « le plus de STALIKA, c'est vous qui décidez et avez la main »)
+- H2 : `Le plus de STALIKA, c'est vous qui décidez *et avez la main*` (J : « le plus de STALIKA, c'est vous qui décidez et avez la main »)
 - Texte : `Vous recevez un lien et vous éditez votre site à votre guise. De mon côté, je regarde, j'écoute, j'échange avec vous et je mets en place rapidement.` (J : « vous recevez un lien, vous éditez votre site à votre guise, je regarde, écoute, échange avec vous et mets en place rapidement »)
 - Les trois retouches, qui se cochent au fil du film : `Réécrire un texte` · `Garder ou retirer une animation` · `Commenter une photo`
 - Fenêtre : adresse `ar-transfert-apercu.vercel.app`. Barre d'édition (simplifiée) : `Navigation` · `Édition` · `Changement immédiat`
@@ -108,7 +110,7 @@ Refaite le 2026-10-07 (J) : la scène montre le client qui a la main, sur le sit
 ### Scène 5 · Livré
 
 - Eyebrow : `04 · Livré`
-- H2 : `Livré propre. Et il *vous appartient*.`
+- H2 : `Livré propre. Et il *vous appartient*`
 - Coche 1 : `Mentions légales et confidentialité en règle`
 - Coche 2 : `Sécurité vérifiée avant la mise en ligne`
 - Coche 3 : `Référencement soigné : titres, descriptions, plan du site, fiche Google`
@@ -130,7 +132,7 @@ Refaite le 2026-10-07 (J) : la scène montre le client qui a la main, sur le sit
 ### Julien
 
 - Eyebrow : `Julien`
-- H2 : `Je dessine et je code des sites, des logiciels et des applications pour des gens qui ont autre chose à faire.`
+- H2 : `Je dessine et je code des sites, des logiciels et des applications pour des gens qui ont autre chose à faire`
 - Texte : `Aujourd'hui, je conçois des sites, des logiciels et des applications sur mesure pour des restaurants, des coachs, des artisans et des commerces, depuis Béziers et pour toute la France. Je m'occupe de tout : le dessin, le code, les textes avec vous, la mise en ligne, et je reste joignable après. Vous relisez sur la page, vous corrigez, j'applique. Un seul interlocuteur, du premier message à la mise en ligne.`
 
 ### Questions fréquentes
@@ -148,7 +150,7 @@ Refaite le 2026-10-07 (J) : la scène montre le client qui a la main, sur le sit
 ### On en parle ?
 
 - Eyebrow : `On en parle ?`
-- H2 : `Dix questions, cinq minutes, et je vous réponds avec une première idée.`
+- H2 : `Dix questions, cinq minutes, et je vous réponds avec une première idée`
 - Bouton principal : `Répondre aux questions` → `/contact`
 - Bouton secondaire : `Ou directement sur WhatsApp` → wa.me
 

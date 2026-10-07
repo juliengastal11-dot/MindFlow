@@ -18,7 +18,6 @@
 export const PRODUITS = {
   carnet: {
     nom: "Carnet",
-    pourQui: "Pour les artisans et les entreprises du bâtiment",
     description: "Le suivi de vos chantiers : tâches, photos, réserves et compte-rendu, au même endroit.",
     statut: "Démo",
     /** L'heure de la barre d'état du téléphone : celle de la scène. */
@@ -32,7 +31,6 @@ export const PRODUITS = {
      de ses deux maquettes (`components/demos/vtbon/`), qui portent leurs propres données. */
   vtbon: {
     nom: "VTBON",
-    pourQui: "Pour les chauffeurs VTC et les taxis",
     description: "Le bon de transport dicté à la voix, la facture qui suit, et la relance quand un paiement tarde.",
     statut: "Bientôt disponible",
     resume:
@@ -40,7 +38,6 @@ export const PRODUITS = {
   },
   controle: {
     nom: "Contrôle",
-    pourQui: "Pour les restaurants, les commerces et les hôtels",
     description: "Les contrôles de vos équipes, et chaque anomalie suivie jusqu'à ce qu'elle soit réglée.",
     statut: "Démo",
     heure: "22:41",

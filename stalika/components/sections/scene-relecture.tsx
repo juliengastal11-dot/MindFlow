@@ -61,7 +61,7 @@ function Texte({ avecId = false }: { avecId?: boolean }) {
       <p className="eyebrow text-accent">03 · La relecture</p>
       {/* Sur un écran court (un téléphone couché), la colonne collée n'a plus la place de tout dire : le titre rétrécit, le texte et la liste s'effacent. */}
       <h2 id={avecId ? "relecture-titre" : undefined} className="mt-3 text-2xl sm:text-3xl md:text-4xl [@media(max-height:560px)]:md:text-2xl">
-        Le plus de STALIKA, c&apos;est vous qui décidez <span className="block text-accent">et avez la main.</span>
+        Le plus de STALIKA, c&apos;est vous qui décidez <span className="block text-accent">et avez la main</span>
       </h2>
       <p className="mt-4 text-sm text-muted-foreground md:text-base [@media(max-height:560px)]:md:hidden">
         Vous recevez un lien et vous éditez votre site à votre guise. De mon côté, je regarde, j&apos;écoute, j&apos;échange avec

@@ -150,16 +150,12 @@
 /* Les couleurs des trois logiciels dans la légende du carrousel, sur le fond
    sombre de la scène : argent pour Carnet, l'or de VTBON (celui de son
    application, #c9a84c), turquoise pour Contrôle (6,8:1, 7,6:1 et 9,4:1 sur le
-   fond), chacune avec la couleur de l'icône posée dessus (de 6,9:1 à 8,6:1).
-   Dans leurs écrans, Carnet et Contrôle ont leur thème complet : `.appli-*`,
-   juste après ; VTBON porte celui de son application (components/demos/vtbon). */
+   fond). Dans leurs écrans, Carnet et Contrôle ont leur thème complet :
+   `.appli-*`, juste après ; VTBON porte celui de son application (components/demos/vtbon). */
 :root {
   --produit-carnet: #a1a1aa;
   --produit-vtbon: #c9a84c;
   --produit-controle: #2dd4bf;
-  --sur-produit-carnet: #18181b;
-  --sur-produit-vtbon: #060610;
-  --sur-produit-controle: #042f2a;
 }
 
 /* Les logiciels des démos, chacun avec son design (demande de J du

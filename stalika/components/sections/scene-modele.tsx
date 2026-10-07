@@ -77,12 +77,9 @@ export function SceneModele() {
           <div className="min-w-0">
             <p className="eyebrow text-accent">01 · Sur mesure</p>
             <h2 id="modele-titre" data-rebond="" className="mt-2.5 font-display text-[1.1875rem] leading-[1.15] sm:text-3xl md:mt-4 md:text-4xl md:leading-[1.1]">
-              Pas un modèle rempli à la chaîne.
+              Pas un modèle rempli à la chaîne
               <span className="mt-1.5 block md:mt-2">
-                Un site dessiné{" "}
-                {/* Le point vit dans chaque mot : la largeur est réservée sur le plus
-                    long, un point posé après resterait loin du mot court. */}
-                <Decode mots={["pour vous.", "pour votre métier.", "pour vos clients."]} de={0.3} a={0.85} className="text-accent" />
+                Un site dessiné <Decode mots={["pour vous", "pour votre métier", "pour vos clients"]} de={0.3} a={0.85} className="text-accent" />
               </span>
             </h2>
             <Arrivee de={0.42}>

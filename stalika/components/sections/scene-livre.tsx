@@ -77,7 +77,7 @@ export function SceneLivre() {
           <div>
             <p className="eyebrow text-encre">04 · Livré</p>
             <h2 id="livre-titre" className="mt-3 text-2xl sm:text-3xl md:text-4xl">
-              Livré propre. Et il <span className="text-encre">vous appartient</span>.
+              Livré propre. Et il <span className="text-encre">vous appartient</span>
             </h2>
             <ul className="mt-6 space-y-4">
               {COCHES.map((texte, i) => (
