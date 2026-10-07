@@ -197,22 +197,14 @@ au client avec un accompagnement pour la mise en ligne, et le nom de domaine tou
 `scene-modele.tsx` pour servir aussi ici (`components/ui/arrivee.tsx`). La scène dure 3,4 s (`duree`), au lieu de
 2,6 s, pour que les arrivées ne se pressent pas.
 
-**Le fond de la section** : un fond en points qui s'efface vers les bords (masque elliptique), extrait collé par
-J le 2026-10-07 (`components/ui/fond-points.tsx`, posé derrière le contenu). Repris d'abord à l'identique ; puis
-passé aux jetons du thème, parce que le garde-fou refuse le blanc pur (`bg-white`) et les teintes hors palette.
-La copie exacte est dans l'historique git (commit « copie exacte de son extrait ») : pour la retrouver, blanc
-pur et gris `#e5e7eb`. Même jour, à la demande de J (« un peu plus visible, et qu'il suive les mouvements du
-téléphone ») : les points sont de l'`encre` du thème à 30 %, de 1,25 px de rayon (au lieu de la bordure, à 1 px),
-et **le motif glisse un peu sous le masque** (jamais plus de 14 px, le motif dépassant d'un pas de chaque côté) :
-- **sur téléphone**, avec l'inclinaison (`deviceorientation`) : les points glissent du côté où l'on penche ; la
-  position de repos suit le téléphone en 4 s environ, donc ce sont les mouvements qui comptent, pas la façon
-  de le tenir ;
-- **sur ordinateur**, avec la souris (10 px au plus) ; **mouvement réduit** : rien ne bouge ;
-- **iPhone et iPad** : Apple ne donne les capteurs qu'après une autorisation demandée par un appui. Plutôt que
-  d'ouvrir sa fenêtre de force à chaque visite, un petit bouton, « Faire bouger le fond », la demande ; il
-  n'apparaît que si aucune mesure n'arrive d'elle-même (Android, ou autorisation déjà donnée dans la session
-  de Safari : pas de bouton). **Jamais essayé sur un vrai téléphone** : testé avec des mesures simulées (Chrome,
-  mesures toutes les 16 ms), pas sur Safari ; à faire par J.
+**Le fond en points : essayé, puis retiré le même jour.** J avait collé un fond en points qui s'efface vers les
+bords (masque elliptique) pour la section 04. Posé d'abord à l'identique, puis aux jetons du thème (le garde-fou
+refuse `bg-white`), puis plus visible et mobile : le motif glissait un peu avec l'inclinaison du téléphone
+(`deviceorientation`, avec un bouton « Faire bouger le fond » sur iPhone et iPad pour l'autorisation d'Apple), ou
+avec la souris. Après un essai sur son téléphone, J l'a retiré : « ça gêne la lecture ». Le composant
+(`components/ui/fond-points.tsx`) est supprimé ; il reste dans l'historique git, commits `4b89553` (copie exacte de
+son extrait), `c7b197d` (aux couleurs du thème) et `906e689` (plus visible, et mobile avec le téléphone). Si l'on
+veut un jour un motif derrière du texte, le garder beaucoup plus léger, ou le réserver aux marges.
 
 ## §1 · La barre de direction
 
