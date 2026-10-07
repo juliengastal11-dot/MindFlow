@@ -585,8 +585,6 @@ html:not(.js) [data-piste] {
 }
 html:not(.js) [data-piste] > * {
   position: static !important;
-  height: auto !important;
-  padding-block: 3rem;
 }
 
 /* La barre d'édition : le segment actif porte le texte sombre de l'accent, l'autre reste clair.
@@ -641,5 +639,59 @@ html:not(.js) [data-piste] > * {
 @media (prefers-reduced-motion: reduce) {
   .rel-phare {
     animation: none !important;
+  }
+}
+
+/* La fenêtre de « La relecture » prend la place qui lui reste dans l'écran
+   (components/sections/relecture-fenetre.tsx). `.rel-place` est un conteneur de requête, nommé,
+   qui prend toute la hauteur laissée libre dans la zone collée ; `.rel-fenetre` en prend la largeur,
+   sans dépasser ce que la hauteur permet (5 rem pour la barre de titre et la légende, et la liste
+   des retouches quand elle est dessous), ni 35 rem
+   (26 pour la page de téléphone, qui flouterait au-delà). La page se compose alors selon la forme
+   de la place : celle d'un ordinateur quand elle est large (36 rem), ou assez large (24 rem) et
+   pas plus haute que large ; celle d'un téléphone sinon. Jusqu'au 2026-10-07 la fenêtre ne suivait
+   que la largeur : sur un écran large mais court, la page de téléphone, étirée, dépassait la zone
+   collée et recouvrait le titre. */
+.rel-place {
+  container: rel-place / size;
+}
+.rel-fenetre {
+  --rel-aspect: 0.696;
+  --rel-max: 26rem;
+  --rel-pied: 6.5rem;
+  container-type: inline-size;
+  width: max(12rem, min(100cqw, var(--rel-max), calc((100cqh - 5rem - var(--rel-pied)) * var(--rel-aspect))));
+}
+/* Sous la fenêtre, sur un écran étroit : les trois retouches. Sur un écran large elles sont dans la colonne
+   du texte ; sur un écran court (moins de 720 px), il n'y a plus la place. Leur hauteur compte dans celle
+   de la fenêtre (`--rel-pied`). */
+.rel-pied {
+  display: block;
+  margin-top: 1.25rem;
+}
+@media (min-width: 768px), (max-height: 720px) {
+  .rel-fenetre {
+    --rel-pied: 0rem;
+  }
+  .rel-pied {
+    display: none;
+  }
+}
+.rel-page-bureau {
+  display: none;
+}
+.rel-page-mobile {
+  display: block;
+}
+@container rel-place (min-width: 36rem) or ((min-width: 24rem) and (min-aspect-ratio: 9/10)) {
+  .rel-fenetre {
+    --rel-aspect: 1.463;
+    --rel-max: 35rem;
+  }
+  .rel-page-bureau {
+    display: block;
+  }
+  .rel-page-mobile {
+    display: none;
   }
 }

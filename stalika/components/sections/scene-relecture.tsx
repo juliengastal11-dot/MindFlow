@@ -20,8 +20,10 @@ import { FenetreRelecture } from "./relecture-fenetre";
    navigateur) ; le film avance avec le défilement, de l'instant où la fenêtre
    se colle au milieu de l'écran jusqu'à celui où elle se décolle. Sur
    ordinateur, le texte reste collé à côté de la fenêtre ; sur téléphone, il
-   défile avant la piste, et la fenêtre seule reste collée. La longueur de la
-   piste et le lissage sont dans `MOUVEMENT.relecture`. Pour revenir à un film
+   défile avant la piste, et la fenêtre seule reste collée. La fenêtre s'ajuste à la
+   place qui lui reste dans l'écran (voir `relecture-fenetre.tsx`) : elle ne recouvre
+   plus le titre sur un écran large mais court. La longueur de la piste et le lissage
+   sont dans `MOUVEMENT.relecture`. Pour revenir à un film
    qui se joue seul à l'arrivée : retirer `defilement` de la scène, et la
    piste (`data-piste`) de la mise en page.
 
@@ -57,10 +59,11 @@ function Texte({ avecId = false }: { avecId?: boolean }) {
   return (
     <div>
       <p className="eyebrow text-accent">03 · La relecture</p>
-      <h2 id={avecId ? "relecture-titre" : undefined} className="mt-3 text-2xl sm:text-3xl md:text-4xl">
+      {/* Sur un écran court (un téléphone couché), la colonne collée n'a plus la place de tout dire : le titre rétrécit, le texte et la liste s'effacent. */}
+      <h2 id={avecId ? "relecture-titre" : undefined} className="mt-3 text-2xl sm:text-3xl md:text-4xl [@media(max-height:560px)]:md:text-2xl">
         Le plus de STALIKA, c&apos;est vous qui décidez <span className="block text-accent">et avez la main.</span>
       </h2>
-      <p className="mt-4 text-sm text-muted-foreground md:text-base">
+      <p className="mt-4 text-sm text-muted-foreground md:text-base [@media(max-height:560px)]:md:hidden">
         Vous recevez un lien et vous éditez votre site à votre guise. De mon côté, je regarde, j&apos;écoute, j&apos;échange avec
         vous et je mets en place rapidement.
       </p>
@@ -82,13 +85,12 @@ export function SceneRelecture() {
           className="grid items-start md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-12 motion-reduce:min-h-0!"
           style={{ minHeight: `${(1 + MOUVEMENT.relecture.ecrans) * 100}svh` }}
         >
-          <div className="sticky top-0 hidden h-svh flex-col justify-center md:flex motion-reduce:static motion-reduce:h-auto motion-reduce:py-12">
+          <div className="sticky top-0 hidden h-svh flex-col justify-center md:flex motion-reduce:static">
             <Texte avecId />
-            <Retouches className="mt-8" />
+            <Retouches className="mt-8 [@media(max-height:560px)]:hidden" />
           </div>
-          <div className="sticky top-0 flex h-svh flex-col justify-center motion-reduce:static motion-reduce:h-auto motion-reduce:pb-12">
-            <FenetreRelecture />
-            <Retouches className="mt-5 md:hidden [@media(max-height:720px)]:hidden" />
+          <div className="sticky top-0 flex h-svh flex-col py-6 motion-reduce:static">
+            <FenetreRelecture pied={<Retouches className="rel-pied" />} />
           </div>
         </div>
       </div>

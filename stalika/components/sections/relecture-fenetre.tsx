@@ -30,7 +30,11 @@ import { cn } from "@/lib/utils";
    mesure en JavaScript). Seul le paragraphe est du vrai texte, en Jost
    comme sur le site, pour qu'on puisse le réécrire lettre à lettre. Deux
    mises en page, comme le site : celle d'un ordinateur (1024 px de large) quand
-   la fenêtre est assez large, celle d'un téléphone (390 px, recadrée) sinon.
+   la place est large, ou assez large et pas plus haute que large ; celle d'un
+   téléphone (390 px, recadrée) sinon. La fenêtre prend la place qui lui reste
+   dans l'écran, hauteur comprise (`.rel-place` et `.rel-fenetre`, app/globals.css) :
+   jamais plus haute que la zone collée, qu'elle recouvrait sur un écran large mais
+   court, comme le panneau de navigateur de J (le 2026-10-07).
 
    Tout ce qui est de l'outil (barre, curseurs, étiquettes, bulles) garde sa
    taille réelle : seul le dessin de la page est mis à l'échelle. Les points
@@ -143,7 +147,7 @@ function Page({ mise }: { mise: Mise }) {
   const { l, h, texte, phares, photo } = mise;
   const cadre = phares.cadre;
   return (
-    <div className={cn("relative", mise.id === "bureau" ? "hidden @xl:block" : "@xl:hidden")} style={{ aspectRatio: `${l} / ${h}` }}>
+    <div className={cn("relative", mise.id === "bureau" ? "rel-page-bureau" : "rel-page-mobile")} style={{ aspectRatio: `${l} / ${h}` }}>
       <div className="@container absolute inset-0 overflow-hidden">
         <div className="absolute inset-0" style={{ ["--u" as string]: `calc(100cqw / ${l})` }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -312,13 +316,15 @@ function Barre() {
             <Check className="size-2.5" strokeWidth={3.5} />
           </span>
         </span>
-        Changement immédiat
+        <span className="@min-[336px]:hidden">Immédiat</span>
+        <span className="hidden @min-[336px]:inline">Changement immédiat</span>
       </span>
     </div>
   );
 }
 
-export function FenetreRelecture() {
+/** `pied` : ce qui se pose sous la fenêtre et sa légende (la liste des retouches, sur un écran étroit). */
+export function FenetreRelecture({ pied }: { pied?: React.ReactNode }) {
   const scene = useScene();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -512,8 +518,9 @@ export function FenetreRelecture() {
       data-phares="attente"
       role="img"
       aria-label="Exemple de relecture sur le site d'AR Transfert, chauffeur VTC à Béziers : le client passe en mode Édition, réécrit un texte, retire une animation et commente une photo ; Julien répond, applique et publie."
-      className="@container relative"
+      className="rel-place relative flex min-h-0 flex-1 items-center justify-center"
     >
+      <div className="rel-fenetre">
       <Card className="relative overflow-hidden">
         <div className="flex items-center gap-1.5 border-b px-3.5 py-2.5" aria-hidden="true">
           <span className="size-2.5 rounded-full bg-muted" />
@@ -545,6 +552,8 @@ export function FenetreRelecture() {
       <p data-legende data-film-cache className="mt-3 text-sm text-muted-foreground">
         C&apos;est comme ça qu&apos;AR Transfert a relu son site.
       </p>
+      {pied}
+      </div>
     </div>
   );
 }

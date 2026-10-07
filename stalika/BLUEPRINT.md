@@ -157,7 +157,14 @@ sur le site d'AR Transfert, en deux temps voulus par J :
 - **La page n'est pas refaite** : c'est une capture du site en ligne (`outils/relecture/`), posée sur un
   dessin à l'échelle de la fenêtre (unités `cqw`, aucune mesure en JavaScript). Seul le paragraphe est du
   vrai texte (Jost, comme sur le site). Deux mises en page, comme le site : ordinateur (1024 px) quand la
-  fenêtre fait au moins 576 px (`@xl`), téléphone (390 px, recadré) sinon. L'outil (barre, curseurs,
+  place est large (36 rem), ou assez large (24 rem) et pas plus haute que large ; téléphone (390 px,
+  recadré) sinon. **La fenêtre prend la place qui lui reste dans l'écran, hauteur comprise** (`.rel-place`,
+  conteneur de requête nommé, et `.rel-fenetre`, dans `app/globals.css`) : jamais plus haute que la zone
+  collée, ni plus large que 35 rem (26 pour la page de téléphone). Retouche du 2026-10-07 (J : « le texte
+  du titre est en dessous de la vidéo, recadre le site pour qu'il prenne un peu moins de place ») : dans le
+  panneau de navigateur de J (614 × 600), la page de téléphone, étirée à 566 px, faisait 850 px de haut et
+  recouvrait le titre. Vérifié de 360 × 640 à 1920 × 1080, téléphone couché compris (la colonne de texte y
+  perd sa suite : titre réduit, paragraphe et liste effacés). L'outil (barre, curseurs,
   étiquettes, bulles) garde sa taille réelle ; les points où va le curseur sont mesurés dans la page au
   moment de construire le film, et remesurés au redimensionnement (`invalidateOnRefresh`).
 - **Le bouton qui tombe** : les éléments de cette scène ne portent plus `data-rebond` (un contenu collé
