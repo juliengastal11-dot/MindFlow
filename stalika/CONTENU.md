@@ -13,7 +13,7 @@ section ne se termine par un point (demande de J, 2026-10-07) ; seul un point du
 ## Commun
 
 - Lien d'évitement : `Aller au contenu`
-- Nav · logo : `Stalika` (monogramme + mot)
+- Logo : `Stalika, Digital & Conseil` (le nom que lit un lecteur d'écran), dans le héros, le menu des autres pages, le pied de page et l'espace privé. Le même logo partout : une lettre au hasard se rebrouille de temps en temps (demande de J, 2026-10-07). Seule la couleur change, selon le fond : lettres lin sur le héros, lettres graphite ailleurs.
 - Nav · bouton : `Contact` → `/contact`
 - Nav · lien : `WhatsApp` → lien wa.me, message pré-écrit : `Bonjour Julien, je viens de votre site Stalika.`
 - Indice de défilement (accueil, sous le héros) : `Faites défiler : la suite se joue sous vos doigts.`

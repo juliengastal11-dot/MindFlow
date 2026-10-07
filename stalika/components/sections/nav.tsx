@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogoAnime } from "@/components/ui/logo-anime";
+import { LogoStalika } from "@/components/ui/logo-stalika";
 import { Button } from "@/components/ui/button";
 import { lienWhatsApp } from "@/lib/site";
 
@@ -15,8 +15,8 @@ export function Nav() {
       </a>
       <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between px-6">
         <Link href="/" className="cursor-pointer rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring">
-          {/* À l'ouverture, le logo se compose lettre à lettre (une fois par visite). */}
-          <LogoAnime className="h-9 text-[2.25rem] md:h-11 md:text-[2.75rem]" />
+          {/* Le logo se compose lettre à lettre la première fois de la visite ; ensuite, une lettre au hasard se rebrouille de temps en temps. */}
+          <LogoStalika entree="une-fois-par-visite" priority className="w-[6.6rem] md:w-32" />
         </Link>
         <nav aria-label="Contact" className="flex items-center gap-4 sm:gap-6">
           <a

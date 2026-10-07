@@ -174,6 +174,26 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-07 : le même logo partout
+
+À la demande de J (« tous les logos Stalika, avec les petites lettres qui bouclent aléatoirement ») : le logo du
+héros (sept lettres qui se composent, puis une lettre au hasard qui se rebrouille, sans fin) sert maintenant tous
+les logos du site. Un seul composant, `LogoBrouille` ; `LogoStalika` (`components/ui/logo-stalika.tsx`) lui donne les
+morceaux de la bonne couleur (`lib/logo.ts`) :
+- le **héros** : lettres lin (`public/hero/logo/`), comme avant ;
+- le **menu des autres pages** (`/contact`, mentions légales, confidentialité, page introuvable), le **pied de page** et
+  l'**espace privé** : lettres graphite (`public/logo/`, 7 lettres et la baseline, découpées dans la planche de
+  l'écran de la plongée avec les mêmes coupes que le héros, donc la même géométrie).
+Le logo de l'écran de l'ordinateur (la plongée) avait déjà le même scintillement. L'image de partage et l'icône de
+l'onglet restent fixes : elles ne peuvent pas bouger.
+
+Réglages de `LogoBrouille` : `entree` (« toujours » : le héros, le pied de page, qui se compose quand on y arrive ;
+« une-fois-par-visite » : le menu, composé à la première page de la visite puis entier d'emblée ; « jamais » : l'espace
+privé, entier d'emblée, seule la boucle joue) ; l'entrée ne démarre que quand le logo est à l'écran ; **la boucle
+s'arrête quand le logo est hors de l'écran**. Disparu : `LogoAnime` (l'ancien logo du menu, composé une fois par
+visite en lettres de police mono, puis remplacé par l'image) et `MOUVEMENT.film.logo`. Mouvement réduit et sans
+JavaScript : le logo entier, immobile.
+
 ## Mise à jour du 2026-10-07 : plus de voiles sombres sur les scènes 01 à 03
 
 À la demande de J (« retire les fonds assombris qui prennent toute la section, regarde s'il y en a d'autres

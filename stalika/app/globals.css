@@ -406,12 +406,6 @@ html.js [data-brouille] [data-baseline] {
   visibility: hidden;
 }
 
-/* Le logo qui se compose (components/ui/logo-anime) : l'image attend que
-   l'effet ait décidé de jouer ou non. Sans JavaScript, elle est là. */
-html.js .logo-anime[data-etat="attente"] img {
-  visibility: hidden;
-}
-
 /* Le curseur de la frappe : un trait qui clignote, période réglée en ligne
    par la primitive depuis lib/mouvement.ts. */
 .frappe-curseur {

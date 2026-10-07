@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogoBrouille } from "@/components/ui/logo-brouille";
+import { LogoStalika } from "@/components/ui/logo-stalika";
 import { EntreeHero } from "@/components/ui/entree-hero";
 import { BoutonChute } from "@/components/ui/bouton-chute";
 import { IleMenu } from "@/components/ui/ile-menu";
@@ -24,18 +24,6 @@ import { IleMenu } from "@/components/ui/ile-menu";
    le bas, dans les jetons du thème. Mouvement réduit : la vidéo disparaît
    (règle de `VideoAdaptative`), le plan reste, le nom s'affiche entier.
 --------------------------------------------------------------------------- */
-
-/* Les sept lettres du logo validé, découpées au milieu des espaces dans le
-   fichier d'origine (1 743 px de large pour le mot, 217 px de haut). */
-const LETTRES = [
-  { src: "/hero/logo/lettre-1.png", largeur: 234 },
-  { src: "/hero/logo/lettre-2.png", largeur: 267 },
-  { src: "/hero/logo/lettre-3.png", largeur: 309 },
-  { src: "/hero/logo/lettre-4.png", largeur: 246 },
-  { src: "/hero/logo/lettre-5.png", largeur: 133 },
-  { src: "/hero/logo/lettre-6.png", largeur: 285 },
-  { src: "/hero/logo/lettre-7.png", largeur: 269 },
-] as const;
 
 const LIENS = [
   { href: "#sur-mesure", libelle: "Sur mesure" },
@@ -87,13 +75,8 @@ export function Hero() {
         {/* Le bas du cadre : le nom géant à gauche, le texte et le bouton à droite. */}
         <div className="mt-auto flex flex-col gap-6 px-5 pb-6 sm:px-8 sm:pb-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
           <h1 id="hero-titre" className="w-[86vw] max-w-[62rem] sm:w-[72vw] lg:w-[54vw]">
-            <LogoBrouille
-              nom="STALIKA, Digital & Conseil"
-              lettres={LETTRES}
-              hauteur={217}
-              baseline={{ src: "/hero/logo/baseline.png", largeur: 1320, hauteur: 65, gauche: 206, ecart: 71 }}
-              delai={0.3}
-            />
+            {/* Les sept lettres du logo validé et sa baseline : lib/logo.ts. */}
+            <LogoStalika fond="nuit" nom="STALIKA, Digital & Conseil" delai={0.3} priority />
             <span className="sr-only"> · sites, logiciels et applications sur mesure pour restaurants, coachs, artisans et commerces</span>
           </h1>
 
