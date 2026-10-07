@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
+import { LogoStalika } from "@/components/ui/logo-stalika";
 import { deconnexion } from "@/lib/actions/admin-demandes";
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           aria-label="Espace privé"
           className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-2 px-6 py-3"
         >
-          <Image src="/logo-nuit.png" alt="Stalika" width={880} height={289} className="h-7 w-auto" priority />
+          <LogoStalika entree="jamais" priority className="w-[5.1rem]" />
           <Link href="/admin" className="text-sm font-medium hover:underline cursor-pointer">
             Demandes
           </Link>

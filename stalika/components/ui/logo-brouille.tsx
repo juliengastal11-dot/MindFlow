@@ -17,6 +17,19 @@ import { MOUVEMENT } from "@/lib/mouvement";
    le nom est complet. Ensuite, sans fin, une lettre au hasard se rebrouille
    un instant et retombe sur le logo, une seule à la fois.
 
+   Depuis le 2026-10-07 (J : « tous les logos Stalika, avec les petites lettres
+   qui bouclent aléatoirement »), ce composant sert tous les logos du site :
+   `LogoStalika` (components/ui/logo-stalika.tsx) lui donne les morceaux de la
+   bonne couleur. Trois choses en plus, pour les logos qui ne sont pas en haut
+   d'écran :
+   - l'entrée ne démarre que quand le logo est à l'écran (un logo de pied de
+     page se compose quand on y arrive) ;
+   - la boucle des lettres s'arrête quand le logo est hors de l'écran ;
+   - `entree` : « toujours » (le héros, le pied de page), « une-fois-par-visite »
+     (le menu des autres pages : une fois composé, le logo est là d'emblée
+     jusqu'à la fin de la visite), ou « jamais » (l'espace privé : le logo est
+     là d'emblée, seule la boucle joue).
+
    Tailles : tout est proportionnel à la largeur du composant (unités `cqw`
    du conteneur), le logo garde donc ses proportions à toutes les tailles.
 
@@ -24,6 +37,9 @@ import { MOUVEMENT } from "@/lib/mouvement";
    lecteurs d'écran lisent le `nom` une fois ; tout le reste est décoratif.
    Durées et symboles dans `MOUVEMENT.film.brouille`.
 --------------------------------------------------------------------------- */
+
+/** Clé de sessionStorage : le logo a déjà joué son entrée dans cette visite. */
+const CLE_SESSION = "stalika-logo-joue";
 
 export type MorceauLogo = { src: string; largeur: number };
 
@@ -38,10 +54,14 @@ export type LogoBrouilleProps = {
   baseline?: { src: string; largeur: number; hauteur: number; gauche: number; ecart: number };
   /** Respiration avant la première lettre, en secondes. */
   delai?: number;
+  /** L'entrée, lettre par lettre : à chaque fois (par défaut), une fois par visite, ou jamais. */
+  entree?: "toujours" | "une-fois-par-visite" | "jamais";
+  /** Précharge les images : pour un logo en haut de page. */
+  priority?: boolean;
   className?: string;
 };
 
-export function LogoBrouille({ nom, lettres, hauteur, baseline, delai = 0, className }: LogoBrouilleProps) {
+export function LogoBrouille({ nom, lettres, hauteur, baseline, delai = 0, entree = "toujours", priority = false, className }: LogoBrouilleProps) {
   const ref = useRef<HTMLDivElement>(null);
   const total = lettres.reduce((s, l) => s + l.largeur, 0);
   // Taille des symboles : un peu plus que la hauteur des lettres, en % de la largeur totale.
@@ -60,6 +80,16 @@ export function LogoBrouille({ nom, lettres, hauteur, baseline, delai = 0, class
       gsap.set(boites, { autoAlpha: 1 });
       if (base) gsap.set(base, { autoAlpha: 1 });
       return;
+    }
+
+    // Une visite qui a déjà vu le logo se composer le retrouve entier d'emblée.
+    let jouer = entree !== "jamais";
+    if (entree === "une-fois-par-visite") {
+      try {
+        if (window.sessionStorage.getItem(CLE_SESSION) === "1") jouer = false;
+      } catch {
+        /* stockage indisponible : l'entrée rejouera, ce n'est pas grave */
+      }
     }
 
     const { glyphes, parLettre, changements, decalage, scintille } = MOUVEMENT.film.brouille;
@@ -95,23 +125,39 @@ export function LogoBrouille({ nom, lettres, hauteur, baseline, delai = 0, class
       });
     };
 
+    let enVue = false;
+    let parti = false;
+    let veille: IntersectionObserver | undefined;
+    let boucler = () => {};
+
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ delay: delai });
-      boites.forEach((b, i) => {
-        gsap.set(b, { autoAlpha: 0 });
-        tl.set(b, { autoAlpha: 1 }, i * decalage);
-        tl.add(brouiller(b, parLettre, changements), i * decalage);
-      });
-      if (base) {
-        gsap.set(base, { autoAlpha: 0, y: 8 });
-        tl.to(base, { autoAlpha: 1, y: 0, duration: 0.8, ease: MOUVEMENT.ease }, "+=0.1");
+      const tl = gsap.timeline({ paused: true, delay: delai });
+      if (jouer) {
+        boites.forEach((b, i) => {
+          gsap.set(b, { autoAlpha: 0 });
+          tl.set(b, { autoAlpha: 1 }, i * decalage);
+          tl.add(brouiller(b, parLettre, changements), i * decalage);
+        });
+        if (base) {
+          gsap.set(base, { autoAlpha: 0, y: 8 });
+          tl.to(base, { autoAlpha: 1, y: 0, duration: 0.8, ease: MOUVEMENT.ease }, "+=0.1");
+        }
+      } else {
+        gsap.set(boites, { autoAlpha: 1 });
+        if (base) gsap.set(base, { autoAlpha: 1 });
       }
 
-      // `ctx.add` rattache au contexte ce qui naît plus tard, dans un rappel :
-      // sans lui, le scintillement survivrait au démontage du composant.
+      // La boucle : une lettre au hasard se rebrouille, puis une pause avant la
+      // suivante ; elle attend quand le logo est hors de l'écran. `ctx.add`
+      // rattache au contexte ce qui naît plus tard, dans un rappel : sans lui, le
+      // scintillement survivrait au démontage du composant.
       let precedente = -1;
       const suivante = () =>
         ctx.add(() => {
+          if (!enVue) {
+            gsap.delayedCall(0.6, suivante);
+            return;
+          }
           let i = Math.floor(Math.random() * boites.length);
           if (i === precedente) i = (i + 1) % boites.length;
           precedente = i;
@@ -119,13 +165,34 @@ export function LogoBrouille({ nom, lettres, hauteur, baseline, delai = 0, class
           const pause = scintille.pauseMin + Math.random() * (scintille.pauseMax - scintille.pauseMin);
           gsap.delayedCall(scintille.duree + pause, suivante);
         });
-      tl.eventCallback("onComplete", () => {
-        ctx.add(() => gsap.delayedCall(scintille.pauseMin, suivante));
-      });
-    }, el);
+      boucler = () => ctx.add(() => gsap.delayedCall(scintille.pauseMin, suivante));
+      if (jouer) tl.eventCallback("onComplete", boucler);
 
-    return () => ctx.revert();
-  }, [delai]);
+      // Le départ : dès que le logo est à l'écran.
+      veille = new IntersectionObserver(([e]) => {
+        enVue = e.isIntersecting;
+        if (!enVue || parti) return;
+        parti = true;
+        if (!jouer) return;
+        if (entree === "une-fois-par-visite") {
+          try {
+            window.sessionStorage.setItem(CLE_SESSION, "1");
+          } catch {
+            /* stockage indisponible */
+          }
+        }
+        tl.play();
+      });
+      veille.observe(el);
+    }, el);
+    // Sans entrée, la boucle part tout de suite (le contexte existe maintenant).
+    if (!jouer) boucler();
+
+    return () => {
+      veille?.disconnect();
+      ctx.revert();
+    };
+  }, [delai, entree]);
 
   return (
     <div ref={ref} data-brouille className={cn("@container", className)}>
@@ -144,7 +211,7 @@ export function LogoBrouille({ nom, lettres, hauteur, baseline, delai = 0, class
               alt=""
               width={l.largeur}
               height={hauteur}
-              priority
+              priority={priority}
               sizes="(min-width: 1024px) 8vw, 13vw"
               className="block h-auto w-full"
             />
@@ -171,7 +238,7 @@ export function LogoBrouille({ nom, lettres, hauteur, baseline, delai = 0, class
             alt=""
             width={baseline.largeur}
             height={baseline.hauteur}
-            priority
+            priority={priority}
             sizes="(min-width: 1024px) 40vw, 70vw"
             className="block h-auto w-full"
           />

@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { LogoStalika } from "@/components/ui/logo-stalika";
 import { LiensLegaux } from "@/components/sections/liens-legaux";
 import { BoutonCookies } from "@/components/sections/consentement";
 import { SITE, lienWhatsApp } from "@/lib/site";
@@ -12,7 +12,7 @@ export function PiedDePage() {
     >
       <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 md:grid-cols-3">
         <div>
-          <Image src="/logo-nuit.png" alt="Stalika" width={880} height={289} className="h-8 w-auto" />
+          <LogoStalika className="w-[5.8rem]" />
           <p className="mt-4 font-medium">Stalika · Julien Gastal</p>
           <p className="mt-2 max-w-xs text-sm text-muted-foreground">
             Sites, logiciels et applications sur mesure pour ceux qui font tourner leur boutique. Toute la France, à distance.

@@ -15,8 +15,9 @@ const sans = Inter({
   variable: "--police-sans",
 });
 
-/* JetBrains Mono, la police mono de la palette : pour le lettrage brouillé
-   du logo à l'ouverture, où chaque caractère doit garder la même largeur. */
+/* JetBrains Mono, la police mono de la palette : pour les symboles qui brouillent
+   les lettres du logo (components/ui/logo-brouille), où chaque caractère doit
+   garder la même largeur. */
 const mono = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
