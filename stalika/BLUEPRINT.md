@@ -190,10 +190,18 @@ qui vaut pour les deux :
   « à partir de » plus tard.
 - **Dans les deux cas** : le nom de domaine est au nom du client ; chaque projet se règle avec lui, un par
   un, et c'est écrit dans le devis.
-Faits donnés par J le 2026-10-07. La FAQ (« Et l'hébergement, le nom de domaine ? ») n'a pas été retouchée :
-elle ne parle pas de l'abonnement. `Arrivee` est sorti de `scene-modele.tsx` pour servir aussi ici
-(`components/ui/arrivee.tsx`). La scène dure 3,4 s (`duree`), au lieu de 2,6 s, pour que les arrivées ne
-se pressent pas.
+Faits donnés par J le 2026-10-07. **La FAQ** (« Et l'hébergement, le nom de domaine ? ») dit la même chose,
+le même jour, à la demande de J : l'abonnement mensuel pour l'hébergement et la maintenance, ou la main laissée
+au client avec un accompagnement pour la mise en ligne, et le nom de domaine toujours à son nom. La question
+« Combien ça coûte, vraiment ? » ne parle pas de l'abonnement : à voir avec J. `Arrivee` est sorti de
+`scene-modele.tsx` pour servir aussi ici (`components/ui/arrivee.tsx`). La scène dure 3,4 s (`duree`), au lieu de
+2,6 s, pour que les arrivées ne se pressent pas.
+
+**Le fond de la section** : un fond en points qui s'efface vers les bords (masque elliptique), extrait collé par
+J le 2026-10-07 (`components/ui/fond-points.tsx`, posé derrière le contenu). Repris d'abord à l'identique ; puis
+passé aux jetons du thème (fond `background`, points `border`), parce que le garde-fou refuse le blanc pur
+(`bg-white`) et les teintes hors palette. La copie exacte est dans l'historique git (commit « copie exacte de son
+extrait ») : pour la retrouver, blanc pur et gris `#e5e7eb`.
 
 ## §1 · La barre de direction
 
