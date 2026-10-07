@@ -24,7 +24,7 @@ const QUESTIONS = [
   },
   {
     q: "Et l'hébergement, le nom de domaine ?",
-    r: "Je peux m'en occuper, ou vous laisser la main. On décide ensemble, et c'est écrit dans le devis.",
+    r: "Je peux m'en occuper, avec un petit abonnement mensuel pour l'hébergement et la maintenance, ou vous laisser la main : je vous accompagne alors pour la mise en ligne. Le nom de domaine est toujours à votre nom. On décide ensemble, et c'est écrit dans le devis.",
   },
   {
     q: "Sous combien de temps ?",

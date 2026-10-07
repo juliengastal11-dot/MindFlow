@@ -148,7 +148,7 @@ Refaite le 2026-10-07 (J) : la scène montre le client qui a la main, sur le sit
 - Q3 (ajoutée le 2026-10-02) : `Faites-vous aussi des logiciels et des applications ?` · R3 : `Oui. Au-delà du site, je crée des logiciels et des applications personnalisés pour votre activité, comme VTBON, l'application des chauffeurs VTC. Dites-moi ce que vous voulez simplifier ou automatiser, et je reviens vers vous avec une première idée.`
 - Q4 : `Je pourrai modifier mon site moi-même ?` · R4 : `Vous relisez et vous corrigez directement sur la page, avec le lien de relecture. J'applique et je publie : vous n'avez rien à casser. Plus tard, pour un changement, un message suffit.`
 - Q5 : `Je serai propriétaire de mon site ?` · R5 : `Oui. Le code, les textes, les images que vous m'avez confiées : tout est à vous. Vous pouvez partir avec.`
-- Q6 : `Et l'hébergement, le nom de domaine ?` · R6 : `Je peux m'en occuper, ou vous laisser la main. On décide ensemble, et c'est écrit dans le devis.`
+- Q6 : `Et l'hébergement, le nom de domaine ?` · R6 : `Je peux m'en occuper, avec un petit abonnement mensuel pour l'hébergement et la maintenance, ou vous laisser la main : je vous accompagne alors pour la mise en ligne. Le nom de domaine est toujours à votre nom. On décide ensemble, et c'est écrit dans le devis.` (l'abonnement et l'accompagnement ajoutés le 2026-10-07, à la demande de J, pour dire la même chose que la section « Livré » ; avant : `Je peux m'en occuper, ou vous laisser la main. On décide ensemble, et c'est écrit dans le devis.`)
 - Q7 : `Sous combien de temps ?` · R7 : `Une première ébauche sous 72 heures. Ensuite, le rythme dépend de vos retours : plus ils arrivent vite, plus le site sort vite.`
 
 ### On en parle ?
