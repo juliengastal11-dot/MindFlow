@@ -3,6 +3,7 @@ import { LogoStalika } from "@/components/ui/logo-stalika";
 import { EntreeHero } from "@/components/ui/entree-hero";
 import { BoutonChute } from "@/components/ui/bouton-chute";
 import { IleMenu } from "@/components/ui/ile-menu";
+import { MOUVEMENT } from "@/lib/mouvement";
 
 /* ---------------------------------------------------------------------------
    Le hero de l'accueil : un grand cadre arrondi, une vidéo plein cadre, et
@@ -10,8 +11,9 @@ import { IleMenu } from "@/components/ui/ile-menu";
 
    Mise en page reprise d'un hero repéré par J sur 21st (la forme seulement :
    cadre arrondi sur fond sombre, menu en onglet accroché au bord haut, nom
-   géant en bas à gauche, texte court et bouton en bas à droite). Rien
-   de son code, de son image ni de ses textes : la vidéo est la nôtre
+   géant en bas à gauche, texte court en bas à droite). Le bouton, lui, est
+   au milieu de la page, sur sa propre rangée sous les deux (J, 2026-10-09).
+   Rien de son code, de son image ni de ses textes : la vidéo est la nôtre
    (image Flux Pro Ultra, animée par Kling 3.0, générées le 2026-09-30),
    montée en aller-retour adouci : le zoom avance 10 s, ralentit jusqu'à
    s'arrêter, puis recule 10 s ; aucune reprise au début, donc aucun fondu.
@@ -48,7 +50,7 @@ export function Hero() {
       />
       <div className="relative flex h-svh min-h-[34rem] flex-col p-2 sm:p-3">
         {/* Le menu, en île dynamique : une capsule détachée du bord haut (demande de J, 2026-10-02). */}
-        <IleMenu aria-label="Principale" className="mx-auto mt-1.5 flex max-w-full items-center gap-0.5 rounded-full bg-background px-2 py-1.5 sm:mt-2 sm:gap-2 sm:px-5 sm:py-2">
+        <IleMenu aria-label="Principale" className="mx-auto mt-1.5 flex max-w-full items-center gap-0.5 rounded-full px-2 py-1.5 sm:mt-2 sm:gap-2 sm:px-5 sm:py-2">
           <a
             href="#sur-mesure"
             className="sr-only focus:not-sr-only focus:rounded-md focus:px-2 focus:text-sm"
@@ -72,28 +74,34 @@ export function Hero() {
           </Link>
         </IleMenu>
 
-        {/* Le bas du cadre : le nom géant à gauche, le texte et le bouton à droite. */}
-        <div className="mt-auto flex flex-col gap-6 px-5 pb-6 sm:px-8 sm:pb-8 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
-          <h1 id="hero-titre" className="w-[86vw] max-w-[62rem] sm:w-[72vw] lg:w-[54vw]">
-            {/* Les sept lettres du logo validé et sa baseline : lib/logo.ts. */}
-            <LogoStalika fond="nuit" nom="STALIKA, Digital & Conseil" delai={0.3} priority />
-            <span className="sr-only"> · sites, logiciels et applications sur mesure pour restaurants, coachs, artisans et commerces</span>
-          </h1>
+        {/* Le bas du cadre : le nom géant à gauche et le texte à droite, puis le bouton, au milieu de la page. */}
+        <div className="mt-auto flex flex-col gap-7 px-5 pb-6 sm:px-8 sm:pb-8 lg:gap-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
+            <h1 id="hero-titre" className="w-[86vw] max-w-[62rem] sm:w-[72vw] lg:w-[54vw]">
+              {/* Les sept lettres du logo validé et sa baseline : lib/logo.ts. */}
+              <LogoStalika fond="nuit" nom="STALIKA, Digital & Conseil" delai={0.3} priority />
+              <span className="sr-only"> · sites, logiciels et applications sur mesure pour restaurants, coachs, artisans et commerces</span>
+            </h1>
 
-          <EntreeHero delai={1.2} className="max-w-md pb-2 lg:pb-5">
-            {/* Les lignes de J (overlay, 2026-10-02), telles qu'il les a écrites. Le même jour il a
-                ajouté « de logiciels personnalisés » à la ligne de l'audit et l'a placée avant
-                « Tout type de profession… en 72h » : les deux phrases de sa première ligne
-                forment donc deux paragraphes, la ligne de l'audit entre eux. */}
-            <p data-rebond="" className="text-sm leading-relaxed text-foreground/85 sm:text-base">
-              Votre site sur mesure, dessiné et pensé pour vous, en accord avec vos besoins.
-            </p>
-            <p className="mt-3 text-sm leading-relaxed text-foreground/85 sm:text-base">
-              Audit de besoin IA en entreprise, création de logiciels personnalisés et accompagnement
-            </p>
-            <p className="mt-3 text-sm leading-relaxed text-foreground/85 sm:text-base">Tout type de profession libérale ou entreprise, première maquette en 72h, à partir de 300&nbsp;€</p>
-            {/* Le bouton : un Cyber Button (21st) qui se décroche et tombe jusqu'à l'ordinateur au fil des clics. */}
-            <BoutonChute href="/contact" className="mt-7">
+            <EntreeHero delai={1.2} className="max-w-md lg:pb-5">
+              {/* Les lignes de J (overlay, 2026-10-02), telles qu'il les a écrites. Le même jour il a
+                  ajouté « de logiciels personnalisés » à la ligne de l'audit et l'a placée avant
+                  « Tout type de profession… en 72h » : les deux phrases de sa première ligne
+                  forment donc deux paragraphes, la ligne de l'audit entre eux. */}
+              <p data-rebond="" className="text-sm leading-relaxed text-foreground/85 sm:text-base">
+                Votre site sur mesure, dessiné et pensé pour vous, en accord avec vos besoins.
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-foreground/85 sm:text-base">
+                Audit de besoin IA en entreprise, création de logiciels personnalisés et accompagnement
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-foreground/85 sm:text-base">Tout type de profession libérale ou entreprise, première maquette en 72h, à partir de 300&nbsp;€</p>
+            </EntreeHero>
+          </div>
+
+          {/* Le bouton : un Cyber Button (21st) qui se décroche et tombe jusqu'à l'ordinateur au fil des clics.
+              Au milieu de la page (J, 2026-10-09) ; il entre après les trois lignes, comme avant. */}
+          <EntreeHero delai={1.2 + 3 * MOUVEMENT.hero.decalage} className="pb-2">
+            <BoutonChute href="/contact" className="mx-auto">
               Parlons projet
             </BoutonChute>
           </EntreeHero>

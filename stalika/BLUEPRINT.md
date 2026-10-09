@@ -174,6 +174,26 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-09 (suite) : l'île en verre, le bandeau centré, le bouton au milieu
+
+Trois retouches de J, le même jour que le bandeau de cookies :
+- **L'île du menu prend le verre du bandeau** (« ajoute le même effet à la dynamique island »), dans
+  `components/ui/ile-menu.tsx`. Fond à 75 % et flou 24 px là où le navigateur sait flouter (95 % sinon, plein avec
+  « réduire la transparence »), bord un peu plus clair (15 %), lumière qui tombe du haut, arête haute éclairée (un trait
+  camel permanent, en plus du filet qui court sur le contour à l'arrivée). Le film d'arrivée est inchangé. Mesuré :
+  derrière la capsule, la vidéo ne dépasse pas rgb(88, 76, 64) (95e centile, sur toute sa boucle) ; les liens muets
+  gardent **5,5:1** (6,3:1 sur l'ancien fond plein), au-dessus du seuil de 4,5:1. Aucun parent de la capsule ne forme de
+  « racine de fond » (filtre, opacité, masque) : elle ne verrait plus le ciel. Le fond n'est plus dans `hero.tsx`.
+- **Le bandeau de cookies est centré** : la pastille au-dessus, puis l'étiquette, le texte (lignes équilibrées,
+  `text-balance`), les deux pilules (même largeur, 7 rem) et le lien, tous sur l'axe du bandeau (mesuré à 0,01 px près,
+  de 320 à 1440 px de large). Il est donc plus haut : 257 px sur téléphone, 265 px sur ordinateur.
+- **Le bouton « Parlons projet » est au milieu de la page** (`components/sections/hero.tsx`) : il quitte le bloc de texte
+  et passe sur sa propre rangée, tout en bas du héros, sous le nom et le texte. Sur ordinateur, le milieu de la page est
+  sous le nom : il ne pouvait pas rester sur la même rangée. Il entre au même moment qu'avant (après les trois lignes).
+  Centré à 0 px près de 320 à 1440 px, sans rien recouvrir. Son film (il se décroche, saute au menu, tombe) est inchangé :
+  il part de la place du vrai bouton, et le clou est au menu, jamais au bouton ; la chute traverse toujours la page
+  jusqu'à l'ordinateur (vérifié sur ordinateur et sur téléphone).
+
 ## Mise à jour du 2026-10-09 : le bandeau de cookies en verre sombre
 
 À la demande de J (« un peu plus sexy »), `components/sections/consentement.tsx` change d'allure ; **le texte, les deux
@@ -181,10 +201,11 @@ réponses, le cookie de choix et le chargement conditionnel de Google Analytics 
 - **Le verre** : la palette de nuit (`nuit`) posée sur le seul bandeau, comme l'île du menu : sombre sur une page claire
   comme sur une scène de nuit. Fond à 85 % et flou 24 px (`backdrop-blur-xl`) là où le navigateur sait flouter, fond à
   95 % sinon, et fond plein avec « réduire la transparence ». Bord un peu plus clair que le fond, ombre en couches, un
-  filet de lumière camel en haut. Un seul élément flouté. Pastille camel avec l'icône cookie, étiquette « Cookies »,
-  texte, deux pilules, le lien. Téléphone : carte flottante à 12 px des bords (au lieu d'un bandeau collé en bas), qui
+  filet de lumière camel en haut. Deux éléments floutés au plus à l'écran, petits tous les deux : ce bandeau et l'île du
+  menu, qui porte le même verre (voir plus haut). Pastille camel avec l'icône cookie, étiquette « Cookies », texte, deux
+  pilules, le lien, le tout centré. Téléphone : carte flottante à 12 px des bords (au lieu d'un bandeau collé en bas), qui
   respecte la zone sûre de l'iPhone.
-- **Même poids pour les deux réponses** : « D'accord » et « Non merci » ont la même recette (taille, forme, contraste).
+- **Même poids pour les deux réponses** : « D'accord » et « Non merci » ont la même recette (taille, forme, contraste, largeur).
   Refuser doit être aussi simple qu'accepter (H6). Seuls l'icône et le filet du haut sont colorés.
 - **Le mouvement** (GSAP) : la première fois, il attend que le héros ait joué (1,4 s), monte en place (0,95 s), ses
   éléments se posent l'un après l'autre, l'icône tourne en arrivant et un reflet traverse le verre une fois. Rouvert par le

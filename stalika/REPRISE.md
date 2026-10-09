@@ -52,6 +52,7 @@
 - Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion.
 - Mode « animations réduites » non revérifié après les derniers changements.
 - Plus de voiles sombres sur les scènes 01 à 03 (2026-10-07, demande de J) : le texte tient par une ombre douce (`sur-ciel`). À regarder sur téléphone au crépuscule (début de la 01) et à l'aube (fin de la 03), voir `BLUEPRINT.md`.
+- Le 2026-10-09, à regarder sur téléphone : l'île du menu en verre (même verre que le bandeau de cookies), le bandeau de cookies centré (donc plus haut : 257 px) et le bouton « Parlons projet » au milieu de la page, sur sa propre rangée (voir `BLUEPRINT.md`). Le verre n'a été vu que dans Chrome : à regarder sur Safari (iPhone) aussi.
 - Rechargement à chaud et films des scènes (développement seulement, constaté le 2026-10-07) : React peut remplacer les
   éléments d'une scène sans relancer les effets des primitives qui les animent ; la scène reste en place, le défilement la
   suit, et plus rien ne bouge. `Scene` expose `rebatir()` (voir son en-tête) : la fenêtre de « La relecture »
