@@ -174,6 +174,25 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-09 : le bandeau de cookies en verre sombre
+
+À la demande de J (« un peu plus sexy »), `components/sections/consentement.tsx` change d'allure ; **le texte, les deux
+réponses, le cookie de choix et le chargement conditionnel de Google Analytics sont ceux d'avant**.
+- **Le verre** : la palette de nuit (`nuit`) posée sur le seul bandeau, comme l'île du menu : sombre sur une page claire
+  comme sur une scène de nuit. Fond à 85 % et flou 24 px (`backdrop-blur-xl`) là où le navigateur sait flouter, fond à
+  95 % sinon, et fond plein avec « réduire la transparence ». Bord un peu plus clair que le fond, ombre en couches, un
+  filet de lumière camel en haut. Un seul élément flouté. Pastille camel avec l'icône cookie, étiquette « Cookies »,
+  texte, deux pilules, le lien. Téléphone : carte flottante à 12 px des bords (au lieu d'un bandeau collé en bas), qui
+  respecte la zone sûre de l'iPhone.
+- **Même poids pour les deux réponses** : « D'accord » et « Non merci » ont la même recette (taille, forme, contraste).
+  Refuser doit être aussi simple qu'accepter (H6). Seuls l'icône et le filet du haut sont colorés.
+- **Le mouvement** (GSAP) : la première fois, il attend que le héros ait joué (1,4 s), monte en place (0,95 s), ses
+  éléments se posent l'un après l'autre, l'icône tourne en arrivant et un reflet traverse le verre une fois. Rouvert par le
+  lien « Cookies » du pied de page, il arrive tout de suite. À la réponse, il redescend (0,4 s) avant de disparaître ; un
+  second clic pendant ce temps est ignoré. Mouvement réduit : posé tout de suite, immobile, retiré sans sortie.
+- Idée : la forme des bandeaux flottants de 21st (pastille, texte court, pilules) et la recette du verre de la fiche
+  « glassmorphism » de ui-skills (flou, bord éclairé, ombre en couches, replis).
+
 ## Mise à jour du 2026-10-07 : le même logo partout
 
 À la demande de J (« tous les logos Stalika, avec les petites lettres qui bouclent aléatoirement ») : le logo du

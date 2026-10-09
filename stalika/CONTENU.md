@@ -20,6 +20,7 @@ section ne se termine par un point (demande de J, 2026-10-07) ; seul un point du
 
 ## Bandeau de consentement (statistiques)
 
+- Étiquette au-dessus du texte : `Cookies` (ajoutée le 2026-10-09, avec le verre sombre ; le nom accessible du bandeau reste `Statistiques de visite`)
 - Texte : `Des statistiques de visite, avec votre accord. Elles m'aident à savoir ce qui vous a été utile. Rien n'est déposé tant que vous n'avez pas répondu.`
 - Bouton 1 : `D'accord`
 - Bouton 2 (même poids) : `Non merci`
