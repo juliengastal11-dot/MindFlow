@@ -20,7 +20,8 @@ import { cn } from "@/lib/utils";
    ne pose rien non plus dans ce cas.
 --------------------------------------------------------------------------- */
 
-export type SourcesVideo = { webm?: string; mp4: string };
+/** `hevc` : un MP4 en HEVC (étiquette hvc1), décodé par la puce de l'iPhone ; `webm` : VP9 ; `mp4` : H.264, le repli. */
+export type SourcesVideo = { hevc?: string; webm?: string; mp4: string };
 
 export type VideoAdaptativeProps = {
   bureau: SourcesVideo;
@@ -41,8 +42,14 @@ export function VideoAdaptative({ bureau, mobile, seuil = 768, className }: Vide
     const requete = window.matchMedia(`(max-width: ${seuil - 1}px)`);
     const poser = () => {
       const s = requete.matches && mobile ? mobile : bureau;
-      // WebM d'abord si le navigateur le lit (moitié moins lourd), sinon MP4.
-      const src = s.webm && video.canPlayType('video/webm; codecs="vp9"') ? s.webm : s.mp4;
+      // HEVC d'abord si le navigateur le lit (l'iPhone : décodé par la puce, plus léger à qualité égale), puis WebM
+      // (VP9, moitié moins lourd que le H.264), sinon MP4.
+      const src =
+        s.hevc && video.canPlayType('video/mp4; codecs="hvc1.1.6.L120.B0"')
+          ? s.hevc
+          : s.webm && video.canPlayType('video/webm; codecs="vp9"')
+            ? s.webm
+            : s.mp4;
       if (video.getAttribute("src") === src) return;
       // iOS ne lance une vidéo seule que si elle est muette : on le redit ici,
       // React ne pose pas toujours l'attribut `muted` dans le HTML serveur.

@@ -34,6 +34,16 @@ import { gsap, mouvementReduit } from "@/lib/gsap";
    le 2026-10-07).
    Mouvement réduit : la capsule est là, entière, d'emblée, sans les deux
    calques de lumière (ils restent invisibles).
+
+   Le 2026-10-09 (J : « ajoute le même effet à la dynamique island »), la capsule
+   prend le verre du bandeau de cookies (components/sections/consentement.tsx) :
+   un fond translucide et un flou de 24 px là où le navigateur sait flouter, un
+   fond presque plein sinon (et avec « réduire la transparence »), un bord un peu
+   plus clair que le fond, la lumière qui tombe du haut, un trait de lumière camel
+   sur l'arête haute. Le flou est posé sur la capsule seule, et aucun de ses
+   parents ne doit former une « racine de fond » (filtre, opacité, masque) : elle
+   ne verrait plus le ciel derrière elle. Les calques de lumière portent `data-ile`
+   pour que le film ne les prenne pas pour des liens.
 --------------------------------------------------------------------------- */
 
 /** Ce que le film pose sur la capsule, et retire à la fin. */
@@ -98,12 +108,18 @@ export function IleMenu({ children, className, ...props }: React.ComponentProps<
     <nav
       ref={ref}
       className={cn(
-        "relative ring-1 ring-foreground/10 shadow-[0_8px_24px_-8px_color-mix(in_oklab,var(--color-background)_90%,transparent)] transition-transform duration-200 active:scale-[0.97]",
+        "relative bg-background/95 bg-linear-to-b from-foreground/[0.07] via-transparent to-transparent ring-1 ring-foreground/15 shadow-[0_8px_24px_-8px_color-mix(in_oklab,var(--color-background)_90%,transparent),inset_0_1px_0_color-mix(in_oklab,var(--color-foreground)_18%,transparent)] supports-[backdrop-filter]:bg-background/75 supports-[backdrop-filter]:backdrop-blur-xl supports-[backdrop-filter]:backdrop-saturate-150 [@media(prefers-reduced-transparency:reduce)]:bg-background! [@media(prefers-reduced-transparency:reduce)]:backdrop-blur-none! transition-transform duration-200 active:scale-[0.97]",
         className,
       )}
       {...props}
     >
       {children}
+      {/* L'arête haute, éclairée : un trait de lumière camel, qui reste. */}
+      <span
+        aria-hidden="true"
+        data-ile="arete"
+        className="pointer-events-none absolute inset-x-8 top-0 h-px bg-linear-to-r from-transparent via-accent/70 to-transparent"
+      />
       {/* Le filet de lumière : un trait doré qui court sur le contour (un anneau d'un pixel, découpé
           par un masque), éteint tant que le film ne l'allume pas. */}
       <span

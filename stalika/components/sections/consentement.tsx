@@ -50,14 +50,19 @@ export function BoutonCookies() {
    - Le verre : la palette de nuit (`nuit`) posée sur le seul bandeau, comme
      l'île du menu, donc sombre sur une page claire comme sur une scène de
      nuit ; flou et fond translucide là où le navigateur sait flouter, un
-     fond presque plein sinon (et avec « réduire la transparence »). Un seul
-     élément flouté, jamais plus. Idée : la recette du verre de la fiche
+     fond presque plein sinon (et avec « réduire la transparence »). L'île du
+     menu (components/ui/ile-menu.tsx) porte le même verre depuis le
+     2026-10-09 : deux éléments floutés au plus à l'écran, petits tous les
+     deux, jamais davantage. Idée : la recette du verre de la fiche
      « glassmorphism » (ui-skills : flou, bord plus clair que le fond, ombre
      en couches) et la forme des bandeaux flottants de 21st (pastille,
      texte court, boutons en pilules).
+   - Tout est centré (J, 2026-10-09) : la pastille, puis l'étiquette, le
+     texte, les deux pilules et le lien, les uns sous les autres.
    - Les deux réponses ont le MÊME poids, même taille, même forme, même
-     contraste : refuser doit être aussi simple qu'accepter (BLUEPRINT, H6).
-     Seul l'accent camel (l'icône, le filet de lumière du haut) est coloré.
+     contraste, et la même largeur : refuser doit être aussi simple
+     qu'accepter (BLUEPRINT, H6). Seul l'accent camel (l'icône, le filet de
+     lumière du haut) est coloré.
    - L'entrée : la première fois, le bandeau attend que le héros ait joué
      (1,4 s), puis monte en place d'un seul geste, et ses éléments se posent
      l'un après l'autre ; un reflet traverse le verre une fois. Rouvert par le
@@ -130,7 +135,7 @@ export function Consentement() {
 
   /* Les deux réponses : une seule recette, donc le même poids. */
   const reponseBouton =
-    "inline-flex h-10 cursor-pointer items-center justify-center rounded-full bg-foreground/10 px-5 text-[13px] font-medium text-foreground ring-1 ring-inset ring-foreground/20 transition-[transform,background-color] duration-200 hover:bg-foreground/[0.16] active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:h-9";
+    "inline-flex h-10 min-w-28 cursor-pointer items-center justify-center rounded-full bg-foreground/10 px-5 text-[13px] font-medium text-foreground ring-1 ring-inset ring-foreground/20 transition-[transform,background-color] duration-200 hover:bg-foreground/[0.16] active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:h-9";
 
   return (
     <>
@@ -167,33 +172,34 @@ export function Consentement() {
             className="pointer-events-none absolute inset-y-0 left-0 w-1/4 -skew-x-12 bg-linear-to-r from-transparent via-foreground/15 to-transparent opacity-0"
           />
 
-          <div className="grid grid-cols-[auto_1fr] gap-x-3.5 gap-y-2.5 sm:gap-y-1.5">
+          <div className="flex flex-col items-center text-center">
             <span
               aria-hidden="true"
               data-icone
-              className="grid size-9 place-items-center rounded-xl bg-accent/15 text-accent ring-1 ring-inset ring-accent/30 sm:row-span-2 sm:size-10"
+              className="grid size-9 place-items-center rounded-xl bg-accent/15 text-accent ring-1 ring-inset ring-accent/30 sm:size-10"
             >
               <Cookie className="size-[1.125rem] sm:size-5" strokeWidth={1.75} />
             </span>
-            <p data-morceau className="eyebrow self-center text-accent sm:self-end">
+            {/* Le retrait à gauche rend à l'étiquette l'espace que l'interlettrage laisse après sa dernière lettre : elle est centrée pour l'œil. */}
+            <p data-morceau className="eyebrow mt-3 pl-[0.18em] text-accent">
               Cookies
             </p>
-            <p data-morceau className="col-span-2 text-[13px] leading-relaxed text-foreground/85 sm:col-span-1 sm:col-start-2">
+            <p data-morceau className="mt-1.5 text-balance text-[13px] leading-relaxed text-foreground/85">
               Des statistiques de visite, avec votre accord. Elles m&apos;aident à savoir ce qui vous a
               été utile. Rien n&apos;est déposé tant que vous n&apos;avez pas répondu.
             </p>
-          </div>
-
-          <div data-morceau className="mt-4 flex flex-wrap items-center gap-2.5 sm:pl-[3.375rem]">
-            <button type="button" onClick={() => repondre("oui")} className={reponseBouton}>
-              D&apos;accord
-            </button>
-            <button type="button" onClick={() => repondre("non")} className={reponseBouton}>
-              Non merci
-            </button>
+            <div data-morceau className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
+              <button type="button" onClick={() => repondre("oui")} className={reponseBouton}>
+                D&apos;accord
+              </button>
+              <button type="button" onClick={() => repondre("non")} className={reponseBouton}>
+                Non merci
+              </button>
+            </div>
             <Link
+              data-morceau
               href="/confidentialite#cookies"
-              className="cursor-pointer rounded-sm px-1 text-xs text-foreground/70 underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+              className="mt-2 cursor-pointer rounded-sm px-2 py-1 text-xs text-foreground/70 underline-offset-4 transition-colors hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               En savoir plus
             </Link>

@@ -174,6 +174,186 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-17 (nuit) : bandes blanches, câble, fond d'écran
+
+Trois retours de J sur son iPhone, après la version du soir.
+- **Des bandes blanches en haut à gauche de l'écran, « de temps en temps au scroll »** : c'était moi. Depuis que les copies de la
+  fenêtre pour le Génie sont préparées un peu avant l'effet (pour éviter une image saccadée), elles restaient **visibles**, empilées
+  en haut à gauche du bureau, par-dessus la barre des menus, entre 63 et 70 % du défilement. Cause : chaque copie forçait
+  `visibility: visible`, ce qui l'emporte sur le `hidden` de sa scène. Corrigé dans `lib/genie.ts` (`inherit`, et la scène est cachée
+  dès sa création). À retenir : `visibility` s'hérite, mais un enfant `visible` s'affiche dans un parent `hidden`.
+- **Un câble électrique qui part en bas dans le vide** : un hauban du poteau, qui descend à travers les nuages de l'image 10 à
+  l'image 98 de la plongée du téléphone et ne mène à rien. Retiré des images par `outils/hero/retirer-cable.py` (voir son
+  LISEZMOI). Le poteau reste, ainsi que ses câbles qui s'affaissent. La série de l'ordinateur (Kling) a d'autres haubans du
+  même genre, non traités.
+- **Le fond d'écran, « trop bateau »** : les dunes vectorielles faisaient « fond d'écran de banque d'images ». Remplacées par
+  l'heure dorée du site en abstrait : un noir chaud, une lueur ambrée basse (le jeton `attente`), deux bancs de brume, une
+  lumière d'angle, du grain (un carreau de bruit fractal en SVG en ligne), une vignette, et jamais un trait dur (un filet de 1 px
+  scintille quand la perspective bouge). Quatre rendus regardés côte à côte (brume, brume et arcs fins, photo du site floutée, filet
+  d'horizon) ; retenu : la brume. Idée de départ : les fonds statiques de bg.ibelick (halo radial), sans leur violet ni leurs grilles.
+  Le Dock passe dans la palette du thème (crème, noir chaud, doré ; le vert et le rouge faisaient « icônes par défaut ») : seule la
+  conversation, l'appli ouverte, est dorée.
+
+## Mise à jour du 2026-10-17 (soir) : le bureau du Mac, sur l'écran de l'ordinateur de la scène
+
+J, après la version précédente (le Dock et le Génie par-dessus toute la vue) : « il faut que tout ça soit dans l'ordinateur
+directement, pas ici [...] jusqu'à avoir un écran de Mac dessiné sur le Mac dans le site et un effet Génie incroyable et
+naturel », puis « c'était mieux si la caméra rentrait dans le PC » (pas d'arrêt sur image avant le zoom).
+- **Le bureau** (`components/ui/ecran-mac.tsx`) : un écran virtuel en pixels CSS (environ 1 300 × 830 sur téléphone), avec la
+  barre des menus, un fond d'écran de dunes au crépuscule dans les couleurs du site (vagues dessinées à la main, à la façon de
+  Haikei), le logo, le Dock, et **la vraie fenêtre de discussion** à sa place. Sombre exprès : la fenêtre claire en sort nettement
+  pendant le Génie. Le logo est un peu plus étroit que la fenêtre, qui le cache tout entier une fois posée.
+- **Collé sur l'écran du portable, en perspective** (`Plongee`) : une homographie (`matrix3d`) envoie les quatre coins du bureau
+  sur ceux de l'écran, image par image. Les coins sont mesurés hors ligne (`outils/hero/mesurer-ecran.py`, chaque bord ajusté par
+  une droite sur une partie que rien ne cache) : `lib/plongee-ecran-mobile.ts` et `lib/plongee-ecran-bureau.ts` (la série Kling
+  de l'ordinateur, dont l'écran crème montrait un navigateur : on en prend tout l'écran, barre comprise). Le bureau déborde de
+  2,5 % de la zone mesurée (sans cela, un liseré blanc).
+- **L'épaule passe devant l'écran** : sur une cinquantaine d'images, l'épaule du personnage cache le bas-gauche de l'écran. Le
+  même outil mesure, rangée par rangée, jusqu'où (`CACHES_…`), et le bureau est découpé à cette limite (`clip-path`), en
+  mordant un peu sur l'épaule (son liseré doré reste à l'image, pas le fond blanc).
+- **Le déroulé** : le bureau s'allume sur l'écran dès qu'il fait 30 px ; l'icône de la conversation rebondit deux fois (0,665 à
+  0,715), la fenêtre sort du Dock avec le Génie pendant que la caméra finit d'arriver (0,70 à 0,80), puis **la caméra entre dans
+  la fenêtre sans s'arrêter** : le zoom part à la vitesse où l'écran grandissait à la fin des images (mesurée), accélère sans
+  à-coup (courbe du cinquième degré : vitesse continue, accélération nulle au départ), puis se pose (0,80 à 0,96). Le canvas
+  suit exactement le même mouvement : la part affine dans son dessin, la perspective qui reste par une transformation CSS. À la
+  fin, la fenêtre est à 1 pour 1, nette et utilisable, et sa conversation commence.
+- **La fin** (0,965 à 0,995) : le bureau et la scène s'effacent vers le fond de la page ; la fenêtre reste. Sur l'iPhone de J,
+  une bande noire et un triangle blanc passaient sous la fenêtre quand la page reprenait : la part de l'écran cachée sous la
+  barre de Safari (40 px), où l'on voyait le canvas zoomé.
+- **La fenêtre** : une fenêtre de Mac (coins arrondis partout, pastilles), sans la poignée de feuille d'avant.
+- **Vérifié** : dans un Chrome sans fenêtre piloté par le protocole DevTools (le panneau navigateur de l'appli était caché ; ses
+  pages y sont figées), en 375 × 812 et 1280 × 800, mouvement réduit compris ; et sur l'iPhone de J par le pont : aucune erreur,
+  59,5 images par seconde pendant le Génie et la plongée (60 pendant le vol), après avoir préparé les copies de la fenêtre un
+  peu avant l'effet (les faire au moment où il commence coûtait une image saccadée).
+- **Reste sur ordinateur** : la série Kling n'a que 61 images pour un grand mouvement ; deux images fondues font un fantôme
+  (deux têtes, deux écrans). C'était déjà le cas ; la vidéo source n'est pas sur le disque.
+
+## Mise à jour du 2026-10-17 (fin) : la fenêtre sort du Dock, comme sur un Mac
+
+Remplacée le soir même par la précédente (le bureau sur l'écran de l'ordinateur) ; gardée pour l'historique.
+
+J : « au lieu de s'ouvrir de bas en haut basiquement, tu fais le style d'ouverture des Mac : tu simules une barre des tâches de
+Mac en bas, puis l'onglet de la conversation s'ouvre comme sur Mac ». Ses choix : au défilement, plusieurs icônes, téléphone et
+ordinateur.
+- **Le déroulé** (`Plongee`, après l'entrée dans l'écran) : le Dock monte du bas, l'icône de la conversation rebondit une fois,
+  puis la fenêtre de discussion en sort avec l'**effet Génie** : étroite près de l'icône, large en haut, elle monte et se pose à
+  sa place. Tout suit le défilement : en remontant, elle rentre dans l'icône. Le fond ne recule plus derrière la fenêtre (c'était
+  l'effet « feuille » d'iPhone). La zone de la plongée passe de 320 à 380 svh et la vidéo finit à 72 % (au lieu de 80 %) :
+  de la place pour le Dock et le Génie.
+- **Le Génie** (`lib/genie.ts`) : la vraie fenêtre est recopiée en 32 bandes (40 sur ordinateur), copies inertes, sans
+  identifiants ; chaque bande est un trapèze qui suit l'entonnoir (sans cela, les bords font des marches) et recouvre la
+  suivante d'un pixel d'écran (sans cela, des rayures). La vraie fenêtre est cachée pendant l'effet et prend le relais à la fin, à
+  la même place. Pas de WebGL, pas de bibliothèque.
+- **Le Dock** (`components/ui/dock-mac.tsx`) : le verre sombre de l'île du menu, cinq tuiles inventées aux couleurs du site (logo
+  S, notes, conversation, agenda, projets), le point sous l'appli ouverte. Aucune icône d'Apple. Idées : le Dock de Watermelon et le
+  « Floating Dock » d'Aceternity (21st). Décoratif : ni cliquable ni lu par les lecteurs d'écran.
+- **En développement**, la barre « Navigation · Édition » de l'overlay cache le Dock sur téléphone ; elle n'existe pas en ligne.
+- Vérifié dans le navigateur intégré, en taille téléphone et ordinateur ; pas encore sur l'iPhone de J.
+
+## Mise à jour du 2026-10-17 (suite) : tout le chemin du téléphone en vertical, un chalet en rondins
+
+J, après avoir vu la vidéo sur son iPhone : « la vidéo pas assez de bonne qualité », « la maison est trop petite, il faut qu'elle fasse
+plus petit chalet ». Sa décision : « Tout le chemin en 9:16, bonne qualité et le chalet. Garde le côté où il s'allume la nuit. »
+- **Le téléphone a sa propre chaîne, verticale d'origine** (Kling 3.0 Pro, 10 s, 1 080 × 1 912, générée le 2026-10-17) : l'aller et le
+  retour du hero, les cinq passages du ciel (lumière du hero, crépuscule, nuit, nuit où le personnage s'étire, aube, lumière
+  dorée) et la plongée. Plus de bande de 600 px prise dans un plan paysage et agrandie : le plan entier, sans recadrage. Le chalet est
+  en rondins (variante B choisie par J), plus gros et entièrement dans le cadre ; ses fenêtres et l'écran de l'ordinateur
+  s'allument la nuit. Le plan ne bouge pas d'un passage à l'autre (trépied), seule la lumière change : chaque passage part de la
+  dernière image du précédent. Les images, les tâches Higgsfield et les commandes pour tout refaire : `outils/hero/LISEZMOI.md`.
+  L'ordinateur garde sa chaîne paysage (la cabane) ; la refaire en 16:9 coûterait environ 170 crédits, J a dit « plus tard ».
+- **Dans le code** : `Ciel` n'a plus de `cadrageMobile` (supprimé) ; une série dit son `rapport` (`RAPPORT_CIEL_MOBILE`, 720 × 1 274)
+  et où le bouton se pose (`POSE_BOUTON_MOBILE`, dans `lib/ciel.ts`), et pose les deux sur son cadre pour que le bouton qui
+  tombe les relise. `Plongee` prend `mobile` : ses 120 images (`public/hero/plongee-mobile`), l'écran dans la dernière, son rythme
+  (`lib/plongee-rythme-mobile.ts`) et les coins de l'écran image par image (`lib/plongee-ecran-mobile.ts`, mesurés par
+  `outils/hero/mesurer-ecran.py`) ; ni raccord ni recadrage, et l'agrandissement final ramène le centre de l'écran au centre de la
+  vue (l'image verticale n'a que 6 % de marge pour glisser). `VideoAdaptative` sert le HEVC aux iPhone (puce vidéo), le VP9
+  ailleurs, le H.264 en repli. Les 120 images de la plongée sont choisies à pas égal de changement (pas à intervalles égaux) :
+  la caméra va dix fois plus vite au milieu qu'au début.
+- **La plongée, d'une seule traite jusque dans l'écran, par un autre modèle** (J, le même soir : « le sol se lève à côté, s'affaisse
+  derrière » ; « je préfère le vol, c'est la caméra qui arrive sur l'ordinateur, et le décor, lui, ne bouge pas » ; « le personnage est
+  à moitié dans l'herbe » ; « j'aurais aimé ne pas avoir besoin d'arrêt sur image puis zoom, c'était mieux si la caméra rentrait dans le
+  PC »). Kling a donné quatre vols : le premier descendait au ras de l'herbe, le deuxième faisait lever la colline, le troisième (décor
+  rigide demandé) tenait mieux mais finissait l'herbe à la taille ; couper avant et finir par un agrandissement d'image fixe ne plaisait
+  pas. Remède : une nouvelle image d'arrivée où l'écran remplit l'image (rognée dans l'image par-dessus l'épaule), et deux autres
+  modèles en parallèle sur le même départ et la même arrivée : Seedance 2.5 (720p, 70 crédits) et MiniMax H3 (2K, 20 crédits). J a
+  choisi MiniMax H3 (tâche `da98b756-b817-499c-9fee-5c2adf21de35`) : le plateau reste un plateau, il reste assis sur l'herbe, jambes
+  croisées visibles, jusqu'au passage par-dessus l'épaule, et la caméra finit dans l'écran (85 % de la largeur). 120 images à pas égal de
+  changement, la dernière en pleine taille (1 440 × 2 550) ; l'entrée dans l'écran n'est plus qu'un léger prolongement
+  (`mobile.agrandissement: 1.1`). Aucun modèle ne garantit un décor rigide : il faut regarder chaque plan image par image.
+- **Poids** (le prix de la qualité) : vidéo du hero 4,5 Mo en HEVC, 4,0 en VP9, 5,5 en H.264 (avant : 2,4 et 1,7 Mo) ; ciel
+  5,5 Mo ; recul 1,8 Mo ; plongée 5,6 Mo. Environ 18 Mo sur téléphone, contre 8,5 avant. À 4,5 Mo la vidéo dépasse les 3 Mo du
+  garde-fou des vidéos de fond, qui ne regarde que `public/` à la racine du projet (ici `stalika/public`, donc pas vue). Si c'est
+  trop : `--hevc 1400` (3,4 Mo), ou des images en qualité 70 (16 % de moins, `--qualite 70`).
+- **Mesuré sur l'iPhone, build de production** : premier défilement (0 à 700 px), page ouverte en haut : 59 images par seconde,
+  médiane 17 ms, aucune image de plus de 50 ms (quatre chargements à froid) ; plongée : 58 images par seconde ; ciel et scènes :
+  58. Le bouton tombé se pose à 1 px du point visé. Piège de mesure : une page rouverte plus bas (défilement restauré), puis
+  ramenée en haut, redémarre la vidéo pendant le défilement : 14 à 40 images par seconde la première seconde ; sans
+  conséquence au chargement normal, mais ça a fait croire à tort à une régression.
+- **Deux retours de J sur les nouveaux plans, corrigés le jour même** : (1) le nuage : « la physique du nuage est étrange, un nuage ne
+  tombe pas comme ça », « trop boule, je préférais l'ancien » : l'aller est regénéré (deux variantes, J a choisi la A : une masse blanche qui
+  traverse le plateau et poursuit dans le vide) ; (2) l'herbe : « quand la caméra se rapproche du PC à la fin, l'herbe pousse et le
+  personnage s'enfonce dans le sol » : la plongée est regénérée avec une caméra qui reste haute (la première descendait au ras de l'herbe, et
+  l'herbe du premier plan grandissait en cachant le bas de son corps) ; ce second plan, lui, faisait « se lever » le sol à la fin ; remplacé
+  depuis par un vol MiniMax H3 (voir ci-dessus). Les tâches Higgsfield : `outils/hero/LISEZMOI.md`.
+- **Un défaut trouvé en vérifiant, corrigé** : si la page s'ouvrait plus bas que le haut (un lien avec ancre, ou Safari qui
+  rend le défilement après un retour), la vidéo n'avait jamais joué et restait figée sur sa première image jusqu'au
+  rechargement ; elle reprend maintenant dès qu'on est en haut (`Ciel`, `suivreVideo`).
+
+## Mise à jour du 2026-10-17 : un seul clic, plein écran, des images sans à-coups, la roue au doigt
+
+Retours de J, vus en direct sur son iPhone 16 Pro (iOS 18.7, Safari) par le pont du skill `/phone`. Mesures faites sur ce
+téléphone.
+- **Le bouton « Parlons projet » : un seul clic** (« on enlève le deuxième clic, il saute et tombe au 1er clic »). Il
+  s'accroupit, saute au clou, se balance 0,7 s (`pendule.avantChute`), puis tombe de lui-même ; un clic pendant ce
+  balancement le fait tomber tout de suite. L'indice « Encore un clic : il tombe. » est retiré. Vérifié sur le téléphone :
+  la copie accrochée à 0,2 s, la chute lancée vers 1,5 s, posée près de l'ordinateur à 12,5 s, aucune erreur.
+- **La vidéo et le ciel occupent tout l'écran** : plus de marge de 8 px ni de coins arrondis (`Ciel`, `Plongee`, le dégradé du
+  hero). Le plan a la hauteur de la plus grande fenêtre (`lvh`) : quand la barre de Safari se replie, la fenêtre grandit
+  (754 px au lieu de 714 sur ce téléphone) et un plan à la hauteur de la plus petite laissait une bande sombre. Le cadre de la
+  plongée est le même, au pixel (mesuré : `0, 0, 402, 754` des deux côtés). La feuille de la discussion garde la hauteur de ce
+  qu'on voit (`dvh`) : son champ de saisie ne passe pas sous la barre.
+- **Moins de latence, au doigt** : le défilement tactile a déjà sa propre inertie, le lisser encore ne faisait que traîner.
+  Le ciel suit le doigt tout de suite (avant : 12 % de l'écart à chaque image, une traîne d'une demi-seconde ; après : le
+  même dessin dès l'image suivante, mesuré 25 ms après un saut de 1 800 px). Les scènes au défilement (`Scene`) sont collées
+  au doigt (`scrub: true`) ; à la molette, le lissage passe de 0,45 s à 0,2 s (Lenis lisse déjà).
+- **La plongée, sans images qui défilent l'une après l'autre** : (1) deux images voisines se fondent selon la position exacte
+  (comme dans le ciel) ; (2) le défilement est réparti d'après de combien l'image change d'une image à la suivante
+  (`lib/plongee-rythme.ts`, mesuré par `outils/hero/rythme-plongee.py`) : la caméra va dix fois plus vite au milieu qu'au
+  début, et une image tous les mêmes pixels (18 px) faisait lurcher la fin. Mesuré sur le téléphone à 600 px/s : le pas visible
+  par affichage a un rapport max/médiane de 1,9 (avant : 6,8, de 2 à 13,7), 68 % des affichages sont des fondus, 60 images par
+  seconde. Reste vrai : ces 61 images viennent d'un plan 16:9 dont un téléphone ne montre que le tiers (voir plus bas).
+- **La roue au doigt** (« il est difficile de la faire tourner ») : sur téléphone, le glissé le plus naturel, sur la carte du
+  milieu, faisait défiler le site dans la carte au lieu de tourner la roue ; il fallait saisir les cartes voisines ou les
+  marges. Maintenant, glisser n'importe où sur la roue la fait tourner ; on **touche** la carte de face pour la visiter (le
+  site défile alors dans la carte, la croix ou un toucher à côté referme), comme à la souris. Au doigt, la roue tourne 1,5 fois
+  plus vite que le doigt (`gainTactile` : 170 px pour changer de carte, au lieu de 254). Vérifié sur le téléphone avec des
+  évènements tactiles simulés : un glissé de 100 ou de 40 px sur la carte du milieu change d'une carte, un coup de doigt en
+  fait trois, un toucher ouvre la visite, un toucher sur le texte la referme. L'indice tactile devient « Touchez pour visiter le
+  site ».
+- **Qualité de la vidéo et maison** : la vidéo du téléphone était une bande de 600 × 1 076 px prise dans un plan 16:9 de 1 080 p,
+  agrandie à 840 × 1 506, puis compressée à 0,7 à 1 Mbit/s : floue, avec des blocs ; la maison (une cabane à l'extrême gauche du
+  plan) était coupée par ce recadrage. Traité le jour même, par une chaîne verticale d'origine : voir la mise à jour ci-dessus.
+
+## Mise à jour du 2026-10-09 (suite) : l'île en verre, le bandeau centré, le bouton au milieu
+
+Trois retouches de J, le même jour que le bandeau de cookies :
+- **L'île du menu prend le verre du bandeau** (« ajoute le même effet à la dynamique island »), dans
+  `components/ui/ile-menu.tsx`. Fond à 75 % et flou 24 px là où le navigateur sait flouter (95 % sinon, plein avec
+  « réduire la transparence »), bord un peu plus clair (15 %), lumière qui tombe du haut, arête haute éclairée (un trait
+  camel permanent, en plus du filet qui court sur le contour à l'arrivée). Le film d'arrivée est inchangé. Mesuré :
+  derrière la capsule, la vidéo ne dépasse pas rgb(88, 76, 64) (95e centile, sur toute sa boucle) ; les liens muets
+  gardent **5,5:1** (6,3:1 sur l'ancien fond plein), au-dessus du seuil de 4,5:1. Aucun parent de la capsule ne forme de
+  « racine de fond » (filtre, opacité, masque) : elle ne verrait plus le ciel. Le fond n'est plus dans `hero.tsx`.
+- **Le bandeau de cookies est centré** : la pastille au-dessus, puis l'étiquette, le texte (lignes équilibrées,
+  `text-balance`), les deux pilules (même largeur, 7 rem) et le lien, tous sur l'axe du bandeau (mesuré à 0,01 px près,
+  de 320 à 1440 px de large). Il est donc plus haut : 257 px sur téléphone, 265 px sur ordinateur.
+- **Le bouton « Parlons projet » est au milieu de la page** (`components/sections/hero.tsx`) : il quitte le bloc de texte
+  et passe sur sa propre rangée, tout en bas du héros, sous le nom et le texte. Sur ordinateur, le milieu de la page est
+  sous le nom : il ne pouvait pas rester sur la même rangée. Il entre au même moment qu'avant (après les trois lignes).
+  Centré à 0 px près de 320 à 1440 px, sans rien recouvrir. Son film (il se décroche, saute au menu, tombe) est inchangé :
+  il part de la place du vrai bouton, et le clou est au menu, jamais au bouton ; la chute traverse toujours la page
+  jusqu'à l'ordinateur (vérifié sur ordinateur et sur téléphone).
+
 ## Mise à jour du 2026-10-09 : le bandeau de cookies en verre sombre
 
 À la demande de J (« un peu plus sexy »), `components/sections/consentement.tsx` change d'allure ; **le texte, les deux
@@ -181,10 +361,11 @@ réponses, le cookie de choix et le chargement conditionnel de Google Analytics 
 - **Le verre** : la palette de nuit (`nuit`) posée sur le seul bandeau, comme l'île du menu : sombre sur une page claire
   comme sur une scène de nuit. Fond à 85 % et flou 24 px (`backdrop-blur-xl`) là où le navigateur sait flouter, fond à
   95 % sinon, et fond plein avec « réduire la transparence ». Bord un peu plus clair que le fond, ombre en couches, un
-  filet de lumière camel en haut. Un seul élément flouté. Pastille camel avec l'icône cookie, étiquette « Cookies »,
-  texte, deux pilules, le lien. Téléphone : carte flottante à 12 px des bords (au lieu d'un bandeau collé en bas), qui
+  filet de lumière camel en haut. Deux éléments floutés au plus à l'écran, petits tous les deux : ce bandeau et l'île du
+  menu, qui porte le même verre (voir plus haut). Pastille camel avec l'icône cookie, étiquette « Cookies », texte, deux
+  pilules, le lien, le tout centré. Téléphone : carte flottante à 12 px des bords (au lieu d'un bandeau collé en bas), qui
   respecte la zone sûre de l'iPhone.
-- **Même poids pour les deux réponses** : « D'accord » et « Non merci » ont la même recette (taille, forme, contraste).
+- **Même poids pour les deux réponses** : « D'accord » et « Non merci » ont la même recette (taille, forme, contraste, largeur).
   Refuser doit être aussi simple qu'accepter (H6). Seuls l'icône et le filet du haut sont colorés.
 - **Le mouvement** (GSAP) : la première fois, il attend que le héros ait joué (1,4 s), monte en place (0,95 s), ses
   éléments se posent l'un après l'autre, l'icône tourne en arrivant et un reflet traverse le verre une fois. Rouvert par le

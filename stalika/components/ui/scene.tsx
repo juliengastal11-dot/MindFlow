@@ -164,7 +164,9 @@ export function Scene({
           trigger: piste,
           start: "top top",
           end: "bottom bottom",
-          scrub: MOUVEMENT.relecture.lissage,
+          // Au doigt, le défilement a déjà sa propre inertie : lisser encore fait traîner la scène derrière lui
+          // (J, 2026-10-17 : « trop de latence »). À la molette, Lenis lisse déjà : un lissage court.
+          scrub: window.matchMedia("(pointer: coarse)").matches ? true : MOUVEMENT.relecture.lissage,
           animation: tl,
           invalidateOnRefresh: true,
         });

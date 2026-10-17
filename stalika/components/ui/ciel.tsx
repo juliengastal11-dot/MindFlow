@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { ScrollTrigger, mouvementReduit } from "@/lib/gsap";
 import { VideoAdaptative, type SourcesVideo } from "@/components/ui/video-adaptative";
-import { RAPPORT_CIEL as RAPPORT } from "@/lib/ciel"; // largeur / hauteur des images entières
+import { POSE_BOUTON, RAPPORT_CIEL as RAPPORT } from "@/lib/ciel"; // largeur / hauteur des images entières
 
 /* ---------------------------------------------------------------------------
    Ciel : un seul plan, du hero jusqu'à la discussion, dont l'heure avance
@@ -44,19 +44,31 @@ import { RAPPORT_CIEL as RAPPORT } from "@/lib/ciel"; // largeur / hauteur des i
    glissement ni de vidéo, le plan prend l'heure du repère le plus proche du
    milieu de l'écran.
 
-   Téléphone : une série recadrée sur la falaise (`cadrageMobile`), moins
-   lourde. Les images ne sont chargées qu'à l'approche.
+   Téléphone : une série verticale d'origine (Kling 9:16, 720 × 1274 px, le
+   2026-10-17), sans recadrage : le plan, la vidéo du hero et la plongée sont
+   générés pour l'écran du téléphone, chalet et lumière compris. Les images ne
+   sont chargées qu'à l'approche.
+
+   Plein écran (J, 2026-10-17 : « il faut que la vidéo occupe tout l'écran ») :
+   le plan va de bord à bord, sans marge ni coins arrondis. Il fait la hauteur
+   de la plus grande fenêtre (`lvh`) : sur iPhone, quand la barre de Safari se
+   replie au défilement, la fenêtre grandit, et un plan de la hauteur de la
+   plus petite (`svh`) laissait une bande sombre en bas. `Plongee` pose son
+   cadre exactement sur celui-ci.
 --------------------------------------------------------------------------- */
 
-export type SerieCiel = { dossier: string; nombre: number };
-/** Une partie de l'image entière, en fractions (0 à 1). */
-export type Rectangle = { x: number; y: number; l: number; h: number };
-
+export type SerieCiel = {
+  dossier: string;
+  nombre: number;
+  /** Largeur / hauteur d'une image de la série, quand ce n'est pas celle du plan paysage entier (`RAPPORT_CIEL`) :
+      une série verticale d'origine (9:16, 720 × 1274 le 2026-10-17). */
+  rapport?: number;
+  /** Où le bouton qui tombe se pose, en fractions de l'image entière de la série (par défaut : `POSE_BOUTON`). */
+  pose?: { x: number; y: number };
+};
 export type CielProps = {
   bureau: SerieCiel;
   mobile?: SerieCiel;
-  /** Partie de l'image entière que montre la série mobile. */
-  cadrageMobile?: Rectangle;
   /** Heure → image : paires [heure de 0 à 1, index d'image], dans l'ordre. */
   jalons: readonly (readonly [number, number])[];
   /** Repères par id d'élément : le premier et le dernier bornent le défilement ; en mouvement réduit, tous comptent. */
@@ -83,11 +95,10 @@ export type CielProps = {
 };
 
 const chemin = (s: SerieCiel, i: number) => `${s.dossier}/${String(i + 1).padStart(3, "0")}.webp`;
-const ENTIER: Rectangle = { x: 0, y: 0, l: 1, h: 1 };
 const borne = (x: number) => Math.min(1, Math.max(0, x));
 const douce = (x: number) => x * x * (3 - 2 * x);
 
-export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, cometes, alt, children, className }: CielProps) {
+export function Ciel({ bureau, mobile, jalons, reperes, video, cometes, alt, children, className }: CielProps) {
   const zone = useRef<HTMLDivElement>(null);
   const cadre = useRef<HTMLDivElement>(null);
   const toile = useRef<HTMLCanvasElement>(null);
@@ -101,8 +112,11 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
     const reduit = mouvementReduit();
     const surMobile = window.matchMedia("(max-width: 767px)").matches;
     const serie = mobile && surMobile ? mobile : bureau;
-    // Partie de l'image entière que montre chaque image de la série, et celle à cadrer par défaut.
-    const source = mobile && surMobile && cadrageMobile ? cadrageMobile : ENTIER;
+    const rapport = serie.rapport ?? RAPPORT;
+    // Ce que le bouton qui tombe doit savoir pour retrouver, à l'écran, le point où il se pose.
+    const pose = serie.pose ?? POSE_BOUTON;
+    cadre.current.dataset.cielRapport = String(rapport);
+    cadre.current.dataset.cielPose = `${pose.x},${pose.y}`;
     const lecteur = video && !reduit ? cadre.current.querySelector("video") : null;
     const images: HTMLImageElement[] = [];
     const prete = (i: number) => images[i]?.complete && images[i].naturalWidth > 0;
@@ -212,10 +226,10 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
         canvas.width = Math.round(w * dpr);
         canvas.height = Math.round(h * dpr);
       }
-      // Chaque image, en « cover », centrée : la série mobile est déjà recadrée sur la falaise.
-      const e = Math.max(w / (source.l * RAPPORT), h / source.h);
-      const dw = source.l * RAPPORT * e;
-      const dh = source.h * e;
+      // Chaque image, en « cover », centrée.
+      const e = Math.max(w / rapport, h);
+      const dw = rapport * e;
+      const dh = e;
       const x0 = (w - dw) / 2;
       const y0 = (h - dh) / 2;
       ctx2d.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -260,7 +274,9 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
       if (t > 0.0005 && !lecteur.paused) {
         avanceePause = avanceeVideo();
         lecteur.pause();
-      } else if (t <= 0.0005 && lecteur.paused && lecteur.currentTime > 0) {
+      } else if (t <= 0.0005 && lecteur.paused) {
+        // Aussi quand la page s'est ouverte plus bas (un lien, ou Safari qui rend le défilement après un retour) : la vidéo n'a
+        // alors jamais joué, et sans cela elle restait figée sur sa première image jusqu'au prochain rechargement.
         void lecteur.play().catch(() => {});
       }
     };
@@ -317,8 +333,16 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
       return p.t + (q.t - p.t) * borne((y - p.y) / (q.y - p.y));
     };
 
+    // Au doigt, le défilement a déjà sa propre inertie : le plan le suit tout de suite, sans traîner derrière
+    // (J, 2026-10-17 : « trop de latence »). À la molette, Lenis lisse déjà : un rattrapage court suffit, et il ne
+    // dépend plus du rythme de l'écran (avant : 12 % de l'écart à chaque image, soit une traîne d'une demi-seconde).
+    const tactile = window.matchMedia("(pointer: coarse)").matches;
+    let dernierTic = performance.now();
     const tourner = () => {
-      courant = reduit ? cible : courant + (cible - courant) * 0.12;
+      const maintenant = performance.now();
+      const dt = Math.min(0.1, (maintenant - dernierTic) / 1000);
+      dernierTic = maintenant;
+      courant = reduit || tactile ? cible : courant + (cible - courant) * (1 - Math.exp(-dt / 0.06));
       if (Math.abs(courant - cible) < 0.0002) courant = cible;
       suivreVideo(courant);
       if (Math.abs(courant - dessinee) > 0.0001) dessiner(courant);
@@ -354,23 +378,26 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
       cancelAnimationFrame(boucle);
       window.removeEventListener("resize", redessiner);
     };
-  }, [bureau, mobile, cadrageMobile, jalons, reperes, video, cometes]);
+  }, [bureau, mobile, jalons, reperes, video, cometes]);
 
   return (
     <div ref={zone} data-src="components/ui/ciel.tsx" className={cn("nuit relative bg-background", className)}>
       {/* Le plan, fixe à l'écran pendant toute la zone ; les sections passent par-dessus.
           Ordre d'empilement explicite (plan en 0, sections en 10) : sans lui,
           Safari sur iPhone peut peindre le plan collant au-dessus des textes. */}
-      <div className="pointer-events-none sticky top-0 z-0 -mb-[100svh] h-svh p-2 sm:p-3">
-        <div ref={cadre} data-ciel-cadre="" className="relative h-full overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]">
+      <div className="pointer-events-none sticky top-0 z-0 -mb-[100lvh] h-lvh">
+        <div ref={cadre} data-ciel-cadre="" className="relative h-full overflow-hidden">
           {/* Sans JavaScript, et jusqu'au premier dessin : la première image. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={chemin(bureau, 0)}
-            alt={alt}
-            fetchPriority="high"
-            className="absolute inset-0 h-full w-full object-cover object-[30%_50%] md:object-center"
-          />
+          <picture>
+            {mobile && <source media="(max-width: 767px)" srcSet={chemin(mobile, 0)} />}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={chemin(bureau, 0)}
+              alt={alt}
+              fetchPriority="high"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+            />
+          </picture>
           <canvas ref={toile} aria-hidden="true" className="absolute inset-0 h-full w-full" />
           {video && (
             <VideoAdaptative className="absolute inset-0" bureau={video.bureau} mobile={video.mobile} />

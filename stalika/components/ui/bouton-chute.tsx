@@ -8,7 +8,7 @@ import { CyberButton } from "@/components/ui/cyber-button";
 import { gsap, ScrollTrigger, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
 import { defilement } from "@/lib/defilement";
-import { CADRAGE_MOBILE, POSE_BOUTON, RAPPORT_CIEL } from "@/lib/ciel";
+import { POSE_BOUTON, RAPPORT_CIEL } from "@/lib/ciel";
 import { angleRepos, bezier, choisirAncrage, ecartPendule, matrice, planifierChute, type PlanChute, type Plateforme, type Point, type Rebond } from "@/lib/chute";
 import { cn } from "@/lib/utils";
 
@@ -17,12 +17,12 @@ import { cn } from "@/lib/utils";
    se décroche, se balance, puis tombe de scène en scène jusqu'à l'ordinateur
    (demande de J, 2026-10-02, par l'overlay).
 
-   Le déroulé voulu par J :
-   1. Premier clic : le bouton se détache et ne tient plus que par un coin. Il
+   Le déroulé voulu par J, en un seul clic depuis le 2026-10-17 (« on enlève le
+   deuxième clic, il saute et tombe au 1er clic ») :
+   1. Le clic : le bouton se détache et ne tient plus que par un coin. Il
       saute s'accrocher au menu (le hero n'a pas la place de le laisser pendre
-      là où il est), se balance quelques secondes, puis s'arrête. Un indice
-      discret dit qu'un second clic le fait tomber.
-   2. Second clic : il tombe, rebondit sur les textes et les animations du
+      là où il est) et se balance un instant (`pendule.avantChute`).
+   2. Puis il tombe de lui-même, rebondit sur les textes et les animations du
       site pendant que la page défile avec lui, et se pose à côté de
       l'ordinateur, sur la dernière image du ciel. Un repère de défilement
       apparaît : on entre dans l'ordinateur en défilant, ou en cliquant sur
@@ -82,7 +82,8 @@ type Course = {
   prochain: number;
   vitesse: number;
   vitesseCible: number;
-  indice: boolean;
+  /** La chute est lancée (par le temps, ou par un clic pendant le balancement) : une seule fois. */
+  declenche: boolean;
 };
 
 const borne = (x: number, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -122,13 +123,16 @@ function poseEcran(): Point | null {
   const cadre = document.querySelector<HTMLElement>("[data-ciel-cadre]");
   if (!cadre) return null;
   const r = cadre.getBoundingClientRect();
-  const source = window.matchMedia("(max-width: 767px)").matches ? CADRAGE_MOBILE : { x: 0, y: 0, l: 1, h: 1 };
-  const e = Math.max(r.width / (source.l * RAPPORT_CIEL), r.height / source.h);
-  const dw = source.l * RAPPORT_CIEL * e;
-  const dh = source.h * e;
+  // `Ciel` dit, sur son cadre, quelle série il affiche : le rapport de ses images (paysage ou vertical) et le point où le
+  // bouton se pose. Sans cela (avant le montage de `Ciel`), les valeurs du plan paysage.
+  const [px, py] = cadre.dataset.cielPose ? cadre.dataset.cielPose.split(",").map(Number) : [POSE_BOUTON.x, POSE_BOUTON.y];
+  const rapport = Number(cadre.dataset.cielRapport) || RAPPORT_CIEL;
+  const e = Math.max(r.width / rapport, r.height);
+  const dw = rapport * e;
+  const dh = e;
   return {
-    x: r.left + (r.width - dw) / 2 + ((POSE_BOUTON.x - source.x) / source.l) * dw,
-    y: r.top + (r.height - dh) / 2 + ((POSE_BOUTON.y - source.y) / source.h) * dh,
+    x: r.left + (r.width - dw) / 2 + px * dw,
+    y: r.top + (r.height - dh) / 2 + py * dh,
   };
 }
 
@@ -168,12 +172,11 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     prochain: 0,
     vitesse: 1,
     vitesseCible: 1,
-    indice: false,
+    declenche: false,
   });
 
   const [etat, setEtat] = useState<Etat>("repos");
   const [monte, setMonte] = useState(false);
-  const [indice, setIndice] = useState(false);
   const [focus, setFocus] = useState(false);
   const [annonce, setAnnonce] = useState("");
   const [hote, setHote] = useState<HTMLElement | null>(null);
@@ -210,15 +213,15 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     c.phase = "accroupi";
     c.t = 0;
     c.angle = 0;
-    c.indice = false;
-    setIndice(false);
+    c.declenche = false;
     setEtat("pendu");
-    setAnnonce("Le bouton s'est décroché et se balance. Activez-le encore : il tombe et vous emmène jusqu'à l'ordinateur.");
+    setAnnonce("Le bouton s'est décroché : il saute au menu, puis tombe jusqu'à l'ordinateur.");
   };
 
   /** Lance la chute. `false` si la page n'a pas ce qu'il faut (le lien ordinaire prend alors le relais). */
   const faireTomber = (): boolean => {
     const c = course.current;
+    c.declenche = true;
     const lenis = defilement();
     const geo = c.geo;
     const zone = document.querySelector<HTMLElement>('[data-src="components/ui/plongee.tsx"]');
@@ -252,7 +255,6 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     c.t = 0;
     c.prochain = 0;
     c.vitesse = c.vitesseCible = 1;
-    setIndice(false);
     setEtat("chute");
     setAnnonce("Le bouton tombe jusqu'à l'ordinateur.");
     return true;
@@ -307,7 +309,7 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     agir(e);
   };
 
-  /* ---- Premier clic : le saut vers le clou, puis le balancement ------------ */
+  /* ---- Le clic : le saut vers le clou, un instant de balancement, puis la chute ---- */
 
   useLayoutEffect(() => {
     if (etat !== "pendu") return;
@@ -352,9 +354,11 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
       const tb = t - accroupi - vol;
       c.angle = geo.repos + ecartPendule(tb, geo.amplitude, reglage);
       el.style.transform = matrice(geo.clou.x, geo.clou.y, c.angle, 1, 1, 0, 0);
-      if (!c.indice && tb > T.pendule.duree * T.indice.apres) {
-        c.indice = true;
-        setIndice(true);
+      // Un seul clic : après un instant au clou, il tombe de lui-même, de l'angle où le balancement l'a laissé.
+      // Si la page n'a pas ce qu'il faut pour la chute, le lien ordinaire prend le relais.
+      if (!c.declenche && tb >= T.pendule.avantChute) {
+        if (!faireTomber()) window.location.assign(href);
+        return;
       }
       if (tb >= T.pendule.duree) {
         c.phase = "fin";
@@ -372,7 +376,7 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     return () => gsap.ticker.remove(pas);
   }, [etat]);
 
-  /* ---- Second clic : la chute ---------------------------------------------- */
+  /* ---- La chute ----------------------------------------------------------- */
 
   useLayoutEffect(() => {
     if (etat !== "chute") return;
@@ -542,7 +546,7 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
       {/* Là où il était : un contour pointillé. */}
       {detache && <span aria-hidden="true" className="pointer-events-none absolute inset-0 border border-dashed border-foreground/20" />}
       <span id={idAide} className="sr-only">
-        Un premier clic décroche le bouton, un second le fait tomber et vous emmène jusqu&apos;à l&apos;ordinateur, où la discussion s&apos;ouvre.
+        Un clic décroche le bouton : il saute au menu, puis tombe et vous emmène jusqu&apos;à l&apos;ordinateur, où la discussion s&apos;ouvre.
       </span>
       <span role="status" aria-live="polite" className="sr-only">
         {annonce}
@@ -562,18 +566,6 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
             <div ref={flotteur} onClick={agir} className="pointer-events-auto invisible absolute left-0 top-0 flex w-max cursor-pointer will-change-transform" style={{ transformOrigin: "0 0" }}>
               <Copie focus={focus}>{children}</Copie>
             </div>
-            {etat === "pendu" && indice && (
-              <div
-                aria-hidden="true"
-                className="absolute left-0 top-0 w-28"
-                style={{ transform: `translate(${geo.clou.x - geo.h * Math.sin(geo.repos) - 12 - 112}px, ${geo.clou.y + 8}px)` }}
-              >
-                {/* L'arrivée en fondu vit sur le texte : une animation sur le bloc posé effacerait sa position. */}
-                <p className="animate-[bouton-indice_0.5s_var(--ease-out)_both] text-right font-mono text-[10px] uppercase leading-snug tracking-[0.18em] text-foreground/75">
-                  Encore un clic : il tombe.
-                </p>
-              </div>
-            )}
             {etat === "chute" && (
               <button
                 type="button"
