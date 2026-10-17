@@ -12,8 +12,8 @@ import type { CoinsEcran } from "@/lib/plongee-ecran";
    Structure voulue par J : un seul plan du hero jusqu'ici (`Ciel`), dont
    l'heure change au défilement ; la lumière dorée du hero revenue à la fin
    mène au zoom dans l'ordinateur et au questionnaire. La plongée vit donc à l'intérieur de `Ciel`, après ses
-   sections : son cadre se pose exactement sur celui du ciel, qui reste en
-   place derrière. Une suite d'images prend le relais, avancée au rythme du
+   sections : son cadre se pose exactement sur celui du ciel (plein écran, même
+   hauteur), qui reste en place derrière. Une suite d'images prend le relais, avancée au rythme du
    défilement : on s'approche du personnage, on passe derrière son épaule, on
    entre dans l'écran, dont le fond d'écran (le logo) remplit le cadre. Puis
    une fenêtre s'ouvre, comme sur un Mac, avec l'effet de « feuille »
@@ -38,6 +38,15 @@ import type { CoinsEcran } from "@/lib/plongee-ecran";
    dont une lettre au hasard se rebrouille de temps en temps, comme dans le
    hero (réglages communs, `MOUVEMENT.film.brouille.scintille`). Les coins
    de l'écran, image par image, sont mesurés hors ligne (`lib/plongee-ecran`).
+
+   Images sans à-coups (J, 2026-10-17 : « on voit trop les images défiler les unes
+   après les autres, surtout sur la fin où on rentre dans le PC ») : deux
+   images voisines se fondent selon la position exacte, comme dans `Ciel`, et
+   le défilement est réparti d'après `rythme` (de combien l'image change d'une
+   image à la suivante : la caméra va dix fois plus vite au milieu qu'au début)
+   au lieu d'une image tous les mêmes pixels. Au doigt, le plan suit le
+   défilement tout de suite : le lissage de ScrollTrigger n'y ajoutait rien
+   qu'une traîne.
 
    Déroulé du défilement, de 0 à 1 :
    - 0 à `fondu` : le canvas apparaît en fondu par-dessus le ciel ;
@@ -100,6 +109,10 @@ export type PlongeeProps = {
   fondu?: number;
   /** Fin des images ; le reste du défilement sert à entrer dans l'écran. */
   finVideo?: number;
+  /** De combien l'image change entre deux images voisines (`nombre - 1` valeurs, mesurées par
+      `outils/hero/rythme-plongee.py`). Le défilement est réparti pour que ce qui se voit avance au
+      même pas ; sans lui, une image tous les mêmes pixels. */
+  rythme?: readonly number[];
   logo?: LogoEcran;
   raccord?: Raccord;
   /** Description de la scène, pour qui ne la voit pas. */
@@ -119,6 +132,7 @@ export function Plongee({
   focus,
   fondu = 0.1,
   finVideo = 0.8,
+  rythme,
   logo,
   raccord,
   alt,
@@ -185,9 +199,20 @@ export function Plongee({
       }
     };
 
-    // Pose le logo sur l'écran de l'image i ; (dx, dy, dw, dh) : où l'image est dessinée.
-    const dessinerLogo = (i: number, dx: number, dy: number, dw: number, dh: number) => {
-      const q = logo?.coins[i];
+    // Les coins de l'écran à l'image fractionnaire f : ceux des deux images voisines, fondus selon la fraction.
+    const coinsA = (f: number): CoinsEcran | null => {
+      if (!logo) return null;
+      const i = Math.min(serie.nombre - 1, Math.max(0, Math.floor(f)));
+      const j = Math.min(serie.nombre - 1, i + 1);
+      const a = f - i;
+      const p = logo.coins[i];
+      const q = logo.coins[j];
+      if (p && q && a > 0) return p.map((v, k) => v + (q[k] - v) * a) as unknown as CoinsEcran;
+      return p ?? (a > 0.5 ? q : null);
+    };
+
+    // Pose le logo sur l'écran, à ces coins ; (dx, dy, dw, dh) : où l'image est dessinée.
+    const dessinerLogo = (q: CoinsEcran | null, dx: number, dy: number, dw: number, dh: number) => {
       if (!logo || !q || !planche?.complete || planche.naturalWidth === 0) return;
       const [hx, hy, dxr, dyr, bx, by] = q;
       const ox = dx + hx * dw;
@@ -228,10 +253,36 @@ export function Plongee({
       ctx2d.restore();
     };
 
-    // Dessine l'image i en « cover » dans le canvas, agrandie de `zoom` autour du centre de l'écran.
-    const dessiner = (i: number) => {
+    // Du défilement (0 à 1 sur les images) à l'image, fractionnaire : à pas égal de ce qui se voit.
+    const nombre = serie.nombre;
+    const cumul: number[] = [0];
+    for (let k = 0; k < nombre - 1; k++) cumul.push(cumul[k] + Math.pow(Math.max(0.5, rythme?.[k] ?? 1), 0.9));
+    const total = cumul[nombre - 1];
+    const rang = (pv: number) => {
+      if (!rythme) return pv * (nombre - 1);
+      const c = pv * total;
+      let bas = 0;
+      let haut = nombre - 1;
+      while (haut - bas > 1) {
+        const milieu = (bas + haut) >> 1;
+        if (cumul[milieu] <= c) bas = milieu;
+        else haut = milieu;
+      }
+      return bas + (c - cumul[bas]) / (cumul[haut] - cumul[bas]);
+    };
+    const prete = (k: number) => !!images[k]?.complete && images[k].naturalWidth > 0;
+
+    // Dessine l'image f (fractionnaire : la suivante, en fondu) en « cover » dans le canvas, agrandie de `zoom` autour du centre de l'écran.
+    const dessiner = (f: number) => {
+      f = Math.min(nombre - 1, Math.max(0, f));
+      const base = Math.floor(f);
+      // Si l'image voulue n'est pas encore là, on garde la plus proche déjà chargée.
+      let i = base;
+      while (i > 0 && !prete(i)) i--;
+      if (!prete(i)) return;
+      const j = Math.min(nombre - 1, base + 1);
+      const melange = i === base && j !== i && prete(j) ? f - base : 0;
       const img = images[i];
-      if (!img || !img.complete || img.naturalWidth === 0) return;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const w = canvas.clientWidth;
       const h = canvas.clientHeight;
@@ -285,10 +336,16 @@ export function Plongee({
       ctx2d.translate(cx, cy);
       ctx2d.scale(zoom, zoom);
       ctx2d.translate(-cx, -cy);
+      ctx2d.globalAlpha = 1;
       ctx2d.drawImage(img, dx, dy, dw2, dh2);
+      if (melange > 0.004) {
+        ctx2d.globalAlpha = melange;
+        ctx2d.drawImage(images[j], dx, dy, dw2, dh2);
+        ctx2d.globalAlpha = 1;
+      }
       etatBrouille(performance.now());
-      dessinerLogo(i, dx, dy, dw2, dh2);
-      courante = i;
+      dessinerLogo(coinsA(f), dx, dy, dw2, dh2);
+      courante = f;
     };
 
     // Chargement à l'approche : toute la série, la première image dessinée dès qu'elle arrive.
@@ -318,7 +375,7 @@ export function Plongee({
     // d'animation, tant que la plongée est à l'écran et le logo visible.
     let boucle = 0;
     const tourner = () => {
-      if (courante >= 0 && logo?.coins[courante]) dessiner(courante);
+      if (courante >= 0 && coinsA(courante)) dessiner(courante);
       boucle = requestAnimationFrame(tourner);
     };
     const arreter = () => {
@@ -330,7 +387,7 @@ export function Plongee({
       trigger: el,
       start: "top top",
       end: "bottom bottom",
-      scrub: 0.4,
+      scrub: true,
       onToggle: (self) => {
         if (self.isActive && !boucle) boucle = requestAnimationFrame(tourner);
         if (!self.isActive) arreter();
@@ -352,11 +409,7 @@ export function Plongee({
         gsap.set(recul, { scale: 1 - 0.06 * ef, borderRadius: 24 * ef });
         gsap.set(voileFond, { opacity: 0.45 * ef });
         avance = pv;
-        const i = Math.round(pv * (serie.nombre - 1));
-        // Si l'image voulue n'est pas encore là, on garde la plus proche déjà chargée.
-        let j = i;
-        while (j > 0 && !(images[j]?.complete && images[j].naturalWidth)) j--;
-        dessiner(j);
+        dessiner(rang(pv));
       },
     });
 
@@ -368,7 +421,7 @@ export function Plongee({
       arreter();
       window.removeEventListener("resize", redessiner);
     };
-  }, [serie, ecran, focus, fondu, finVideo, logo, raccord]);
+  }, [serie, ecran, focus, fondu, finVideo, rythme, logo, raccord]);
 
   return (
     <div
@@ -377,11 +430,11 @@ export function Plongee({
       className={cn("nuit relative h-[320svh] motion-reduce:h-auto", className)}
     >
       {/* `data-plongee-colle` : là où se pose ce qui reste collé au plan quand la plongée commence (le bouton tombé près de l'ordinateur). */}
-      <div data-plongee-colle="" className="sticky top-0 h-svh motion-reduce:static motion-reduce:h-auto">
-        {/* La plongée, posée exactement sur le cadre du hero (mêmes marges, mêmes coins). */}
+      <div data-plongee-colle="" className="sticky top-0 h-lvh motion-reduce:static motion-reduce:h-auto">
+        {/* La plongée, posée exactement sur le cadre du hero : plein écran, même hauteur (`lvh`). */}
         <div
           ref={calque}
-          className="pointer-events-none invisible absolute inset-2 overflow-hidden rounded-[1.5rem] bg-background opacity-0 sm:inset-3 sm:rounded-[2rem] motion-reduce:hidden"
+          className="pointer-events-none invisible absolute inset-0 overflow-hidden bg-background opacity-0 motion-reduce:hidden"
         >
           {/* Le fond qui recule derrière la feuille. */}
           <div ref={fond} className="absolute inset-0 overflow-hidden">
@@ -389,10 +442,11 @@ export function Plongee({
             <div ref={ombre} aria-hidden="true" className="absolute inset-0 bg-background opacity-0" />
           </div>
         </div>
-        {/* La fenêtre en « feuille », dans le même cadre. Mouvement réduit : posée
-            sous le hero, dans le cours de la page. */}
+        {/* La fenêtre en « feuille ». Elle a la hauteur de ce qu'on voit (`dvh`) et non celle du plan
+            (`lvh`) : sur iPhone, son pied (le champ de saisie) passerait sous la barre de Safari.
+            Mouvement réduit : posée sous le hero, dans le cours de la page. */}
         {fenetre && (
-          <div className="pointer-events-none absolute inset-2 overflow-hidden rounded-[1.5rem] sm:inset-3 sm:rounded-[2rem] motion-reduce:pointer-events-auto motion-reduce:relative motion-reduce:inset-auto motion-reduce:mx-2 motion-reduce:h-[85svh] motion-reduce:overflow-visible sm:motion-reduce:mx-3">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-dvh overflow-hidden motion-reduce:pointer-events-auto motion-reduce:relative motion-reduce:inset-auto motion-reduce:mx-2 motion-reduce:h-[85svh] motion-reduce:overflow-visible sm:motion-reduce:mx-3">
             <div
               ref={feuille}
               className="pointer-events-auto invisible absolute inset-x-0 bottom-0 top-11 mx-auto md:top-14 md:max-w-3xl motion-reduce:visible motion-reduce:top-0"

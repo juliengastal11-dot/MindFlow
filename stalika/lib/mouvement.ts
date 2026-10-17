@@ -139,6 +139,10 @@ export const MOUVEMENT = {
       inertie: 0.34,
       /** Au plus, de combien de cartes un lancer fait tourner la roue. */
       lancerMax: 4,
+      /** Au doigt, la roue tourne ce nombre de fois plus vite que le doigt (la roue d'un
+          téléphone est petite : à 1, il fallait glisser sur toute la hauteur d'une carte, soit
+          254 px, pour en changer ; à 1,5, 170 px). */
+      gainTactile: 1.5,
       /** Un glissé qui franchit cette part d'une carte change de carte, même lent
           (0,2 : un cinquième de carte, soit une cinquantaine de pixels sur téléphone). */
       seuilGlisse: 0.2,
@@ -168,22 +172,21 @@ export const MOUVEMENT = {
   },
 
   /* --- Le bouton du héros : il se décroche, se balance, puis tombe de scène
-     en scène jusqu'à l'ordinateur (demande de J, 2026-10-02). Premier clic :
-     il saute s'accrocher au menu par un coin et se balance. Second clic : il
-     tombe, rebondit sur les textes et les animations du site, et se pose près
-     de l'ordinateur, sur la dernière image du ciel. En mouvement réduit, rien
-     de tout cela : le bouton est un simple lien. */
+     en scène jusqu'à l'ordinateur (demande de J, 2026-10-02). Un seul clic
+     (depuis le 2026-10-17) : il saute s'accrocher au menu par un coin, se
+     balance un instant, puis tombe de lui-même, rebondit sur les textes et les
+     animations du site, et se pose près de l'ordinateur, sur la dernière image
+     du ciel. En mouvement réduit, rien de tout cela : le bouton est un simple
+     lien. */
   bouton: {
     /** Le saut vers le clou : le bouton s'accroupit, puis vole (secondes). */
     envol: { accroupi: 0.16, vol: 0.62 },
     /** Le balancement par le coin haut gauche. `amplitude` : de combien il part
         de sa position de repos, en radians (0,63 ≈ 36°) ; `periode` des petites
         oscillations ; `duree` avant qu'il ne s'arrête ; `taux` : amortissement
-        par seconde. */
-    pendule: { amplitude: 0.63, periode: 1.45, duree: 4.4, taux: 0.6 },
-    /** L'indice du second clic apparaît quand le balancement n'a plus que cette
-        part de sa durée à courir. */
-    indice: { apres: 0.55 },
+        par seconde ; `avantChute` : le temps qu'il reste au clou, après son
+        saut, avant de tomber de lui-même (secondes). */
+    pendule: { amplitude: 0.63, periode: 1.45, duree: 4.4, taux: 0.6, avantChute: 0.7 },
     chute: {
       /** Durée voulue du film, en secondes : `base`, plus `parEcran` par hauteur
           d'écran à parcourir, bornée par `min` et `max`. */
@@ -252,7 +255,8 @@ export const MOUVEMENT = {
   relecture: {
     /** Longueur de la piste, en hauteurs d'écran, en plus de l'écran qui la porte. */
     ecrans: 2.6,
-    /** Lissage de la lecture derrière la molette, en secondes (0 : collée au doigt). */
-    lissage: 0.45,
+    /** Lissage de la lecture derrière la molette, en secondes (0 : collée au doigt). Au doigt, aucun
+        (2026-10-17, « trop de latence ») ; à la molette 0,2 au lieu de 0,45 : Lenis lisse déjà. */
+    lissage: 0.2,
   },
 } as const;

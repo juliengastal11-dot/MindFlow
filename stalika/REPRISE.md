@@ -45,11 +45,19 @@
 ## Ce qui reste à faire ou à vérifier
 
 - Le bouton du hero (Cyber Button « Parlons projet », `components/ui/bouton-chute.tsx`) : première
-  étape faite (décrochage, balancement, chute jusqu'à l'ordinateur) ; **deuxième étape reportée par J
+  étape faite (décrochage, balancement, chute jusqu'à l'ordinateur ; **en un seul clic depuis le 2026-10-17**) ; **deuxième étape reportée par J
   (2026-10-02), jusqu'à ce qu'il ait retravaillé toutes les sections** : les perchoirs de section quand
   le visiteur ne clique pas (voir `BLUEPRINT.md`, mise à jour du 2026-10-02). Après chaque retouche de
   section, vérifier que les `data-rebond` suivent. À tester par J sur iPhone (fluidité de la chute).
 - Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion.
+- **À décider avec J (2026-10-17) : la qualité de la vidéo du hero et la maison.** J : « la vidéo pas assez de bonne qualité », « la maison est
+  trop petite, il faut qu'elle fasse plus petit chalet ». Causes mesurées : la vidéo du téléphone est une bande de 600 × 1 076 px
+  d'un plan 16:9, agrandie puis compressée à 0,7-1 Mbit/s ; la plongée est la même bande, sur un plan 16:9 dont le téléphone ne montre que le
+  tiers ; la maison est à l'extrême gauche du plan, coupée par le recadrage mobile. Pistes, de la moins chère à la plus chère :
+  (a) retélécharger les deux plans du hero (tâches ci-dessous, gratuit) et recompresser plus haut (AV1/HEVC/VP9) : plus de blocs, pas plus de
+  résolution ; (b) un plan natif 9:16 en 1080 × 1920 pour le téléphone, avec un chalet plus gros et dans le cadre : le hero seul, 2 plans à 17,5
+  crédits, mais le premier défilement fondrait sur un ciel resté paysage ; (c) tout le chemin en 9:16 (hero, cinq passages du ciel, plongée),
+  autour de 150 crédits ; le solde de J était de 1 224 crédits le 2026-10-17. Aucune génération sans le prix annoncé et l'accord de J.
 - Tester sur le vrai iPhone, en direct (2026-10-17) : le skill global `/phone` (`~/.claude/skills/phone`, son README l'explique).
   Il monte un pont (relais sur le réseau local + télécommande de la page ouverte dans Safari) et rend une seule adresse à copier dans
   Safari ; ensuite Claude lit la console, mesure, défile, touche et chronomètre la fluidité sur le téléphone. Un iPhone ne se pilote pas

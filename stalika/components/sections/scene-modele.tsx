@@ -13,8 +13,8 @@ import { REALISATIONS } from "@/lib/realisations";
 
    À gauche, la roue des sites (demande de J, 2026-10-01) : quatre sites de
    Julien, chacun en action, AR Transfert en tête (2026-10-04). Elle tourne seule, on l'attrape, on la lance ; le
-   site de face défile dans sa carte, au doigt sur téléphone, après un clic à
-   la souris. À droite, ce que « sur mesure » veut dire. Même disposition sur
+   site de face défile dans sa carte une fois visitée, par un clic à la souris
+   ou un toucher au doigt. À droite, ce que « sur mesure » veut dire. Même disposition sur
    téléphone : la roue à gauche, le texte à droite.
 
    La chronologie de la scène : la roue arrive lancée et se pose sur la

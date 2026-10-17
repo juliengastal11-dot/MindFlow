@@ -6,8 +6,9 @@ import { IleMenu } from "@/components/ui/ile-menu";
 import { MOUVEMENT } from "@/lib/mouvement";
 
 /* ---------------------------------------------------------------------------
-   Le hero de l'accueil : un grand cadre arrondi, une vidéo plein cadre, et
-   STALIKA en très grand qui se compose lettre par lettre.
+   Le hero de l'accueil : une vidéo plein écran (le cadre arrondi a été retiré
+   le 2026-10-17, demande de J : « il faut que la vidéo occupe tout l'écran »),
+   et STALIKA en très grand qui se compose lettre par lettre.
 
    Mise en page reprise d'un hero repéré par J sur 21st (la forme seulement :
    cadre arrondi sur fond sombre, menu en onglet accroché au bord haut, nom
@@ -42,7 +43,7 @@ export function Hero() {
           bord visible quand le hero remonte sur le plan fixe. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-2 top-2 h-[160svh] rounded-t-[1.5rem] sm:inset-x-3 sm:top-3 sm:rounded-t-[2rem]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[160svh]"
         style={{
           backgroundImage:
             "linear-gradient(to bottom, color-mix(in oklab, var(--color-background) 45%, transparent), transparent 22%, color-mix(in oklab, var(--color-background) 85%, transparent) 58%, transparent)",

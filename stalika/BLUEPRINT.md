@@ -174,6 +174,42 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-17 : un seul clic, plein écran, des images sans à-coups, la roue au doigt
+
+Retours de J, vus en direct sur son iPhone 16 Pro (iOS 18.7, Safari) par le pont du skill `/phone`. Mesures faites sur ce
+téléphone.
+- **Le bouton « Parlons projet » : un seul clic** (« on enlève le deuxième clic, il saute et tombe au 1er clic »). Il
+  s'accroupit, saute au clou, se balance 0,7 s (`pendule.avantChute`), puis tombe de lui-même ; un clic pendant ce
+  balancement le fait tomber tout de suite. L'indice « Encore un clic : il tombe. » est retiré. Vérifié sur le téléphone :
+  la copie accrochée à 0,2 s, la chute lancée vers 1,5 s, posée près de l'ordinateur à 12,5 s, aucune erreur.
+- **La vidéo et le ciel occupent tout l'écran** : plus de marge de 8 px ni de coins arrondis (`Ciel`, `Plongee`, le dégradé du
+  hero). Le plan a la hauteur de la plus grande fenêtre (`lvh`) : quand la barre de Safari se replie, la fenêtre grandit
+  (754 px au lieu de 714 sur ce téléphone) et un plan à la hauteur de la plus petite laissait une bande sombre. Le cadre de la
+  plongée est le même, au pixel (mesuré : `0, 0, 402, 754` des deux côtés). La feuille de la discussion garde la hauteur de ce
+  qu'on voit (`dvh`) : son champ de saisie ne passe pas sous la barre.
+- **Moins de latence, au doigt** : le défilement tactile a déjà sa propre inertie, le lisser encore ne faisait que traîner.
+  Le ciel suit le doigt tout de suite (avant : 12 % de l'écart à chaque image, une traîne d'une demi-seconde ; après : le
+  même dessin dès l'image suivante, mesuré 25 ms après un saut de 1 800 px). Les scènes au défilement (`Scene`) sont collées
+  au doigt (`scrub: true`) ; à la molette, le lissage passe de 0,45 s à 0,2 s (Lenis lisse déjà).
+- **La plongée, sans images qui défilent l'une après l'autre** : (1) deux images voisines se fondent selon la position exacte
+  (comme dans le ciel) ; (2) le défilement est réparti d'après de combien l'image change d'une image à la suivante
+  (`lib/plongee-rythme.ts`, mesuré par `outils/hero/rythme-plongee.py`) : la caméra va dix fois plus vite au milieu qu'au
+  début, et une image tous les mêmes pixels (18 px) faisait lurcher la fin. Mesuré sur le téléphone à 600 px/s : le pas visible
+  par affichage a un rapport max/médiane de 1,9 (avant : 6,8, de 2 à 13,7), 68 % des affichages sont des fondus, 60 images par
+  seconde. Reste vrai : ces 61 images viennent d'un plan 16:9 dont un téléphone ne montre que le tiers (voir plus bas).
+- **La roue au doigt** (« il est difficile de la faire tourner ») : sur téléphone, le glissé le plus naturel, sur la carte du
+  milieu, faisait défiler le site dans la carte au lieu de tourner la roue ; il fallait saisir les cartes voisines ou les
+  marges. Maintenant, glisser n'importe où sur la roue la fait tourner ; on **touche** la carte de face pour la visiter (le
+  site défile alors dans la carte, la croix ou un toucher à côté referme), comme à la souris. Au doigt, la roue tourne 1,5 fois
+  plus vite que le doigt (`gainTactile` : 170 px pour changer de carte, au lieu de 254). Vérifié sur le téléphone avec des
+  évènements tactiles simulés : un glissé de 100 ou de 40 px sur la carte du milieu change d'une carte, un coup de doigt en
+  fait trois, un toucher ouvre la visite, un toucher sur le texte la referme. L'indice tactile devient « Touchez pour visiter le
+  site ».
+- **Pas fait, à décider avec J** : la qualité de la vidéo et la maison. La vidéo du téléphone est une bande de 600 × 1 076 px
+  prise dans un plan 16:9 de 1 080 p, agrandie à 840 × 1 506, puis compressée à 0,7 à 1 Mbit/s : floue, avec des blocs. La
+  maison (une cabane à l'extrême gauche du plan) est coupée par ce recadrage. Les vrais remèdes demandent de regénérer, donc des
+  crédits : voir `REPRISE.md`.
+
 ## Mise à jour du 2026-10-09 (suite) : l'île en verre, le bandeau centré, le bouton au milieu
 
 Trois retouches de J, le même jour que le bandeau de cookies :

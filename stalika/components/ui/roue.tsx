@@ -49,12 +49,16 @@ import { useScene } from "@/components/ui/scene";
    développement peut l'avancer à la main quand il est masqué.
 
    Les cartes ne sont pas des liens, mais on fait défiler le site dans la carte
-   de face, jusqu'à son pied de page :
-   · au doigt (téléphone, tablette), directement : glisser sur la carte de face
-     fait défiler le site ; glisser au-dessus ou en dessous fait tourner la roue ;
-   · à la souris, après un clic sur la carte de face (`visitable`) : sans ce
-     clic, la molette ferait défiler la carte au lieu de la page à chaque
-     passage du curseur.
+   de face, jusqu'à son pied de page, après l'avoir visitée (`visitable`) : un
+   clic à la souris, un toucher au doigt. Sans cela, la molette ferait défiler
+   la carte au lieu de la page à chaque passage du curseur, et au doigt le
+   glissé le plus naturel, sur la carte du milieu, faisait défiler le site au
+   lieu de tourner la roue (J, 2026-10-17 : « il est difficile de la faire
+   tourner »). Désormais, au doigt comme à la souris, glisser n'importe où sur
+   la roue la fait tourner ; on touche la carte de face pour la visiter, et on
+   touche à côté (ou la croix) pour refermer. Au doigt, la roue tourne un peu
+   plus vite que le doigt (`gainTactile`) : une carte pour une centaine de
+   pixels de glissé, pas pour toute sa hauteur.
    Pendant qu'on lit, la roue attend `repriseLecture` secondes avant de repartir.
 
    Toutes les cartes tiennent sur la face visible du cylindre : l'écart entre
@@ -192,7 +196,6 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
     focus: false,
     pause: false,
     visite: -1,
-    contact: false,
     reduit: false,
     enVue: false,
     repriseA: 0,
@@ -210,7 +213,7 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
 
   const suspendue = () => {
     const s = m.current;
-    return s.survol || s.focus || s.pause || s.visite >= 0 || s.contact || s.reduit || !s.enVue;
+    return s.survol || s.focus || s.pause || s.visite >= 0 || s.reduit || !s.enVue;
   };
 
   /** Les bandes d'une carte (éléments `data-bande`), lues dans le DOM la première fois. */
@@ -299,7 +302,7 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
         loin: d * ecart > LOIN,
         enVue: s.enVue,
         visite: s.visite === i,
-        defilable: s.visite === i || (s.tactile && devant),
+        defilable: s.visite === i,
       };
     });
     const cle = etatsNeufs.map((e) => `${+e.devant}${+e.proche}${+e.loin}${+e.enVue}${+e.visite}${+e.defilable}`).join("");
@@ -508,15 +511,6 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
     const indexCarte = carte ? Number(carte.dataset.index) : -1;
     // Dans la carte qu'on visite, le geste appartient au site.
     if (s.visite >= 0 && indexCarte === s.visite) return;
-    // Au doigt, sur la page de la carte de face : le geste fait défiler le site dans la
-    // carte (défilement natif), la roue ne bouge pas. Sur le reste de la carte (ses
-    // bords), il fait tourner la roue.
-    const surLaPage = !!(e.target as HTMLElement).closest("[data-lenis-prevent]");
-    if (e.pointerType !== "mouse" && s.tactile && surLaPage && indexCarte >= 0 && Math.abs(ecartA(indexCarte, s.pos, n)) < DEVANT) {
-      s.contact = true;
-      retenir();
-      return;
-    }
     sortirDeVisite();
     s.tween?.kill();
     s.tween = null;
@@ -538,7 +532,10 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
     if (s.pointeur !== e.pointerId || s.mode !== "glisse") return;
     const dy = e.clientY - s.departY;
     if (!s.glisse && Math.abs(dy) > 5) s.glisse = true;
-    s.pos = s.departPos - dy / s.parCarte;
+    // Au doigt, la roue prend de l'avance sur lui : la roue d'un téléphone est petite, et suivre le doigt au pixel
+    // près demandait de glisser sur toute la hauteur d'une carte pour en changer.
+    const gain = e.pointerType === "mouse" ? 1 : R0.gainTactile;
+    s.pos = s.departPos - (dy * gain) / s.parCarte;
     const t = performance.now();
     s.histo.push({ t, p: s.pos });
     while (s.histo.length > 2 && t - s.histo[0].t > 100) s.histo.shift();
@@ -547,11 +544,6 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
 
   const aLaFin = (e: React.PointerEvent<HTMLDivElement>) => {
     const s = m.current;
-    // Le doigt quitte la carte de face qu'il faisait défiler.
-    if (s.contact) {
-      s.contact = false;
-      retenir();
-    }
     if (s.pointeur !== e.pointerId) return;
     s.pointeur = -1;
     const premier = s.histo[0];
@@ -571,7 +563,7 @@ export function Roue({ legendes, rendu, label, visitable = false, className }: R
           setAnnonce(`${i + 1} sur ${n} : ${legendes[i].titre}`);
           return;
         }
-        if (visitable && e.pointerType === "mouse" && s.bureau) {
+        if (visitable && (e.pointerType === "mouse" ? s.bureau : s.tactile)) {
           allerVers(Math.round(s.pos), 0, () => {
             s.visite = i;
             setVisite(i);

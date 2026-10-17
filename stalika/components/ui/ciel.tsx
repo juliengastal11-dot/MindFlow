@@ -46,6 +46,13 @@ import { RAPPORT_CIEL as RAPPORT } from "@/lib/ciel"; // largeur / hauteur des i
 
    Téléphone : une série recadrée sur la falaise (`cadrageMobile`), moins
    lourde. Les images ne sont chargées qu'à l'approche.
+
+   Plein écran (J, 2026-10-17 : « il faut que la vidéo occupe tout l'écran ») :
+   le plan va de bord à bord, sans marge ni coins arrondis. Il fait la hauteur
+   de la plus grande fenêtre (`lvh`) : sur iPhone, quand la barre de Safari se
+   replie au défilement, la fenêtre grandit, et un plan de la hauteur de la
+   plus petite (`svh`) laissait une bande sombre en bas. `Plongee` pose son
+   cadre exactement sur celui-ci.
 --------------------------------------------------------------------------- */
 
 export type SerieCiel = { dossier: string; nombre: number };
@@ -317,8 +324,16 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
       return p.t + (q.t - p.t) * borne((y - p.y) / (q.y - p.y));
     };
 
+    // Au doigt, le défilement a déjà sa propre inertie : le plan le suit tout de suite, sans traîner derrière
+    // (J, 2026-10-17 : « trop de latence »). À la molette, Lenis lisse déjà : un rattrapage court suffit, et il ne
+    // dépend plus du rythme de l'écran (avant : 12 % de l'écart à chaque image, soit une traîne d'une demi-seconde).
+    const tactile = window.matchMedia("(pointer: coarse)").matches;
+    let dernierTic = performance.now();
     const tourner = () => {
-      courant = reduit ? cible : courant + (cible - courant) * 0.12;
+      const maintenant = performance.now();
+      const dt = Math.min(0.1, (maintenant - dernierTic) / 1000);
+      dernierTic = maintenant;
+      courant = reduit || tactile ? cible : courant + (cible - courant) * (1 - Math.exp(-dt / 0.06));
       if (Math.abs(courant - cible) < 0.0002) courant = cible;
       suivreVideo(courant);
       if (Math.abs(courant - dessinee) > 0.0001) dessiner(courant);
@@ -361,8 +376,8 @@ export function Ciel({ bureau, mobile, cadrageMobile, jalons, reperes, video, co
       {/* Le plan, fixe à l'écran pendant toute la zone ; les sections passent par-dessus.
           Ordre d'empilement explicite (plan en 0, sections en 10) : sans lui,
           Safari sur iPhone peut peindre le plan collant au-dessus des textes. */}
-      <div className="pointer-events-none sticky top-0 z-0 -mb-[100svh] h-svh p-2 sm:p-3">
-        <div ref={cadre} data-ciel-cadre="" className="relative h-full overflow-hidden rounded-[1.5rem] sm:rounded-[2rem]">
+      <div className="pointer-events-none sticky top-0 z-0 -mb-[100lvh] h-lvh">
+        <div ref={cadre} data-ciel-cadre="" className="relative h-full overflow-hidden">
           {/* Sans JavaScript, et jusqu'au premier dessin : la première image. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

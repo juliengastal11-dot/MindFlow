@@ -25,8 +25,10 @@ import { dossierRealisation, type Realisation } from "@/lib/realisations";
      carte est de face ou voisine. Une entrée se remet au début quand la carte
      passe derrière la roue, et se joue quand elle revient de face : on
      « arrive » sur le site à chaque tour.
-   · Le site défile dans la carte, jusqu'au pied de page : au doigt sur la carte
-     de face ; à la souris, après un clic (la visite). Le défilement natif est
+   · Le site défile dans la carte, jusqu'au pied de page, une fois la carte
+     visitée : un clic à la souris, un toucher au doigt (depuis le 2026-10-17 :
+     avant, le doigt la faisait défiler directement, et le glissé le plus
+     naturel sur la roue ne la faisait donc pas tourner). Le défilement natif est
      porté par une couche transparente posée devant la carte (la page est faite
      d'images peintes, il n'y a rien à faire défiler d'autre) ; sa position
      commande la peinture. Les tranches de la page se chargent au fil du
@@ -109,7 +111,10 @@ export function CarteRealisation({ site, etat, actions }: { site: Realisation; e
   const permise = useRef(false);
   const jouee = useRef(false);
   const horsChamp = useRef(false);
-  const auDoigt = etat.defilable && !etat.visite;
+  // Un écran tactile : la carte de face dit qu'on peut la toucher pour la visiter.
+  const [tactile, setTactile] = useState(false);
+  useEffect(() => setTactile(window.matchMedia("(pointer: coarse)").matches), []);
+  const auDoigt = tactile && etat.devant && !etat.visite;
 
   /* --- La peinture ---------------------------------------------------------- */
   const peindre = useCallback(() => {
@@ -373,7 +378,7 @@ export function CarteRealisation({ site, etat, actions }: { site: Realisation; e
     demander();
   };
 
-  // Au doigt : la première fois qu'une carte s'offre au défilement, on le dit.
+  // Au doigt : la première fois qu'une carte reste de face, on dit qu'on peut la visiter.
   // Pas pendant que la roue tourne : il faut que la carte reste de face.
   useEffect(() => {
     if (!auDoigt || !etat.enVue || indiceTactileMontre) return;
@@ -497,7 +502,7 @@ export function CarteRealisation({ site, etat, actions }: { site: Realisation; e
         {indice && auDoigt && (
           <span className="absolute inset-x-0 bottom-[12%] flex animate-[roue-indice_3.6s_var(--ease-out)_both] justify-center">
             <span className="rounded-full bg-background/80 px-2.5 py-1 text-[0.625rem] font-semibold text-foreground shadow-lg backdrop-blur-sm">
-              Faites défiler le site
+              Touchez pour visiter le site
             </span>
           </span>
         )}
@@ -509,7 +514,7 @@ export function CarteRealisation({ site, etat, actions }: { site: Realisation; e
           </div>
         )}
 
-        {/* En visite, à la souris : la sortie. */}
+        {/* En visite : la sortie. */}
         {etat.visite && (
           <>
             <button
@@ -522,7 +527,8 @@ export function CarteRealisation({ site, etat, actions }: { site: Realisation; e
             </button>
             <span className="absolute inset-x-0 bottom-[12%] flex animate-[roue-indice_3.6s_var(--ease-out)_both] justify-center">
               <span className="rounded-full bg-background/80 px-3.5 py-1.5 text-xs font-semibold text-foreground shadow-lg backdrop-blur-sm">
-                Faites défiler · Échap pour sortir
+                <span className="[@media(pointer:coarse)]:hidden">Faites défiler · Échap pour sortir</span>
+                <span className="hidden [@media(pointer:coarse)]:inline">Faites défiler · touchez à côté pour sortir</span>
               </span>
             </span>
           </>

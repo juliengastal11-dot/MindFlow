@@ -4,6 +4,7 @@ import { Plongee } from "@/components/ui/plongee";
 import { Ciel } from "@/components/ui/ciel";
 import { Discussion } from "@/components/ui/discussion";
 import { ECRANS_PLONGEE } from "@/lib/plongee-ecran";
+import { RYTHME_PLONGEE } from "@/lib/plongee-rythme";
 import { CADRAGE_MOBILE } from "@/lib/ciel";
 import { SceneModele } from "@/components/sections/scene-modele";
 import { SceneUtile } from "@/components/sections/scene-utile";
@@ -79,6 +80,7 @@ export default function Accueil() {
             images={{ dossier: "/hero/plongee", nombre: 61 }}
             ecran={{ x: 0.3, y: 0.4, l: 0.275, h: 0.32 }}
             focus={{ debut: { x: 0.3, y: 0.5 }, fin: { x: 0.44, y: 0.55 } }}
+            rythme={RYTHME_PLONGEE}
             logo={{
               src: "/hero/logo/ecran.png",
               lettres: [234, 267, 309, 246, 133, 285, 269],
