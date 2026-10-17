@@ -3,8 +3,8 @@ import { Hero } from "@/components/sections/hero";
 import { Plongee } from "@/components/ui/plongee";
 import { Ciel } from "@/components/ui/ciel";
 import { Discussion } from "@/components/ui/discussion";
-import { ECRANS_PLONGEE } from "@/lib/plongee-ecran";
-import { ECRANS_PLONGEE_MOBILE } from "@/lib/plongee-ecran-mobile";
+import { CACHES_PLONGEE_BUREAU, ECRANS_PLONGEE_BUREAU } from "@/lib/plongee-ecran-bureau";
+import { CACHES_PLONGEE_MOBILE, ECRANS_PLONGEE_MOBILE } from "@/lib/plongee-ecran-mobile";
 import { RYTHME_PLONGEE } from "@/lib/plongee-rythme";
 import { RYTHME_PLONGEE_MOBILE } from "@/lib/plongee-rythme-mobile";
 import { POSE_BOUTON_MOBILE, RAPPORT_CIEL_MOBILE } from "@/lib/ciel";
@@ -77,18 +77,14 @@ export default function Accueil() {
               la première de la plongée) quand ce point passe au milieu de l'écran. */}
           <div id="ciel-fin" aria-hidden="true" className="h-px" />
           {/* La plongée dans l'ordinateur (Kling 3.0, du plan large au gros plan
-              sur l'écran, 61 images), posée dans le cadre du ciel. */}
+              sur l'écran, 61 images), posée dans le cadre du ciel. Sur l'écran, un
+              bureau de Mac, d'où sort la fenêtre de discussion (`EcranMac`). */}
           <Plongee
             images={{ dossier: "/hero/plongee", nombre: 61 }}
-            ecran={{ x: 0.3, y: 0.4, l: 0.275, h: 0.32 }}
             focus={{ debut: { x: 0.3, y: 0.5 }, fin: { x: 0.44, y: 0.55 } }}
             rythme={RYTHME_PLONGEE}
-            logo={{
-              src: "/hero/logo/ecran.png",
-              lettres: [234, 267, 309, 246, 133, 285, 269],
-              hauteurLettres: 217,
-              coins: ECRANS_PLONGEE,
-            }}
+            coins={ECRANS_PLONGEE_BUREAU}
+            caches={CACHES_PLONGEE_BUREAU}
             raccord={{
               // Le dernier passage du ciel se termine sur la première image de la plongée
               // (imposée à Kling comme image d'arrivée) : aucun écart de cadrage.
@@ -99,17 +95,16 @@ export default function Accueil() {
             }}
             // La plongée du téléphone, verticale d'origine : un seul vol, de la falaise jusque dans l'écran (MiniMax H3, 2K : J l'a choisi
             // parce que le décor tient et que le personnage reste assis sur l'herbe). 120 images à pas égal de changement, la dernière en
-            // pleine taille ; l'écran, qui remplit déjà l'image, finit d'entrer par un léger agrandissement (outils/hero/extraire-vertical.mjs).
-            // L'écran dans la dernière image, ses coins image par image (mesurer-ecran.py).
+            // pleine taille (outils/hero/extraire-vertical.mjs), et les coins de l'écran image par image (mesurer-ecran.py), où se
+            // colle le bureau du Mac, avec ce qu'en cache l'épaule du personnage.
             mobile={{
               images: { dossier: "/hero/plongee-mobile", nombre: 120 },
-              ecran: { x: 0.079, y: 0.334, l: 0.847, h: 0.298 },
-              agrandissement: 1.1,
               rythme: RYTHME_PLONGEE_MOBILE,
               coins: ECRANS_PLONGEE_MOBILE,
+              caches: CACHES_PLONGEE_MOBILE,
             }}
             fenetre={<Discussion />}
-            alt="La caméra s'approche du personnage assis au bord de la falaise, passe derrière son épaule et entre dans l'écran de son ordinateur, où le logo Stalika est affiché."
+            alt="La caméra s'approche du personnage assis au bord de la falaise et passe derrière son épaule ; sur l'écran de son ordinateur, un bureau de Mac au logo Stalika, d'où s'ouvre la fenêtre de discussion."
           />
         </Ciel>
         <SceneLivre />

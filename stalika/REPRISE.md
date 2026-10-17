@@ -36,8 +36,11 @@
    - Par-dessus : `Hero` (section transparente), `SceneModele` (#sur-mesure, la roue des trois
      sites de Julien : `components/ui/roue.tsx`, voir `BLUEPRINT.md`), `SceneUtile`
      (#utile), `SceneRelecture` (#relecture : une piste de 3,6 écrans où le contenu reste collé et où le film suit le défilement, voir `BLUEPRINT.md`, mise à jour du 2026-10-07), puis `Plongee` (`components/ui/plongee.tsx`) :
-     zoom dans l'ordinateur (61 images `public/hero/plongee/`), logo Stalika qui scintille sur
-     l'écran (`lib/plongee-ecran.ts`), puis la fenêtre de discussion qui s'ouvre en « feuille ».
+     le vol jusque dans l'ordinateur (120 images verticales sur téléphone, 61 images Kling sur ordinateur) ; sur l'écran du
+     portable, un bureau de Mac collé en perspective (`components/ui/ecran-mac.tsx`, coins et épaule mesurés dans
+     `lib/plongee-ecran-mobile.ts` et `lib/plongee-ecran-bureau.ts`), d'où la fenêtre de discussion sort du Dock avec l'effet
+     Génie ; puis la caméra entre dans la fenêtre et le bureau s'efface vers la page (voir `BLUEPRINT.md`, mise à jour du
+     2026-10-17, soir).
 2. `Discussion` (`components/ui/discussion.tsx`) : premier message écrit tout seul, réponse
    fixe, puis relais honnête (créneau → WhatsApp pré-rempli). L'API Claude n'est PAS branchée.
 3. `SceneLivre` (prix), `Confiance`, `Julien`, `Faq`, `Appel`, pied de page.
@@ -62,7 +65,14 @@
   Safari ; ensuite Claude lit la console, mesure, défile, touche et chronomètre la fluidité sur le téléphone. Un iPhone ne se pilote pas
   depuis Windows (pas d'ADB) : on pilote la page, pas l'appareil ; pas de captures d'écran (J les envoie, ou un récepteur AirPlay sur
   le PC, non installé). Le débogage ADB sans fil, c'était pour l'application VTBON sur Android, pas pour ce site.
-- Mode « animations réduites » non revérifié après les derniers changements.
+- Mode « animations réduites » : revérifié le 2026-10-17 au soir pour la discussion (la fenêtre posée dans la page, sans bureau) ;
+  le reste de la page non revérifié.
+- Sur ordinateur, la plongée Kling (61 images pour un grand mouvement) fait un fantôme quand deux images se fondent (deux têtes,
+  deux écrans) : à reprendre avec la chaîne paysage (plus d'images, ou un vol MiniMax comme sur téléphone ; se compte en crédits).
+- Pour voir la page sans le panneau navigateur de l'appli (caché : ses pages y sont figées), un Chrome sans fenêtre piloté par le
+  protocole DevTools, sans paquet à installer : Node 24 a `WebSocket` ; lancer `chrome.exe --headless=new
+  --remote-debugging-port=9333 --user-data-dir=<dossier jetable>`, puis `Emulation.setDeviceMetricsOverride`, `Page.navigate`,
+  `Runtime.evaluate` (défiler) et `Page.captureScreenshot`.
 - Plus de voiles sombres sur les scènes 01 à 03 (2026-10-07, demande de J) : le texte tient par une ombre douce (`sur-ciel`). À regarder sur téléphone au crépuscule (début de la 01) et à l'aube (fin de la 03), voir `BLUEPRINT.md`.
 - Le 2026-10-09, à regarder sur téléphone : l'île du menu en verre (même verre que le bandeau de cookies), le bandeau de cookies centré (donc plus haut : 257 px) et le bouton « Parlons projet » au milieu de la page, sur sa propre rangée (voir `BLUEPRINT.md`). Le verre n'a été vu que dans Chrome : à regarder sur Safari (iPhone) aussi.
 - Rechargement à chaud et films des scènes (développement seulement, constaté le 2026-10-07) : React peut remplacer les

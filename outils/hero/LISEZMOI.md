@@ -83,7 +83,8 @@ Il faut Node, ffmpeg et Python (Pillow, numpy).
 node monter-vertical.mjs aller.mp4 retour.mp4 [dossier] [--h264 2200] [--vp9 1600] [--hevc 1800]
 node extraire-vertical.mjs ciel <dossier> passe1.mp4:21 passe2.mp4:20 passe3.mp4:30 passe4.mp4:20 passe5.mp4:20
 node extraire-vertical.mjs plongee plongee.mp4 <dossier> 120 --derniere-pleine --qualite 72
-python -I -X utf8 mesurer-ecran.py <images de la plongée> stalika/lib/plongee-ecran-mobile.ts ECRANS_PLONGEE_MOBILE --debug <dossier>
+python -I -X utf8 mesurer-ecran.py stalika/public/hero/plongee-mobile stalika/lib/plongee-ecran-mobile.ts ECRANS_PLONGEE_MOBILE --debug <dossier>
+python -I -X utf8 mesurer-ecran.py stalika/public/hero/plongee stalika/lib/plongee-ecran-bureau.ts ECRANS_PLONGEE_BUREAU --lumiere 160 --couleur 62 --graines stalika/lib/plongee-ecran-bureau.ts
 python -I -X utf8 rythme-plongee.py --mobile
 ```
 
@@ -94,14 +95,18 @@ python -I -X utf8 rythme-plongee.py --mobile
 - `extraire-vertical.mjs ciel` : les 111 images du ciel, bout à bout (21, 20, 30, 20, 20 par passe), `public/ciel/mobile` ;
 - `extraire-vertical.mjs plongee` : 120 images **à pas égal de changement** (la différence moyenne entre deux images
   voisines est cumulée, puis découpée en parts égales : la caméra va dix fois plus vite au milieu qu'au début), `public/hero/plongee-mobile`.
-  `--derniere-pleine` : la dernière image reste en 1 080 × 1 912, parce que la page finit par un agrandissement de cette image
-  (`Plongee`, `mobile.agrandissement`). `--fin <image>` coupe un plan avant un mouvement raté (servi un temps à 163 sur le vol Kling, abandonné : J veut que la caméra
+  `--derniere-pleine` : la dernière image reste en 1 080 × 1 912, parce que la page finit par entrer dans cet écran
+  (le zoom de `Plongee` dessine cette image jusqu'à quatre fois plus grande). `--fin <image>` coupe un plan avant un mouvement raté (servi un temps à 163 sur le vol Kling, abandonné : J veut que la caméra
   entre dans l'écran sans arrêt sur image). Les plans sont rognés au format 1 080 × 1 912 quelle que soit leur taille (MiniMax sort en 1 440 de large). **Pour un vol, le prompt
   doit dire que le décor est rigide** : les deux premiers plans faisaient lever et s'affaisser le terrain (J : « c'est la caméra qui
   arrive sur l'ordinateur, le décor ne bouge pas ») ; le troisième disait « a real, solid location… the ground never rises, sinks,
   tilts, bends or grows… only the camera moves, with natural parallax », et il tient ;
-- `mesurer-ecran.py` : les coins de l'écran blanc de l'ordinateur dans chaque image de la plongée, là où la page pose le logo ;
+- `mesurer-ecran.py` : les quatre coins de l'écran de l'ordinateur dans chaque image de la plongée, là où la page colle le bureau
+  du Mac en perspective (chaque bord ajusté par une droite sur une partie que l'épaule ne cache pas), et ce que l'épaule en cache,
+  rangée par rangée (`CACHES_…`, dans le même fichier). L'écran de la série verticale est blanc ; celui de la série Kling de
+  l'ordinateur est crème et montre un navigateur : `--lumiere 160 --couleur 62`, et `--graines` (des coins déjà mesurés, ici le
+  fichier lui-même) pour garder la zone de l'écran plutôt que les nuages crème, plus grands ;
 - `rythme-plongee.py --mobile` : de combien l'image change d'une image à la suivante (`lib/plongee-rythme-mobile.ts`).
 
 Les points mesurés à la main, dans `stalika/lib/ciel.ts` : `POSE_BOUTON_MOBILE` (où le bouton tombé se pose : l'herbe à droite de
-l'ordinateur) ; dans `stalika/app/page.tsx` : le rectangle de l'écran dans la dernière image de la plongée.
+l'ordinateur).

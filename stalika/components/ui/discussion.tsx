@@ -267,20 +267,32 @@ export function Discussion({ className }: { className?: string }) {
       if (vivant.current) setPret(true);
     };
 
+    // Seulement quand la fenêtre est entièrement à l'écran, et posée : sur le Mac de la plongée (`Plongee`, `EcranMac`), elle
+    // est déjà dans la vue quand elle n'est encore qu'une petite fenêtre sur l'écran du portable ; son parent porte alors
+    // `data-fenetre-attente`, retiré quand la fenêtre est à sa taille.
+    const parent = el.parentElement;
+    let enVue = false;
+    const essayer = () => {
+      if (parti || !enVue || parent?.hasAttribute("data-fenetre-attente")) return;
+      parti = true;
+      obs.disconnect();
+      attente.disconnect();
+      void jouer();
+    };
     const obs = new IntersectionObserver(
       (entrees) => {
-        // Seulement quand la fenêtre est entièrement en place (elle monte encore avant).
-        if (parti || !entrees.some((e) => e.intersectionRatio >= 0.97)) return;
-        parti = true;
-        obs.disconnect();
-        void jouer();
+        enVue = entrees.some((e) => e.intersectionRatio >= 0.97);
+        essayer();
       },
       { threshold: [0, 0.97] },
     );
+    const attente = new MutationObserver(essayer);
     obs.observe(el);
+    if (parent) attente.observe(parent, { attributes: true, attributeFilter: ["data-fenetre-attente"] });
     return () => {
       vivant.current = false;
       obs.disconnect();
+      attente.disconnect();
     };
   }, [ajouter, julien]);
 
@@ -333,14 +345,13 @@ export function Discussion({ className }: { className?: string }) {
       aria-labelledby="discussion-titre"
       role="region"
       className={cn(
-        "jour flex h-full flex-col overflow-hidden rounded-t-[1.25rem] bg-background text-foreground shadow-carte",
+        "jour flex h-full flex-col overflow-hidden rounded-[1.25rem] bg-background text-foreground shadow-carte",
         className,
       )}
     >
-      {/* La barre de la fenêtre : poignée de feuille, pastilles, titre. */}
-      <div className="relative shrink-0 border-b bg-secondary px-4 pb-2.5 pt-3 sm:px-5">
-        <span aria-hidden="true" className="absolute left-1/2 top-1.5 h-1 w-9 -translate-x-1/2 rounded-full bg-muted-foreground/30" />
-        <div className="flex items-center gap-3 pt-1">
+      {/* La barre de la fenêtre : pastilles et titre, comme une fenêtre de Mac. */}
+      <div className="relative shrink-0 border-b bg-secondary px-4 py-2.5 sm:px-5">
+        <div className="flex items-center gap-3">
           <span aria-hidden="true" className="flex w-12 gap-1.5">
             <span className="size-2.5 rounded-full bg-destructive/70" />
             <span className="size-2.5 rounded-full bg-primary" />

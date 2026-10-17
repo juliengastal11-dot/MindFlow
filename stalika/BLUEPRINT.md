@@ -174,7 +174,43 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-17 (soir) : le bureau du Mac, sur l'écran de l'ordinateur de la scène
+
+J, après la version précédente (le Dock et le Génie par-dessus toute la vue) : « il faut que tout ça soit dans l'ordinateur
+directement, pas ici [...] jusqu'à avoir un écran de Mac dessiné sur le Mac dans le site et un effet Génie incroyable et
+naturel », puis « c'était mieux si la caméra rentrait dans le PC » (pas d'arrêt sur image avant le zoom).
+- **Le bureau** (`components/ui/ecran-mac.tsx`) : un écran virtuel en pixels CSS (environ 1 300 × 830 sur téléphone), avec la
+  barre des menus, un fond d'écran de dunes au crépuscule dans les couleurs du site (vagues dessinées à la main, à la façon de
+  Haikei), le logo, le Dock, et **la vraie fenêtre de discussion** à sa place. Sombre exprès : la fenêtre claire en sort nettement
+  pendant le Génie. Le logo est un peu plus étroit que la fenêtre, qui le cache tout entier une fois posée.
+- **Collé sur l'écran du portable, en perspective** (`Plongee`) : une homographie (`matrix3d`) envoie les quatre coins du bureau
+  sur ceux de l'écran, image par image. Les coins sont mesurés hors ligne (`outils/hero/mesurer-ecran.py`, chaque bord ajusté par
+  une droite sur une partie que rien ne cache) : `lib/plongee-ecran-mobile.ts` et `lib/plongee-ecran-bureau.ts` (la série Kling
+  de l'ordinateur, dont l'écran crème montrait un navigateur : on en prend tout l'écran, barre comprise). Le bureau déborde de
+  2,5 % de la zone mesurée (sans cela, un liseré blanc).
+- **L'épaule passe devant l'écran** : sur une cinquantaine d'images, l'épaule du personnage cache le bas-gauche de l'écran. Le
+  même outil mesure, rangée par rangée, jusqu'où (`CACHES_…`), et le bureau est découpé à cette limite (`clip-path`), en
+  mordant un peu sur l'épaule (son liseré doré reste à l'image, pas le fond blanc).
+- **Le déroulé** : le bureau s'allume sur l'écran dès qu'il fait 30 px ; l'icône de la conversation rebondit deux fois (0,665 à
+  0,715), la fenêtre sort du Dock avec le Génie pendant que la caméra finit d'arriver (0,70 à 0,80), puis **la caméra entre dans
+  la fenêtre sans s'arrêter** : le zoom part à la vitesse où l'écran grandissait à la fin des images (mesurée), accélère sans
+  à-coup (courbe du cinquième degré : vitesse continue, accélération nulle au départ), puis se pose (0,80 à 0,96). Le canvas
+  suit exactement le même mouvement : la part affine dans son dessin, la perspective qui reste par une transformation CSS. À la
+  fin, la fenêtre est à 1 pour 1, nette et utilisable, et sa conversation commence.
+- **La fin** (0,965 à 0,995) : le bureau et la scène s'effacent vers le fond de la page ; la fenêtre reste. Sur l'iPhone de J,
+  une bande noire et un triangle blanc passaient sous la fenêtre quand la page reprenait : la part de l'écran cachée sous la
+  barre de Safari (40 px), où l'on voyait le canvas zoomé.
+- **La fenêtre** : une fenêtre de Mac (coins arrondis partout, pastilles), sans la poignée de feuille d'avant.
+- **Vérifié** : dans un Chrome sans fenêtre piloté par le protocole DevTools (le panneau navigateur de l'appli était caché ; ses
+  pages y sont figées), en 375 × 812 et 1280 × 800, mouvement réduit compris ; et sur l'iPhone de J par le pont : aucune erreur,
+  59,5 images par seconde pendant le Génie et la plongée (60 pendant le vol), après avoir préparé les copies de la fenêtre un
+  peu avant l'effet (les faire au moment où il commence coûtait une image saccadée).
+- **Reste sur ordinateur** : la série Kling n'a que 61 images pour un grand mouvement ; deux images fondues font un fantôme
+  (deux têtes, deux écrans). C'était déjà le cas ; la vidéo source n'est pas sur le disque.
+
 ## Mise à jour du 2026-10-17 (fin) : la fenêtre sort du Dock, comme sur un Mac
+
+Remplacée le soir même par la précédente (le bureau sur l'écran de l'ordinateur) ; gardée pour l'historique.
 
 J : « au lieu de s'ouvrir de bas en haut basiquement, tu fais le style d'ouverture des Mac : tu simules une barre des tâches de
 Mac en bas, puis l'onglet de la conversation s'ouvre comme sur Mac ». Ses choix : au défilement, plusieurs icônes, téléphone et

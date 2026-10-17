@@ -70,8 +70,11 @@ export function creerGenie(source: HTMLElement, hote: HTMLElement, tranches: num
   hote.appendChild(scene);
 
   const poser = (g: number, f: Boite, i: Boite) => {
-    scene.style.visibility = g <= 0.001 ? "hidden" : "visible";
-    if (g <= 0.001) return;
+    // Avant l'effet, la fenêtre est dans son icône ; après, la vraie fenêtre a pris le relais : rien à montrer. (On peut
+    // ainsi préparer l'effet un peu avant et le garder un peu après, sans copier la fenêtre au moment où il commence.)
+    const montre = g > 0.001 && g < 0.999;
+    scene.style.visibility = montre ? "visible" : "hidden";
+    if (!montre) return;
     // Deux temps qui se chevauchent : la fenêtre monte hors de l'icône (g1), puis elle s'élargit et se pose (g2).
     const g1 = sortie(borne(g / 0.62));
     const g2 = douce(borne((g - 0.38) / 0.62));
