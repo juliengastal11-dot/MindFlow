@@ -62,11 +62,11 @@ s'allument la nuit. Le plan ne bouge pas d'une passe à l'autre (trépied), seul
 | Passe 3 | `44ace8bb-99c6-4ee8-ba1c-fe227379bd1b` | nuit, le personnage s'étire |
 | Passe 4 | `af7c5474-3881-41dc-87c5-abb94e2cf807` | nuit → aube |
 | Passe 5 | `0de45b26-4b28-4ff5-8cef-ca86c5e27729` | aube → lumière dorée (arrivée : l'image de départ du chalet) |
-| Plongée | `65149249-cfab-4b6b-a8ee-80d63c487d76` | dernière image de la passe 5 → plan par-dessus l'épaule, écran blanc ; décor rigide, seule la caméra bouge (troisième essai, voir plus bas) |
+| Plongée | `da98b756-b817-499c-9fee-5c2adf21de35` | **MiniMax H3**, 2K (1 440 × 2 560), 20 crédits : dernière image de la passe 5 → l'écran qui remplit l'image (`arrivee-ecran.png`, rognée dans l'image par-dessus l'épaule `f12724ec…`), d'une seule traite |
 
 Plans écartés (17,5 crédits chacun) : l'aller `8b515e96-1917-4e26-b305-a4ffcf2b2b8c` (un nuage gonflé qui retombait le long de la
 falaise : « la physique est étrange », J) ; la variante B du nuage `e4ae5801-40ac-4fc8-b878-359db9c04ba6` (un voile plat, que je préférais ;
-J a choisi A) ; la plongée `bac6c8a7-c6d7-4fb2-b45b-37bc3ba1f596` (la caméra restait haute puis descendait : le sol « se levait ») ; la plongée `649a93af-faf7-498d-bfa8-3af185f78c5a` (la caméra descendait au ras de l'herbe : l'herbe « poussait » et le
+J a choisi A) ; les plongées Kling `65149249-cfab-4b6b-a8ee-80d63c487d76` (décor rigide, mais l'herbe à la taille à la fin) et Seedance 2.5 `9f93d8b7-4dc9-4196-bed9-263d28963bd4` (720p, 70 crédits ; l'herbe remontait autour de lui) ; la plongée `bac6c8a7-c6d7-4fb2-b45b-37bc3ba1f596` (la caméra restait haute puis descendait : le sol « se levait ») ; la plongée `649a93af-faf7-498d-bfa8-3af185f78c5a` (la caméra descendait au ras de l'herbe : l'herbe « poussait » et le
 personnage semblait s'enfoncer dans le sol). Le prompt de l'aller disait « pours over the edge » et « billowing » : à éviter. Celui de la plongée
 disait « closer and lower » : c'est ce qui a mis la caméra au ras de l'herbe.
 
@@ -82,7 +82,7 @@ Il faut Node, ffmpeg et Python (Pillow, numpy).
 ```
 node monter-vertical.mjs aller.mp4 retour.mp4 [dossier] [--h264 2200] [--vp9 1600] [--hevc 1800]
 node extraire-vertical.mjs ciel <dossier> passe1.mp4:21 passe2.mp4:20 passe3.mp4:30 passe4.mp4:20 passe5.mp4:20
-node extraire-vertical.mjs plongee plongee.mp4 <dossier> 120 --fin 163 --derniere-pleine --qualite 72
+node extraire-vertical.mjs plongee plongee.mp4 <dossier> 120 --derniere-pleine --qualite 72
 python -I -X utf8 mesurer-ecran.py <images de la plongée> stalika/lib/plongee-ecran-mobile.ts ECRANS_PLONGEE_MOBILE --debug <dossier>
 python -I -X utf8 rythme-plongee.py --mobile
 ```
@@ -95,8 +95,8 @@ python -I -X utf8 rythme-plongee.py --mobile
 - `extraire-vertical.mjs plongee` : 120 images **à pas égal de changement** (la différence moyenne entre deux images
   voisines est cumulée, puis découpée en parts égales : la caméra va dix fois plus vite au milieu qu'au début), `public/hero/plongee-mobile`.
   `--derniere-pleine` : la dernière image reste en 1 080 × 1 912, parce que la page finit par un agrandissement de cette image
-  (`Plongee`, `mobile.agrandissement`). `--fin 163` coupe le plan à 6,8 s : ensuite la caméra descend derrière l'homme et l'herbe lui monte à la taille (J : « à moitié
-  dans l'herbe »). **Pour un vol, le prompt
+  (`Plongee`, `mobile.agrandissement`). `--fin <image>` coupe un plan avant un mouvement raté (servi un temps à 163 sur le vol Kling, abandonné : J veut que la caméra
+  entre dans l'écran sans arrêt sur image). Les plans sont rognés au format 1 080 × 1 912 quelle que soit leur taille (MiniMax sort en 1 440 de large). **Pour un vol, le prompt
   doit dire que le décor est rigide** : les deux premiers plans faisaient lever et s'affaisser le terrain (J : « c'est la caméra qui
   arrive sur l'ordinateur, le décor ne bouge pas ») ; le troisième disait « a real, solid location… the ground never rises, sinks,
   tilts, bends or grows… only the camera moves, with natural parallax », et il tient ;

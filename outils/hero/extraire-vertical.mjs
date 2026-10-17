@@ -39,8 +39,10 @@ const drapeau = (nom) => {
 };
 const PLEINE = drapeau("derniere-pleine");
 const REGULIER = drapeau("regulier");
-// Les plans Kling font 1080 × 1912 (ou 1916) : on les rogne à 1080 × 1912, puis on les réduit sans les déformer (720 × 1274).
+// Les plans Kling font 1080 × 1912 (ou 1916) : on les rogne au format 1080 × 1912, puis on les réduit sans les déformer (720 × 1274).
 const HAUTEUR = Math.round((LARGEUR * 1912) / 1080 / 2) * 2;
+// Le rognage au format 1080 × 1912, quelle que soit la taille du plan (Kling : 1080 de large ; MiniMax H3 : 1440 × 2560).
+const ROGNE = "crop=iw:2*round(iw*1912/2160)";
 const [commande, ...reste] = argv;
 
 const ff = (...a) => execFileSync("ffmpeg", ["-v", "error", "-y", ...a], { stdio: "inherit" });
@@ -56,9 +58,9 @@ function extraire(plan, indices, numeros, sortie) {
   // images du début du plan jusqu'à la dernière voulue, et on ne garde que les bonnes.
   const toutes = uniques.length > 80;
   if (toutes) {
-    ff("-i", plan, "-vf", `crop=1080:1912,scale=${LARGEUR}:${HAUTEUR}:flags=lanczos`, "-frames:v", String(uniques[uniques.length - 1] + 1), path.join(tmp, "%04d.png"));
+    ff("-i", plan, "-vf", `${ROGNE},scale=${LARGEUR}:${HAUTEUR}:flags=lanczos`, "-frames:v", String(uniques[uniques.length - 1] + 1), path.join(tmp, "%04d.png"));
   } else {
-    ff("-i", plan, "-vf", `select='${uniques.map((n) => `eq(n\\,${n})`).join("+")}',crop=1080:1912,scale=${LARGEUR}:${HAUTEUR}:flags=lanczos`, "-fps_mode", "vfr", path.join(tmp, "%04d.png"));
+    ff("-i", plan, "-vf", `select='${uniques.map((n) => `eq(n\\,${n})`).join("+")}',${ROGNE},scale=${LARGEUR}:${HAUTEUR}:flags=lanczos`, "-fps_mode", "vfr", path.join(tmp, "%04d.png"));
   }
   const pos = new Map(uniques.map((n, k) => [n, toutes ? n + 1 : k + 1]));
   indices.forEach((n, k) => {
@@ -68,11 +70,11 @@ function extraire(plan, indices, numeros, sortie) {
   fs.rmSync(tmp, { recursive: true, force: true });
 }
 
-/** Écrit l'image d'indice donné à la pleine taille (1080 × 1912, rognée au centre), sous le numéro donné. */
+/** Écrit l'image d'indice donné à la pleine taille du plan (rognée au centre au format 1080 × 1912), sous le numéro donné. */
 function extrairePleine(plan, indice, numero, sortie) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "extraire-"));
   const png = path.join(tmp, "pleine.png");
-  ff("-i", plan, "-vf", `select='eq(n\\,${indice})',crop=1080:1912`, "-fps_mode", "vfr", "-frames:v", "1", png);
+  ff("-i", plan, "-vf", `select='eq(n\\,${indice})',${ROGNE}`, "-fps_mode", "vfr", "-frames:v", "1", png);
   ff("-i", png, "-c:v", "libwebp", "-quality", "85", path.join(sortie, `${String(numero).padStart(3, "0")}.webp`));
   fs.rmSync(tmp, { recursive: true, force: true });
 }
@@ -83,7 +85,7 @@ const reparties = (n, total) => Array.from({ length: n }, (_, i) => Math.round((
     entre deux images voisines (version réduite de 112 × 200) est cumulée, puis découpée en n − 1 parts égales. */
 function repartiesParMouvement(plan, n, utile) {
   const [L, H] = [112, 200];
-  const brut = execFileSync("ffmpeg", ["-v", "error", "-i", plan, "-vf", `crop=1080:1912,scale=${L}:${H}:flags=area,format=gray`, "-f", "rawvideo", "-"], { maxBuffer: 1 << 28 });
+  const brut = execFileSync("ffmpeg", ["-v", "error", "-i", plan, "-vf", `${ROGNE},scale=${L}:${H}:flags=area,format=gray`, "-f", "rawvideo", "-"], { maxBuffer: 1 << 28 });
   const taille = L * H;
   const total = Math.min(utile, Math.floor(brut.length / taille));
   const cumul = [0];

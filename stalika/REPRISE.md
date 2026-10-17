@@ -53,7 +53,7 @@
 - **Fait le 2026-10-17 : tout le chemin du téléphone en vertical** (J : « Tout le chemin en 9:16 c'est ok, bonne qualité et le chalet. Garde le
   côté où il s'allume la nuit »). Chalet en rondins, vidéo du hero, cinq passages du ciel et plongée générés en 1 080 × 1 912 : voir `BLUEPRINT.md`
   (mise à jour du 2026-10-17, suite) et `outils/hero/LISEZMOI.md` (tâches Higgsfield, commandes pour tout refaire). Mesuré sur l'iPhone de J (build de
-  production) : 58 à 59 images par seconde partout. **À regarder par J** : le nuage (variante A, nouveau plan) et le sol de la plongée (retours du jour : deux plans faisaient « se lever » le sol ; un troisième, demandé avec un décor rigide, les remplace, voir `BLUEPRINT.md`), le rendu sur son téléphone (chalet, nuit, plongée dans l'écran, bouton
+  production) : 58 à 59 images par seconde partout. **À regarder par J** : le nuage (variante A, nouveau plan) et le sol de la plongée (retours du jour : les vols Kling faisaient lever le sol ou mettaient l'herbe à la taille ; un vol MiniMax H3 d'une seule traite jusque dans l'écran les remplace, voir `BLUEPRINT.md`), le rendu sur son téléphone (chalet, nuit, plongée dans l'écran, bouton
   qui tombe) et le poids (environ 16 Mo sur téléphone, contre 8,5 avant ; voir `BLUEPRINT.md` pour l'alléger). **L'ordinateur garde la chaîne
   paysage (la cabane)** : la refaire en 16:9, avec le chalet, coûterait environ 170 crédits ; J a répondu « plus tard ». Aucune génération sans le
   prix annoncé et l'accord de J.
@@ -74,7 +74,7 @@
 - Assistant de discussion (API Claude, agenda, RGPD, transparence IA) : plus tard, voir `BLUEPRINT.md`.
 - Mentions légales et données marquées `[[À CONFIRMER PAR L'UTILISATEUR : …]]`.
 
-## Médias générés (Higgsfield, compte de J, 995 crédits restants au 2026-10-17)
+## Médias générés (Higgsfield, compte de J, 905 crédits restants au 2026-10-17)
 
 Les fichiers bruts de la session précédente sont perdus avec son conteneur ; ils restent
 téléchargeables depuis Higgsfield par leur identifiant de tâche :
@@ -91,7 +91,7 @@ téléchargeables depuis Higgsfield par leur identifiant de tâche :
 | Aube → lumière dorée (fin = 1re image de la plongée) | `0c2f7efb-c6bd-4933-9d38-b7ca5fa6a7f8` |
 
 **La chaîne verticale du téléphone (2026-10-17)** : huit plans Kling retenus et leurs images clés, avec leurs tâches, dans `outils/hero/LISEZMOI.md`
-(229 crédits dépensés ce jour-là : 19 pour les images, 12 plans de 17,5 dont 4 écartés ; le solde de J est passé de 1 224 à 995).
+(319 crédits dépensés ce jour-là : 19 pour les images, 12 plans Kling de 17,5 dont 5 écartés, un plan Seedance 2.5 à 70 écarté, un plan MiniMax H3 à 20 retenu pour la plongée ; le solde de J est passé de 1 224 à 905).
 Les tâches du tableau ci-dessus sont celles de la chaîne paysage, toujours servie à l'ordinateur.
 
 Montage (`outils/hero/monter.mjs`, depuis le 2026-10-04) : l'aller puis le retour, chacun

@@ -193,21 +193,19 @@ plus petit chalet ». Sa décision : « Tout le chemin en 9:16, bonne qualité e
   vue (l'image verticale n'a que 6 % de marge pour glisser). `VideoAdaptative` sert le HEVC aux iPhone (puce vidéo), le VP9
   ailleurs, le H.264 en repli. Les 120 images de la plongée sont choisies à pas égal de changement (pas à intervalles égaux) :
   la caméra va dix fois plus vite au milieu qu'au début.
-- **Le décor ne bouge plus pendant le vol** (J : « le sol se lève à côté, s'affaisse derrière, tout est n'importe quoi » ; puis,
-  à qui proposait un zoom pur : « je préfère le vol, c'est beaucoup plus joli. C'est la caméra qui arrive sur l'ordinateur, et le
-  décor, lui, ne bouge pas »). Cause : Kling invente le terrain image par image ; le premier plan descendait au ras de l'herbe, le
-  second gardait la caméra haute puis la faisait descendre, et l'IA déformait la colline pour rejoindre l'image d'arrivée. Une
-  tentative gratuite (couper le plan à 7,2 s et finir par un agrandissement d'image fixe) n'a rien changé pour J : le terrain bougeait
-  déjà pendant le vol. Remède : un troisième plan (tâche `65149249-cfab-4b6b-a8ee-80d63c487d76`, 17,5 crédits), même départ et même
-  arrivée, avec un prompt qui décrit un lieu réel et rigide (« the ground never rises, sinks, tilts, bends or grows… only the
-  camera moves, with natural parallax »). Vérifié image par image : la ligne où l'herbe rencontre les nuages reste à la même
-  hauteur jusqu'à l'épaule. Mais à la fin la caméra descend derrière lui et l'herbe du premier plan lui monte à la taille (J : « le
-  personnage est à moitié dans l'herbe, sérieusement ») : le vol est coupé à 6,8 s sur 10 (image 163), quand il est encore assis sur
-  l'herbe, jambes croisées visibles. 120 images à pas égal de changement, la dernière en pleine taille (1 080 × 1 912) ; l'entrée dans
-  l'écran agrandit cette image jusqu'à ce que l'écran prenne 80 % de la largeur de la vue (`Plongee`, `mobile.agrandissement`).
-  Leçon : une image d'arrivée prise à hauteur d'épaule, derrière quelqu'un d'assis dans l'herbe, met forcément de l'herbe devant lui.
+- **La plongée, d'une seule traite jusque dans l'écran, par un autre modèle** (J, le même soir : « le sol se lève à côté, s'affaisse
+  derrière » ; « je préfère le vol, c'est la caméra qui arrive sur l'ordinateur, et le décor, lui, ne bouge pas » ; « le personnage est
+  à moitié dans l'herbe » ; « j'aurais aimé ne pas avoir besoin d'arrêt sur image puis zoom, c'était mieux si la caméra rentrait dans le
+  PC »). Kling a donné quatre vols : le premier descendait au ras de l'herbe, le deuxième faisait lever la colline, le troisième (décor
+  rigide demandé) tenait mieux mais finissait l'herbe à la taille ; couper avant et finir par un agrandissement d'image fixe ne plaisait
+  pas. Remède : une nouvelle image d'arrivée où l'écran remplit l'image (rognée dans l'image par-dessus l'épaule), et deux autres
+  modèles en parallèle sur le même départ et la même arrivée : Seedance 2.5 (720p, 70 crédits) et MiniMax H3 (2K, 20 crédits). J a
+  choisi MiniMax H3 (tâche `da98b756-b817-499c-9fee-5c2adf21de35`) : le plateau reste un plateau, il reste assis sur l'herbe, jambes
+  croisées visibles, jusqu'au passage par-dessus l'épaule, et la caméra finit dans l'écran (85 % de la largeur). 120 images à pas égal de
+  changement, la dernière en pleine taille (1 440 × 2 550) ; l'entrée dans l'écran n'est plus qu'un léger prolongement
+  (`mobile.agrandissement: 1.1`). Aucun modèle ne garantit un décor rigide : il faut regarder chaque plan image par image.
 - **Poids** (le prix de la qualité) : vidéo du hero 4,5 Mo en HEVC, 4,0 en VP9, 5,5 en H.264 (avant : 2,4 et 1,7 Mo) ; ciel
-  5,5 Mo ; recul 1,8 Mo ; plongée 5,8 Mo. Environ 18 Mo sur téléphone, contre 8,5 avant. À 4,5 Mo la vidéo dépasse les 3 Mo du
+  5,5 Mo ; recul 1,8 Mo ; plongée 5,6 Mo. Environ 18 Mo sur téléphone, contre 8,5 avant. À 4,5 Mo la vidéo dépasse les 3 Mo du
   garde-fou des vidéos de fond, qui ne regarde que `public/` à la racine du projet (ici `stalika/public`, donc pas vue). Si c'est
   trop : `--hevc 1400` (3,4 Mo), ou des images en qualité 70 (16 % de moins, `--qualite 70`).
 - **Mesuré sur l'iPhone, build de production** : premier défilement (0 à 700 px), page ouverte en haut : 59 images par seconde,
@@ -219,8 +217,8 @@ plus petit chalet ». Sa décision : « Tout le chemin en 9:16, bonne qualité e
   tombe pas comme ça », « trop boule, je préférais l'ancien » : l'aller est regénéré (deux variantes, J a choisi la A : une masse blanche qui
   traverse le plateau et poursuit dans le vide) ; (2) l'herbe : « quand la caméra se rapproche du PC à la fin, l'herbe pousse et le
   personnage s'enfonce dans le sol » : la plongée est regénérée avec une caméra qui reste haute (la première descendait au ras de l'herbe, et
-  l'herbe du premier plan grandissait en cachant le bas de son corps) ; ce second plan, lui, faisait « se lever » le sol à la fin, remplacé
-  par un troisième (voir ci-dessus). Les tâches Higgsfield : `outils/hero/LISEZMOI.md`.
+  l'herbe du premier plan grandissait en cachant le bas de son corps) ; ce second plan, lui, faisait « se lever » le sol à la fin ; remplacé
+  depuis par un vol MiniMax H3 (voir ci-dessus). Les tâches Higgsfield : `outils/hero/LISEZMOI.md`.
 - **Un défaut trouvé en vérifiant, corrigé** : si la page s'ouvrait plus bas que le haut (un lien avec ancre, ou Safari qui
   rend le défilement après un retour), la vidéo n'avait jamais joué et restait figée sur sa première image jusqu'au
   rechargement ; elle reprend maintenant dès qu'on est en haut (`Ciel`, `suivreVideo`).
