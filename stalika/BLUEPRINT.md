@@ -193,21 +193,18 @@ plus petit chalet ». Sa décision : « Tout le chemin en 9:16, bonne qualité e
   vue (l'image verticale n'a que 6 % de marge pour glisser). `VideoAdaptative` sert le HEVC aux iPhone (puce vidéo), le VP9
   ailleurs, le H.264 en repli. Les 120 images de la plongée sont choisies à pas égal de changement (pas à intervalles égaux) :
   la caméra va dix fois plus vite au milieu qu'au début.
-- **Le sol ne bouge plus quand on entre dans l'ordinateur** (J : « le sol se lève à côté, s'affaisse derrière, tout est n'importe quoi.
-  Quand il y a le zoom sur l'ordinateur, le sol ne doit pas bouger, ni les herbes. Il n'y avait pas ce bug avant »). Cause : un plan Kling
-  qui finit par une descente de la caméra. Quand une caméra descend, le sol monte dans l'image ; et comme l'image d'arrivée imposée
-  (l'écran vu à hauteur d'épaule) est plus basse que le départ, l'IA déforme le terrain pour la rejoindre (une colline qui se
-  lève d'un côté, une pente qui s'affaisse de l'autre). Probable, non revérifié : avant, sur téléphone, un plan paysage
-  était recadré sur son tiers central, donc les côtés, où le terrain se déforme, n'étaient pas à l'écran ; et c'était un autre
-  tirage de l'IA, avec une autre trajectoire. Remède : la série s'arrête à 7,2 s sur 10 (l'image 173 du plan,
-  avant la descente : le sol y est stable), sa dernière image est en pleine taille (1 080 × 1 912), et l'entrée dans l'écran n'est qu'un
-  agrandissement de cette image fixe (`Plongee`, option `mobile.agrandissement` : l'écran finit à 80 % de la largeur de la vue) :
-  le sol et l'herbe ne font que grandir avec elle, rien ne peut se déformer. Aucune génération, aucun crédit. Le défaut s'est
-  aggravé entre les deux plans parce que le second gardait la caméra plus haute (pour l'herbe) puis la faisait descendre à la fin.
-  L'image fixe est agrandie au plus 4 fois (pixels d'appareil par pixel de la source) : douce, mais lisible ; l'écran blanc et le logo
-  (dessiné net par la page) n'en souffrent pas.
+- **Le décor ne bouge plus pendant le vol** (J : « le sol se lève à côté, s'affaisse derrière, tout est n'importe quoi » ; puis,
+  à qui proposait un zoom pur : « je préfère le vol, c'est beaucoup plus joli. C'est la caméra qui arrive sur l'ordinateur, et le
+  décor, lui, ne bouge pas »). Cause : Kling invente le terrain image par image ; le premier plan descendait au ras de l'herbe, le
+  second gardait la caméra haute puis la faisait descendre, et l'IA déformait la colline pour rejoindre l'image d'arrivée. Une
+  tentative gratuite (couper le plan à 7,2 s et finir par un agrandissement d'image fixe) n'a rien changé pour J : le terrain bougeait
+  déjà pendant le vol. Remède : un troisième plan (tâche `65149249-cfab-4b6b-a8ee-80d63c487d76`, 17,5 crédits), même départ et même
+  arrivée, avec un prompt qui décrit un lieu réel et rigide (« the ground never rises, sinks, tilts, bends or grows… only the
+  camera moves, with natural parallax »). Vérifié image par image : la ligne où l'herbe rencontre les nuages reste à la même
+  hauteur jusqu'à l'épaule. 120 images à pas égal de changement, la dernière en pleine taille (1 080 × 1 912) ; l'entrée dans l'écran
+  agrandit cette image jusqu'à ce que l'écran prenne la largeur de la vue (`Plongee`, `mobile.agrandissement: 1`).
 - **Poids** (le prix de la qualité) : vidéo du hero 4,5 Mo en HEVC, 4,0 en VP9, 5,5 en H.264 (avant : 2,4 et 1,7 Mo) ; ciel
-  5,5 Mo ; recul 1,8 Mo ; plongée 6,1 Mo. Environ 18 Mo sur téléphone, contre 8,5 avant. À 4,5 Mo la vidéo dépasse les 3 Mo du
+  5,5 Mo ; recul 1,8 Mo ; plongée 5,8 Mo. Environ 18 Mo sur téléphone, contre 8,5 avant. À 4,5 Mo la vidéo dépasse les 3 Mo du
   garde-fou des vidéos de fond, qui ne regarde que `public/` à la racine du projet (ici `stalika/public`, donc pas vue). Si c'est
   trop : `--hevc 1400` (3,4 Mo), ou des images en qualité 70 (16 % de moins, `--qualite 70`).
 - **Mesuré sur l'iPhone, build de production** : premier défilement (0 à 700 px), page ouverte en haut : 59 images par seconde,
@@ -219,8 +216,8 @@ plus petit chalet ». Sa décision : « Tout le chemin en 9:16, bonne qualité e
   tombe pas comme ça », « trop boule, je préférais l'ancien » : l'aller est regénéré (deux variantes, J a choisi la A : une masse blanche qui
   traverse le plateau et poursuit dans le vide) ; (2) l'herbe : « quand la caméra se rapproche du PC à la fin, l'herbe pousse et le
   personnage s'enfonce dans le sol » : la plongée est regénérée avec une caméra qui reste haute (la première descendait au ras de l'herbe, et
-  l'herbe du premier plan grandissait en cachant le bas de son corps) ; ce second plan, lui, faisait « se lever » le sol à la fin (voir
-  ci-dessus) : on n'en garde que le début. Les tâches Higgsfield : `outils/hero/LISEZMOI.md`.
+  l'herbe du premier plan grandissait en cachant le bas de son corps) ; ce second plan, lui, faisait « se lever » le sol à la fin, remplacé
+  par un troisième (voir ci-dessus). Les tâches Higgsfield : `outils/hero/LISEZMOI.md`.
 - **Un défaut trouvé en vérifiant, corrigé** : si la page s'ouvrait plus bas que le haut (un lien avec ancre, ou Safari qui
   rend le défilement après un retour), la vidéo n'avait jamais joué et restait figée sur sa première image jusqu'au
   rechargement ; elle reprend maintenant dès qu'on est en haut (`Ciel`, `suivreVideo`).

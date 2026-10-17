@@ -29,10 +29,10 @@ import type { CoinsEcran } from "@/lib/plongee-ecran";
      saccadent sur iPhone) : des images dessinées sur un canvas selon la
      position de défilement, la méthode des pages produit d'Apple.
 
-   Le sol ne doit pas bouger quand on entre dans l'ordinateur (J, 2026-10-17 : « le sol se lève, s'affaisse derrière, tout est n'importe
-   quoi »). Un plan généré finit par une descente de la caméra : le sol monte dans l'image et l'IA déforme le terrain pour atteindre
-   l'image d'arrivée. La série du téléphone s'arrête donc avant (à 7,2 s sur 10), sa dernière image est en pleine taille, et
-   l'entrée dans l'écran n'est qu'un agrandissement de cette image fixe : le sol et l'herbe ne font que grandir avec elle.
+   Le décor ne doit pas bouger pendant le vol (J, 2026-10-17 : « c'est la caméra qui arrive sur l'ordinateur, et le décor, lui, ne
+   bouge pas »). Deux plans générés déformaient le terrain (le sol se levait d'un côté, s'affaissait de l'autre) ; le troisième a
+   été demandé avec un décor rigide et c'est lui que sert le téléphone. Sa dernière image est en pleine taille : l'entrée dans l'écran
+   l'agrandit (`mobile.agrandissement`), sans qu'aucune image de plus ne vienne déformer le décor.
 
    Raccord : le dernier passage du ciel se termine sur la première image de
    la plongée (image d'arrivée imposée à Kling). Le
