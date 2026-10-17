@@ -9,8 +9,11 @@ import { cn } from "@/lib/utils";
 
    Idées : le Dock de Watermelon (barre arrondie, tuiles, point sous l'appli
    ouverte, rebond à ressort) et le « Floating Dock » d'Aceternity (21st), redits
-   avec un verre clair et les couleurs du site. Aucune icône
-   d'Apple : des tuiles inventées (logo, notes, conversation, agenda, projets).
+   avec un verre clair et les couleurs du site. Aucune icône d'Apple : des tuiles
+   inventées (logo, notes, conversation, agenda, projets), toutes dans la palette
+   du thème : crème, noir chaud, doré. Le vert et le rouge de la première version
+   faisaient « icônes par défaut » (J : « trop bateau ») ; seule la conversation,
+   l'appli ouverte, est dorée : l'œil va à l'icône d'où sort la fenêtre.
 
    Mesuré pour l'écran virtuel du Mac (environ 1 300 px de large) : des tuiles
    de 64 px, comme un vrai Dock, pour qu'il se lise encore quand l'écran ne
@@ -37,22 +40,22 @@ export function DockMac({ className }: { className?: string }) {
         className,
       )}
     >
-      <span className={cn(tuile, "bg-linear-to-b from-card to-background font-display text-3xl font-semibold text-accent")}>S</span>
-      <span className={cn(tuile, "bg-linear-to-b from-accent to-encre text-lin")}>
-        <NotebookPen className="size-8" strokeWidth={2} />
+      <span className={cn(tuile, "bg-linear-to-b from-lin to-secondary font-display text-3xl font-semibold text-encre")}>S</span>
+      <span className={cn(tuile, "bg-linear-to-b from-foreground/85 to-foreground text-accent")}>
+        <NotebookPen className="size-8" strokeWidth={1.75} />
       </span>
       {/* La conversation : la fenêtre sort d'ici. Le point dit qu'elle est ouverte. */}
       <span data-dock-conversation="" className="relative flex flex-col items-center">
-        <span className={cn(tuile, "bg-linear-to-b from-succes/70 to-succes text-on-succes")}>
-          <MessageCircle className="size-9" strokeWidth={2} />
+        <span className={cn(tuile, "bg-linear-to-b from-accent to-encre text-lin")}>
+          <MessageCircle className="size-9" strokeWidth={1.75} />
         </span>
         <span data-dock-point="" className="absolute -bottom-2 size-1.5 rounded-full bg-lin/85 opacity-0" />
       </span>
-      <span className={cn(tuile, "bg-lin text-destructive")}>
-        <CalendarDays className="size-8" strokeWidth={2} />
+      <span className={cn(tuile, "bg-linear-to-b from-lin to-secondary text-encre")}>
+        <CalendarDays className="size-8" strokeWidth={1.75} />
       </span>
-      <span className={cn(tuile, "bg-linear-to-b from-muted-foreground to-card text-accent")}>
-        <FolderOpen className="size-8" strokeWidth={2} />
+      <span className={cn(tuile, "bg-linear-to-b from-foreground/85 to-foreground text-accent")}>
+        <FolderOpen className="size-8" strokeWidth={1.75} />
       </span>
     </div>
   );

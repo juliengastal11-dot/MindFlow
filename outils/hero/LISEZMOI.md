@@ -86,6 +86,7 @@ node extraire-vertical.mjs plongee plongee.mp4 <dossier> 120 --derniere-pleine -
 python -I -X utf8 mesurer-ecran.py stalika/public/hero/plongee-mobile stalika/lib/plongee-ecran-mobile.ts ECRANS_PLONGEE_MOBILE --debug <dossier>
 python -I -X utf8 mesurer-ecran.py stalika/public/hero/plongee stalika/lib/plongee-ecran-bureau.ts ECRANS_PLONGEE_BUREAU --lumiere 160 --couleur 62 --graines stalika/lib/plongee-ecran-bureau.ts
 python -I -X utf8 rythme-plongee.py --mobile
+python -I -X utf8 retirer-cable.py stalika/public/hero/plongee-mobile --ancre 70 --de 1 --a 99
 ```
 
 - `monter-vertical.mjs` : la boucle de 20 s (même montage que `monter.mjs`, sans recadrage), en trois encodages
@@ -106,7 +107,16 @@ python -I -X utf8 rythme-plongee.py --mobile
   rangée par rangée (`CACHES_…`, dans le même fichier). L'écran de la série verticale est blanc ; celui de la série Kling de
   l'ordinateur est crème et montre un navigateur : `--lumiere 160 --couleur 62`, et `--graines` (des coins déjà mesurés, ici le
   fichier lui-même) pour garder la zone de l'écran plutôt que les nuages crème, plus grands ;
-- `rythme-plongee.py --mobile` : de combien l'image change d'une image à la suivante (`lib/plongee-rythme-mobile.ts`).
+- `rythme-plongee.py --mobile` : de combien l'image change d'une image à la suivante (`lib/plongee-rythme-mobile.ts`) ;
+- `retirer-cable.py` : retire d'une série d'images un fil fin et sombre, ici le **hauban du poteau**, qui descend du haut du poteau
+  à travers la mer de nuages et ne mène nulle part (J, 2026-10-17 : « un câble électrique qui part en bas dans le vide, il faut
+  l'enlever »). On le trouve dans l'image d'ancre (`--ancre`, une où il est net), puis on le suit d'une image à l'autre, vers
+  l'avant et vers l'arrière, jusqu'à ce qu'il ne soit plus là ; dans chaque rangée on remplace ses 7 px par un dégradé entre les
+  deux côtés. Il commence dans le câble qui s'affaisse du poteau (jamais effacé : on s'arrête sous lui) et se poursuit en bas
+  tant qu'on le devine. Sans `--sortie`, il réécrit les images **sur place**, en WebP de qualité 78 (même poids ; écart moyen
+  de 1,4 niveau sur 255 ; les originaux sont dans git). Vérifié : la force du fil le long de son tracé passe de 20 à 57 à moins
+  de 4 (le bruit) dans les images 5 à 98. Réglé sur la série verticale MiniMax (720 × 1 274, pente 0,13 à 0,17) ; la série Kling
+  de l'ordinateur a d'autres haubans, en diagonale, non traités (cette chaîne doit être refaite en 16:9).
 
 Les points mesurés à la main, dans `stalika/lib/ciel.ts` : `POSE_BOUTON_MOBILE` (où le bouton tombé se pose : l'herbe à droite de
 l'ordinateur).

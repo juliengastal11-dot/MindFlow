@@ -36,7 +36,8 @@ export function creerGenie(source: HTMLElement, hote: HTMLElement, tranches: num
   const scene = document.createElement("div");
   scene.setAttribute("aria-hidden", "true");
   scene.inert = true;
-  Object.assign(scene.style, { position: "absolute", inset: "0", pointerEvents: "none", zIndex: "1" });
+  // Cachée dès sa création : l'effet n'a pas commencé, rien ne doit se voir avant le premier `poser`.
+  Object.assign(scene.style, { position: "absolute", inset: "0", pointerEvents: "none", zIndex: "1", visibility: "hidden", opacity: "0" });
   const bandes: HTMLDivElement[] = [];
   for (let k = 0; k < tranches; k++) {
     const bande = document.createElement("div");
@@ -60,7 +61,10 @@ export function creerGenie(source: HTMLElement, hote: HTMLElement, tranches: num
       width: `${l}px`,
       height: `${h}px`,
       transform: "none",
-      visibility: "visible",
+      // « inherit » et non « visible » : la vraie fenêtre est cachée (`visibility: hidden`), sa copie doit suivre sa scène. Avec
+      // « visible », les 32 copies, avant l'effet, restaient empilées en haut à gauche du bureau (des bandes blanches sur la
+      // barre des menus, vues par J sur iPhone le 2026-10-17).
+      visibility: "inherit",
       opacity: "1",
     });
     bande.appendChild(copie);
@@ -74,7 +78,10 @@ export function creerGenie(source: HTMLElement, hote: HTMLElement, tranches: num
     // ainsi préparer l'effet un peu avant et le garder un peu après, sans copier la fenêtre au moment où il commence.)
     const montre = g > 0.001 && g < 0.999;
     scene.style.visibility = montre ? "visible" : "hidden";
-    if (!montre) return;
+    if (!montre) {
+      scene.style.opacity = "0";
+      return;
+    }
     // Deux temps qui se chevauchent : la fenêtre monte hors de l'icône (g1), puis elle s'élargit et se pose (g2).
     const g1 = sortie(borne(g / 0.62));
     const g2 = douce(borne((g - 0.38) / 0.62));

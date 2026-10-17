@@ -13,12 +13,22 @@ import { cn } from "@/lib/utils";
    naturel »). Le fond d'écran (le logo Stalika), la barre des menus, le Dock,
    et la vraie fenêtre de discussion, posée là où elle s'ouvrira.
 
-   Le fond d'écran : des dunes au crépuscule, dans les couleurs du site (vagues
-   superposées dessinées à la main, à la façon de Haikei, et lueurs dorées),
-   sombre pour que la fenêtre claire en sorte nettement pendant l'effet Génie,
-   et qu'il se lise comme un écran de Mac même quand l'écran ne fait que
-   200 px dans la scène. Le logo est un peu plus étroit que la fenêtre : une
-   fois posée, elle le cache tout entier, sans lettres qui dépassent.
+   Le fond d'écran : l'heure dorée du site, en abstrait (J, le même soir : « trop
+   bateau, plus élégant, dans la DA du site »). Les dunes vectorielles qu'il y
+   avait d'abord faisaient « fond d'écran de banque d'images ». Ici, un noir
+   chaud, une seule lueur ambrée qui monte derrière des bancs de brume, une lumière
+   d'angle, du grain, et jamais un trait dur : un filet de 1 px, sur un écran
+   qui n'en fait que 200 dans la scène, scintille dès que la perspective bouge ; les
+   lueurs, elles, rapetissent sans broncher. Les teintes sont celles du thème
+   (accent, encre, lin) et l'ambre de `attente`. Pistes écartées en regardant
+   quatre rendus côte à côte : la photo du site floutée (le fond d'écran qu'on voit
+   partout), des arcs fins (la montre de luxe), un filet d'horizon (il scintille).
+   Idée de départ : les fonds statiques de bg.ibelick (halo radial masqué), sans
+   leur violet ni leurs grilles.
+   Sombre, pour que la fenêtre claire en sorte nettement pendant l'effet Génie,
+   et qu'il se lise comme un écran de Mac même quand l'écran ne fait que 200 px
+   dans la scène. Le logo est un peu plus étroit que la fenêtre : une fois
+   posée, elle le cache tout entier, sans lettres qui dépassent.
 
    C'est un écran virtuel, en vrais pixels CSS, que `Plongee` colle image par
    image sur l'écran du portable (une perspective qui suit ses coins), puis
@@ -49,64 +59,40 @@ function Heure() {
   return <span className="tabular-nums">{texte}</span>;
 }
 
-/** Le fond d'écran : un ciel qui passe du presque noir au brun doré, une lueur basse, trois dunes devant, chacune en dégradé
-    et soulignée d'un fil de lumière sur sa crête. */
+/* Le grain : du bruit fractal, en un petit carreau répété, sans ressource à charger. Il casse les aplats des dégradés (sans lui, des
+   bandes de couleur se voient dans le noir) et donne du papier au fond. Pas de mode de fusion : trop coûteux dans une perspective. */
+const GRAIN = `url("data:image/svg+xml,${encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.4 -.2'/></filter><rect width='180' height='180' filter='url(#n)'/></svg>",
+)}")`;
+
+const teinte = (couleur: string, part: number) => `color-mix(in oklab, var(--color-${couleur}) ${part}%, transparent)`;
+
+/** Le fond d'écran : un noir chaud, une lueur ambrée basse (l'heure dorée qui monte derrière les nuages, un peu décentrée),
+    deux bancs de brume, une lumière d'angle, un souffle de clarté derrière le logo, une vignette, du grain. */
 function FondEcran() {
-  const arret = (couleur: string, opacite: number) => ({ stopColor: `var(--color-${couleur})`, stopOpacity: opacite });
-  const dunes = [
-    {
-      d: "M0 590 C 210 532 430 640 700 604 C 980 566 1250 650 1600 574 L1600 1000 L0 1000 Z",
-      de: arret("accent", 0.85),
-      a: arret("encre", 0.55),
-      crete: 0.55,
-    },
-    {
-      d: "M0 712 C 260 646 540 772 860 718 C 1140 670 1380 752 1600 700 L1600 1000 L0 1000 Z",
-      de: arret("encre", 0.95),
-      a: arret("foreground", 0.75),
-      crete: 0.4,
-    },
-    {
-      d: "M0 836 C 320 778 620 884 930 838 C 1200 798 1420 866 1600 830 L1600 1000 L0 1000 Z",
-      de: arret("foreground", 0.85),
-      a: arret("foreground", 1),
-      crete: 0.28,
-    },
-  ];
   return (
     <div aria-hidden="true" className="absolute inset-0 overflow-hidden motion-reduce:hidden">
       <div
         className="absolute inset-0"
         style={{
           background: [
-            "radial-gradient(55% 40% at 50% 60%, color-mix(in oklab, var(--color-accent) 60%, transparent), transparent 75%)",
-            "radial-gradient(40% 45% at 90% 18%, color-mix(in oklab, var(--color-encre) 45%, transparent), transparent 72%)",
-            "linear-gradient(to bottom, var(--color-foreground) 0%, color-mix(in oklab, var(--color-foreground) 60%, var(--color-encre)) 62%, var(--color-encre) 100%)",
+            // la vignette : le bord de l'écran s'éteint
+            "radial-gradient(125% 105% at 50% 42%, transparent 50%, rgb(0 0 0 / 0.5) 100%)",
+            // un souffle de clarté derrière le logo
+            `radial-gradient(34% 22% at 50% 40%, ${teinte("lin", 6)}, transparent 72%)`,
+            // la lueur : l'ambre au cœur, le doré du thème autour ; assez haut pour que le Dock ne la cache pas
+            `radial-gradient(60% 28% at 56% 80%, ${teinte("attente", 74)}, ${teinte("accent", 26)} 44%, transparent 80%)`,
+            // deux bancs de brume : doré pâle à gauche, encre à droite
+            `radial-gradient(46% 10% at 24% 70%, ${teinte("accent", 17)}, transparent 72%)`,
+            `radial-gradient(42% 9% at 82% 75%, ${teinte("encre", 46)}, transparent 74%)`,
+            // la lumière d'angle, en haut à droite
+            `radial-gradient(60% 46% at 92% 0%, ${teinte("encre", 38)}, transparent 70%)`,
+            // le noir chaud, un peu plus brun en bas
+            `linear-gradient(to bottom, color-mix(in oklab, var(--color-foreground) 55%, black), color-mix(in oklab, var(--color-foreground) 72%, var(--color-encre)))`,
           ].join(", "),
         }}
       />
-      <svg viewBox="0 0 1600 1000" preserveAspectRatio="none" className="absolute inset-0 size-full">
-        <defs>
-          {dunes.map((dune, i) => (
-            <linearGradient key={i} id={`fond-mac-dune-${i}`} x1="0" y1="0" x2="0.35" y2="1">
-              <stop offset="0" style={dune.de} />
-              <stop offset="1" style={dune.a} />
-            </linearGradient>
-          ))}
-        </defs>
-        {dunes.map((dune, i) => (
-          <g key={i}>
-            <path d={dune.d} fill={`url(#fond-mac-dune-${i})`} />
-            <path
-              d={dune.d.split(" L1600")[0]}
-              fill="none"
-              strokeWidth={2}
-              vectorEffect="non-scaling-stroke"
-              style={{ stroke: "var(--color-lin)", strokeOpacity: dune.crete }}
-            />
-          </g>
-        ))}
-      </svg>
+      <div className="absolute inset-0 opacity-[0.09]" style={{ backgroundImage: GRAIN }} />
     </div>
   );
 }

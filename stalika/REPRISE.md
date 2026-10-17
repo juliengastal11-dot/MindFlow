@@ -67,6 +67,8 @@
   le PC, non installé). Le débogage ADB sans fil, c'était pour l'application VTBON sur Android, pas pour ce site.
 - Mode « animations réduites » : revérifié le 2026-10-17 au soir pour la discussion (la fenêtre posée dans la page, sans bureau) ;
   le reste de la page non revérifié.
+- Sur ordinateur, la série Kling garde plusieurs haubans qui pendent dans les nuages (en diagonale, images 26 à 54) : le hauban de la
+  série du téléphone a été retiré (`outils/hero/retirer-cable.py`), pas ceux-là. À traiter avec la chaîne paysage quand elle sera refaite.
 - Sur ordinateur, la plongée Kling (61 images pour un grand mouvement) fait un fantôme quand deux images se fondent (deux têtes,
   deux écrans) : à reprendre avec la chaîne paysage (plus d'images, ou un vol MiniMax comme sur téléphone ; se compte en crédits).
 - Pour voir la page sans le panneau navigateur de l'appli (caché : ses pages y sont figées), un Chrome sans fenêtre piloté par le

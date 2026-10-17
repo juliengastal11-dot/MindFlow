@@ -174,6 +174,26 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-17 (nuit) : bandes blanches, câble, fond d'écran
+
+Trois retours de J sur son iPhone, après la version du soir.
+- **Des bandes blanches en haut à gauche de l'écran, « de temps en temps au scroll »** : c'était moi. Depuis que les copies de la
+  fenêtre pour le Génie sont préparées un peu avant l'effet (pour éviter une image saccadée), elles restaient **visibles**, empilées
+  en haut à gauche du bureau, par-dessus la barre des menus, entre 63 et 70 % du défilement. Cause : chaque copie forçait
+  `visibility: visible`, ce qui l'emporte sur le `hidden` de sa scène. Corrigé dans `lib/genie.ts` (`inherit`, et la scène est cachée
+  dès sa création). À retenir : `visibility` s'hérite, mais un enfant `visible` s'affiche dans un parent `hidden`.
+- **Un câble électrique qui part en bas dans le vide** : un hauban du poteau, qui descend à travers les nuages de l'image 10 à
+  l'image 98 de la plongée du téléphone et ne mène à rien. Retiré des images par `outils/hero/retirer-cable.py` (voir son
+  LISEZMOI). Le poteau reste, ainsi que ses câbles qui s'affaissent. La série de l'ordinateur (Kling) a d'autres haubans du
+  même genre, non traités.
+- **Le fond d'écran, « trop bateau »** : les dunes vectorielles faisaient « fond d'écran de banque d'images ». Remplacées par
+  l'heure dorée du site en abstrait : un noir chaud, une lueur ambrée basse (le jeton `attente`), deux bancs de brume, une
+  lumière d'angle, du grain (un carreau de bruit fractal en SVG en ligne), une vignette, et jamais un trait dur (un filet de 1 px
+  scintille quand la perspective bouge). Quatre rendus regardés côte à côte (brume, brume et arcs fins, photo du site floutée, filet
+  d'horizon) ; retenu : la brume. Idée de départ : les fonds statiques de bg.ibelick (halo radial), sans leur violet ni leurs grilles.
+  Le Dock passe dans la palette du thème (crème, noir chaud, doré ; le vert et le rouge faisaient « icônes par défaut ») : seule la
+  conversation, l'appli ouverte, est dorée.
+
 ## Mise à jour du 2026-10-17 (soir) : le bureau du Mac, sur l'écran de l'ordinateur de la scène
 
 J, après la version précédente (le Dock et le Génie par-dessus toute la vue) : « il faut que tout ça soit dans l'ordinateur
