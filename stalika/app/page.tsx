@@ -4,8 +4,10 @@ import { Plongee } from "@/components/ui/plongee";
 import { Ciel } from "@/components/ui/ciel";
 import { Discussion } from "@/components/ui/discussion";
 import { ECRANS_PLONGEE } from "@/lib/plongee-ecran";
+import { ECRANS_PLONGEE_MOBILE } from "@/lib/plongee-ecran-mobile";
 import { RYTHME_PLONGEE } from "@/lib/plongee-rythme";
-import { CADRAGE_MOBILE } from "@/lib/ciel";
+import { RYTHME_PLONGEE_MOBILE } from "@/lib/plongee-rythme-mobile";
+import { POSE_BOUTON_MOBILE, RAPPORT_CIEL_MOBILE } from "@/lib/ciel";
 import { SceneModele } from "@/components/sections/scene-modele";
 import { SceneUtile } from "@/components/sections/scene-utile";
 import { SceneRelecture } from "@/components/sections/scene-relecture";
@@ -45,8 +47,8 @@ export default function Accueil() {
             (92 à 111). */}
         <Ciel
           bureau={{ dossier: "/ciel/bureau", nombre: 111 }}
-          mobile={{ dossier: "/ciel/mobile", nombre: 111 }}
-          cadrageMobile={CADRAGE_MOBILE}
+          // Le téléphone a toute sa chaîne en vertical d'origine (hero, ciel, plongée), chalet en rondins compris.
+          mobile={{ dossier: "/ciel/mobile", nombre: 111, rapport: RAPPORT_CIEL_MOBILE, pose: POSE_BOUTON_MOBILE }}
           jalons={[
             [0.08, 0],
             [1, 110],
@@ -56,8 +58,8 @@ export default function Accueil() {
           reperes={{ accueil: 0, "sur-mesure": 0.3, utile: 0.5, relecture: 0.7, "ciel-fin": 1 }}
           video={{
             bureau: { webm: "/hero/video.webm", mp4: "/hero/video.mp4" },
-            // Même recadrage que la série mobile du ciel : aucun saut au premier défilement.
-            mobile: { webm: "/hero/video-mobile.webm", mp4: "/hero/video-mobile.mp4" },
+            // Même plan que la série mobile du ciel : aucun saut au premier défilement. HEVC pour les iPhone, VP9 ailleurs, H.264 en repli.
+            mobile: { hevc: "/hero/video-mobile-hevc.mp4", webm: "/hero/video-mobile.webm", mp4: "/hero/video-mobile.mp4" },
             duree: 20,
             retour: {
               bureau: { dossier: "/hero/recul/bureau", nombre: 30 },
@@ -94,8 +96,14 @@ export default function Accueil() {
               x: 0,
               y: 0,
               bureau: { x: 0, y: 0, l: 1, h: 1 },
-              // La série mobile du ciel (mesures dans lib/ciel.ts).
-              mobile: CADRAGE_MOBILE,
+            }}
+            // La plongée du téléphone, verticale d'origine : 80 images à pas égal de changement (outils/hero/extraire-vertical.mjs),
+            // l'écran dans la dernière, et ses coins image par image (outils/hero/mesurer-ecran.py).
+            mobile={{
+              images: { dossier: "/hero/plongee-mobile", nombre: 80 },
+              ecran: { x: 0.406, y: 0.462, l: 0.486, h: 0.168 },
+              rythme: RYTHME_PLONGEE_MOBILE,
+              coins: ECRANS_PLONGEE_MOBILE,
             }}
             fenetre={<Discussion />}
             alt="La caméra s'approche du personnage assis au bord de la falaise, passe derrière son épaule et entre dans l'écran de son ordinateur, où le logo Stalika est affiché."

@@ -8,7 +8,7 @@ import { CyberButton } from "@/components/ui/cyber-button";
 import { gsap, ScrollTrigger, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
 import { defilement } from "@/lib/defilement";
-import { CADRAGE_MOBILE, POSE_BOUTON, RAPPORT_CIEL } from "@/lib/ciel";
+import { POSE_BOUTON, RAPPORT_CIEL } from "@/lib/ciel";
 import { angleRepos, bezier, choisirAncrage, ecartPendule, matrice, planifierChute, type PlanChute, type Plateforme, type Point, type Rebond } from "@/lib/chute";
 import { cn } from "@/lib/utils";
 
@@ -123,13 +123,16 @@ function poseEcran(): Point | null {
   const cadre = document.querySelector<HTMLElement>("[data-ciel-cadre]");
   if (!cadre) return null;
   const r = cadre.getBoundingClientRect();
-  const source = window.matchMedia("(max-width: 767px)").matches ? CADRAGE_MOBILE : { x: 0, y: 0, l: 1, h: 1 };
-  const e = Math.max(r.width / (source.l * RAPPORT_CIEL), r.height / source.h);
-  const dw = source.l * RAPPORT_CIEL * e;
-  const dh = source.h * e;
+  // `Ciel` dit, sur son cadre, quelle série il affiche : le rapport de ses images (paysage ou vertical) et le point où le
+  // bouton se pose. Sans cela (avant le montage de `Ciel`), les valeurs du plan paysage.
+  const [px, py] = cadre.dataset.cielPose ? cadre.dataset.cielPose.split(",").map(Number) : [POSE_BOUTON.x, POSE_BOUTON.y];
+  const rapport = Number(cadre.dataset.cielRapport) || RAPPORT_CIEL;
+  const e = Math.max(r.width / rapport, r.height);
+  const dw = rapport * e;
+  const dh = e;
   return {
-    x: r.left + (r.width - dw) / 2 + ((POSE_BOUTON.x - source.x) / source.l) * dw,
-    y: r.top + (r.height - dh) / 2 + ((POSE_BOUTON.y - source.y) / source.h) * dh,
+    x: r.left + (r.width - dw) / 2 + px * dw,
+    y: r.top + (r.height - dh) / 2 + py * dh,
   };
 }
 

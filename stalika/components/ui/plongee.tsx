@@ -55,9 +55,11 @@ import type { CoinsEcran } from "@/lib/plongee-ecran";
      fenêtre monte et le fond recule (0,5 → 0,9) ; le reste laisse le temps
      de la voir en place avant que la page ne reprenne son cours.
 
-   Les images ne sont chargées qu'à l'approche. Une seule série pour tous
-   les écrans : quand l'écran rogne l'image (téléphone), le cadrage suit
-   l'action, du personnage au début jusqu'à l'ordinateur à la fin.
+   Les images ne sont chargées qu'à l'approche. Deux séries : le plan
+   paysage pour l'ordinateur (quand l'écran en rogne un côté, le cadrage suit
+   l'action, du personnage au début jusqu'à l'ordinateur à la fin) et, pour le
+   téléphone, une série verticale d'origine (`mobile`, 2026-10-17), sans
+   recadrage ni raccord : son premier plan est la dernière image du ciel.
    Mouvement réduit : le hero seul, immobile, sans plongée.
 --------------------------------------------------------------------------- */
 
@@ -115,6 +117,15 @@ export type PlongeeProps = {
   rythme?: readonly number[];
   logo?: LogoEcran;
   raccord?: Raccord;
+  /** La version verticale d'origine, pour le téléphone (moins de 768 px) : ses images, l'écran dans sa dernière image, son
+      rythme et les coins de l'écran image par image. Ses images sont prises au cadre du ciel : ni raccord ni recadrage.
+      Absente : le téléphone montre la série du dessus, recadrée. */
+  mobile?: {
+    images: SerieImages;
+    ecran: { x: number; y: number; l: number; h: number };
+    rythme?: readonly number[];
+    coins?: readonly (CoinsEcran | null)[];
+  };
   /** Description de la scène, pour qui ne la voit pas. */
   alt: string;
   /** La fenêtre qui s'ouvre dans l'ordinateur, en « feuille », à la fin de la plongée. */
@@ -127,14 +138,15 @@ function chemin(s: SerieImages, i: number) {
 }
 
 export function Plongee({
-  images: serie,
-  ecran,
-  focus,
+  images: serieBureau,
+  ecran: ecranBureau,
+  focus: focusBureau,
   fondu = 0.1,
   finVideo = 0.8,
-  rythme,
+  rythme: rythmeBureau,
   logo,
-  raccord,
+  raccord: raccordBureau,
+  mobile,
   alt,
   fenetre,
   className,
@@ -158,7 +170,14 @@ export function Plongee({
     if (!ctx2d) return;
     if (mouvementReduit()) return;
 
-    const cible = ecran;
+    // Sur téléphone, la série verticale d'origine, quand il y en a une : son écran, son rythme, ses coins, et pas de recadrage.
+    const surMobile = !!mobile && window.matchMedia("(max-width: 767px)").matches;
+    const serie = surMobile ? mobile.images : serieBureau;
+    const cible = surMobile ? mobile.ecran : ecranBureau;
+    const focus = surMobile ? { debut: { x: 0.5, y: 0.5 }, fin: { x: 0.5, y: 0.5 } } : focusBureau;
+    const rythme = surMobile ? mobile.rythme : rythmeBureau;
+    const raccord = surMobile ? undefined : raccordBureau;
+    const coinsLogo = surMobile && mobile.coins ? mobile.coins : logo?.coins;
     const images: HTMLImageElement[] = [];
     let courante = -1;
     let entree = 0; // entrée dans l'écran, de 0 à 1, adoucie
@@ -201,12 +220,12 @@ export function Plongee({
 
     // Les coins de l'écran à l'image fractionnaire f : ceux des deux images voisines, fondus selon la fraction.
     const coinsA = (f: number): CoinsEcran | null => {
-      if (!logo) return null;
+      if (!logo || !coinsLogo) return null;
       const i = Math.min(serie.nombre - 1, Math.max(0, Math.floor(f)));
       const j = Math.min(serie.nombre - 1, i + 1);
       const a = f - i;
-      const p = logo.coins[i];
-      const q = logo.coins[j];
+      const p = coinsLogo[i];
+      const q = coinsLogo[j];
       if (p && q && a > 0) return p.map((v, k) => v + (q[k] - v) * a) as unknown as CoinsEcran;
       return p ?? (a > 0.5 ? q : null);
     };
@@ -331,9 +350,13 @@ export function Plongee({
       const rw = w / (cible.l * dw2);
       const rh = h / (cible.h * dh2);
       const zoom = 1 + (Math.min(Math.max(rw, rh), rw * 1.6) * 1.15 - 1) * entree;
+      // La série verticale n'a presque pas de marge pour glisser (6 % de large) : au lieu de recadrer pour garder l'écran
+      // au centre, l'agrandissement ramène le centre de l'écran au centre de la vue, à mesure qu'on entre.
+      const vx = surMobile ? cx + (w / 2 - cx) * entree : cx;
+      const vy = surMobile ? cy + (h / 2 - cy) * entree : cy;
       ctx2d.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx2d.clearRect(0, 0, w, h);
-      ctx2d.translate(cx, cy);
+      ctx2d.translate(vx, vy);
       ctx2d.scale(zoom, zoom);
       ctx2d.translate(-cx, -cy);
       ctx2d.globalAlpha = 1;
@@ -421,7 +444,7 @@ export function Plongee({
       arreter();
       window.removeEventListener("resize", redessiner);
     };
-  }, [serie, ecran, focus, fondu, finVideo, rythme, logo, raccord]);
+  }, [serieBureau, ecranBureau, focusBureau, fondu, finVideo, rythmeBureau, logo, raccordBureau, mobile]);
 
   return (
     <div

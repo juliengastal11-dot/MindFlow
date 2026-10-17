@@ -174,6 +174,45 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-17 (suite) : tout le chemin du téléphone en vertical, un chalet en rondins
+
+J, après avoir vu la vidéo sur son iPhone : « la vidéo pas assez de bonne qualité », « la maison est trop petite, il faut qu'elle fasse
+plus petit chalet ». Sa décision : « Tout le chemin en 9:16, bonne qualité et le chalet. Garde le côté où il s'allume la nuit. »
+- **Le téléphone a sa propre chaîne, verticale d'origine** (Kling 3.0 Pro, 10 s, 1 080 × 1 912, générée le 2026-10-17) : l'aller et le
+  retour du hero, les cinq passages du ciel (lumière du hero, crépuscule, nuit, nuit où le personnage s'étire, aube, lumière
+  dorée) et la plongée. Plus de bande de 600 px prise dans un plan paysage et agrandie : le plan entier, sans recadrage. Le chalet est
+  en rondins (variante B choisie par J), plus gros et entièrement dans le cadre ; ses fenêtres et l'écran de l'ordinateur
+  s'allument la nuit. Le plan ne bouge pas d'un passage à l'autre (trépied), seule la lumière change : chaque passage part de la
+  dernière image du précédent. Les images, les tâches Higgsfield et les commandes pour tout refaire : `outils/hero/LISEZMOI.md`.
+  L'ordinateur garde sa chaîne paysage (la cabane) ; la refaire en 16:9 coûterait environ 170 crédits, J a dit « plus tard ».
+- **Dans le code** : `Ciel` n'a plus de `cadrageMobile` (supprimé) ; une série dit son `rapport` (`RAPPORT_CIEL_MOBILE`, 720 × 1 274)
+  et où le bouton se pose (`POSE_BOUTON_MOBILE`, dans `lib/ciel.ts`), et pose les deux sur son cadre pour que le bouton qui
+  tombe les relise. `Plongee` prend `mobile` : ses 80 images (`public/hero/plongee-mobile`), l'écran dans la dernière, son rythme
+  (`lib/plongee-rythme-mobile.ts`) et les coins de l'écran image par image (`lib/plongee-ecran-mobile.ts`, mesurés par
+  `outils/hero/mesurer-ecran.py`) ; ni raccord ni recadrage, et l'agrandissement final ramène le centre de l'écran au centre de la
+  vue (l'image verticale n'a que 6 % de marge pour glisser). `VideoAdaptative` sert le HEVC aux iPhone (puce vidéo), le VP9
+  ailleurs, le H.264 en repli. Les 80 images de la plongée sont choisies à pas égal de changement (pas à intervalles égaux) :
+  la caméra va dix fois plus vite au milieu qu'au début.
+- **Poids** (le prix de la qualité) : vidéo du hero 4,5 Mo en HEVC, 4,0 en VP9, 5,5 en H.264 (avant : 2,4 et 1,7 Mo) ; ciel
+  5,5 Mo ; recul 1,8 Mo ; plongée 4,1 Mo. Environ 16 Mo sur téléphone, contre 8,5 avant. À 4,5 Mo la vidéo dépasse les 3 Mo du
+  garde-fou des vidéos de fond, qui ne regarde que `public/` à la racine du projet (ici `stalika/public`, donc pas vue). Si c'est
+  trop : `--hevc 1400` (3,4 Mo), ou des images en qualité 70 (16 % de moins, `--qualite 70`).
+- **Mesuré sur l'iPhone, build de production** : premier défilement (0 à 700 px), page ouverte en haut : 59 images par seconde,
+  médiane 17 ms, aucune image de plus de 50 ms (quatre chargements à froid) ; plongée : 58 images par seconde ; ciel et scènes :
+  58. Le bouton tombé se pose à 1 px du point visé. Piège de mesure : une page rouverte plus bas (défilement restauré), puis
+  ramenée en haut, redémarre la vidéo pendant le défilement : 14 à 40 images par seconde la première seconde ; sans
+  conséquence au chargement normal, mais ça a fait croire à tort à une régression.
+- **Deux retours de J sur les nouveaux plans, corrigés le jour même** : (1) le nuage : « la physique du nuage est étrange, un nuage ne
+  tombe pas comme ça », « trop boule, je préférais l'ancien » : l'aller est regénéré (deux variantes, J a choisi la A : une masse blanche qui
+  traverse le plateau et poursuit dans le vide) ; (2) l'herbe : « quand la caméra se rapproche du PC à la fin, l'herbe pousse et le
+  personnage s'enfonce dans le sol » : la plongée est regénérée avec une caméra qui reste haute (la première descendait au ras de l'herbe, et
+  l'herbe du premier plan grandissait en cachant le bas de son corps). Reste un peu d'herbe au premier plan en fin de plongée, c'est
+  la composition de l'image d'arrivée (l'écran à hauteur d'épaule) : pour l'ôter tout à fait, il faudrait une image d'arrivée vue de plus
+  haut. Les tâches Higgsfield : `outils/hero/LISEZMOI.md`.
+- **Un défaut trouvé en vérifiant, corrigé** : si la page s'ouvrait plus bas que le haut (un lien avec ancre, ou Safari qui
+  rend le défilement après un retour), la vidéo n'avait jamais joué et restait figée sur sa première image jusqu'au
+  rechargement ; elle reprend maintenant dès qu'on est en haut (`Ciel`, `suivreVideo`).
+
 ## Mise à jour du 2026-10-17 : un seul clic, plein écran, des images sans à-coups, la roue au doigt
 
 Retours de J, vus en direct sur son iPhone 16 Pro (iOS 18.7, Safari) par le pont du skill `/phone`. Mesures faites sur ce
@@ -205,10 +244,9 @@ téléphone.
   évènements tactiles simulés : un glissé de 100 ou de 40 px sur la carte du milieu change d'une carte, un coup de doigt en
   fait trois, un toucher ouvre la visite, un toucher sur le texte la referme. L'indice tactile devient « Touchez pour visiter le
   site ».
-- **Pas fait, à décider avec J** : la qualité de la vidéo et la maison. La vidéo du téléphone est une bande de 600 × 1 076 px
-  prise dans un plan 16:9 de 1 080 p, agrandie à 840 × 1 506, puis compressée à 0,7 à 1 Mbit/s : floue, avec des blocs. La
-  maison (une cabane à l'extrême gauche du plan) est coupée par ce recadrage. Les vrais remèdes demandent de regénérer, donc des
-  crédits : voir `REPRISE.md`.
+- **Qualité de la vidéo et maison** : la vidéo du téléphone était une bande de 600 × 1 076 px prise dans un plan 16:9 de 1 080 p,
+  agrandie à 840 × 1 506, puis compressée à 0,7 à 1 Mbit/s : floue, avec des blocs ; la maison (une cabane à l'extrême gauche du
+  plan) était coupée par ce recadrage. Traité le jour même, par une chaîne verticale d'origine : voir la mise à jour ci-dessus.
 
 ## Mise à jour du 2026-10-09 (suite) : l'île en verre, le bandeau centré, le bouton au milieu
 
