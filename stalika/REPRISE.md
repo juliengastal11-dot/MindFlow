@@ -50,11 +50,11 @@
   le visiteur ne clique pas (voir `BLUEPRINT.md`, mise à jour du 2026-10-02). Après chaque retouche de
   section, vérifier que les `data-rebond` suivent. À tester par J sur iPhone (fluidité de la chute).
 - Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion.
-- Tester sur le vrai iPhone, en direct (2026-10-17) : `outils/telephone/` (voir son `LISEZMOI.md`). `node outils/telephone/pont.mjs`,
-  puis J ouvre l'adresse affichée dans Safari (même Wi-Fi) ; `node outils/telephone/ctl.mjs` lit, mesure, défile, touche
-  et chronomètre la fluidité sur le téléphone. Un iPhone ne se pilote pas depuis Windows (pas d'ADB) : on pilote la page, pas
-  l'appareil ; pas de captures d'écran (J les envoie, ou un récepteur AirPlay sur le PC, non installé). Le débogage ADB sans fil,
-  c'était pour l'application VTBON sur Android, pas pour ce site.
+- Tester sur le vrai iPhone, en direct (2026-10-17) : le skill global `/phone` (`~/.claude/skills/phone`, son README l'explique).
+  Il monte un pont (relais sur le réseau local + télécommande de la page ouverte dans Safari) et rend une seule adresse à copier dans
+  Safari ; ensuite Claude lit la console, mesure, défile, touche et chronomètre la fluidité sur le téléphone. Un iPhone ne se pilote pas
+  depuis Windows (pas d'ADB) : on pilote la page, pas l'appareil ; pas de captures d'écran (J les envoie, ou un récepteur AirPlay sur
+  le PC, non installé). Le débogage ADB sans fil, c'était pour l'application VTBON sur Android, pas pour ce site.
 - Mode « animations réduites » non revérifié après les derniers changements.
 - Plus de voiles sombres sur les scènes 01 à 03 (2026-10-07, demande de J) : le texte tient par une ombre douce (`sur-ciel`). À regarder sur téléphone au crépuscule (début de la 01) et à l'aube (fin de la 03), voir `BLUEPRINT.md`.
 - Le 2026-10-09, à regarder sur téléphone : l'île du menu en verre (même verre que le bandeau de cookies), le bandeau de cookies centré (donc plus haut : 257 px) et le bouton « Parlons projet » au milieu de la page, sur sa propre rangée (voir `BLUEPRINT.md`). Le verre n'a été vu que dans Chrome : à regarder sur Safari (iPhone) aussi.
