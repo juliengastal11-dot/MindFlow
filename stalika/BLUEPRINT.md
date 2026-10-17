@@ -174,6 +174,26 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-17 (fin) : la fenêtre sort du Dock, comme sur un Mac
+
+J : « au lieu de s'ouvrir de bas en haut basiquement, tu fais le style d'ouverture des Mac : tu simules une barre des tâches de
+Mac en bas, puis l'onglet de la conversation s'ouvre comme sur Mac ». Ses choix : au défilement, plusieurs icônes, téléphone et
+ordinateur.
+- **Le déroulé** (`Plongee`, après l'entrée dans l'écran) : le Dock monte du bas, l'icône de la conversation rebondit une fois,
+  puis la fenêtre de discussion en sort avec l'**effet Génie** : étroite près de l'icône, large en haut, elle monte et se pose à
+  sa place. Tout suit le défilement : en remontant, elle rentre dans l'icône. Le fond ne recule plus derrière la fenêtre (c'était
+  l'effet « feuille » d'iPhone). La zone de la plongée passe de 320 à 380 svh et la vidéo finit à 72 % (au lieu de 80 %) :
+  de la place pour le Dock et le Génie.
+- **Le Génie** (`lib/genie.ts`) : la vraie fenêtre est recopiée en 32 bandes (40 sur ordinateur), copies inertes, sans
+  identifiants ; chaque bande est un trapèze qui suit l'entonnoir (sans cela, les bords font des marches) et recouvre la
+  suivante d'un pixel d'écran (sans cela, des rayures). La vraie fenêtre est cachée pendant l'effet et prend le relais à la fin, à
+  la même place. Pas de WebGL, pas de bibliothèque.
+- **Le Dock** (`components/ui/dock-mac.tsx`) : le verre sombre de l'île du menu, cinq tuiles inventées aux couleurs du site (logo
+  S, notes, conversation, agenda, projets), le point sous l'appli ouverte. Aucune icône d'Apple. Idées : le Dock de Watermelon et le
+  « Floating Dock » d'Aceternity (21st). Décoratif : ni cliquable ni lu par les lecteurs d'écran.
+- **En développement**, la barre « Navigation · Édition » de l'overlay cache le Dock sur téléphone ; elle n'existe pas en ligne.
+- Vérifié dans le navigateur intégré, en taille téléphone et ordinateur ; pas encore sur l'iPhone de J.
+
 ## Mise à jour du 2026-10-17 (suite) : tout le chemin du téléphone en vertical, un chalet en rondins
 
 J, après avoir vu la vidéo sur son iPhone : « la vidéo pas assez de bonne qualité », « la maison est trop petite, il faut qu'elle fasse

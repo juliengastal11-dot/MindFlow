@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import { gsap, ScrollTrigger, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
 import type { CoinsEcran } from "@/lib/plongee-ecran";
+import { creerGenie, type Boite, type Genie } from "@/lib/genie";
+import { DockMac } from "@/components/ui/dock-mac";
 
 /* ---------------------------------------------------------------------------
    Plongée : à la fin du ciel, on entre dans l'écran de l'ordinateur.
@@ -16,11 +18,13 @@ import type { CoinsEcran } from "@/lib/plongee-ecran";
    hauteur), qui reste en place derrière. Une suite d'images prend le relais, avancée au rythme du
    défilement : on s'approche du personnage, on passe derrière son épaule, on
    entre dans l'écran, dont le fond d'écran (le logo) remplit le cadre. Puis
-   une fenêtre s'ouvre, comme sur un Mac, avec l'effet de « feuille »
-   d'iPhone voulu par J : elle monte du bas, et le fond recule un peu,
-   s'arrondit et s'assombrit derrière elle (`fenetre`, la discussion). Au
-   bout du défilement, tout reprend sa place dans la page : la fenêtre
-   défile avec elle, comme une section.
+   on est sur le bureau d'un Mac (J, 2026-10-17 : « tu simules une barre des
+   tâches de Mac en bas, puis l'onglet de la conversation s'ouvre comme sur
+   Mac ») : le Dock monte du bas, l'icône de la conversation rebondit, et la
+   fenêtre de discussion (`fenetre`) en sort avec l'effet Génie
+   (`lib/genie.ts`), au rythme du défilement. Au bout du défilement, tout
+   reprend sa place dans la page : la fenêtre défile avec elle, comme une
+   section.
 
    Deux leçons tirées de la première version du film :
    - pas d'épinglage GSAP (il ajoutait des sauts sur iPhone) : `sticky`,
@@ -56,9 +60,10 @@ import type { CoinsEcran } from "@/lib/plongee-ecran";
    Déroulé du défilement, de 0 à 1 :
    - 0 à `fondu` : le canvas apparaît en fondu par-dessus le ciel ;
    - `fondu` à `finVideo` : les images défilent ;
-   - `finVideo` à 1 : agrandissement centré sur l'écran (0 → 0,6), puis la
-     fenêtre monte et le fond recule (0,5 → 0,9) ; le reste laisse le temps
-     de la voir en place avant que la page ne reprenne son cours.
+   - `finVideo` à 1 : agrandissement centré sur l'écran (0 → 0,4), le Dock
+     monte (0,3 → 0,45), l'icône de la conversation rebondit (0,46 → 0,56),
+     la fenêtre sort de l'icône (0,56 → 0,92) ; le reste laisse le temps de
+     la voir en place avant que la page ne reprenne son cours.
 
    Les images ne sont chargées qu'à l'approche. Deux séries : le plan
    paysage pour l'ordinateur (quand l'écran en rogne un côté, le cadrage suit
@@ -150,7 +155,7 @@ export function Plongee({
   ecran: ecranBureau,
   focus: focusBureau,
   fondu = 0.1,
-  finVideo = 0.8,
+  finVideo = 0.72,
   rythme: rythmeBureau,
   logo,
   raccord: raccordBureau,
@@ -162,18 +167,18 @@ export function Plongee({
   const zone = useRef<HTMLDivElement>(null);
   const calque = useRef<HTMLDivElement>(null);
   const toile = useRef<HTMLCanvasElement>(null);
-  const fond = useRef<HTMLDivElement>(null);
-  const ombre = useRef<HTMLDivElement>(null);
   const feuille = useRef<HTMLDivElement>(null);
+  const bureau = useRef<HTMLDivElement>(null);
+  const rangee = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const el = zone.current;
     const cadre = calque.current;
     const canvas = toile.current;
-    const recul = fond.current;
-    const voileFond = ombre.current;
     const panneau = feuille.current;
-    if (!el || !cadre || !canvas || !recul || !voileFond) return;
+    const hote = bureau.current;
+    const dock = rangee.current;
+    if (!el || !cadre || !canvas) return;
     const ctx2d = canvas.getContext("2d");
     if (!ctx2d) return;
     if (mouvementReduit()) return;
@@ -403,6 +408,33 @@ export function Plongee({
     );
     obs.observe(el);
 
+    /* Le bureau du Mac, après l'entrée dans l'écran : le Dock monte du bas, l'icône de la conversation rebondit une fois,
+       puis la fenêtre en sort avec l'effet Génie. Tout suit le défilement : en remontant, la fenêtre rentre dans l'icône. */
+    const icone = dock?.querySelector<HTMLElement>("[data-dock-conversation] > span") ?? null;
+    const point = dock?.querySelector<HTMLElement>("[data-dock-point]") ?? null;
+    const tranches = surMobile ? 32 : 40;
+    let genie: Genie | null = null;
+    const dans = (r: DOMRect, base: DOMRect): Boite => ({ x: r.left - base.left, y: r.top - base.top, l: r.width, h: r.height });
+    if (panneau) gsap.set(panneau, { yPercent: 0, autoAlpha: 0 });
+    const poserMac = (pz: number) => {
+      if (!panneau || !hote || !dock || !icone) return;
+      const monte = 1 - Math.pow(1 - borne((pz - 0.3) / 0.15), 3);
+      gsap.set(dock, { yPercent: 160 * (1 - monte), autoAlpha: monte });
+      const u = borne((pz - 0.46) / 0.1);
+      gsap.set(icone, { y: -14 * Math.sin(Math.PI * u) });
+      const g = borne((pz - 0.56) / 0.36);
+      if (point) gsap.set(point, { opacity: g > 0 ? 1 : 0 });
+      if (g > 0 && g < 1) {
+        genie ??= creerGenie(panneau, hote, tranches);
+        const base = hote.getBoundingClientRect();
+        genie.poser(g, dans(panneau.getBoundingClientRect(), base), dans(icone.getBoundingClientRect(), base));
+      } else if (genie) {
+        genie.detruire();
+        genie = null;
+      }
+      gsap.set(panneau, { autoAlpha: g >= 1 ? 1 : 0 });
+    };
+
     // Le scintillement continue quand le défilement s'arrête : une boucle
     // d'animation, tant que la plongée est à l'écran et le logo visible.
     let boucle = 0;
@@ -432,14 +464,8 @@ export function Plongee({
         const pv = Math.min(1, Math.max(0, (p - fondu) / (finVideo - fondu)));
         const pz = Math.max(0, (p - finVideo) / (1 - finVideo));
         // Entrée dans l'écran : lente au début, franche à la fin.
-        entree = douce(borne(pz / 0.6));
-        // La feuille : elle monte du bas (fin franche, comme un ressort
-        // amorti), le fond recule, s'arrondit et s'assombrit derrière elle.
-        const f = borne((pz - 0.5) / 0.4);
-        const ef = 1 - Math.pow(1 - f, 3);
-        if (panneau) gsap.set(panneau, { yPercent: 105 * (1 - ef), autoAlpha: f > 0 ? 1 : 0 });
-        gsap.set(recul, { scale: 1 - 0.06 * ef, borderRadius: 24 * ef });
-        gsap.set(voileFond, { opacity: 0.45 * ef });
+        entree = douce(borne(pz / 0.4));
+        poserMac(pz);
         avance = pv;
         dessiner(rang(pv));
       },
@@ -448,6 +474,7 @@ export function Plongee({
     const redessiner = () => courante >= 0 && dessiner(courante);
     window.addEventListener("resize", redessiner);
     return () => {
+      genie?.detruire();
       st.kill();
       obs.disconnect();
       arreter();
@@ -459,7 +486,7 @@ export function Plongee({
     <div
       ref={zone}
       data-src="components/ui/plongee.tsx"
-      className={cn("nuit relative h-[320svh] motion-reduce:h-auto", className)}
+      className={cn("nuit relative h-[380svh] motion-reduce:h-auto", className)}
     >
       {/* `data-plongee-colle` : là où se pose ce qui reste collé au plan quand la plongée commence (le bouton tombé près de l'ordinateur). */}
       <div data-plongee-colle="" className="sticky top-0 h-lvh motion-reduce:static motion-reduce:h-auto">
@@ -468,17 +495,24 @@ export function Plongee({
           ref={calque}
           className="pointer-events-none invisible absolute inset-0 overflow-hidden bg-background opacity-0 motion-reduce:hidden"
         >
-          {/* Le fond qui recule derrière la feuille. */}
-          <div ref={fond} className="absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 overflow-hidden">
             <canvas ref={toile} role="img" aria-label={alt} className="absolute inset-0 h-full w-full" />
-            <div ref={ombre} aria-hidden="true" className="absolute inset-0 bg-background opacity-0" />
           </div>
         </div>
-        {/* La fenêtre en « feuille ». Elle a la hauteur de ce qu'on voit (`dvh`) et non celle du plan
-            (`lvh`) : sur iPhone, son pied (le champ de saisie) passerait sous la barre de Safari.
-            Mouvement réduit : posée sous le hero, dans le cours de la page. */}
+        {/* Le bureau du Mac : le Dock, puis la fenêtre qui sort de son icône. Il a la hauteur de ce qu'on voit (`dvh`) et
+            non celle du plan (`lvh`) : sur iPhone, le Dock et le pied de la fenêtre (le champ de saisie) passeraient sous la
+            barre de Safari. Mouvement réduit : la fenêtre est posée sous le hero, dans le cours de la page, sans Dock. */}
         {fenetre && (
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-dvh overflow-hidden motion-reduce:pointer-events-auto motion-reduce:relative motion-reduce:inset-auto motion-reduce:mx-2 motion-reduce:h-[85svh] motion-reduce:overflow-visible sm:motion-reduce:mx-3">
+          <div
+            ref={bureau}
+            className="pointer-events-none absolute inset-x-0 top-0 h-dvh overflow-hidden motion-reduce:pointer-events-auto motion-reduce:relative motion-reduce:inset-auto motion-reduce:mx-2 motion-reduce:h-[85svh] motion-reduce:overflow-visible sm:motion-reduce:mx-3"
+          >
+            <div
+              ref={rangee}
+              className="invisible absolute inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] flex justify-center motion-reduce:hidden"
+            >
+              <DockMac />
+            </div>
             <div
               ref={feuille}
               className="pointer-events-auto invisible absolute inset-x-0 bottom-0 top-11 mx-auto md:top-14 md:max-w-3xl motion-reduce:visible motion-reduce:top-0"
