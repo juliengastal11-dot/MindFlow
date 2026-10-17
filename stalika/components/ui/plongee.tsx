@@ -29,6 +29,11 @@ import type { CoinsEcran } from "@/lib/plongee-ecran";
      saccadent sur iPhone) : des images dessinées sur un canvas selon la
      position de défilement, la méthode des pages produit d'Apple.
 
+   Le sol ne doit pas bouger quand on entre dans l'ordinateur (J, 2026-10-17 : « le sol se lève, s'affaisse derrière, tout est n'importe
+   quoi »). Un plan généré finit par une descente de la caméra : le sol monte dans l'image et l'IA déforme le terrain pour atteindre
+   l'image d'arrivée. La série du téléphone s'arrête donc avant (à 7,2 s sur 10), sa dernière image est en pleine taille, et
+   l'entrée dans l'écran n'est qu'un agrandissement de cette image fixe : le sol et l'herbe ne font que grandir avec elle.
+
    Raccord : le dernier passage du ciel se termine sur la première image de
    la plongée (image d'arrivée imposée à Kling). Le
    `raccord` la pose exactement comme le ciel la cadre (téléphone compris),
@@ -125,6 +130,9 @@ export type PlongeeProps = {
     ecran: { x: number; y: number; l: number; h: number };
     rythme?: readonly number[];
     coins?: readonly (CoinsEcran | null)[];
+    /** Largeur de l'écran de l'ordinateur à la fin de l'agrandissement, en part de la largeur de la vue (0,8 : il en prend
+        les quatre cinquièmes). Absent : l'écran déborde de la vue (au plus 1,84 fois sa largeur). */
+    agrandissement?: number;
   };
   /** Description de la scène, pour qui ne la voit pas. */
   alt: string;
@@ -349,7 +357,8 @@ export function Plongee({
       // il dépasse un peu la largeur : le fond d'écran reste lisible.
       const rw = w / (cible.l * dw2);
       const rh = h / (cible.h * dh2);
-      const zoom = 1 + (Math.min(Math.max(rw, rh), rw * 1.6) * 1.15 - 1) * entree;
+      const zoomFinal = surMobile && mobile.agrandissement ? rw * mobile.agrandissement : Math.min(Math.max(rw, rh), rw * 1.6) * 1.15;
+      const zoom = 1 + (zoomFinal - 1) * entree;
       // La série verticale n'a presque pas de marge pour glisser (6 % de large) : au lieu de recadrer pour garder l'écran
       // au centre, l'agrandissement ramène le centre de l'écran au centre de la vue, à mesure qu'on entre.
       const vx = surMobile ? cx + (w / 2 - cx) * entree : cx;

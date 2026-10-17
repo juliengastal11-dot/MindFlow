@@ -97,11 +97,13 @@ export default function Accueil() {
               y: 0,
               bureau: { x: 0, y: 0, l: 1, h: 1 },
             }}
-            // La plongée du téléphone, verticale d'origine : 80 images à pas égal de changement (outils/hero/extraire-vertical.mjs),
-            // l'écran dans la dernière, et ses coins image par image (outils/hero/mesurer-ecran.py).
+            // La plongée du téléphone, verticale d'origine : 120 images à pas égal de changement, prises jusqu'à 7,2 s du plan (avant que la
+            // caméra descende : le sol monterait), la dernière en pleine taille ; puis on entre dans l'écran par un simple agrandissement
+            // de cette image (outils/hero/extraire-vertical.mjs). L'écran dans la dernière, et ses coins image par image (mesurer-ecran.py).
             mobile={{
-              images: { dossier: "/hero/plongee-mobile", nombre: 80 },
-              ecran: { x: 0.406, y: 0.462, l: 0.486, h: 0.168 },
+              images: { dossier: "/hero/plongee-mobile", nombre: 120 },
+              ecran: { x: 0.487, y: 0.541, l: 0.224, h: 0.091 },
+              agrandissement: 0.8,
               rythme: RYTHME_PLONGEE_MOBILE,
               coins: ECRANS_PLONGEE_MOBILE,
             }}

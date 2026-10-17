@@ -53,7 +53,7 @@
 - **Fait le 2026-10-17 : tout le chemin du téléphone en vertical** (J : « Tout le chemin en 9:16 c'est ok, bonne qualité et le chalet. Garde le
   côté où il s'allume la nuit »). Chalet en rondins, vidéo du hero, cinq passages du ciel et plongée générés en 1 080 × 1 912 : voir `BLUEPRINT.md`
   (mise à jour du 2026-10-17, suite) et `outils/hero/LISEZMOI.md` (tâches Higgsfield, commandes pour tout refaire). Mesuré sur l'iPhone de J (build de
-  production) : 58 à 59 images par seconde partout. **À regarder par J** : le nuage (variante A) et l'herbe de la plongée (retours du jour, corrigés par deux nouveaux plans), le rendu sur son téléphone (chalet, nuit, plongée dans l'écran, bouton
+  production) : 58 à 59 images par seconde partout. **À regarder par J** : le nuage (variante A, nouveau plan) et le sol de la plongée (retours du jour : le second plan faisait « se lever » le sol à la fin ; on n'en garde que les 7,2 premières secondes, puis un zoom pur sur une image fixe, voir `BLUEPRINT.md`), le rendu sur son téléphone (chalet, nuit, plongée dans l'écran, bouton
   qui tombe) et le poids (environ 16 Mo sur téléphone, contre 8,5 avant ; voir `BLUEPRINT.md` pour l'alléger). **L'ordinateur garde la chaîne
   paysage (la cabane)** : la refaire en 16:9, avec le chalet, coûterait environ 170 crédits ; J a répondu « plus tard ». Aucune génération sans le
   prix annoncé et l'accord de J.

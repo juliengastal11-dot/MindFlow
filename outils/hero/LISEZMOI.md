@@ -62,7 +62,7 @@ s'allument la nuit. Le plan ne bouge pas d'une passe à l'autre (trépied), seul
 | Passe 3 | `44ace8bb-99c6-4ee8-ba1c-fe227379bd1b` | nuit, le personnage s'étire |
 | Passe 4 | `af7c5474-3881-41dc-87c5-abb94e2cf807` | nuit → aube |
 | Passe 5 | `0de45b26-4b28-4ff5-8cef-ca86c5e27729` | aube → lumière dorée (arrivée : l'image de départ du chalet) |
-| Plongée | `bac6c8a7-c6d7-4fb2-b45b-37bc3ba1f596` | dernière image de la passe 5 → plan par-dessus l'épaule, écran blanc ; la caméra reste haute au-dessus de l'herbe |
+| Plongée | `bac6c8a7-c6d7-4fb2-b45b-37bc3ba1f596` | dernière image de la passe 5 → plan par-dessus l'épaule, écran blanc ; la caméra reste haute au-dessus de l'herbe. **On n'en garde que les 7,2 premières secondes** (voir plus bas) |
 
 Plans écartés (17,5 crédits chacun) : l'aller `8b515e96-1917-4e26-b305-a4ffcf2b2b8c` (un nuage gonflé qui retombait le long de la
 falaise : « la physique est étrange », J) ; la variante B du nuage `e4ae5801-40ac-4fc8-b878-359db9c04ba6` (un voile plat, que je préférais ;
@@ -82,7 +82,7 @@ Il faut Node, ffmpeg et Python (Pillow, numpy).
 ```
 node monter-vertical.mjs aller.mp4 retour.mp4 [dossier] [--h264 2200] [--vp9 1600] [--hevc 1800]
 node extraire-vertical.mjs ciel <dossier> passe1.mp4:21 passe2.mp4:20 passe3.mp4:30 passe4.mp4:20 passe5.mp4:20
-node extraire-vertical.mjs plongee plongee.mp4 <dossier> 80
+node extraire-vertical.mjs plongee plongee.mp4 <dossier> 120 --fin 173 --derniere-pleine --qualite 72
 python -I -X utf8 mesurer-ecran.py <images de la plongée> stalika/lib/plongee-ecran-mobile.ts ECRANS_PLONGEE_MOBILE --debug <dossier>
 python -I -X utf8 rythme-plongee.py --mobile
 ```
@@ -92,8 +92,12 @@ python -I -X utf8 rythme-plongee.py --mobile
   réglés à 4,5 / 4,0 / 5,5 Mo, indiscernables d'un encodage deux fois plus lourd sur la zone la plus fine), et les
   30 images du recul prises dans le plan retour (`recul/mobile`, `001` = plan large) ;
 - `extraire-vertical.mjs ciel` : les 111 images du ciel, bout à bout (21, 20, 30, 20, 20 par passe), `public/ciel/mobile` ;
-- `extraire-vertical.mjs plongee` : 80 images **à pas égal de changement** (la différence moyenne entre deux images
-  voisines est cumulée, puis découpée en parts égales : la caméra va dix fois plus vite au milieu qu'au début), `public/hero/plongee-mobile` ;
+- `extraire-vertical.mjs plongee` : 120 images **à pas égal de changement** (la différence moyenne entre deux images
+  voisines est cumulée, puis découpée en parts égales : la caméra va dix fois plus vite au milieu qu'au début), `public/hero/plongee-mobile`.
+  **`--fin 173` : on s'arrête à 7,2 s sur 10**, avant la descente de la caméra, où le sol monte et où l'IA déforme le terrain
+  (J : « le sol se lève »). **`--derniere-pleine`** : la dernière image reste en 1 080 × 1 912, parce que la page finit par un simple
+  agrandissement de cette image fixe (`Plongee`, `mobile.agrandissement`) : le sol et l'herbe n'y bougent plus. Si on regénère la
+  plongée : garder la caméra à la hauteur de l'homme dès le départ, ou couper de la même façon avant tout mouvement vertical ;
 - `mesurer-ecran.py` : les coins de l'écran blanc de l'ordinateur dans chaque image de la plongée, là où la page pose le logo ;
 - `rythme-plongee.py --mobile` : de combien l'image change d'une image à la suivante (`lib/plongee-rythme-mobile.ts`).
 
