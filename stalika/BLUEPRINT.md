@@ -201,8 +201,11 @@ plus petit chalet ». Sa décision : « Tout le chemin en 9:16, bonne qualité e
   déjà pendant le vol. Remède : un troisième plan (tâche `65149249-cfab-4b6b-a8ee-80d63c487d76`, 17,5 crédits), même départ et même
   arrivée, avec un prompt qui décrit un lieu réel et rigide (« the ground never rises, sinks, tilts, bends or grows… only the
   camera moves, with natural parallax »). Vérifié image par image : la ligne où l'herbe rencontre les nuages reste à la même
-  hauteur jusqu'à l'épaule. 120 images à pas égal de changement, la dernière en pleine taille (1 080 × 1 912) ; l'entrée dans l'écran
-  agrandit cette image jusqu'à ce que l'écran prenne la largeur de la vue (`Plongee`, `mobile.agrandissement: 1`).
+  hauteur jusqu'à l'épaule. Mais à la fin la caméra descend derrière lui et l'herbe du premier plan lui monte à la taille (J : « le
+  personnage est à moitié dans l'herbe, sérieusement ») : le vol est coupé à 6,8 s sur 10 (image 163), quand il est encore assis sur
+  l'herbe, jambes croisées visibles. 120 images à pas égal de changement, la dernière en pleine taille (1 080 × 1 912) ; l'entrée dans
+  l'écran agrandit cette image jusqu'à ce que l'écran prenne 80 % de la largeur de la vue (`Plongee`, `mobile.agrandissement`).
+  Leçon : une image d'arrivée prise à hauteur d'épaule, derrière quelqu'un d'assis dans l'herbe, met forcément de l'herbe devant lui.
 - **Poids** (le prix de la qualité) : vidéo du hero 4,5 Mo en HEVC, 4,0 en VP9, 5,5 en H.264 (avant : 2,4 et 1,7 Mo) ; ciel
   5,5 Mo ; recul 1,8 Mo ; plongée 5,8 Mo. Environ 18 Mo sur téléphone, contre 8,5 avant. À 4,5 Mo la vidéo dépasse les 3 Mo du
   garde-fou des vidéos de fond, qui ne regarde que `public/` à la racine du projet (ici `stalika/public`, donc pas vue). Si c'est

@@ -82,7 +82,7 @@ Il faut Node, ffmpeg et Python (Pillow, numpy).
 ```
 node monter-vertical.mjs aller.mp4 retour.mp4 [dossier] [--h264 2200] [--vp9 1600] [--hevc 1800]
 node extraire-vertical.mjs ciel <dossier> passe1.mp4:21 passe2.mp4:20 passe3.mp4:30 passe4.mp4:20 passe5.mp4:20
-node extraire-vertical.mjs plongee plongee.mp4 <dossier> 120 --derniere-pleine --qualite 72
+node extraire-vertical.mjs plongee plongee.mp4 <dossier> 120 --fin 163 --derniere-pleine --qualite 72
 python -I -X utf8 mesurer-ecran.py <images de la plongée> stalika/lib/plongee-ecran-mobile.ts ECRANS_PLONGEE_MOBILE --debug <dossier>
 python -I -X utf8 rythme-plongee.py --mobile
 ```
@@ -95,7 +95,8 @@ python -I -X utf8 rythme-plongee.py --mobile
 - `extraire-vertical.mjs plongee` : 120 images **à pas égal de changement** (la différence moyenne entre deux images
   voisines est cumulée, puis découpée en parts égales : la caméra va dix fois plus vite au milieu qu'au début), `public/hero/plongee-mobile`.
   `--derniere-pleine` : la dernière image reste en 1 080 × 1 912, parce que la page finit par un agrandissement de cette image
-  (`Plongee`, `mobile.agrandissement`). `--fin <image>` existe pour couper un plan avant un mouvement raté. **Pour un vol, le prompt
+  (`Plongee`, `mobile.agrandissement`). `--fin 163` coupe le plan à 6,8 s : ensuite la caméra descend derrière l'homme et l'herbe lui monte à la taille (J : « à moitié
+  dans l'herbe »). **Pour un vol, le prompt
   doit dire que le décor est rigide** : les deux premiers plans faisaient lever et s'affaisser le terrain (J : « c'est la caméra qui
   arrive sur l'ordinateur, le décor ne bouge pas ») ; le troisième disait « a real, solid location… the ground never rises, sinks,
   tilts, bends or grows… only the camera moves, with natural parallax », et il tient ;

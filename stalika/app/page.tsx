@@ -97,14 +97,14 @@ export default function Accueil() {
               y: 0,
               bureau: { x: 0, y: 0, l: 1, h: 1 },
             }}
-            // La plongée du téléphone, verticale d'origine : le vol jusqu'à l'épaule, décor rigide (J : « c'est la caméra qui arrive sur
-            // l'ordinateur, le décor ne bouge pas »). 120 images à pas égal de changement, la dernière en pleine taille, puis l'écran
-            // s'agrandit jusqu'à la largeur de la vue (outils/hero/extraire-vertical.mjs). L'écran dans la dernière image, ses coins
-            // image par image (mesurer-ecran.py).
+            // La plongée du téléphone, verticale d'origine : le vol, décor rigide (J : « c'est la caméra qui arrive sur l'ordinateur, le
+            // décor ne bouge pas »), coupé à 6,8 s sur 10 : ensuite la caméra descend derrière lui et l'herbe lui monte à la taille (J : « le
+            // personnage est à moitié dans l'herbe »). 120 images à pas égal de changement, la dernière en pleine taille, que l'entrée dans
+            // l'écran agrandit (outils/hero/extraire-vertical.mjs). L'écran dans la dernière image, ses coins image par image (mesurer-ecran.py).
             mobile={{
               images: { dossier: "/hero/plongee-mobile", nombre: 120 },
-              ecran: { x: 0.41, y: 0.457, l: 0.483, h: 0.169 },
-              agrandissement: 1,
+              ecran: { x: 0.507, y: 0.494, l: 0.229, h: 0.094 },
+              agrandissement: 0.8,
               rythme: RYTHME_PLONGEE_MOBILE,
               coins: ECRANS_PLONGEE_MOBILE,
             }}
