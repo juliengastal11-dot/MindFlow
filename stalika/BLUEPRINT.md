@@ -187,6 +187,10 @@ pendant que le logo se composait encore (jusqu'à 3,6 s) : tout se chevauchait. 
   doré, se balance en s'amortissant (pivot au haut du fil), puis le fil remonte. Il annonce la chute qui suit au clic. La descente
   est courte : sur téléphone, le texte est juste au-dessus et le bouton ne doit pas le traverser. Écartées : contour tracé puis
   rempli, ressort et reflet.
+- **Le clic, moins haut** (J : « il ne doit pas sauter si haut, juste sursauter sur le texte puis tomber ») : le bouton ne saute
+  plus jusqu'au menu pour s'y accrocher et s'y balancer. Il s'accroupit, fait un petit bond (arche à 5 % de l'écran au-dessus)
+  sur le bord haut du texte du hero (`data-perchoir`, la colonne de droite sur ordinateur), le texte tressaille, il rebondit
+  un quart de seconde, puis la chute part de là (`MOUVEMENT.bouton.saut`). Le clou et le pendule ne servent plus.
 - Réglages : `MOUVEMENT.hero.brume` et `MOUVEMENT.hero.fil`. Mouvement réduit : tout est là d'emblée. Vérifié en 375 × 812 et
   1280 × 800 (captures à instants fixes après le chargement), pas encore sur l'iPhone de J.
 

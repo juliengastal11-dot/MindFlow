@@ -9,7 +9,7 @@ import { gsap, ScrollTrigger, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
 import { defilement } from "@/lib/defilement";
 import { POSE_BOUTON, RAPPORT_CIEL } from "@/lib/ciel";
-import { angleRepos, bezier, choisirAncrage, ecartPendule, matrice, planifierChute, type PlanChute, type Plateforme, type Point, type Rebond } from "@/lib/chute";
+import { bezier, matrice, planifierChute, type PlanChute, type Plateforme, type Point, type Rebond } from "@/lib/chute";
 import { cn } from "@/lib/utils";
 
 /* ---------------------------------------------------------------------------
@@ -19,9 +19,11 @@ import { cn } from "@/lib/utils";
 
    Le déroulé voulu par J, en un seul clic depuis le 2026-10-17 (« on enlève le
    deuxième clic, il saute et tombe au 1er clic ») :
-   1. Le clic : le bouton se détache et ne tient plus que par un coin. Il
-      saute s'accrocher au menu (le hero n'a pas la place de le laisser pendre
-      là où il est) et se balance un instant (`pendule.avantChute`).
+   1. Le clic : le bouton s'accroupit et sursaute sur le texte du hero, juste
+      au-dessus de lui ; le texte tressaille, il y reste un instant
+      (`saut.pose`). J, 2026-10-18 : « il ne doit pas sauter si haut, juste
+      sursauter sur le texte puis tomber » (avant, il sautait jusqu'au menu,
+      s'y accrochait par un coin et s'y balançait).
    2. Puis il tombe de lui-même, rebondit sur les textes et les animations du
       site pendant que la page défile avec lui, et se pose à côté de
       l'ordinateur, sur la dernière image du ciel. Un repère de défilement
@@ -52,8 +54,8 @@ import { cn } from "@/lib/utils";
 
 const T = MOUVEMENT.bouton;
 
-type Etat = "repos" | "pendu" | "chute" | "pose";
-type Phase = "accroupi" | "vol" | "balance" | "fin";
+type Etat = "repos" | "saut" | "chute" | "pose";
+type Phase = "accroupi" | "vol" | "perche";
 
 type Geo = {
   /** Taille du bouton. */
@@ -61,11 +63,10 @@ type Geo = {
   h: number;
   /** Le coin haut gauche du vrai bouton, dans la page : d'où il part. */
   depart: Point;
-  /** Le clou, dans la page. */
-  clou: Point;
-  /** Écart de départ du balancement, et angle de repos, en radians. */
-  amplitude: number;
-  repos: number;
+  /** Le coin haut gauche du bouton posé sur le texte du hero, dans la page : où il sursaute. */
+  perchoir: Point;
+  /** Le texte du hero, qui tressaille quand il s'y pose. */
+  texte: HTMLElement;
 };
 
 type Cible = HTMLElement | null;
@@ -82,7 +83,7 @@ type Course = {
   prochain: number;
   vitesse: number;
   vitesseCible: number;
-  /** La chute est lancée (par le temps, ou par un clic pendant le balancement) : une seule fois. */
+  /** La chute est lancée (par le temps, ou par un clic quand il est sur le texte) : une seule fois. */
   declenche: boolean;
 };
 
@@ -160,7 +161,6 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
   const calque = useRef<HTMLDivElement>(null);
   const calquePose = useRef<HTMLDivElement>(null);
   const flotteur = useRef<HTMLDivElement>(null);
-  const clou = useRef<HTMLSpanElement>(null);
   const course = useRef<Course>({
     etat: "repos",
     phase: "accroupi",
@@ -183,25 +183,26 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
 
   useEffect(() => setMonte(true), []);
 
-  /* ---- Les mesures du bouton accroché ------------------------------------- */
+  /* ---- Les mesures du saut ------------------------------------------------ */
 
-  /** Où il part, où est le clou, de combien il se balance. `null` si l'écran
-      n'a pas la place : le lien fait alors son travail ordinaire. */
+  /** Où il part, et où il se pose sur le texte du hero (`data-perchoir`). `null` si l'écran n'a pas la place ou si le texte
+      n'est pas là : le lien fait alors son travail ordinaire. */
   const mesurer = (): Geo | null => {
     const a = ancre.current;
-    if (!a) return null;
+    const texte = document.querySelector<HTMLElement>("#accueil [data-perchoir]");
+    if (!a || !texte) return null;
     const r = a.getBoundingClientRect();
     const vw = document.documentElement.clientWidth;
     const vh = window.innerHeight;
     if (vw < 320 || vh < 520) return null;
     const sx = window.scrollX;
     const sy = window.scrollY;
-    const nav = document.querySelector<HTMLElement>("#accueil nav")?.getBoundingClientRect();
-    // Le clou est planté au bord bas de l'onglet du menu ; si le menu a quitté l'écran, en haut de la vue.
-    const yClou = nav && nav.bottom > 24 ? nav.bottom + sy : sy + 0.14 * vh;
-    const { x, amplitude } = choisirAncrage({ l: r.width, h: r.height, ecran: vw, vise: nav ? nav.right - 36 : vw - 80, marge: 14, amplitude: T.pendule.amplitude });
-    if (yClou + Math.hypot(r.width, r.height) + 24 > sy + vh) return null;
-    return { l: r.width, h: r.height, depart: { x: r.left + sx, y: r.top + sy }, clou: { x: x + sx, y: yClou }, amplitude, repos: angleRepos(r.width, r.height) };
+    const t = texte.getBoundingClientRect();
+    // Debout sur le bord haut du texte, au-dessus de son milieu (la colonne de droite sur ordinateur), sans sortir de l'écran.
+    const x = borne(t.left + t.width / 2 - r.width / 2, 14, vw - 14 - r.width);
+    const y = t.top - r.height;
+    if (y < 8) return null;
+    return { l: r.width, h: r.height, depart: { x: r.left + sx, y: r.top + sy }, perchoir: { x: x + sx, y: y + sy }, texte };
   };
 
   /* ---- Les gestes --------------------------------------------------------- */
@@ -209,13 +210,13 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
   const decrocher = (geo: Geo) => {
     const c = course.current;
     c.geo = geo;
-    c.etat = "pendu";
+    c.etat = "saut";
     c.phase = "accroupi";
     c.t = 0;
     c.angle = 0;
     c.declenche = false;
-    setEtat("pendu");
-    setAnnonce("Le bouton s'est décroché : il saute au menu, puis tombe jusqu'à l'ordinateur.");
+    setEtat("saut");
+    setAnnonce("Le bouton s'est décroché : il saute sur le texte, puis tombe jusqu'à l'ordinateur.");
   };
 
   /** Lance la chute. `false` si la page n'a pas ce qu'il faut (le lien ordinaire prend alors le relais). */
@@ -230,12 +231,9 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     const vue = { l: document.documentElement.clientWidth, h: window.innerHeight };
     const debut = window.scrollY;
     const fin = zone.getBoundingClientRect().top + debut;
-    // Le centre du bouton au lâcher : il pend au clou, à l'angle où le balancement l'a laissé.
-    const th = c.angle;
-    const centre = {
-      x: geo.clou.x + (Math.cos(th) * geo.l) / 2 - (Math.sin(th) * geo.h) / 2,
-      y: geo.clou.y + (Math.sin(th) * geo.l) / 2 + (Math.cos(th) * geo.h) / 2,
-    };
+    // Le centre du bouton au lâcher : debout sur le texte, droit.
+    const th = 0;
+    const centre = { x: geo.perchoir.x + geo.l / 2, y: geo.perchoir.y + geo.h / 2 };
     const duree = borne(T.chute.duree.base + (T.chute.duree.parEcran * (fin - debut)) / vue.h, T.chute.duree.min, T.chute.duree.max);
     c.plan = planifierChute<Cible>({
       l: geo.l,
@@ -288,9 +286,9 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
         decrocher(geo);
         return;
       }
-      case "pendu":
+      case "saut":
         e.preventDefault();
-        if ((c.phase === "balance" || c.phase === "fin") && !faireTomber()) window.location.assign(href);
+        if (c.phase === "perche" && !c.declenche && !faireTomber()) window.location.assign(href);
         return;
       case "chute":
         e.preventDefault();
@@ -309,26 +307,37 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     agir(e);
   };
 
-  /* ---- Le clic : le saut vers le clou, un instant de balancement, puis la chute ---- */
+  /* ---- Le clic : il s'accroupit, sursaute sur le texte, s'y pose un instant, puis la chute ---- */
 
   useLayoutEffect(() => {
-    if (etat !== "pendu") return;
+    if (etat !== "saut") return;
     const c = course.current;
     const geo = c.geo;
     const el = flotteur.current;
     if (!geo || !el) return;
-    const { accroupi, vol } = T.envol;
-    const reglage = { periode: T.pendule.periode, duree: T.pendule.duree, taux: T.pendule.taux };
+    const { accroupi, vol, hauteur, pose } = T.saut;
     const depart = geo.depart;
-    const theta0 = geo.repos - geo.amplitude;
-    // L'arche du saut : il passe un peu au-dessus du clou, puis s'y accroche.
-    const arche: Point = { x: depart.x + (geo.clou.x - depart.x) * 0.35, y: Math.max(geo.clou.y - 0.12 * window.innerHeight, window.scrollY + 10) };
+    const arrivee = geo.perchoir;
+    // L'arche : un sursaut, un peu au-dessus du texte, pas plus.
+    const arche: Point = { x: (depart.x + arrivee.x) / 2, y: Math.min(depart.y, arrivee.y) - hauteur * window.innerHeight };
+    // Il penche du côté où il va, pendant le vol.
+    const penche = Math.sign(arrivee.x - depart.x || 1) * 0.12;
+    let touche = false;
 
-    const accrocher = () => {
-      const n = clou.current;
-      if (!n) return;
-      n.style.visibility = "visible";
-      n.animate([{ transform: "scale(0)" }, { transform: "scale(1.35)", offset: 0.6 }, { transform: "scale(1)" }], { duration: 280, easing: "cubic-bezier(0.23, 1, 0.32, 1)" });
+    const toucher = () => {
+      // Le texte tressaille sous lui, et un trait de lumière marque le contact, comme pendant la chute.
+      geo.texte.animate(
+        [{ translate: "0 0" }, { translate: "0 3px", offset: 0.25 }, { translate: "0 -1px", offset: 0.6 }, { translate: "0 0" }],
+        { duration: 420, easing: "cubic-bezier(0.23, 1, 0.32, 1)" },
+      );
+      const couche = calque.current;
+      if (!couche) return;
+      const trait = document.createElement("div");
+      trait.className = "absolute left-0 top-0 h-px w-52 bg-linear-to-r from-transparent via-accent to-transparent shadow-[0_0_14px_0_var(--color-accent)]";
+      trait.style.transform = `translate(${arrivee.x + geo.l / 2 - 104}px, ${arrivee.y + geo.h}px)`;
+      couche.appendChild(trait);
+      const jeu = trait.animate([{ opacity: 0.9, scale: "0.5 1" }, { opacity: 0, scale: "1.5 1" }], { duration: 520, easing: "cubic-bezier(0.23, 1, 0.32, 1)" });
+      jeu.onfinish = () => trait.remove();
     };
 
     const poser = (t: number) => {
@@ -340,29 +349,27 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
       }
       if (t < accroupi + vol) {
         const s = (t - accroupi) / vol;
-        const e = cubique(s);
-        const p = bezier(e, depart, arche, geo.clou);
-        const levee = 1 + 0.06 * Math.sin(Math.PI * s);
-        c.angle = theta0 * e;
-        el.style.transform = matrice(p.x, p.y, c.angle, levee, levee, 0, 0);
+        const p = bezier(douce(s), depart, arche, arrivee);
+        const levee = 1 + 0.04 * Math.sin(Math.PI * s);
+        c.angle = penche * Math.sin(Math.PI * s);
+        el.style.transform = matrice(p.x + geo.l / 2, p.y + geo.h, c.angle, levee, levee, geo.l / 2, geo.h);
         return;
       }
-      if (c.phase !== "balance" && c.phase !== "fin") {
-        c.phase = "balance";
-        accrocher();
+      // Posé sur le texte : il s'écrase un peu au contact, puis se redresse.
+      if (!touche) {
+        touche = true;
+        c.phase = "perche";
+        c.angle = 0;
+        toucher();
       }
-      const tb = t - accroupi - vol;
-      c.angle = geo.repos + ecartPendule(tb, geo.amplitude, reglage);
-      el.style.transform = matrice(geo.clou.x, geo.clou.y, c.angle, 1, 1, 0, 0);
-      // Un seul clic : après un instant au clou, il tombe de lui-même, de l'angle où le balancement l'a laissé.
-      // Si la page n'a pas ce qu'il faut pour la chute, le lien ordinaire prend le relais.
-      if (!c.declenche && tb >= T.pendule.avantChute) {
-        if (!faireTomber()) window.location.assign(href);
-        return;
-      }
-      if (tb >= T.pendule.duree) {
-        c.phase = "fin";
+      const tp = t - accroupi - vol;
+      const k = Math.exp(-tp * 9) * Math.cos(tp * 26);
+      el.style.transform = matrice(arrivee.x + geo.l / 2, arrivee.y + geo.h, 0, 1 + 0.06 * k, 1 - 0.12 * k, geo.l / 2, geo.h);
+      // Un seul clic : après un instant sur le texte, il tombe de lui-même. Si la page n'a pas ce qu'il faut pour la chute, le
+      // lien ordinaire prend le relais.
+      if (!c.declenche && tp >= pose) {
         gsap.ticker.remove(pas);
+        if (!faireTomber()) window.location.assign(href);
       }
     };
     const pas = (_temps: number, dt: number) => {
@@ -386,9 +393,6 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     const el = flotteur.current;
     const lenis = defilement();
     if (!plan || !geo || !el || !lenis) return;
-
-    // Le clou lâche prise.
-    clou.current?.animate([{ transform: "scale(1)", opacity: 1 }, { transform: "scale(0.4) translateY(10px)", opacity: 0 }], { duration: 180, fill: "forwards" });
 
     const choc = (r: Rebond<Cible>) => {
       const couche = calque.current;
@@ -502,19 +506,17 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     };
   }, [etat, hote]);
 
-  /* ---- Accroché : si l'écran change de forme, le clou suit le menu ---------- */
+  /* ---- Sur le texte : si l'écran change de forme, il suit le texte --------- */
 
   useEffect(() => {
-    if (etat !== "pendu") return;
+    if (etat !== "saut") return;
     const c = course.current;
     const replacer = () => {
       const geo = mesurer();
       const el = flotteur.current;
-      if (!geo || !el || (c.phase !== "balance" && c.phase !== "fin")) return;
+      if (!geo || !el || c.phase !== "perche") return;
       c.geo = geo;
-      c.angle = geo.repos;
-      c.phase = "fin";
-      el.style.transform = matrice(geo.clou.x, geo.clou.y, geo.repos, 1, 1, 0, 0);
+      el.style.transform = matrice(geo.perchoir.x + geo.l / 2, geo.perchoir.y + geo.h, 0, 1, 1, geo.l / 2, geo.h);
     };
     window.addEventListener("resize", replacer);
     return () => window.removeEventListener("resize", replacer);
@@ -546,23 +548,18 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
       {/* Là où il était : un contour pointillé. */}
       {detache && <span aria-hidden="true" className="pointer-events-none absolute inset-0 border border-dashed border-foreground/20" />}
       <span id={idAide} className="sr-only">
-        Un clic décroche le bouton : il saute au menu, puis tombe et vous emmène jusqu&apos;à l&apos;ordinateur, où la discussion s&apos;ouvre.
+        Un clic décroche le bouton : il saute sur le texte, puis tombe et vous emmène jusqu&apos;à l&apos;ordinateur, où la discussion s&apos;ouvre.
       </span>
       <span role="status" aria-live="polite" className="sr-only">
         {annonce}
       </span>
 
-      {/* Accroché, puis en chute : une couche dans la page, qui défile avec elle. */}
+      {/* Le saut, puis la chute : une couche dans la page, qui défile avec elle. */}
       {monte &&
         geo &&
-        (etat === "pendu" || etat === "chute") &&
+        (etat === "saut" || etat === "chute") &&
         createPortal(
           <div ref={calque} className="nuit pointer-events-none absolute left-0 top-0 z-[55] h-0 w-full overflow-x-clip">
-            <div className="absolute left-0 top-0" style={{ transform: `translate(${geo.clou.x - 6}px, ${geo.clou.y - 6}px)` }}>
-              <span ref={clou} className="invisible grid size-3 place-items-center rounded-full bg-accent shadow-[0_1px_5px_color-mix(in_oklab,var(--color-background)_70%,transparent)] ring-2 ring-background">
-                <span className="size-1 rounded-full bg-background" />
-              </span>
-            </div>
             <div ref={flotteur} onClick={agir} className="pointer-events-auto invisible absolute left-0 top-0 flex w-max cursor-pointer will-change-transform" style={{ transformOrigin: "0 0" }}>
               <Copie focus={focus}>{children}</Copie>
             </div>

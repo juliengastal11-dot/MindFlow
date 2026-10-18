@@ -185,14 +185,10 @@ export const MOUVEMENT = {
      du ciel. En mouvement réduit, rien de tout cela : le bouton est un simple
      lien. */
   bouton: {
-    /** Le saut vers le clou : le bouton s'accroupit, puis vole (secondes). */
-    envol: { accroupi: 0.16, vol: 0.62 },
-    /** Le balancement par le coin haut gauche. `amplitude` : de combien il part
-        de sa position de repos, en radians (0,63 ≈ 36°) ; `periode` des petites
-        oscillations ; `duree` avant qu'il ne s'arrête ; `taux` : amortissement
-        par seconde ; `avantChute` : le temps qu'il reste au clou, après son
-        saut, avant de tomber de lui-même (secondes). */
-    pendule: { amplitude: 0.63, periode: 1.45, duree: 4.4, taux: 0.6, avantChute: 0.7 },
+    /** Le clic : le bouton s'accroupit, sursaute sur le texte du hero (une arche à `hauteur` d'écran au-dessus du plus haut des
+        deux points), s'y pose `pose` secondes en s'écrasant un peu, puis tombe (J, 2026-10-18 : « pas si haut, juste sursauter
+        sur le texte puis tomber » ; avant, il sautait jusqu'au menu et s'y balançait). */
+    saut: { accroupi: 0.14, vol: 0.42, hauteur: 0.05, pose: 0.24 },
     chute: {
       /** Durée voulue du film, en secondes : `base`, plus `parEcran` par hauteur
           d'écran à parcourir, bornée par `min` et `max`. */

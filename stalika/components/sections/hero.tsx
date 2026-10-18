@@ -85,7 +85,7 @@ export function Hero() {
             </h1>
 
             {/* Le texte sort de la brume, mot par mot, quand STALIKA a fini de se composer (J, 2026-10-18). */}
-            <MotsBrume className="max-w-md lg:pb-5">
+            <MotsBrume data-perchoir="" className="max-w-md lg:pb-5">
               {/* Les lignes de J (overlay, 2026-10-02), telles qu'il les a écrites. Le même jour il a
                   ajouté « de logiciels personnalisés » à la ligne de l'audit et l'a placée avant
                   « Tout type de profession… en 72h » : les deux phrases de sa première ligne
