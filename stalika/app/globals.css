@@ -675,6 +675,7 @@ html.js [data-brouille] [data-baseline] {
 .chrono-montre .montre { position: absolute; left: 0; top: calc(var(--montre-l) * .75 - var(--montre-l) * 470 / 440); }
 .chrono-texte { position: relative; width: 100%; max-width: 34rem; }
 .chrono-3d { display: none; }
+.chrono-reglette { display: none; }
 .chrono-etapes { display: grid; gap: 3rem; }
 .chrono-titre { margin-top: .75rem; font-size: 1.6rem; line-height: 1.15; }
 .chrono-texte-p { margin-top: 1rem; max-width: 30rem; color: color-mix(in oklab, var(--color-foreground) 82%, transparent); }
@@ -686,7 +687,16 @@ html.js [data-brouille] [data-baseline] {
   html.js .chrono-montre .montre { left: calc(var(--montre-l) / -2); top: calc(30svh - var(--montre-l) * 470 / 440); }
   html.js .chrono-texte { position: absolute; left: 1.5rem; right: 1.5rem; top: 58svh; bottom: max(1.5rem, env(safe-area-inset-bottom)); width: auto; max-width: none; }
   html.js .chrono-etapes { display: block; position: relative; height: 100%; }
-  html.js .chrono-etapes > li { position: absolute; inset: 0; }
+  html.js .chrono-etapes > li { position: absolute; inset: 0; padding-top: 1.75rem; }
+  /* le texte qui suit l'aiguille : les mots s'allument (`--v`, de pâle à plein) avec un éclat d'or au passage (`--b`) */
+  html.js .chrono-mot { opacity: calc(.22 + .78 * var(--v, 1)); color: color-mix(in oklab, var(--color-accent) calc(var(--b, 0) * 100%), currentColor); }
+  /* la réglette : les minutes en pâle, les mêmes en or jusqu'au curseur (`--chrono`, de 0 à 1) */
+  html.js .chrono-reglette { display: block; position: absolute; left: 0; right: 0; top: 0; height: 9px; color: color-mix(in oklab, var(--color-foreground) 24%, transparent); }
+  html.js .chrono-reglette, html.js .chrono-reglette-or {
+    background-image: linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to right, currentColor 1px, transparent 1px);
+    background-size: calc(100% / 12) 100%, calc(100% / 60) 45%; background-position: 0 0, 0 100%; background-repeat: repeat-x; }
+  html.js .chrono-reglette-or { position: absolute; inset: 0; color: var(--color-accent); clip-path: inset(0 calc((1 - var(--chrono, 0)) * 100%) 0 0); }
+  html.js .chrono-reglette-curseur { position: absolute; top: -4px; bottom: -4px; left: calc(var(--chrono, 0) * 100%); width: 1.5px; background: var(--color-foreground); }
   /* la montre en volume (components/ui/montre-3d.tsx) : en haut de l'écran au téléphone, fondue vers le texte ; à droite
      sur un écran large, fondue vers la colonne de texte. Elle remplace la montre à plat une fois dessinée. */
   html.js .chrono-3d { display: block; position: absolute; left: 0; right: 0; top: 0; height: 64svh; pointer-events: none; opacity: 0; transition: opacity .8s ease;
@@ -701,7 +711,9 @@ html.js [data-brouille] [data-baseline] {
     html.js .chrono-montre { left: auto; right: max(3vw, calc(50vw - 600px)); width: var(--montre-l); --montre-l: min(36vw, 60svh); }
     html.js .chrono-montre .montre { left: 0; top: calc(50svh - var(--montre-l) * 470 / 440); }
     html.js .chrono-texte { left: max(1.5rem, calc(50vw - 600px)); right: auto; top: 0; bottom: 0; width: min(32rem, 40vw); }
-    html.js .chrono-etapes > li { display: flex; flex-direction: column; justify-content: center; }
+    /* les numéros et les titres à la même hauteur d'un temps à l'autre : le quantième tourne sur place */
+    html.js .chrono-reglette { top: 24svh; }
+    html.js .chrono-etapes > li { padding-top: calc(24svh + 2.25rem); }
   }
 }
 

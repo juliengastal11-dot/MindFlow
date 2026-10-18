@@ -9,6 +9,7 @@ import { Montre } from "@/components/ui/montre";
 import { Trace } from "@/components/ui/trace";
 import { Rouleaux } from "@/components/ui/rouleaux";
 import { BoutonFilet } from "@/components/ui/bouton-filet";
+import { SplitText } from "gsap/SplitText";
 import { gsap, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
 import { poseInitiale, webglDisponible, type PoseMontre } from "@/lib/pose-montre";
@@ -51,6 +52,18 @@ const Montre3D = dynamic(() => import("@/components/ui/montre-3d").then((m) => m
    la section approche, si le navigateur sait faire du WebGL et sans mouvement
    réduit ; la montre à plat reste en place jusqu'à ce qu'elle soit prête, et
    pour toujours si le WebGL manque ou échoue.
+
+   Le texte suit l'aiguille (2026-10-18, J : « que le texte s'affiche de
+   manière stylée, fluide, et suive le mouvement des aiguilles » ; parmi quatre
+   pistes en maquettes, « la lecture à l'aiguille » pour le texte et « le
+   quantième » pour les numéros et les titres). Le numéro et le titre de chaque
+   temps tournent dans leur fenêtre comme le disque de date d'une montre : les
+   lettres montent une à une, celles du temps d'avant partent par le haut, au
+   même endroit. Le reste du texte est là dès le changement, très pâle, et
+   s'allume mot à mot au rythme exact de l'aiguille du chrono (même départ,
+   même durée, même courbe), avec un éclat d'or au passage. Au-dessus du
+   texte, une réglette de soixante minutes, le pourtour du cadran déroulé : un
+   curseur la parcourt avec le chrono et dore les minutes passées.
 
    Mécanique : `Scene` en mode `defilement`, comme « La relecture » : une piste
    plus haute que l'écran, son contenu collé par `position: sticky`, une
@@ -110,98 +123,136 @@ class Garde extends Component<{ children: React.ReactNode; onErreur: () => void 
   }
 }
 
+/* Pour le film du texte : `data-numero` et `data-titre` tournent comme un quantième ; `data-corps` apparaît en bloc, et
+   ses `data-lecture` s'allument mot à mot derrière l'aiguille. */
 function Numero({ n }: { n: number }) {
-  return <p className="font-mono text-[11px] tracking-[0.3em] text-accent">{String(n).padStart(2, "0")} / 07</p>;
+  return (
+    <p data-numero className="overflow-hidden font-mono text-[11px] tracking-[0.3em] text-accent">
+      <span className="inline-block">{String(n).padStart(2, "0")} / 07</span>
+    </p>
+  );
 }
 
 function Etapes() {
   return (
     <ol className="chrono-etapes">
       <li data-etape="0">
-        <p className="eyebrow text-accent">04 · Livré</p>
-        <h2 id="livre-titre" className="mt-3 text-3xl sm:text-4xl md:text-5xl">
+        <p data-numero className="eyebrow overflow-hidden text-accent">
+          <span className="inline-block">04 · Livré</span>
+        </p>
+        <h2 id="livre-titre" data-titre className="mt-3 text-3xl sm:text-4xl md:text-5xl">
           Réglé comme une montre
           <span className="mt-1 block text-accent">du premier message à la mise en ligne</span>
         </h2>
-        <p className="mt-5 max-w-md text-sm text-foreground/80 md:text-base">Sept étapes, et un seul interlocuteur du début à la fin.</p>
+        <div data-corps>
+          <p data-lecture className="mt-5 max-w-md text-sm text-foreground/80 md:text-base">
+            Sept étapes, et un seul interlocuteur du début à la fin.
+          </p>
+        </div>
       </li>
       <li data-etape="1">
         <Numero n={1} />
-        <h3 className="chrono-titre">Le premier message</h3>
-        <p className="chrono-texte-p">Vous m&apos;écrivez : dans la discussion, ici même, ou par le questionnaire, dix questions et cinq minutes.</p>
+        <h3 data-titre className="chrono-titre">Le premier message</h3>
+        <div data-corps>
+          <p data-lecture className="chrono-texte-p">Vous m&apos;écrivez : dans la discussion, ici même, ou par le questionnaire, dix questions et cinq minutes.</p>
+        </div>
       </li>
       <li data-etape="2">
         <Numero n={2} />
-        <h3 className="chrono-titre">On en parle</h3>
-        <p className="chrono-texte-p">Un appel pour comprendre ce qu&apos;il vous faut, puis un devis. Chaque projet se règle avec vous, un par un.</p>
-        <p className="mt-5 font-display text-3xl md:text-4xl">À partir de 300 €</p>
-        <p className="mt-1 text-sm text-foreground/70">payable en plusieurs fois, sans frais</p>
+        <h3 data-titre className="chrono-titre">On en parle</h3>
+        <div data-corps>
+          <p data-lecture className="chrono-texte-p">Un appel pour comprendre ce qu&apos;il vous faut, puis un devis. Chaque projet se règle avec vous, un par un.</p>
+          <p data-lecture className="mt-5 font-display text-3xl md:text-4xl">À partir de 300 €</p>
+          <p data-lecture className="mt-1 text-sm text-foreground/70">payable en plusieurs fois, sans frais</p>
+        </div>
       </li>
       <li data-etape="3">
         <Numero n={3} />
-        <h3 className="chrono-titre">Votre première ébauche</h3>
-        <p className="mt-3 font-display text-5xl tabular-nums text-accent md:text-6xl">
-          <Rouleaux valeur={72} chiffres={2} de={d(3) + S * 0.15} a={d(3) + S * 0.75} />
-          &nbsp;h
-        </p>
-        <p className="chrono-texte-p">Sous 72 heures, vous voyez votre site. Pas un modèle : il est dessiné pour vous.</p>
+        <h3 data-titre className="chrono-titre">Votre première ébauche</h3>
+        <div data-corps>
+          <p className="mt-3 font-display text-5xl tabular-nums text-accent md:text-6xl">
+            <Rouleaux valeur={72} chiffres={2} de={d(3) + S * 0.15} a={d(3) + S * 0.75} />
+            &nbsp;h
+          </p>
+          <p data-lecture className="chrono-texte-p">Sous 72 heures, vous voyez votre site. Pas un modèle : il est dessiné pour vous.</p>
+        </div>
       </li>
       <li data-etape="4">
         <Numero n={4} />
-        <h3 className="chrono-titre">Vous relisez</h3>
-        <p className="chrono-texte-p">
-          Vous recevez un lien pour voir votre site et le modifier. Vous commentez sur la page, je mets à jour à votre guise.
-        </p>
+        <h3 data-titre className="chrono-titre">Vous relisez</h3>
+        <div data-corps>
+          <p data-lecture className="chrono-texte-p">
+            Vous recevez un lien pour voir votre site et le modifier. Vous commentez sur la page, je mets à jour à votre guise.
+          </p>
+        </div>
       </li>
       <li data-etape="5">
         <Numero n={5} />
-        <h3 className="chrono-titre">Tout est vérifié</h3>
-        <ul className="mt-5 space-y-3">
-          {COCHES.map((texte, i) => (
-            <li key={texte} className="flex items-start gap-3 text-sm md:text-base">
-              <Trace
-                d="M5 12.5l4.5 4.5L19 7"
-                viewBox="0 0 24 24"
-                de={d(5) + S * (0.12 + i * 0.2)}
-                a={d(5) + S * (0.3 + i * 0.2)}
-                epaisseur={2.5}
-                trait="stroke-accent"
-                className="mt-0.5 size-5 shrink-0"
-              />
-              <span className="text-foreground/85">{texte}</span>
-            </li>
-          ))}
-        </ul>
+        <h3 data-titre className="chrono-titre">Tout est vérifié</h3>
+        <div data-corps>
+          <ul className="mt-5 space-y-3">
+            {COCHES.map((texte, i) => (
+              <li key={texte} className="flex items-start gap-3 text-sm md:text-base">
+                <Trace
+                  d="M5 12.5l4.5 4.5L19 7"
+                  viewBox="0 0 24 24"
+                  de={d(5) + S * (0.12 + i * 0.2)}
+                  a={d(5) + S * (0.3 + i * 0.2)}
+                  epaisseur={2.5}
+                  trait="stroke-accent"
+                  className="mt-0.5 size-5 shrink-0"
+                />
+                <span data-lecture className="text-foreground/85">
+                  {texte}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </li>
       <li data-etape="6">
         <Numero n={6} />
-        <h3 className="chrono-titre">La mise en ligne</h3>
-        <div className="mt-5 space-y-4">
+        <h3 data-titre className="chrono-titre">La mise en ligne</h3>
+        <div data-corps className="mt-5 space-y-4">
           <div className="border-t border-foreground/15 pt-3">
-            <p className="eyebrow text-accent">Chez vous</p>
-            <p className="mt-1.5 text-sm text-foreground/85 md:text-base">Je vous livre le site prêt à publier et je vous accompagne pour le mettre en ligne.</p>
+            <p data-lecture className="eyebrow text-accent">
+              Chez vous
+            </p>
+            <p data-lecture className="mt-1.5 text-sm text-foreground/85 md:text-base">
+              Je vous livre le site prêt à publier et je vous accompagne pour le mettre en ligne.
+            </p>
           </div>
           <div className="border-t border-foreground/15 pt-3">
-            <p className="eyebrow text-accent">Chez moi</p>
-            <p className="mt-1.5 text-sm text-foreground/85 md:text-base">
+            <p data-lecture className="eyebrow text-accent">
+              Chez moi
+            </p>
+            <p data-lecture className="mt-1.5 text-sm text-foreground/85 md:text-base">
               Je m&apos;occupe de l&apos;hébergement et de la maintenance, pour un petit abonnement mensuel.
             </p>
           </div>
-          <p className="text-sm text-foreground/65">Dans les deux cas, le nom de domaine est à votre nom. C&apos;est écrit dans le devis.</p>
+          <p data-lecture className="text-sm text-foreground/65">
+            Dans les deux cas, le nom de domaine est à votre nom. C&apos;est écrit dans le devis.
+          </p>
         </div>
       </li>
       <li data-etape="7">
         <Numero n={7} />
-        <h3 className="chrono-titre">Et après</h3>
-        <p className="chrono-texte-p">Le code est à vous : vous partez quand vous voulez, avec votre site. Et je reste joignable.</p>
-        <p className="mt-5 text-sm text-foreground/70">À partir de 300 € · première ébauche sous 72 h · partout en France, à distance</p>
-        <p className="mt-1 text-sm text-foreground/70">Un logiciel ou une application sur mesure ? Dites-moi ce qu&apos;il vous faut.</p>
-        <BoutonFilet className="mt-6">
-          <Link href="/contact">
-            Parlons de votre projet
-            <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4 transition-transform duration-500 group-hover:translate-x-1.5" />
-          </Link>
-        </BoutonFilet>
+        <h3 data-titre className="chrono-titre">Et après</h3>
+        <div data-corps>
+          <p data-lecture className="chrono-texte-p">Le code est à vous : vous partez quand vous voulez, avec votre site. Et je reste joignable.</p>
+          <p data-lecture className="mt-5 text-sm text-foreground/70">
+            À partir de 300 € · première ébauche sous 72 h · partout en France, à distance
+          </p>
+          <p data-lecture className="mt-1 text-sm text-foreground/70">
+            Un logiciel ou une application sur mesure ? Dites-moi ce qu&apos;il vous faut.
+          </p>
+          <BoutonFilet className="mt-6">
+            <Link href="/contact">
+              Parlons de votre projet
+              <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4 transition-transform duration-500 group-hover:translate-x-1.5" />
+            </Link>
+          </BoutonFilet>
+        </div>
       </li>
     </ol>
   );
@@ -236,8 +287,10 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
     if (!montre || !incline || !pivot || !heures || !minutes || !chrono || !compteur || !couronne || !rotor || !balancier) return;
 
     const arc = q<SVGCircleElement>("[data-montre-arc]");
+    gsap.registerPlugin(SplitText);
+    const coupes: SplitText[] = [];
 
-    return scene.inscrire((tl) => {
+    const desinscrire = scene.inscrire((tl) => {
       /* Les rotations du dessin sont écrites à la main, sur un objet que la chronologie fait avancer : `rotate(angle cx cy)`.
          (GSAP calculait mal le centre de rotation de ces aiguilles, dans un SVG agrandi et basculé en 3D : décalées, elles
          ne passaient plus par le centre.) Les ombres des aiguilles tournent avec elles, décalées vers le bas à droite. */
@@ -256,6 +309,8 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
       const poserChrono = () => {
         chrono.setAttribute("transform", `rotate(${ch.a} 220 220)`);
         arc?.setAttribute("stroke-dashoffset", String(360 - ch.a));
+        // la réglette au-dessus du texte suit le chrono
+        el.style.setProperty("--chrono", String(ch.a / 360));
       };
       poserChrono();
       const cpt = tourne(compteur, 0, 0, 0);
@@ -269,12 +324,73 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
       gsap.set(montre, { "--reflet-x": "10%", "--reflet-y": "8%" });
       tl.to(incline, { rotationX: INCLINAISONS[0].x, rotationY: INCLINAISONS[0].y, rotationZ: 0, scale: 1, duration: S * 0.8, ease: "power2.out" }, 0);
 
+      /* Le texte suit l'aiguille. Chaque temps a son état : l'entrée et la sortie du numéro et du titre (le quantième),
+         l'apparition du corps, et la lecture (de 0 à 1, comme l'aiguille sur ses deux heures). Les lettres et les mots
+         sont posés à la main à chaque image, d'après cet état : une lettre peut ainsi entrer puis sortir sans que deux
+         tweens se disputent son `transform`. */
+      const borne = (x: number) => Math.min(1, Math.max(0, x));
+      const douce = (x: number) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2);
       etapes.forEach((li, k) => {
+        const numero = li.querySelector<HTMLElement>("[data-numero] > span");
+        const titre = li.querySelector<HTMLElement>("[data-titre]");
+        const corps = li.querySelector<HTMLElement>("[data-corps]");
+        const lectures = Array.from(li.querySelectorAll<HTMLElement>("[data-lecture]"));
+        if (!numero || !titre || !corps) return;
+        const coupeTitre = SplitText.create(titre, { type: "words,chars", mask: "chars", charsClass: "chrono-lettre" });
+        const coupeMots = SplitText.create(lectures, { type: "words", wordsClass: "chrono-mot" });
+        coupes.push(coupeTitre, coupeMots);
+        // la fenêtre de chaque lettre, un peu plus haute que la lettre : les accents ne sont pas rognés
+        for (const m of coupeTitre.masks) Object.assign((m as HTMLElement).style, { paddingBlock: "0.14em", marginBlock: "-0.14em" });
+        const lettres = coupeTitre.chars as HTMLElement[];
+        const mots = coupeMots.words as HTMLElement[];
+        const n = lettres.length;
+        const m = mots.length;
+
+        const e = { numIn: k === 0 ? 1 : 0, numOut: 0, titIn: k === 0 ? 1 : 0, titOut: 0, lecture: 0 };
+        const poserQuantieme = () => {
+          numero.style.transform = `translateY(${((1 - e.numIn) * 110 - e.numOut * 110).toFixed(2)}%)`;
+          lettres.forEach((c, j) => {
+            const entre = douce(borne((e.titIn * (n + 5) - j) / 5));
+            const sort = douce(borne((e.titOut * (n + 3) - j) / 3));
+            c.style.transform = `translateY(${((1 - entre) * 110 - sort * 110).toFixed(2)}%)`;
+          });
+        };
+        const poserLecture = () => {
+          mots.forEach((w, j) => {
+            const v = borne(e.lecture * (m + 1.5) - j);
+            w.style.setProperty("--v", v.toFixed(3));
+            w.style.setProperty("--b", Math.sin(Math.PI * v).toFixed(3));
+          });
+        };
+        poserQuantieme();
+        poserLecture();
+
+        // l'entrée : le numéro tourne, puis le titre lettre à lettre ; le corps paraît, pâle
         if (k > 0) {
-          gsap.set(li, { autoAlpha: 0, y: 20 });
-          tl.to(li, { autoAlpha: 1, y: 0, duration: S * 0.22, ease: "power2.out" }, d(k) + S * 0.04);
+          gsap.set(li, { autoAlpha: 0 });
+          gsap.set(corps, { opacity: 0 });
+          tl.set(li, { autoAlpha: 1 }, d(k));
+          tl.to(e, { numIn: 1, duration: S * 0.12, ease: "power2.out", onUpdate: poserQuantieme }, d(k));
+          tl.to(e, { titIn: 1, duration: S * 0.4, onUpdate: poserQuantieme }, d(k) + S * 0.03);
+          tl.to(corps, { opacity: 1, duration: S * 0.08 }, d(k) + S * 0.05);
         }
-        if (k < N - 1) tl.to(li, { autoAlpha: 0, y: -16, duration: S * 0.18, ease: "power1.in" }, d(k + 1) - S * 0.2);
+        // la lecture, au rythme de l'aiguille : pendant l'arrivée de la montre, puis avec le chrono (étapes 1 à 6), puis
+        // pendant que la montre se retourne
+        const lecture =
+          k === 0
+            ? { t: 0, duree: S * 0.7, ease: "power2.out" }
+            : k < N - 1
+              ? { t: d(k) + S * 0.1, duree: S * 0.6, ease: "power2.inOut" }
+              : { t: d(k) + S * 0.04, duree: S * 0.5, ease: "power2.inOut" };
+        tl.to(e, { lecture: 1, duration: lecture.duree, ease: lecture.ease, onUpdate: poserLecture }, lecture.t);
+        // la sortie : numéro et titre partent par le haut, le corps s'efface
+        if (k < N - 1) {
+          tl.to(e, { numOut: 1, duration: S * 0.1, ease: "power2.in", onUpdate: poserQuantieme }, d(k + 1));
+          tl.to(e, { titOut: 1, duration: S * 0.12, onUpdate: poserQuantieme }, d(k + 1));
+          tl.to(corps, { opacity: 0, duration: S * 0.06 }, d(k + 1));
+          tl.set(li, { autoAlpha: 0 }, d(k + 1) + S * 0.14);
+        }
+
         // la montre bouge dans la main, et la lumière glisse sur le verre
         if (k > 0) {
           const { x, y } = INCLINAISONS[k];
@@ -341,6 +457,10 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
       tl.to(p, { rouage: 300, duration: S * 0.9, ease: "power1.inOut" }, d(7) + S * 0.08);
       tl.to(p, { keyframes: { balancier: [0, 210, -40, 190, -20, 170, 0] }, duration: S * 0.9 }, d(7) + S * 0.08);
     });
+    return () => {
+      desinscrire();
+      coupes.forEach((c) => c.revert());
+    };
   }, [scene, racine, pose]);
 
   return null;
@@ -388,6 +508,11 @@ export function SceneLivre() {
             </div>
           )}
           <div className="chrono-texte">
+            {/* le pourtour du cadran déroulé : soixante minutes, que le curseur parcourt avec le chrono */}
+            <div className="chrono-reglette" aria-hidden="true">
+              <div className="chrono-reglette-or" />
+              <span className="chrono-reglette-curseur" />
+            </div>
             <Etapes />
           </div>
         </div>
