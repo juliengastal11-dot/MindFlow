@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Component, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Scene, useScene } from "@/components/ui/scene";
@@ -10,6 +11,10 @@ import { Rouleaux } from "@/components/ui/rouleaux";
 import { BoutonFilet } from "@/components/ui/bouton-filet";
 import { gsap, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
+import { poseInitiale, webglDisponible, type PoseMontre } from "@/lib/pose-montre";
+
+// La montre en volume : Three.js ne se charge qu'à l'approche de la section (voir `SceneLivre`).
+const Montre3D = dynamic(() => import("@/components/ui/montre-3d").then((m) => m.Montre3D), { ssr: false });
 
 /* ---------------------------------------------------------------------------
    Scène 5 · Livré, refaite le 2026-10-18 (J : « trop générique ; quelque chose
@@ -36,6 +41,16 @@ import { MOUVEMENT } from "@/lib/mouvement";
       projet ».
    Les faits sont ceux que J a donnés pour l'ancienne section, la FAQ et le
    questionnaire (aucun chiffre ajouté).
+
+   La montre en volume (2026-10-18, J : « il faut que la montre soit en 3D et
+   surtout qu'elle ait l'épaisseur d'une vraie montre, pareil pour le
+   bracelet », « elle se montre sous tous les angles ») : `Montre3D`, en
+   Three.js, joue la même partition par sa `pose`, et se tourne à chaque étape
+   vers un autre angle (`POSES_3D`) : trois quarts, profil côté couronne,
+   face, plongée, dessous, puis le fond et son mouvement. Elle se charge quand
+   la section approche, si le navigateur sait faire du WebGL et sans mouvement
+   réduit ; la montre à plat reste en place jusqu'à ce qu'elle soit prête, et
+   pour toujours si le WebGL manque ou échoue.
 
    Mécanique : `Scene` en mode `defilement`, comme « La relecture » : une piste
    plus haute que l'écran, son contenu collé par `position: sticky`, une
@@ -67,6 +82,33 @@ const INCLINAISONS = [
   { x: 5, y: 5 },
   { x: 8, y: 0 },
 ] as const;
+
+/* La montre en volume à chaque étape (degrés ; `rx` négatif : vue d'au-dessus, `ry` négatif : le côté de la couronne,
+   180 : le fond). Elle ne revient jamais deux fois au même angle. */
+const POSES_3D = [
+  { rx: -22, ry: -22, rz: -6 }, // l'arrivée, de trois quarts
+  { rx: -14, ry: 30, rz: 5 },
+  { rx: -6, ry: -66, rz: 0 }, // de profil, côté couronne : l'épaisseur
+  { rx: -4, ry: -2, rz: 0 }, // de face, pour le compteur des 72 heures
+  { rx: -56, ry: 8, rz: 18 }, // en plongée
+  { rx: -12, ry: -40, rz: -6 },
+  { rx: -30, ry: 52, rz: -8 }, // de l'autre côté, d'au-dessus
+  { rx: -10, ry: 196, rz: 0 }, // retournée : le fond saphir, le mouvement
+] as const;
+
+/** Une erreur de la scène 3D (contexte WebGL refusé, perdu) ne casse pas la section : la montre à plat reste. */
+class Garde extends Component<{ children: React.ReactNode; onErreur: () => void }, { erreur: boolean }> {
+  state = { erreur: false };
+  static getDerivedStateFromError() {
+    return { erreur: true };
+  }
+  componentDidCatch() {
+    this.props.onErreur();
+  }
+  render() {
+    return this.state.erreur ? null : this.props.children;
+  }
+}
 
 function Numero({ n }: { n: number }) {
   return <p className="font-mono text-[11px] tracking-[0.3em] text-accent">{String(n).padStart(2, "0")} / 07</p>;
@@ -165,9 +207,12 @@ function Etapes() {
   );
 }
 
-/** Le film de la montre, inscrit sur la chronologie de la scène. */
-function Mecanique({ scene: racine }: { scene: React.RefObject<HTMLDivElement | null> }) {
+/** Le film de la montre, inscrit sur la chronologie de la scène : la montre à plat, et la pose de la montre en volume. */
+function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElement | null>; pose: React.RefObject<PoseMontre> }) {
   const scene = useScene();
+
+  // la montre en volume ne se redessine que quand la chronologie avance
+  useEffect(() => scene?.surProgres(() => pose.current.redessiner?.()), [scene, pose]);
 
   useEffect(() => {
     const el = racine.current;
@@ -261,27 +306,92 @@ function Mecanique({ scene: racine }: { scene: React.RefObject<HTMLDivElement | 
         tl.to(r.etat, { a: roues[k].dataset.montreRoue === "inverse" ? -220 : 140 + k * 30, duration: S * 0.9, onUpdate: r.poser }, d(7) + S * 0.08),
       );
       tl.to(bal.etat, { keyframes: { a: [0, 210, -40, 190, -20, 170, 0] }, duration: S * 0.9, onUpdate: bal.poser }, d(7) + S * 0.08);
+
+      /* La montre en volume, sur la même partition : sa pose avance avec la chronologie, qu'elle soit déjà chargée ou
+         non (elle prend la pose du moment en arrivant). */
+      const p = pose.current;
+      const feux = p.allumes.map((_, i) => ({
+        get v() {
+          return p.allumes[i];
+        },
+        set v(x: number) {
+          p.allumes[i] = x;
+        },
+      }));
+      gsap.set(p, { rx: -40, ry: -42, rz: -14, echelle: 0.86 });
+      tl.to(p, { ...POSES_3D[0], echelle: 1, duration: S * 0.8, ease: "power2.out" }, 0);
+      for (let k = 1; k < N; k++) {
+        const retourne = k === N - 1;
+        tl.to(
+          p,
+          { ...POSES_3D[k], echelle: k === 3 ? 1.06 : 1, duration: S * (retourne ? 0.5 : 0.7), ease: retourne ? "power2.inOut" : "sine.inOut" },
+          d(k) + (retourne ? S * 0.04 : 0),
+        );
+      }
+      for (let k = 1; k <= 6; k++) {
+        const t = d(k) + S * 0.1;
+        tl.to(p, { chrono: 60 * k, duration: S * 0.6, ease: "power2.inOut" }, t);
+        tl.to(feux[2 * k - 1], { v: 1, duration: S * 0.08 }, t + S * 0.26);
+        tl.to(feux[(2 * k) % 12], { v: 1, duration: S * 0.08 }, t + S * 0.52);
+        tl.to(p, { minutes: 62 + 360 * k, heures: -62 + 30 * k, duration: S * 0.7, ease: "sine.inOut" }, d(k));
+      }
+      tl.to(p, { couronne: 1, duration: S * 0.04, ease: "power2.in" }, d(3) + S * 0.08);
+      tl.to(p, { couronne: 0, duration: S * 0.06, ease: "power2.out" }, d(3) + S * 0.12);
+      tl.to(p, { compteur: 360, duration: S * 0.6, ease: "power1.inOut" }, d(3) + S * 0.15);
+      tl.to(p, { rouage: 300, duration: S * 0.9, ease: "power1.inOut" }, d(7) + S * 0.08);
+      tl.to(p, { keyframes: { balancier: [0, 210, -40, 190, -20, 170, 0] }, duration: S * 0.9 }, d(7) + S * 0.08);
     });
-  }, [scene, racine]);
+  }, [scene, racine, pose]);
 
   return null;
 }
 
 export function SceneLivre() {
   const racine = useRef<HTMLDivElement>(null);
+  const pose = useRef<PoseMontre>(poseInitiale());
+  // la montre en volume : chargée à l'approche de la section (un écran et demi avant), affichée une fois dessinée
+  const [charger, setCharger] = useState(false);
+  const [prete, setPrete] = useState(false);
+  useEffect(() => {
+    const el = racine.current;
+    if (!el || mouvementReduit() || !webglDisponible()) return;
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        setCharger(true);
+        obs.disconnect();
+      },
+      { rootMargin: "150% 0px" },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   return (
     <Scene id="livre" nuit defilement src="components/sections/scene-livre.tsx" aria-labelledby="livre-titre">
       <div ref={racine} data-piste className="chrono-piste motion-reduce:min-h-0!" style={{ minHeight: `${(1 + R.ecrans) * 100}svh` }}>
         <div className="chrono-colle">
           <div className="chrono-lumiere" aria-hidden="true" />
-          <div className="chrono-montre">
+          <div className="chrono-montre" data-cachee={prete || undefined}>
             <Montre />
           </div>
+          {charger && (
+            <div className="chrono-3d" data-prete={prete || undefined} aria-hidden="true">
+              <Garde
+                onErreur={() => {
+                  setPrete(false);
+                  setCharger(false);
+                }}
+              >
+                <Montre3D pose={pose} onPret={() => setPrete(true)} />
+              </Garde>
+            </div>
+          )}
           <div className="chrono-texte">
             <Etapes />
           </div>
         </div>
-        <Mecanique scene={racine} />
+        <Mecanique scene={racine} pose={pose} />
       </div>
     </Scene>
   );

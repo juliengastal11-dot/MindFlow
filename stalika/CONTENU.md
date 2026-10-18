@@ -122,7 +122,7 @@ du questionnaire. Textes :
 - `05 / 07` · `Tout est vérifié` · coches : `Mentions légales et confidentialité en règle` · `Sécurité vérifiée avant la mise en ligne` · `Référencement soigné : titres, descriptions, plan du site, fiche Google`
 - `06 / 07` · `La mise en ligne` · `Chez vous` : `Je vous livre le site prêt à publier et je vous accompagne pour le mettre en ligne.` · `Chez moi` : `Je m'occupe de l'hébergement et de la maintenance, pour un petit abonnement mensuel.` · `Dans les deux cas, le nom de domaine est à votre nom. C'est écrit dans le devis.` (les deux voies raccourcies pour tenir dans l'écran du téléphone ; le détail, mises à jour, surveillance, modifications dans la limite du raisonnable, reste dans la FAQ et le devis)
 - `07 / 07` · `Et après` · `Le code est à vous : vous partez quand vous voulez, avec votre site. Et je reste joignable.` · `À partir de 300 € · première ébauche sous 72 h · partout en France, à distance` · `Un logiciel ou une application sur mesure ? Dites-moi ce qu'il vous faut.` · bouton `Parlons de votre projet` → `/contact`
-- Sur la montre : cadran `STALIKA` · `SUR MESURE` · `FAIT MAIN`, compteur `72` `24` `48` ; au dos, gravé `VOTRE CODE · VOTRE DOMAINE · À VOTRE NOM · STALIKA · SUR MESURE · FAIT MAIN ·`, sur le rotor `STALIKA · LE CODE EST À VOUS`.
+- Sur la montre : cadran `STALIKA` · `SUR MESURE` · `FAIT MAIN`, compteur `72` `24` `48` ; au dos, gravé `VOTRE CODE · VOTRE DOMAINE · À VOTRE NOM · STALIKA · SUR MESURE · FAIT MAIN ·`, sur le rotor `STALIKA · LE CODE EST À VOUS` (montre à plat) ; la montre en volume, à remontage manuel, n'a pas de rotor : `STALIKA` est gravé sur un pont du mouvement.
 
 ### Ils m'ont fait confiance (bandeau)
 

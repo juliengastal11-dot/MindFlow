@@ -674,6 +674,7 @@ html.js [data-brouille] [data-baseline] {
 .chrono-montre { --montre-l: min(72vw, 340px); position: relative; width: var(--montre-l); height: calc(var(--montre-l) * 1.5); overflow: hidden; }
 .chrono-montre .montre { position: absolute; left: 0; top: calc(var(--montre-l) * .75 - var(--montre-l) * 470 / 440); }
 .chrono-texte { position: relative; width: 100%; max-width: 34rem; }
+.chrono-3d { display: none; }
 .chrono-etapes { display: grid; gap: 3rem; }
 .chrono-titre { margin-top: .75rem; font-size: 1.6rem; line-height: 1.15; }
 .chrono-texte-p { margin-top: 1rem; max-width: 30rem; color: color-mix(in oklab, var(--color-foreground) 82%, transparent); }
@@ -686,7 +687,17 @@ html.js [data-brouille] [data-baseline] {
   html.js .chrono-texte { position: absolute; left: 1.5rem; right: 1.5rem; top: 58svh; bottom: max(1.5rem, env(safe-area-inset-bottom)); width: auto; max-width: none; }
   html.js .chrono-etapes { display: block; position: relative; height: 100%; }
   html.js .chrono-etapes > li { position: absolute; inset: 0; }
+  /* la montre en volume (components/ui/montre-3d.tsx) : en haut de l'écran au téléphone, fondue vers le texte ; à droite
+     sur un écran large, fondue vers la colonne de texte. Elle remplace la montre à plat une fois dessinée. */
+  html.js .chrono-3d { display: block; position: absolute; left: 0; right: 0; top: 0; height: 64svh; pointer-events: none; opacity: 0; transition: opacity .8s ease;
+    -webkit-mask: linear-gradient(to bottom, #000 74%, transparent); mask: linear-gradient(to bottom, #000 74%, transparent); }
+  html.js .chrono-3d[data-prete] { opacity: 1; }
+  html.js .chrono-montre { transition: opacity .8s ease, visibility 0s; }
+  html.js .chrono-montre[data-cachee] { opacity: 0; visibility: hidden; transition: opacity .8s ease, visibility 0s .8s; }
   @media (min-width: 768px) {
+    html.js .chrono-lumiere { background: radial-gradient(42% 60% at 69% 50%, color-mix(in oklab, var(--color-accent) 14%, transparent), transparent 70%); }
+    html.js .chrono-3d { left: 38vw; bottom: 0; height: auto;
+      -webkit-mask: linear-gradient(to right, transparent, #000 16%); mask: linear-gradient(to right, transparent, #000 16%); }
     html.js .chrono-montre { left: auto; right: max(3vw, calc(50vw - 600px)); width: var(--montre-l); --montre-l: min(36vw, 60svh); }
     html.js .chrono-montre .montre { left: 0; top: calc(50svh - var(--montre-l) * 470 / 440); }
     html.js .chrono-texte { left: max(1.5rem, calc(50vw - 600px)); right: auto; top: 0; bottom: 0; width: min(32rem, 40vw); }

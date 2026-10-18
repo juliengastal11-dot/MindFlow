@@ -53,6 +53,10 @@
   le visiteur ne clique pas (voir `BLUEPRINT.md`, mise à jour du 2026-10-02). Après chaque retouche de
   section, vérifier que les `data-rebond` suivent. À tester par J sur iPhone (fluidité de la chute).
 - Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion.
+- **La montre 3D de la section 04** (2026-10-18, `components/ui/montre-3d.tsx`, voir `BLUEPRINT.md`) : à mesurer sur l'iPhone de
+  J (`/phone`, puis `perf` sur la piste de `#livre`) ; si elle peine, baisser d'abord `dpr` et la carte d'ombre (2048) avant de
+  toucher aux matières. Une page d'essai qui la montre seule, orientée par l'adresse, se remonte en deux fichiers
+  (`app/labo-montre/`, jamais versionnée) quand on la retravaille.
 - **Fait le 2026-10-17 : tout le chemin du téléphone en vertical** (J : « Tout le chemin en 9:16 c'est ok, bonne qualité et le chalet. Garde le
   côté où il s'allume la nuit »). Chalet en rondins, vidéo du hero, cinq passages du ciel et plongée générés en 1 080 × 1 912 : voir `BLUEPRINT.md`
   (mise à jour du 2026-10-17, suite) et `outils/hero/LISEZMOI.md` (tâches Higgsfield, commandes pour tout refaire). Mesuré sur l'iPhone de J (build de

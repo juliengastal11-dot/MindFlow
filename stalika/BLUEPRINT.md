@@ -201,6 +201,28 @@ en or comme référence d'allure.
   de plus de mille).
 - Sans JavaScript et en mouvement réduit : la montre immobile, puis les huit temps en liste. Vérifié en 1440 × 900 et 390 × 844
   (captures à huit positions), aucune erreur de console ; pas encore sur l'iPhone de J.
+- **Le soir même, la montre passe en volume** (J : « il faut que la montre soit en 3D et surtout qu'elle ait l'épaisseur d'une
+  vraie montre, pareil pour le bracelet » ; Three.js, bracelet « courbé, comme sur un poignet », « elle se montre sous tous les
+  angles » ; puis la photo d'un vrai mouvement à remontage manuel). `components/ui/montre-3d.tsx` (react-three-fiber), ses
+  pièces dans `lib/montre-3d.ts`, sa pose dans `lib/pose-montre.ts`. Tout est calculé, rien ne se télécharge : 38 mm, près de
+  7 mm d'épaisseur (boîtier tourné, fond satiné à part, lunette polie, rehaut), cornes effilées, couronne à 30 cannelures,
+  cadran champagne à brossage soleil (anisotropie), bâtons et aiguilles en relief qui portent ombre, compteur azuré en creux,
+  verre bombé ; bracelet de 3,4 mm qui sort à plat des cornes puis s'enroule (arc de 13 mm), alligator dessus, doublure lisse
+  dessous ; au dos, sous le saphir, le mouvement d'après la photo de J : ponts en acier à côtes de Genève, roues en laiton sous
+  les ponts, rochet et roue de couronne soleillés par-dessus, balancier et spiral, rubis en chatons, vis ; fond gravé « VOTRE
+  CODE · VOTRE DOMAINE · À VOTRE NOM ». Lumière : un studio de boîtes à lumière (drei `Lightformer`) et une lampe qui porte
+  les ombres.
+- **Branchement** : la même chronologie fait avancer la pose (orientation, aiguilles, compteur, couronne, index allumés, rouage)
+  et la scène ne se redessine que quand elle avance (`frameloop="demand"`). Une orientation par temps (`POSES_3D` : trois quarts,
+  profil côté couronne, face, plongée, l'autre côté, puis le fond). Three.js se charge à un écran et demi de la section, si le
+  navigateur sait faire du WebGL 2 et sans mouvement réduit ; la montre à plat reste en place jusqu'à la première image, et pour
+  toujours si le WebGL manque ou échoue (garde d'erreur). Téléphone : la montre en haut, fondue vers le texte ; ordinateur : à
+  droite, fondue vers la colonne de texte.
+- **À retenir** : un profil tourné (`LatheGeometry`) se parcourt de la fenêtre du fond vers le cadran, sinon l'extérieur devient
+  l'intérieur ; garder ses normales (un `computeVertexNormals` laisse une couture) ; même chose pour le bracelet, dont les
+  triangles dépendent du sens du brin. `rx` négatif = vue d'au-dessus.
+- Vérifié : 1440 × 900 et 390 × 844 aux huit temps, mouvement réduit (montre à plat, Three.js jamais chargé), Three.js absent en
+  haut de page ; aucune erreur de console ; sur ordinateur, image médiane 6 ms, la pire 18 ms. Pas encore sur l'iPhone de J.
 
 ## Mise à jour du 2026-10-18 : l'entrée du hero, dans l'ordre
 
