@@ -41,9 +41,11 @@ export const MOUVEMENT = {
         `chevauchement` secondes avant que le précédent ait fini de s'éclaircir ; le bouton est appelé `boutonAvantFin`
         secondes avant la fin du dernier. */
     brume: { debut: 3.2, entreMots: 0.035, duree: 1.15, flou: 10, monte: 6, chevauchement: 0.5, boutonAvantFin: 0.4 },
-    /** Le bouton : il descend au bout d'un fil, se balance, se pose, et le fil remonte. Il attend la fin du texte ;
-        `secours` : il vient de toute façon à cet instant (le texte n'a pas pu l'appeler). */
-    fil: { secours: 9, longueur: 90, chute: 56, descente: 0.9, balance: 1.3, angle: 5, retrait: 0.6 },
+    /** Le bouton se dessine à la main (J, 2026-10-18, à la place du fil qui le déposait) : quatre traits de plume, un par
+        côté, à `vitesse` px/s avec `coin` secondes au coin ; ils dépassent de 1,5 à `depasse` px et se creusent de `tremble`
+        px au plus ; une pointe lumineuse de rayon `pointe` suit le bout du trait ; le texte s'écrit en `ecriture` s ; le trait se fond dans le cadre en `fondu` s. Il attend la fin du texte ;
+        `secours` : il vient de toute façon à cet instant. */
+    dessin: { secours: 9, vitesse: 380, coin: 0.07, depasse: 4.5, tremble: 1.3, epaisseur: 1.2, pointe: 1.8, ecriture: 1.1, fondu: 0.45 },
   },
 
   /** Débord de la parallaxe, en fraction de la hauteur du cadre. */
@@ -229,6 +231,16 @@ export const MOUVEMENT = {
     /** Du bouton posé à la fenêtre de discussion, quand on clique dessus :
         durée du défilement, et part de la plongée où la fenêtre est en place. */
     discussion: { duree: 3.4, avancee: 0.985 },
+    /** Posé près de l'ordinateur, il emmène dedans de lui-même (J, 2026-10-18 : « quand il tombe, il doit emmener
+        directement dans l'ordinateur, jouer le zoom et l'animation dans l'écran du Mac ») : après `attente` secondes, la page
+        défile toute seule jusqu'à la fenêtre posée, en `duree` secondes. Le pas suit des repères (part du temps → part de la
+        plongée) : le vol, puis plus de temps pour le rebond de l'icône et l'effet Génie (0,665 à 0,80), puis le zoom dans la
+        fenêtre (0,80 à 0,96) ; la courbe part et arrive au repos. */
+    plonger: {
+      attente: 0.7,
+      duree: 8,
+      reperes: { temps: [0, 0.46, 0.72, 0.94, 1], plongee: [0, 0.665, 0.8, 0.96, 0.985] },
+    },
   },
 
   /* --- Les démos de logiciels de la section 02 (components/demos, demande de
@@ -258,6 +270,10 @@ export const MOUVEMENT = {
      laquelle le contenu reste collé (`Scene`, option `defilement`). La page
      défile toujours normalement ; seul le contenu reste en place le temps du
      film. J : « avec le défilement, on change si ce n'est pas bien ». */
+  /** La section 04, la montre (components/sections/scene-livre.tsx) : longueur de la piste, en hauteurs d'écran, en plus de
+      l'écran qui la porte ; huit temps de même longueur. */
+  livre: { ecrans: 6.2 },
+
   relecture: {
     /** Longueur de la piste, en hauteurs d'écran, en plus de l'écran qui la porte. */
     ecrans: 2.6,

@@ -35,7 +35,7 @@
      Étoiles filantes dessinées en code la nuit.
    - Par-dessus : `Hero` (section transparente), `SceneModele` (#sur-mesure, la roue des trois
      sites de Julien : `components/ui/roue.tsx`, voir `BLUEPRINT.md`), `SceneUtile`
-     (#utile), `SceneRelecture` (#relecture : une piste de 3,6 écrans où le contenu reste collé et où le film suit le défilement, voir `BLUEPRINT.md`, mise à jour du 2026-10-07), puis `Plongee` (`components/ui/plongee.tsx`) :
+     (#utile), `SceneRelecture` (#relecture : une piste de 3,6 écrans où le contenu reste collé et où le film suit le défilement, voir `BLUEPRINT.md`, mise à jour du 2026-10-07), `SceneLivre` (#livre, la montre 3D : l'heure du ciel y est suspendue, voir `BLUEPRINT.md`, 2026-10-19), puis `Plongee` (`components/ui/plongee.tsx`) :
      le vol jusque dans l'ordinateur (120 images verticales sur téléphone, 61 images Kling sur ordinateur) ; sur l'écran du
      portable, un bureau de Mac collé en perspective (`components/ui/ecran-mac.tsx`, coins et épaule mesurés dans
      `lib/plongee-ecran-mobile.ts` et `lib/plongee-ecran-bureau.ts`), d'où la fenêtre de discussion sort du Dock avec l'effet
@@ -43,7 +43,7 @@
      2026-10-17, soir).
 2. `Discussion` (`components/ui/discussion.tsx`) : premier message écrit tout seul, réponse
    fixe, puis relais honnête (créneau → WhatsApp pré-rempli). L'API Claude n'est PAS branchée.
-3. `SceneLivre` (prix), `Confiance`, `Julien`, `Faq`, `Appel`, pied de page.
+3. `Confiance`, `Julien`, `Faq`, `Appel`, pied de page (`SceneLivre`, le prix et la montre, est remontée dans le ciel le 2026-10-19).
 
 ## Ce qui reste à faire ou à vérifier
 
@@ -53,6 +53,10 @@
   le visiteur ne clique pas (voir `BLUEPRINT.md`, mise à jour du 2026-10-02). Après chaque retouche de
   section, vérifier que les `data-rebond` suivent. À tester par J sur iPhone (fluidité de la chute).
 - Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion.
+- **La montre 3D de la section 04** (2026-10-18, `components/ui/montre-3d.tsx`, voir `BLUEPRINT.md`) : à mesurer sur l'iPhone de
+  J (`/phone`, puis `perf` sur la piste de `#livre`) ; si elle peine, baisser d'abord `dpr` et la carte d'ombre (2048) avant de
+  toucher aux matières. Une page d'essai qui la montre seule, orientée par l'adresse, se remonte en deux fichiers
+  (`app/labo-montre/`, jamais versionnée) quand on la retravaille.
 - **Fait le 2026-10-17 : tout le chemin du téléphone en vertical** (J : « Tout le chemin en 9:16 c'est ok, bonne qualité et le chalet. Garde le
   côté où il s'allume la nuit »). Chalet en rondins, vidéo du hero, cinq passages du ciel et plongée générés en 1 080 × 1 912 : voir `BLUEPRINT.md`
   (mise à jour du 2026-10-17, suite) et `outils/hero/LISEZMOI.md` (tâches Higgsfield, commandes pour tout refaire). Mesuré sur l'iPhone de J (build de

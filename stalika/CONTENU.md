@@ -109,24 +109,20 @@ Refaite le 2026-10-07 (J) : la scène montre le client qui a la main, sur le sit
 - Légende sous la maquette : `C'est comme ça qu'AR Transfert a relu son site.` (à confirmer par J : voir H8)
 - Libellé accessible de la maquette : `Exemple de relecture sur le site d'AR Transfert, chauffeur VTC à Béziers : le client passe en mode Édition, réécrit un texte, retire une animation et commente une photo ; Julien répond, applique et publie.` Liste : `Ce que le client peut retoucher`
 
-### Scène 5 · Livré
+### Scène 5 · Livré (la montre)
 
-- Eyebrow : `04 · Livré`
-- H2 : `Livré propre, *hébergé comme vous voulez*` (refait le 2026-10-07 à la demande de J, la section parlant maintenant d'hébergement ; avant : `Livré propre. Et il *vous appartient*`)
-- Coche 1 : `Mentions légales et confidentialité en règle`
-- Coche 2 : `Sécurité vérifiée avant la mise en ligne`
-- Coche 3 : `Référencement soigné : titres, descriptions, plan du site, fiche Google`
-- Coche 4 : `Le code est à vous : vous partez quand vous voulez, avec votre site`
-- Voie 1, titre : `Chez vous` · texte : `Vous avez déjà un hébergeur, ou vous préférez garder la main. Je vous livre le site prêt à publier et je vous accompagne pour le mettre en ligne.`
-- Voie 2, titre : `Chez moi` · texte : `Je m'occupe de l'hébergement et de la maintenance : mises à jour, surveillance. Vous demandez une modification, je la fais, dans la limite du raisonnable. En échange, un petit abonnement mensuel.`
-- Ligne commune aux deux voies : `Dans les deux cas, le nom de domaine est à votre nom. Chaque projet se règle avec vous, un par un, et c'est écrit dans le devis.`
-- Les faits des deux voies (J, 2026-10-07) : l'hébergement et la maintenance chez J sont facturés par un petit abonnement mensuel, sans montant sur la page ; modifications à la demande, dans la limite du raisonnable ; le nom de domaine est toujours au nom du client ; chez le client, J livre le site prêt à publier et l'accompagne pour la mise en ligne.
-- Offre, grand chiffre : `À partir de 300 €`
-- Offre, sous le chiffre : `payable en plusieurs fois, sans frais`
-- Offre, délai (les rouleaux) : `Première ébauche sous 72 h`
-- Offre, zone : `Partout en France, à distance`
-- Offre, ligne ajoutée le 2026-10-02 (le prix est celui d'un site vitrine) : `Un logiciel ou une application sur mesure ? Dites-moi ce qu'il vous faut.`
-- Bouton : `Parlons de votre projet` → `/contact` (avant : `Parlons de votre site`)
+Refaite le 2026-10-18 (J : « trop générique » ; piste choisie : le chronographe, « une très belle montre qui au défilement
+montre tout le processus de création »). Huit temps, sur la même piste ; les faits sont ceux de l'ancienne section, de la FAQ et
+du questionnaire. Textes :
+- Temps 0 · Eyebrow : `04 · Livré` · H2 : `Réglé comme une montre` *`du premier message à la mise en ligne`* · `Sept étapes, et un seul interlocuteur du début à la fin.`
+- `01 / 07` · `Le premier message` · `Vous m'écrivez : dans la discussion, ici même, ou par le questionnaire, dix questions et cinq minutes.`
+- `02 / 07` · `On en parle` · `Un appel pour comprendre ce qu'il vous faut, puis un devis. Chaque projet se règle avec vous, un par un.` · `À partir de 300 €` · `payable en plusieurs fois, sans frais`
+- `03 / 07` · `Votre première ébauche` · `72 h` (le chiffre roule) · `Sous 72 heures, vous voyez votre site. Pas un modèle : il est dessiné pour vous.`
+- `04 / 07` · `Vous relisez` · `Vous recevez un lien pour voir votre site et le modifier. Vous commentez sur la page, je mets à jour à votre guise.`
+- `05 / 07` · `Tout est vérifié` · coches : `Mentions légales et confidentialité en règle` · `Sécurité vérifiée avant la mise en ligne` · `Référencement soigné : titres, descriptions, plan du site, fiche Google`
+- `06 / 07` · `La mise en ligne` · `Chez vous` : `Je vous livre le site prêt à publier et je vous accompagne pour le mettre en ligne.` · `Chez moi` : `Je m'occupe de l'hébergement et de la maintenance, pour un petit abonnement mensuel.` · `Dans les deux cas, le nom de domaine est à votre nom. C'est écrit dans le devis.` (les deux voies raccourcies pour tenir dans l'écran du téléphone ; le détail, mises à jour, surveillance, modifications dans la limite du raisonnable, reste dans la FAQ et le devis)
+- `07 / 07` · `Et après` · `Le code est à vous : vous partez quand vous voulez, avec votre site. Et je reste joignable.` · `À partir de 300 € · première ébauche sous 72 h · partout en France, à distance` · `Un logiciel ou une application sur mesure ? Dites-moi ce qu'il vous faut.` · bouton `Parlons de votre projet` → `/contact`
+- Sur la montre : cadran `STALIKA` · `SUR MESURE` · `FAIT MAIN`, compteur `72` `24` `48` ; au dos, gravé `VOTRE CODE · VOTRE DOMAINE · À VOTRE NOM · STALIKA · SUR MESURE · FAIT MAIN ·`, sur le rotor `STALIKA · LE CODE EST À VOUS` (montre à plat) ; la montre en volume, à remontage manuel, n'a pas de rotor : `STALIKA` est gravé sur un pont du mouvement.
 
 ### Ils m'ont fait confiance (bandeau)
 

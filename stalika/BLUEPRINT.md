@@ -174,6 +174,81 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-18 (suite) : la section 04 devient une montre
+
+J : « la section 04 est trop générique ; garder l'esprit premium, mais surtout faire quelque chose de personnel et
+d'extraordinaire, comme les autres sections ». Cinq pistes proposées en maquettes (le bon de livraison qu'on déchire, la carte
+d'embarquement, la lettre cachetée, le coffret, le chronographe) ; J : « j'adore le chronographe ; une très belle montre qui au
+défilement tourne et montre tout le processus de création, du début à la fin », puis il envoie la photo d'une montre habillée
+en or comme référence d'allure.
+- **La montre** (`components/ui/montre.tsx`, styles « La montre » dans `app/globals.css`) : dessinée en code (CSS pour les
+  métaux et le cadran, SVG pour le reste), jamais copiée : boîtier très fin en or jaune, lunette large polie, cadran champagne
+  brossé soleil (deux lobes de lumière et un grain léger : des rayures fines faisaient une moire), douze bâtons appliqués, deux
+  aiguilles bâtons noires, couronne cannelée, cornes courtes, alligator noir surpiqué. Pour le déroulé : la couronne fait
+  poussoir (chronographe monopoussoir), un compteur de 72 heures au-dessus de 6 h, une aiguille fine de chronographe et un arc
+  d'or qui la suit au bord du cadran. Au dos, un fond saphir sur le mouvement (platine perlée, côtes de Genève, rotor en or
+  gravé « le code est à vous », balancier et spiral, rubis). L'or vient du doré du thème ; cuir, acier et rubis sont réglés
+  comme des matières. Toutes les tailles suivent `--montre-l`.
+- **La section** (`components/sections/scene-livre.tsx`) : `Scene` en mode défilement, comme « La relecture » (piste de
+  7,2 écrans, contenu collé, `MOUVEMENT.livre`). Huit temps : l'arrivée ; le premier message ; on en parle (devis, 300 €) ;
+  la première ébauche (on appuie sur la couronne, le compteur fait le tour des 72 h pendant que le chiffre roule) ; vous relisez ;
+  tout est vérifié (trois coches tracées) ; la mise en ligne (chez vous, chez moi) ; et après (la montre se retourne, le rotor
+  tourne, le balancier bat, le bouton Filet d'or). À chaque temps l'aiguille du chrono avance de deux heures et allume les index
+  passés, les heures et les minutes tournent, la montre s'incline et le reflet du verre glisse. La section passe dans la nuit
+  dorée (`.nuit`). Textes : `CONTENU.md`, « Scène 5 ».
+- **À retenir** : les rotations du dessin SVG sont écrites à la main (`rotate(angle cx cy)` à chaque image) ; `svgOrigin` de GSAP
+  plaçait mal le centre dans ce SVG agrandi et basculé en 3D (l'aiguille des heures décalée de quelques pixels, celle du chrono
+  de plus de mille).
+- Sans JavaScript et en mouvement réduit : la montre immobile, puis les huit temps en liste. Vérifié en 1440 × 900 et 390 × 844
+  (captures à huit positions), aucune erreur de console ; pas encore sur l'iPhone de J.
+- **Le soir même, la montre passe en volume** (J : « il faut que la montre soit en 3D et surtout qu'elle ait l'épaisseur d'une
+  vraie montre, pareil pour le bracelet » ; Three.js, bracelet « courbé, comme sur un poignet », « elle se montre sous tous les
+  angles » ; puis la photo d'un vrai mouvement à remontage manuel). `components/ui/montre-3d.tsx` (react-three-fiber), ses
+  pièces dans `lib/montre-3d.ts`, sa pose dans `lib/pose-montre.ts`. Tout est calculé, rien ne se télécharge : 38 mm, près de
+  7 mm d'épaisseur (boîtier tourné, fond satiné à part, lunette polie, rehaut), cornes effilées, couronne à 30 cannelures,
+  cadran champagne à brossage soleil (anisotropie), bâtons et aiguilles en relief qui portent ombre, compteur azuré en creux,
+  verre bombé ; bracelet de 3,4 mm qui sort à plat des cornes puis s'enroule (arc de 13 mm), alligator dessus, doublure lisse
+  dessous ; au dos, sous le saphir, le mouvement d'après la photo de J : ponts en acier à côtes de Genève, roues en laiton sous
+  les ponts, rochet et roue de couronne soleillés par-dessus, balancier et spiral, rubis en chatons, vis ; fond gravé « VOTRE
+  CODE · VOTRE DOMAINE · À VOTRE NOM ». Lumière : un studio de boîtes à lumière (drei `Lightformer`) et une lampe qui porte
+  les ombres.
+- **Branchement** : la même chronologie fait avancer la pose (orientation, aiguilles, compteur, couronne, index allumés, rouage)
+  et la scène ne se redessine que quand elle avance (`frameloop="demand"`). Une orientation par temps (`POSES_3D` : trois quarts,
+  profil côté couronne, face, plongée, l'autre côté, puis le fond). Three.js se charge à un écran et demi de la section, si le
+  navigateur sait faire du WebGL 2 et sans mouvement réduit ; la montre à plat reste en place jusqu'à la première image, et pour
+  toujours si le WebGL manque ou échoue (garde d'erreur). Téléphone : la montre en haut, fondue vers le texte ; ordinateur : à
+  droite, fondue vers la colonne de texte.
+- **À retenir** : un profil tourné (`LatheGeometry`) se parcourt de la fenêtre du fond vers le cadran, sinon l'extérieur devient
+  l'intérieur ; garder ses normales (un `computeVertexNormals` laisse une couture) ; même chose pour le bracelet, dont les
+  triangles dépendent du sens du brin. `rx` négatif = vue d'au-dessus.
+- Vérifié : 1440 × 900 et 390 × 844 aux huit temps, mouvement réduit (montre à plat, Three.js jamais chargé), Three.js absent en
+  haut de page ; aucune erreur de console ; sur ordinateur, image médiane 6 ms, la pire 18 ms. Pas encore sur l'iPhone de J.
+
+## Mise à jour du 2026-10-19 : le texte suit l'aiguille, et la montre passe avant la plongée
+
+- **Le texte** (J : « qu'il s'affiche de manière stylée, fluide, et suive le mouvement des aiguilles » ; quatre pistes montrées en
+  maquettes animées, J choisit « la lecture à l'aiguille » pour le texte et « le quantième » pour les numéros et les titres) :
+  le numéro et le titre de chaque temps tournent dans leur fenêtre comme le disque de date d'une montre (lettres coupées par
+  SplitText, chacune dans son masque ; celles du temps d'avant partent par le haut, au même endroit). Le reste paraît pâle et
+  s'allume mot à mot au rythme exact de l'aiguille du chrono (même départ, durée, courbe), avec un éclat d'or au passage
+  (`--v`, `--b` sur chaque mot). Au-dessus, une réglette de soixante minutes, le pourtour du cadran déroulé, que suit un curseur
+  (`--chrono`). Sur ordinateur, numéros et titres à hauteur fixe (38svh), pour que le quantième tourne sur place. Lettres et mots
+  sont posés à la main d'après un état par temps (entrée, sortie, lecture) : une lettre peut entrer puis sortir sans conflit.
+- **La place** (J : « qu'elle se joue au-dessus de l'écran du Mac, avant la cinématique qui mène au questionnaire ») : la section
+  est remontée dans `Ciel`, entre « La relecture » et la plongée. Pendant qu'elle se joue, l'heure du ciel est suspendue (`Ciel`,
+  prop `pauses`) : l'heure de toutes les autres scènes reste celle que J a validée. Elle passe sur le ciel sans voile (J : « pas
+  de voile sombre »), sauf derrière le texte (« un voile derrière le texte uniquement ») : une nappe de nuit aux bords fondus,
+  sans rectangle ; le texte garde l'ombre `sur-ciel`. Mouvement réduit : fond opaque, tout le texte affiché.
+- **Le bouton du hero** tombe désormais à travers la montre jusqu'à l'ordinateur. Pendant tout son film (chute puis plongée),
+  `html[data-film]` est posé et la montre 3D attend pour se mettre en route (au plus vingt secondes).
+- **La mise en route de la 3D par tranches** : d'un bloc, elle figeait la page près d'une seconde (mesuré au défilement depuis
+  « La relecture » : 0,15 s, 0,28 s, 0,38 s). Textures puis formes préparées dans les temps morts (`requestIdleCallback`), le
+  grain du cadran en carreau répété ; la scène montée sans dessiner (`frameloop="never"`), puis la lumière du studio (PMREM d'une
+  petite scène de boîtes à lumière, à la place de drei, retiré des dépendances), l'envoi des textures, `compileAsync`, et la
+  première image. Pire image après : 0,11 s en développement (l'évaluation du code), les autres sous 0,08 s.
+- **À savoir** : le `Canvas` de react-three-fiber ne se mesure qu'à l'arrêt du défilement (anti-rebond) : la montre 3D paraît au
+  premier temps d'arrêt, la montre à plat tient la place jusque-là.
+
 ## Mise à jour du 2026-10-18 : l'entrée du hero, dans l'ordre
 
 J : « que le titre, le texte du héros et le bouton Parlons projet apparaissent de manière stylée ; on garde les lettres une par une
@@ -187,6 +262,20 @@ pendant que le logo se composait encore (jusqu'à 3,6 s) : tout se chevauchait. 
   doré, se balance en s'amortissant (pivot au haut du fil), puis le fil remonte. Il annonce la chute qui suit au clic. La descente
   est courte : sur téléphone, le texte est juste au-dessus et le bouton ne doit pas le traverser. Écartées : contour tracé puis
   rempli, ressort et reflet.
+- **Le bouton emmène dans l'ordinateur** (J : « quand il tombe, il doit emmener directement dans l'ordinateur, jouer le zoom et
+  l'animation dans l'écran du Mac ») : posé près de l'ordinateur, il attend 0,7 s, puis la page défile toute seule à travers la
+  plongée jusqu'à la fenêtre posée, en 8 s (Lenis, défilement verrouillé). Le pas suit des repères (`MOUVEMENT.bouton.plonger`) :
+  46 % du temps pour le vol, 26 % pour le rebond de l'icône et l'effet Génie, 22 % pour le zoom dans la fenêtre ; la courbe part et
+  arrive au repos. La discussion commence à l'arrivée. L'indice « Faites défiler » est retiré. Vérifié en 375 × 812 et
+  1280 × 800 : clic à 0 s, bouton posé vers 9 s, fenêtre posée vers 18 s, premiers messages vers 21 s.
+- **Le bouton devient un Filet d'or, qui se dessine à la main** (J : trois pistes proposées, « on part sur le Filet d'or, et au
+  lieu du fil qui dépose le bouton, le bouton se dessine comme à la main »). `components/ui/bouton-filet.tsx` remplace le Cyber
+  Button de 21st (gardé dans `components/ui/cyber-button.tsx`, plus utilisé) : un cadre d'un fil doré, deux coins appuyés, le
+  texte espacé comme la baseline ; au survol, l'or monte et remplit, le texte passe en noir, les coins en encre, la flèche avance.
+  `components/ui/entree-dessin.tsx` remplace l'entrée au bout du fil : une pointe de plume lumineuse tire les quatre côtés l'un
+  après l'autre, un peu tremblés et dépassant aux coins comme un geste, pendant que le texte s'écrit ; puis la flèche se trace,
+  les coins se posent et le trait se fond dans le cadre (environ 2,5 s, `MOUVEMENT.hero.dessin`). Idées : « Fill Up », « Arrow
+  Push » et « Border Draw » d'animatedbuttons, le tracé de trait de Kinetics. La copie qui tombe au clic est le même Filet d'or.
 - **Paragraphe par paragraphe** (J : « ralentir un peu pour profiter de l'effet de brume, ou paragraphe par paragraphe, encore
   mieux ») : chaque paragraphe sort de la brume en entier (flou 10 px, 1,15 s par mot, vague de 35 ms), le suivant part une
   demi-seconde avant que le précédent soit net. Le bouton n'a plus d'heure fixe : le texte l'appelle quand le dernier

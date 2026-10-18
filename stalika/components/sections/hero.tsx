@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LogoStalika } from "@/components/ui/logo-stalika";
 import { MotsBrume } from "@/components/ui/mots-brume";
-import { EntreeFil } from "@/components/ui/entree-fil";
+import { EntreeDessin } from "@/components/ui/entree-dessin";
 import { BoutonChute } from "@/components/ui/bouton-chute";
 import { IleMenu } from "@/components/ui/ile-menu";
 
@@ -101,12 +101,12 @@ export function Hero() {
           </div>
 
           {/* Le bouton : un Cyber Button (21st) qui se décroche et tombe jusqu'à l'ordinateur au fil des clics.
-              Au milieu de la page (J, 2026-10-09). Il entre en dernier, au bout de son fil (J, 2026-10-18). */}
-          <EntreeFil className="pb-2">
+              Au milieu de la page (J, 2026-10-09). Il entre en dernier, en se dessinant à la main (J, 2026-10-18). */}
+          <EntreeDessin className="pb-2">
             <BoutonChute href="/contact" className="mx-auto">
               Parlons projet
             </BoutonChute>
-          </EntreeFil>
+          </EntreeDessin>
         </div>
       </div>
     </section>

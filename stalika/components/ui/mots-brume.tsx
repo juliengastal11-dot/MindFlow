@@ -12,7 +12,7 @@ import { MOUVEMENT } from "@/lib/mouvement";
    chaque mot arrive flou et transparent, puis devient net, en vague de gauche
    à droite, paragraphe par paragraphe : le suivant part quand le précédent finit
    de s'éclaircir. Quand le dernier a presque fini, il appelle le bouton
-   (l'évènement `HERO_TEXTE`, attendu par `EntreeFil`). Doux, dans l'esprit
+   (l'évènement `HERO_TEXTE`, attendu par `EntreeDessin`). Doux, dans l'esprit
    de la brume dorée de la scène, et sans disputer la vedette au logo, qui se
    compose avant.
 

@@ -4,16 +4,17 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { CyberButton } from "@/components/ui/cyber-button";
+import { BoutonFilet } from "@/components/ui/bouton-filet";
 import { gsap, ScrollTrigger, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
 import { defilement } from "@/lib/defilement";
 import { POSE_BOUTON, RAPPORT_CIEL } from "@/lib/ciel";
-import { bezier, matrice, planifierChute, type PlanChute, type Plateforme, type Point, type Rebond } from "@/lib/chute";
+import { bezier, courbeMonotone, matrice, planifierChute, type PlanChute, type Plateforme, type Point, type Rebond } from "@/lib/chute";
 import { cn } from "@/lib/utils";
 
 /* ---------------------------------------------------------------------------
-   Le bouton « Parlons projet » du hero : un Cyber Button (21st) qui
+   Le bouton « Parlons projet » du hero : un Filet d'or (`BoutonFilet`, à la
+   place du Cyber Button de 21st depuis le 2026-10-18) qui
    se décroche, se balance, puis tombe de scène en scène jusqu'à l'ordinateur
    (demande de J, 2026-10-02, par l'overlay).
 
@@ -26,9 +27,11 @@ import { cn } from "@/lib/utils";
       s'y accrochait par un coin et s'y balançait).
    2. Puis il tombe de lui-même, rebondit sur les textes et les animations du
       site pendant que la page défile avec lui, et se pose à côté de
-      l'ordinateur, sur la dernière image du ciel. Un repère de défilement
-      apparaît : on entre dans l'ordinateur en défilant, ou en cliquant sur
-      le bouton, qui emmène à la fenêtre de discussion.
+      l'ordinateur, sur la dernière image du ciel.
+   3. Puis il emmène dans l'ordinateur, de lui-même (J, 2026-10-18) : la page
+      défile toute seule à travers la plongée (`plonger`), la caméra arrive
+      sur l'écran, l'icône rebondit, la fenêtre sort du Dock, le zoom entre
+      dedans, et la discussion commence.
    Le visiteur peut passer la chute (molette, doigt, Échap, bouton « Passer »).
 
    Comment c'est fait :
@@ -140,12 +143,12 @@ function poseEcran(): Point | null {
 /** La copie du bouton qui voyage : même gabarit que le vrai, sans lien. */
 function Copie({ children, focus }: { children: React.ReactNode; focus: boolean }) {
   return (
-    <CyberButton asChild size="default">
+    <BoutonFilet>
       <span aria-hidden="true" className={cn("cursor-pointer", focus && "ring-2 ring-ring ring-offset-2 ring-offset-background")}>
         {children}
-        <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+        <ArrowRight strokeWidth={1.5} className="size-4 transition-transform duration-500 group-hover:translate-x-1.5" />
       </span>
-    </CyberButton>
+    </BoutonFilet>
   );
 }
 
@@ -249,6 +252,8 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
       reglage: T.chute,
     });
     c.atterrir = fin;
+    // Pendant la chute, la page appartient au film : ce qui se charge à l'approche attend (la montre 3D de la section 04).
+    document.documentElement.dataset.film = "chute";
     c.etat = "chute";
     c.t = 0;
     c.prochain = 0;
@@ -432,12 +437,13 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
       while (c.prochain < plan.rebonds.length && plan.rebonds[c.prochain].t <= t) choc(plan.rebonds[c.prochain++]);
       if (c.t >= plan.duree) {
         gsap.ticker.remove(pas);
+        delete document.documentElement.dataset.film;
         // L'arrivée exacte, quoi que la mise en page ait pu bouger en route.
         lenis.scrollTo(c.atterrir, { immediate: true, force: true });
         c.etat = "pose";
         setHote(document.querySelector<HTMLElement>("[data-plongee-colle]"));
         setEtat("pose");
-        setAnnonce("Le bouton est tombé près de l'ordinateur. Faites défiler pour entrer dans l'écran, ou activez-le pour aller à la discussion.");
+        setAnnonce("Le bouton est tombé près de l'ordinateur : on entre dans l'écran, jusqu'à la discussion.");
       }
     };
 
@@ -464,6 +470,7 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     gsap.ticker.add(pas);
     return () => {
       gsap.ticker.remove(pas);
+      delete html.dataset.film;
       html.style.touchAction = gestes;
       window.removeEventListener("wheel", bloquer, { capture: true });
       window.removeEventListener("touchmove", bloquer, { capture: true });
@@ -487,6 +494,29 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     placer();
     // La plongée commence : le bouton posé s'efface sur ses premiers pixels de défilement.
     const zone = hote.parentElement;
+    // Et elle commence d'elle-même : après un instant, la page défile jusqu'à la fenêtre posée, au pas des repères.
+    const lenis = defilement();
+    const { attente, duree, reperes } = T.plonger;
+    const fin = reperes.plongee[reperes.plongee.length - 1];
+    const pas = courbeMonotone(
+      reperes.temps,
+      reperes.plongee.map((v) => v / fin),
+    );
+    const lancer =
+      lenis && zone
+        ? gsap.delayedCall(attente, () => {
+            const haut = zone.getBoundingClientRect().top + window.scrollY;
+            lenis.scrollTo(haut + fin * (zone.offsetHeight - window.innerHeight), {
+              duration: duree,
+              easing: pas,
+              lock: true,
+              force: true,
+              onComplete: () => delete document.documentElement.dataset.film,
+            });
+          })
+        : null;
+    // La chute enchaîne sur la plongée : la page appartient encore au film jusqu'à la fenêtre posée.
+    if (lancer) document.documentElement.dataset.film = "plongee";
     const st = zone
       ? ScrollTrigger.create({
           trigger: zone,
@@ -502,6 +532,8 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     window.addEventListener("resize", placer);
     return () => {
       st?.kill();
+      lancer?.kill();
+      delete document.documentElement.dataset.film;
       window.removeEventListener("resize", placer);
     };
   }, [etat, hote]);
@@ -530,7 +562,7 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     <div className={cn("relative flex w-fit", className)}>
       {/* Le vrai lien : il ne quitte jamais sa place (clavier, lecteurs d'écran, sans JavaScript). */}
       <span className={cn("inline-flex transition-opacity duration-200", detache && "pointer-events-none opacity-0")}>
-        <CyberButton asChild size="default">
+        <BoutonFilet>
           <Link
             ref={ancre}
             href={href}
@@ -541,9 +573,9 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
             className="cursor-pointer"
           >
             {children}
-            <ArrowRight aria-hidden="true" className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+            <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4 transition-transform duration-500 group-hover:translate-x-1.5" />
           </Link>
-        </CyberButton>
+        </BoutonFilet>
       </span>
       {/* Là où il était : un contour pointillé. */}
       {detache && <span aria-hidden="true" className="pointer-events-none absolute inset-0 border border-dashed border-foreground/20" />}
@@ -589,12 +621,6 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
               style={{ transformOrigin: "0 0" }}
             >
               <Copie focus={focus}>{children}</Copie>
-            </div>
-            <div className="absolute inset-x-0 bottom-[max(1.5rem,env(safe-area-inset-bottom))] flex animate-[bouton-indice_0.7s_0.6s_var(--ease-out)_both] flex-col items-center gap-2">
-              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/70">Faites défiler</span>
-              <span aria-hidden="true" className="relative block h-9 w-px overflow-hidden bg-foreground/20">
-                <span className="absolute inset-x-0 top-0 h-1/2 animate-[bouton-defile_1.6s_ease-in-out_infinite] bg-accent" />
-              </span>
             </div>
           </div>,
           hote,
