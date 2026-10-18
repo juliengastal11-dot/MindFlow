@@ -187,6 +187,10 @@ pendant que le logo se composait encore (jusqu'à 3,6 s) : tout se chevauchait. 
   doré, se balance en s'amortissant (pivot au haut du fil), puis le fil remonte. Il annonce la chute qui suit au clic. La descente
   est courte : sur téléphone, le texte est juste au-dessus et le bouton ne doit pas le traverser. Écartées : contour tracé puis
   rempli, ressort et reflet.
+- **Paragraphe par paragraphe** (J : « ralentir un peu pour profiter de l'effet de brume, ou paragraphe par paragraphe, encore
+  mieux ») : chaque paragraphe sort de la brume en entier (flou 10 px, 1,15 s par mot, vague de 35 ms), le suivant part une
+  demi-seconde avant que le précédent soit net. Le bouton n'a plus d'heure fixe : le texte l'appelle quand le dernier
+  paragraphe a presque fini (évènement `stalika:hero-texte`), vers 6,5 s ; il est posé vers 8 s.
 - **Le clic, moins haut** (J : « il ne doit pas sauter si haut, juste sursauter sur le texte puis tomber ») : le bouton ne saute
   plus jusqu'au menu pour s'y accrocher et s'y balancer. Il s'accroupit, fait un petit bond (arche à 5 % de l'écran au-dessus)
   sur le bord haut du texte du hero (`data-perchoir`, la colonne de droite sur ordinateur), le texte tressaille, il rebondit

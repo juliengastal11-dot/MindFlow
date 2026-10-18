@@ -10,7 +10,9 @@ import { MOUVEMENT } from "@/lib/mouvement";
    Le texte du hero sort de la brume (J, 2026-10-18 : « que le texte et le
    bouton apparaissent de manière stylée », piste choisie parmi quatre) :
    chaque mot arrive flou et transparent, puis devient net, en vague de gauche
-   à droite ; les lignes (les enfants directs) se suivent. Doux, dans l'esprit
+   à droite, paragraphe par paragraphe : le suivant part quand le précédent finit
+   de s'éclaircir. Quand le dernier a presque fini, il appelle le bouton
+   (l'évènement `HERO_TEXTE`, attendu par `EntreeFil`). Doux, dans l'esprit
    de la brume dorée de la scène, et sans disputer la vedette au logo, qui se
    compose avant.
 
@@ -27,6 +29,9 @@ import { MOUVEMENT } from "@/lib/mouvement";
 
 const R = MOUVEMENT.hero.brume;
 
+/** Le texte du hero a (presque) fini d'entrer : le bouton peut venir. */
+export const HERO_TEXTE = "stalika:hero-texte";
+
 export function MotsBrume({ children, className, ...props }: React.ComponentProps<"div">) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -41,21 +46,27 @@ export function MotsBrume({ children, className, ...props }: React.ComponentProp
     const ctx = gsap.context(() => {
       gsap.set(lignes, { autoAlpha: 1 });
       if (mouvementReduit()) return;
+      const tl = gsap.timeline({ delay: R.debut });
       lignes.forEach((ligne, i) => {
         const coupe = SplitText.create(ligne, { type: "words", wordsClass: "inline-block will-change-[filter,opacity]" });
         coupes.push(coupe);
-        gsap.from(coupe.words, {
-          autoAlpha: 0,
-          filter: `blur(${R.flou}px)`,
-          y: R.monte,
-          duration: R.duree,
-          ease: "power2.out",
-          stagger: R.entreMots,
-          delay: R.debut + i * R.entreLignes,
-          // le texte redevient un texte ordinaire
-          onComplete: () => coupe.revert(),
-        });
+        tl.from(
+          coupe.words,
+          {
+            autoAlpha: 0,
+            filter: `blur(${R.flou}px)`,
+            y: R.monte,
+            duration: R.duree,
+            ease: "power2.out",
+            stagger: R.entreMots,
+            // le paragraphe redevient un texte ordinaire
+            onComplete: () => coupe.revert(),
+          },
+          // paragraphe par paragraphe : le suivant part quand le précédent finit de s'éclaircir
+          i === 0 ? 0 : `>-${R.chevauchement}`,
+        );
       });
+      tl.call(() => document.dispatchEvent(new CustomEvent(HERO_TEXTE)), [], Math.max(0, tl.duration() - R.boutonAvantFin));
     }, ref);
 
     return () => {

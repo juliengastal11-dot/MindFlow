@@ -4,11 +4,13 @@ import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { gsap, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
+import { HERO_TEXTE } from "@/components/ui/mots-brume";
 
 /* ---------------------------------------------------------------------------
    Le bouton du hero descend au bout de son fil (J, 2026-10-18, piste choisie
    parmi trois) : il arrive d'en haut, suspendu à un fil doré, se pose en se
-   balançant un peu, puis le fil remonte et disparaît. C'est le même bouton qui,
+   balançant un peu, puis le fil remonte et disparaît. Il attend que le texte
+   ait fini de sortir de la brume (`HERO_TEXTE`). C'est le même bouton qui,
    au clic, se décroche et tombe jusqu'à l'ordinateur (`BoutonChute`) : son
    entrée annonce la suite.
 
@@ -43,8 +45,8 @@ export function EntreeFil({ children, className }: { children: React.ReactNode; 
       // le pivot : le haut du fil, au-dessus du milieu du bouton
       gsap.set(suspendu, { transformOrigin: `50% ${-R.longueur}px` });
       const a = R.angle;
-      gsap
-        .timeline({ delay: R.debut, onComplete: () => gsap.set(suspendu, { clearProps: "transform,transformOrigin" }) })
+      const tl = gsap
+        .timeline({ paused: true, onComplete: () => gsap.set(suspendu, { clearProps: "transform,transformOrigin" }) })
         // la descente : il arrive d'en haut, déjà un peu penché, et ralentit
         // (de peu : sur téléphone, le texte est juste au-dessus, il ne doit pas le traverser)
         .fromTo(
@@ -61,6 +63,16 @@ export function EntreeFil({ children, className }: { children: React.ReactNode; 
         })
         // le fil remonte
         .to(fil, { scaleY: 0, autoAlpha: 0, duration: R.retrait, ease: "power2.in" }, ">-0.1");
+      // il vient quand le texte l'appelle, ou au plus tard à `secours`
+      const venir = () => {
+        if (tl.progress() === 0 && !tl.isActive()) tl.play();
+      };
+      document.addEventListener(HERO_TEXTE, venir);
+      const secours = gsap.delayedCall(R.secours, venir);
+      return () => {
+        document.removeEventListener(HERO_TEXTE, venir);
+        secours.kill();
+      };
     }, ref);
 
     return () => ctx.revert();
