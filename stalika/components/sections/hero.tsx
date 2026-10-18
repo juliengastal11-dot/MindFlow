@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { LogoStalika } from "@/components/ui/logo-stalika";
-import { EntreeHero } from "@/components/ui/entree-hero";
+import { MotsBrume } from "@/components/ui/mots-brume";
+import { EntreeFil } from "@/components/ui/entree-fil";
 import { BoutonChute } from "@/components/ui/bouton-chute";
 import { IleMenu } from "@/components/ui/ile-menu";
-import { MOUVEMENT } from "@/lib/mouvement";
 
 /* ---------------------------------------------------------------------------
    Le hero de l'accueil : une vidéo plein écran (le cadre arrondi a été retiré
@@ -84,7 +84,8 @@ export function Hero() {
               <span className="sr-only"> · sites, logiciels et applications sur mesure pour restaurants, coachs, artisans et commerces</span>
             </h1>
 
-            <EntreeHero delai={1.2} className="max-w-md lg:pb-5">
+            {/* Le texte sort de la brume, mot par mot, quand STALIKA a fini de se composer (J, 2026-10-18). */}
+            <MotsBrume data-perchoir="" className="max-w-md lg:pb-5">
               {/* Les lignes de J (overlay, 2026-10-02), telles qu'il les a écrites. Le même jour il a
                   ajouté « de logiciels personnalisés » à la ligne de l'audit et l'a placée avant
                   « Tout type de profession… en 72h » : les deux phrases de sa première ligne
@@ -96,16 +97,16 @@ export function Hero() {
                 Audit de besoin IA en entreprise, création de logiciels personnalisés et accompagnement
               </p>
               <p className="mt-3 text-sm leading-relaxed text-foreground/85 sm:text-base">Tout type de profession libérale ou entreprise, première maquette en 72h, à partir de 300&nbsp;€</p>
-            </EntreeHero>
+            </MotsBrume>
           </div>
 
           {/* Le bouton : un Cyber Button (21st) qui se décroche et tombe jusqu'à l'ordinateur au fil des clics.
-              Au milieu de la page (J, 2026-10-09) ; il entre après les trois lignes, comme avant. */}
-          <EntreeHero delai={1.2 + 3 * MOUVEMENT.hero.decalage} className="pb-2">
+              Au milieu de la page (J, 2026-10-09). Il entre en dernier, au bout de son fil (J, 2026-10-18). */}
+          <EntreeFil className="pb-2">
             <BoutonChute href="/contact" className="mx-auto">
               Parlons projet
             </BoutonChute>
-          </EntreeHero>
+          </EntreeFil>
         </div>
       </div>
     </section>

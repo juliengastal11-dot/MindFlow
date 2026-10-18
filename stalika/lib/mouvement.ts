@@ -34,6 +34,16 @@ export const MOUVEMENT = {
     delai: 0.15,
     /** Écart entre l'eyebrow, le titre, le texte, les boutons. */
     decalage: 0.12,
+    /* L'ordre voulu par J (2026-10-18) : STALIKA se compose (0,3 à 3,6 s), puis le texte, puis le bouton.
+       Le texte part quand les dernières lettres se posent, pendant que la baseline « Digital & Conseil » arrive. */
+    /** Le texte : ses mots sortent de la brume, flous puis nets, en vague, paragraphe par paragraphe (J, 2026-10-18 :
+        « ralentir un peu pour profiter de l'effet de brume, ou paragraphe par paragraphe, encore mieux »). Le suivant part
+        `chevauchement` secondes avant que le précédent ait fini de s'éclaircir ; le bouton est appelé `boutonAvantFin`
+        secondes avant la fin du dernier. */
+    brume: { debut: 3.2, entreMots: 0.035, duree: 1.15, flou: 10, monte: 6, chevauchement: 0.5, boutonAvantFin: 0.4 },
+    /** Le bouton : il descend au bout d'un fil, se balance, se pose, et le fil remonte. Il attend la fin du texte ;
+        `secours` : il vient de toute façon à cet instant (le texte n'a pas pu l'appeler). */
+    fil: { secours: 9, longueur: 90, chute: 56, descente: 0.9, balance: 1.3, angle: 5, retrait: 0.6 },
   },
 
   /** Débord de la parallaxe, en fraction de la hauteur du cadre. */
@@ -179,14 +189,10 @@ export const MOUVEMENT = {
      du ciel. En mouvement réduit, rien de tout cela : le bouton est un simple
      lien. */
   bouton: {
-    /** Le saut vers le clou : le bouton s'accroupit, puis vole (secondes). */
-    envol: { accroupi: 0.16, vol: 0.62 },
-    /** Le balancement par le coin haut gauche. `amplitude` : de combien il part
-        de sa position de repos, en radians (0,63 ≈ 36°) ; `periode` des petites
-        oscillations ; `duree` avant qu'il ne s'arrête ; `taux` : amortissement
-        par seconde ; `avantChute` : le temps qu'il reste au clou, après son
-        saut, avant de tomber de lui-même (secondes). */
-    pendule: { amplitude: 0.63, periode: 1.45, duree: 4.4, taux: 0.6, avantChute: 0.7 },
+    /** Le clic : le bouton s'accroupit, sursaute sur le texte du hero (une arche à `hauteur` d'écran au-dessus du plus haut des
+        deux points), s'y pose `pose` secondes en s'écrasant un peu, puis tombe (J, 2026-10-18 : « pas si haut, juste sursauter
+        sur le texte puis tomber » ; avant, il sautait jusqu'au menu et s'y balançait). */
+    saut: { accroupi: 0.14, vol: 0.42, hauteur: 0.05, pose: 0.24 },
     chute: {
       /** Durée voulue du film, en secondes : `base`, plus `parEcran` par hauteur
           d'écran à parcourir, bornée par `min` et `max`. */
