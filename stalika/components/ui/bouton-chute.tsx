@@ -4,7 +4,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { CyberButton } from "@/components/ui/cyber-button";
+import { BoutonFilet } from "@/components/ui/bouton-filet";
 import { gsap, ScrollTrigger, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
 import { defilement } from "@/lib/defilement";
@@ -13,7 +13,8 @@ import { bezier, matrice, planifierChute, type PlanChute, type Plateforme, type 
 import { cn } from "@/lib/utils";
 
 /* ---------------------------------------------------------------------------
-   Le bouton « Parlons projet » du hero : un Cyber Button (21st) qui
+   Le bouton « Parlons projet » du hero : un Filet d'or (`BoutonFilet`, à la
+   place du Cyber Button de 21st depuis le 2026-10-18) qui
    se décroche, se balance, puis tombe de scène en scène jusqu'à l'ordinateur
    (demande de J, 2026-10-02, par l'overlay).
 
@@ -140,12 +141,12 @@ function poseEcran(): Point | null {
 /** La copie du bouton qui voyage : même gabarit que le vrai, sans lien. */
 function Copie({ children, focus }: { children: React.ReactNode; focus: boolean }) {
   return (
-    <CyberButton asChild size="default">
+    <BoutonFilet>
       <span aria-hidden="true" className={cn("cursor-pointer", focus && "ring-2 ring-ring ring-offset-2 ring-offset-background")}>
         {children}
-        <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+        <ArrowRight strokeWidth={1.5} className="size-4 transition-transform duration-500 group-hover:translate-x-1.5" />
       </span>
-    </CyberButton>
+    </BoutonFilet>
   );
 }
 
@@ -530,7 +531,7 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     <div className={cn("relative flex w-fit", className)}>
       {/* Le vrai lien : il ne quitte jamais sa place (clavier, lecteurs d'écran, sans JavaScript). */}
       <span className={cn("inline-flex transition-opacity duration-200", detache && "pointer-events-none opacity-0")}>
-        <CyberButton asChild size="default">
+        <BoutonFilet>
           <Link
             ref={ancre}
             href={href}
@@ -541,9 +542,9 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
             className="cursor-pointer"
           >
             {children}
-            <ArrowRight aria-hidden="true" className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+            <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4 transition-transform duration-500 group-hover:translate-x-1.5" />
           </Link>
-        </CyberButton>
+        </BoutonFilet>
       </span>
       {/* Là où il était : un contour pointillé. */}
       {detache && <span aria-hidden="true" className="pointer-events-none absolute inset-0 border border-dashed border-foreground/20" />}

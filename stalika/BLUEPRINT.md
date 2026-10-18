@@ -187,6 +187,14 @@ pendant que le logo se composait encore (jusqu'à 3,6 s) : tout se chevauchait. 
   doré, se balance en s'amortissant (pivot au haut du fil), puis le fil remonte. Il annonce la chute qui suit au clic. La descente
   est courte : sur téléphone, le texte est juste au-dessus et le bouton ne doit pas le traverser. Écartées : contour tracé puis
   rempli, ressort et reflet.
+- **Le bouton devient un Filet d'or, qui se dessine à la main** (J : trois pistes proposées, « on part sur le Filet d'or, et au
+  lieu du fil qui dépose le bouton, le bouton se dessine comme à la main »). `components/ui/bouton-filet.tsx` remplace le Cyber
+  Button de 21st (gardé dans `components/ui/cyber-button.tsx`, plus utilisé) : un cadre d'un fil doré, deux coins appuyés, le
+  texte espacé comme la baseline ; au survol, l'or monte et remplit, le texte passe en noir, les coins en encre, la flèche avance.
+  `components/ui/entree-dessin.tsx` remplace l'entrée au bout du fil : une pointe de plume lumineuse tire les quatre côtés l'un
+  après l'autre, un peu tremblés et dépassant aux coins comme un geste, pendant que le texte s'écrit ; puis la flèche se trace,
+  les coins se posent et le trait se fond dans le cadre (environ 2,5 s, `MOUVEMENT.hero.dessin`). Idées : « Fill Up », « Arrow
+  Push » et « Border Draw » d'animatedbuttons, le tracé de trait de Kinetics. La copie qui tombe au clic est le même Filet d'or.
 - **Paragraphe par paragraphe** (J : « ralentir un peu pour profiter de l'effet de brume, ou paragraphe par paragraphe, encore
   mieux ») : chaque paragraphe sort de la brume en entier (flou 10 px, 1,15 s par mot, vague de 35 ms), le suivant part une
   demi-seconde avant que le précédent soit net. Le bouton n'a plus d'heure fixe : le texte l'appelle quand le dernier
