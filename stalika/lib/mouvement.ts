@@ -270,6 +270,10 @@ export const MOUVEMENT = {
      laquelle le contenu reste collé (`Scene`, option `defilement`). La page
      défile toujours normalement ; seul le contenu reste en place le temps du
      film. J : « avec le défilement, on change si ce n'est pas bien ». */
+  /** La section 04, la montre (components/sections/scene-livre.tsx) : longueur de la piste, en hauteurs d'écran, en plus de
+      l'écran qui la porte ; huit temps de même longueur. */
+  livre: { ecrans: 6.2 },
+
   relecture: {
     /** Longueur de la piste, en hauteurs d'écran, en plus de l'écran qui la porte. */
     ecrans: 2.6,

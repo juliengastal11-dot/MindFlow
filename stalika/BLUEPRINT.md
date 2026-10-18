@@ -174,6 +174,34 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-18 (suite) : la section 04 devient une montre
+
+J : « la section 04 est trop générique ; garder l'esprit premium, mais surtout faire quelque chose de personnel et
+d'extraordinaire, comme les autres sections ». Cinq pistes proposées en maquettes (le bon de livraison qu'on déchire, la carte
+d'embarquement, la lettre cachetée, le coffret, le chronographe) ; J : « j'adore le chronographe ; une très belle montre qui au
+défilement tourne et montre tout le processus de création, du début à la fin », puis il envoie la photo d'une montre habillée
+en or comme référence d'allure.
+- **La montre** (`components/ui/montre.tsx`, styles « La montre » dans `app/globals.css`) : dessinée en code (CSS pour les
+  métaux et le cadran, SVG pour le reste), jamais copiée : boîtier très fin en or jaune, lunette large polie, cadran champagne
+  brossé soleil (deux lobes de lumière et un grain léger : des rayures fines faisaient une moire), douze bâtons appliqués, deux
+  aiguilles bâtons noires, couronne cannelée, cornes courtes, alligator noir surpiqué. Pour le déroulé : la couronne fait
+  poussoir (chronographe monopoussoir), un compteur de 72 heures au-dessus de 6 h, une aiguille fine de chronographe et un arc
+  d'or qui la suit au bord du cadran. Au dos, un fond saphir sur le mouvement (platine perlée, côtes de Genève, rotor en or
+  gravé « le code est à vous », balancier et spiral, rubis). L'or vient du doré du thème ; cuir, acier et rubis sont réglés
+  comme des matières. Toutes les tailles suivent `--montre-l`.
+- **La section** (`components/sections/scene-livre.tsx`) : `Scene` en mode défilement, comme « La relecture » (piste de
+  7,2 écrans, contenu collé, `MOUVEMENT.livre`). Huit temps : l'arrivée ; le premier message ; on en parle (devis, 300 €) ;
+  la première ébauche (on appuie sur la couronne, le compteur fait le tour des 72 h pendant que le chiffre roule) ; vous relisez ;
+  tout est vérifié (trois coches tracées) ; la mise en ligne (chez vous, chez moi) ; et après (la montre se retourne, le rotor
+  tourne, le balancier bat, le bouton Filet d'or). À chaque temps l'aiguille du chrono avance de deux heures et allume les index
+  passés, les heures et les minutes tournent, la montre s'incline et le reflet du verre glisse. La section passe dans la nuit
+  dorée (`.nuit`). Textes : `CONTENU.md`, « Scène 5 ».
+- **À retenir** : les rotations du dessin SVG sont écrites à la main (`rotate(angle cx cy)` à chaque image) ; `svgOrigin` de GSAP
+  plaçait mal le centre dans ce SVG agrandi et basculé en 3D (l'aiguille des heures décalée de quelques pixels, celle du chrono
+  de plus de mille).
+- Sans JavaScript et en mouvement réduit : la montre immobile, puis les huit temps en liste. Vérifié en 1440 × 900 et 390 × 844
+  (captures à huit positions), aucune erreur de console ; pas encore sur l'iPhone de J.
+
 ## Mise à jour du 2026-10-18 : l'entrée du hero, dans l'ordre
 
 J : « que le titre, le texte du héros et le bouton Parlons projet apparaissent de manière stylée ; on garde les lettres une par une
