@@ -174,6 +174,22 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-18 : l'entrée du hero, dans l'ordre
+
+J : « que le titre, le texte du héros et le bouton Parlons projet apparaissent de manière stylée ; on garde les lettres une par une
+du titre ; STALIKA, puis le texte, puis le bouton ». Avant, le texte entrait à 1,2 s et le bouton à 1,6 s, en simple fondu montant,
+pendant que le logo se composait encore (jusqu'à 3,6 s) : tout se chevauchait. Pistes proposées, choix de J :
+- **Le texte sort de la brume** (`components/ui/mots-brume.tsx`) : chaque mot arrive flou et transparent puis devient net, en vague,
+  une ligne après l'autre, à partir de 3,4 s (les dernières lettres se posent, la baseline arrive). SplitText de GSAP, le temps de
+  l'entrée seulement : le texte redevient un texte ordinaire ensuite. Écartées : lignes qui montent d'un cache, fil d'or qui allume
+  le texte, brouillage comme le logo.
+- **Le bouton descend au bout de son fil** (`components/ui/entree-fil.tsx`), à 5 s : il arrive d'un peu plus haut, pendu à un fil
+  doré, se balance en s'amortissant (pivot au haut du fil), puis le fil remonte. Il annonce la chute qui suit au clic. La descente
+  est courte : sur téléphone, le texte est juste au-dessus et le bouton ne doit pas le traverser. Écartées : contour tracé puis
+  rempli, ressort et reflet.
+- Réglages : `MOUVEMENT.hero.brume` et `MOUVEMENT.hero.fil`. Mouvement réduit : tout est là d'emblée. Vérifié en 375 × 812 et
+  1280 × 800 (captures à instants fixes après le chargement), pas encore sur l'iPhone de J.
+
 ## Mise à jour du 2026-10-17 (nuit) : bandes blanches, câble, fond d'écran
 
 Trois retours de J sur son iPhone, après la version du soir.

@@ -34,6 +34,12 @@ export const MOUVEMENT = {
     delai: 0.15,
     /** Écart entre l'eyebrow, le titre, le texte, les boutons. */
     decalage: 0.12,
+    /* L'ordre voulu par J (2026-10-18) : STALIKA se compose (0,3 à 3,6 s), puis le texte, puis le bouton.
+       Le texte part quand les dernières lettres se posent, pendant que la baseline « Digital & Conseil » arrive. */
+    /** Le texte : ses mots sortent de la brume, flous puis nets, en vague ; une ligne après l'autre. */
+    brume: { debut: 3.4, entreLignes: 0.3, entreMots: 0.04, duree: 0.9, flou: 8, monte: 6 },
+    /** Le bouton : il descend au bout d'un fil, se balance, se pose, et le fil remonte. */
+    fil: { debut: 5.0, longueur: 90, chute: 56, descente: 0.9, balance: 1.3, angle: 5, retrait: 0.6 },
   },
 
   /** Débord de la parallaxe, en fraction de la hauteur du cadre. */
