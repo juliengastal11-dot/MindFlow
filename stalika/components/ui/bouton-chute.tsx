@@ -9,7 +9,7 @@ import { gsap, ScrollTrigger, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
 import { defilement } from "@/lib/defilement";
 import { POSE_BOUTON, RAPPORT_CIEL } from "@/lib/ciel";
-import { bezier, matrice, planifierChute, type PlanChute, type Plateforme, type Point, type Rebond } from "@/lib/chute";
+import { bezier, courbeMonotone, matrice, planifierChute, type PlanChute, type Plateforme, type Point, type Rebond } from "@/lib/chute";
 import { cn } from "@/lib/utils";
 
 /* ---------------------------------------------------------------------------
@@ -27,9 +27,11 @@ import { cn } from "@/lib/utils";
       s'y accrochait par un coin et s'y balançait).
    2. Puis il tombe de lui-même, rebondit sur les textes et les animations du
       site pendant que la page défile avec lui, et se pose à côté de
-      l'ordinateur, sur la dernière image du ciel. Un repère de défilement
-      apparaît : on entre dans l'ordinateur en défilant, ou en cliquant sur
-      le bouton, qui emmène à la fenêtre de discussion.
+      l'ordinateur, sur la dernière image du ciel.
+   3. Puis il emmène dans l'ordinateur, de lui-même (J, 2026-10-18) : la page
+      défile toute seule à travers la plongée (`plonger`), la caméra arrive
+      sur l'écran, l'icône rebondit, la fenêtre sort du Dock, le zoom entre
+      dedans, et la discussion commence.
    Le visiteur peut passer la chute (molette, doigt, Échap, bouton « Passer »).
 
    Comment c'est fait :
@@ -438,7 +440,7 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
         c.etat = "pose";
         setHote(document.querySelector<HTMLElement>("[data-plongee-colle]"));
         setEtat("pose");
-        setAnnonce("Le bouton est tombé près de l'ordinateur. Faites défiler pour entrer dans l'écran, ou activez-le pour aller à la discussion.");
+        setAnnonce("Le bouton est tombé près de l'ordinateur : on entre dans l'écran, jusqu'à la discussion.");
       }
     };
 
@@ -488,6 +490,21 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     placer();
     // La plongée commence : le bouton posé s'efface sur ses premiers pixels de défilement.
     const zone = hote.parentElement;
+    // Et elle commence d'elle-même : après un instant, la page défile jusqu'à la fenêtre posée, au pas des repères.
+    const lenis = defilement();
+    const { attente, duree, reperes } = T.plonger;
+    const fin = reperes.plongee[reperes.plongee.length - 1];
+    const pas = courbeMonotone(
+      reperes.temps,
+      reperes.plongee.map((v) => v / fin),
+    );
+    const lancer =
+      lenis && zone
+        ? gsap.delayedCall(attente, () => {
+            const haut = zone.getBoundingClientRect().top + window.scrollY;
+            lenis.scrollTo(haut + fin * (zone.offsetHeight - window.innerHeight), { duration: duree, easing: pas, lock: true, force: true });
+          })
+        : null;
     const st = zone
       ? ScrollTrigger.create({
           trigger: zone,
@@ -503,6 +520,7 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     window.addEventListener("resize", placer);
     return () => {
       st?.kill();
+      lancer?.kill();
       window.removeEventListener("resize", placer);
     };
   }, [etat, hote]);
@@ -590,12 +608,6 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
               style={{ transformOrigin: "0 0" }}
             >
               <Copie focus={focus}>{children}</Copie>
-            </div>
-            <div className="absolute inset-x-0 bottom-[max(1.5rem,env(safe-area-inset-bottom))] flex animate-[bouton-indice_0.7s_0.6s_var(--ease-out)_both] flex-col items-center gap-2">
-              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-foreground/70">Faites défiler</span>
-              <span aria-hidden="true" className="relative block h-9 w-px overflow-hidden bg-foreground/20">
-                <span className="absolute inset-x-0 top-0 h-1/2 animate-[bouton-defile_1.6s_ease-in-out_infinite] bg-accent" />
-              </span>
             </div>
           </div>,
           hote,

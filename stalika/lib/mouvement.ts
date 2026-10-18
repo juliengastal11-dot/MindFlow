@@ -231,6 +231,16 @@ export const MOUVEMENT = {
     /** Du bouton posé à la fenêtre de discussion, quand on clique dessus :
         durée du défilement, et part de la plongée où la fenêtre est en place. */
     discussion: { duree: 3.4, avancee: 0.985 },
+    /** Posé près de l'ordinateur, il emmène dedans de lui-même (J, 2026-10-18 : « quand il tombe, il doit emmener
+        directement dans l'ordinateur, jouer le zoom et l'animation dans l'écran du Mac ») : après `attente` secondes, la page
+        défile toute seule jusqu'à la fenêtre posée, en `duree` secondes. Le pas suit des repères (part du temps → part de la
+        plongée) : le vol, puis plus de temps pour le rebond de l'icône et l'effet Génie (0,665 à 0,80), puis le zoom dans la
+        fenêtre (0,80 à 0,96) ; la courbe part et arrive au repos. */
+    plonger: {
+      attente: 0.7,
+      duree: 8,
+      reperes: { temps: [0, 0.46, 0.72, 0.94, 1], plongee: [0, 0.665, 0.8, 0.96, 0.985] },
+    },
   },
 
   /* --- Les démos de logiciels de la section 02 (components/demos, demande de

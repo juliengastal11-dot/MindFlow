@@ -187,6 +187,12 @@ pendant que le logo se composait encore (jusqu'à 3,6 s) : tout se chevauchait. 
   doré, se balance en s'amortissant (pivot au haut du fil), puis le fil remonte. Il annonce la chute qui suit au clic. La descente
   est courte : sur téléphone, le texte est juste au-dessus et le bouton ne doit pas le traverser. Écartées : contour tracé puis
   rempli, ressort et reflet.
+- **Le bouton emmène dans l'ordinateur** (J : « quand il tombe, il doit emmener directement dans l'ordinateur, jouer le zoom et
+  l'animation dans l'écran du Mac ») : posé près de l'ordinateur, il attend 0,7 s, puis la page défile toute seule à travers la
+  plongée jusqu'à la fenêtre posée, en 8 s (Lenis, défilement verrouillé). Le pas suit des repères (`MOUVEMENT.bouton.plonger`) :
+  46 % du temps pour le vol, 26 % pour le rebond de l'icône et l'effet Génie, 22 % pour le zoom dans la fenêtre ; la courbe part et
+  arrive au repos. La discussion commence à l'arrivée. L'indice « Faites défiler » est retiré. Vérifié en 375 × 812 et
+  1280 × 800 : clic à 0 s, bouton posé vers 9 s, fenêtre posée vers 18 s, premiers messages vers 21 s.
 - **Le bouton devient un Filet d'or, qui se dessine à la main** (J : trois pistes proposées, « on part sur le Filet d'or, et au
   lieu du fil qui dépose le bouton, le bouton se dessine comme à la main »). `components/ui/bouton-filet.tsx` remplace le Cyber
   Button de 21st (gardé dans `components/ui/cyber-button.tsx`, plus utilisé) : un cadre d'un fil doré, deux coins appuyés, le

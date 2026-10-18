@@ -553,22 +553,12 @@ html.js [data-brouille] [data-baseline] {
   .bulle-entree, .points-frappe span { animation: none; }
 }
 
-/* Le bouton qui tombe (components/ui/bouton-chute.tsx) : l'indice du second
-   clic arrive en montant ; le bouton posé près de l'ordinateur respire ; le
-   repère de défilement fait descendre un point le long d'un trait. Mouvement
+/* Le bouton qui tombe (components/ui/bouton-chute.tsx) : posé près de
+   l'ordinateur, il respire, le temps que la plongée l'emmène dedans. Mouvement
    réduit : le bouton n'est qu'un lien, rien de tout cela n'existe. */
-@keyframes bouton-indice {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: none; }
-}
 @keyframes bouton-souffle {
   0%, 100% { filter: drop-shadow(0 0 2px color-mix(in oklab, var(--color-accent) 25%, transparent)); }
   50% { filter: drop-shadow(0 0 9px color-mix(in oklab, var(--color-accent) 65%, transparent)); }
-}
-@keyframes bouton-defile {
-  0% { transform: translateY(-110%); opacity: 0; }
-  30% { opacity: 1; }
-  100% { transform: translateY(210%); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   [class*="animate-[bouton-"] { animation: none; }
