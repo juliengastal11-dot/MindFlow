@@ -683,6 +683,13 @@ html.js [data-brouille] [data-baseline] {
 
 @media (prefers-reduced-motion: no-preference) {
   html.js .chrono-colle { position: sticky; top: 0; height: 100svh; overflow: hidden; display: block; padding: 0; }
+  /* posée directement sur le ciel (le temps y est suspendu), sans voile (J, 2026-10-19) : le texte garde l'ombre `sur-ciel` */
+  html.js .chrono-sur-ciel { background: transparent; }
+  /* … sauf derrière le texte (J, même jour : « un voile derrière le texte uniquement ») : une nappe de nuit aux bords fondus,
+     qui ne dessine aucun rectangle ; la montre, elle, reste sur le ciel nu */
+  html.js .chrono-texte { isolation: isolate; }
+  html.js .chrono-texte::before { content: ""; position: absolute; z-index: -1; pointer-events: none; left: -1.5rem; right: -1.5rem; top: -7svh; bottom: -1.5rem;
+    background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--color-background) 62%, transparent) 30%, color-mix(in oklab, var(--color-background) 74%, transparent)); }
   html.js .chrono-montre { position: absolute; left: 50%; top: 0; width: 0; height: 100%; overflow: visible; --montre-l: min(76vw, 40svh); }
   html.js .chrono-montre .montre { left: calc(var(--montre-l) / -2); top: calc(30svh - var(--montre-l) * 470 / 440); }
   html.js .chrono-texte { position: absolute; left: 1.5rem; right: 1.5rem; top: 58svh; bottom: max(1.5rem, env(safe-area-inset-bottom)); width: auto; max-width: none; }
@@ -691,7 +698,8 @@ html.js [data-brouille] [data-baseline] {
   /* le texte qui suit l'aiguille : les mots s'allument (`--v`, de pâle à plein) avec un éclat d'or au passage (`--b`) */
   html.js .chrono-mot { opacity: calc(.22 + .78 * var(--v, 1)); color: color-mix(in oklab, var(--color-accent) calc(var(--b, 0) * 100%), currentColor); }
   /* la réglette : les minutes en pâle, les mêmes en or jusqu'au curseur (`--chrono`, de 0 à 1) */
-  html.js .chrono-reglette { display: block; position: absolute; left: 0; right: 0; top: 0; height: 9px; color: color-mix(in oklab, var(--color-foreground) 24%, transparent); }
+  html.js .chrono-reglette { display: block; position: absolute; left: 0; right: 0; top: 0; height: 9px; color: color-mix(in oklab, var(--color-foreground) 34%, transparent);
+    filter: drop-shadow(0 1px 3px color-mix(in oklab, var(--color-background) 85%, transparent)); }
   html.js .chrono-reglette, html.js .chrono-reglette-or {
     background-image: linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to right, currentColor 1px, transparent 1px);
     background-size: calc(100% / 12) 100%, calc(100% / 60) 45%; background-position: 0 0, 0 100%; background-repeat: repeat-x; }
@@ -710,10 +718,13 @@ html.js [data-brouille] [data-baseline] {
       -webkit-mask: linear-gradient(to right, transparent, #000 16%); mask: linear-gradient(to right, transparent, #000 16%); }
     html.js .chrono-montre { left: auto; right: max(3vw, calc(50vw - 600px)); width: var(--montre-l); --montre-l: min(36vw, 60svh); }
     html.js .chrono-montre .montre { left: 0; top: calc(50svh - var(--montre-l) * 470 / 440); }
-    html.js .chrono-texte { left: max(1.5rem, calc(50vw - 600px)); right: auto; top: 0; bottom: 0; width: min(32rem, 40vw); }
+    html.js .chrono-texte { left: max(1.5rem, calc(50vw - 600px)); right: auto; top: 0; bottom: 0; width: min(30rem, 36vw); }
     /* les numéros et les titres à la même hauteur d'un temps à l'autre : le quantième tourne sur place */
-    html.js .chrono-reglette { top: 24svh; }
-    html.js .chrono-etapes > li { padding-top: calc(24svh + 2.25rem); }
+    /* sous l'horizon, sur la falaise : le texte reste lisible sur le ciel sans voile */
+    html.js .chrono-reglette { top: 38svh; }
+    html.js .chrono-texte::before { left: -9rem; right: -7rem; top: 24svh; bottom: 6svh;
+      background: radial-gradient(closest-side, color-mix(in oklab, var(--color-background) 72%, transparent), color-mix(in oklab, var(--color-background) 58%, transparent) 55%, transparent); }
+    html.js .chrono-etapes > li { padding-top: calc(38svh + 2.25rem); }
   }
 }
 

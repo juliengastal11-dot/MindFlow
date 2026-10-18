@@ -35,7 +35,7 @@
      Étoiles filantes dessinées en code la nuit.
    - Par-dessus : `Hero` (section transparente), `SceneModele` (#sur-mesure, la roue des trois
      sites de Julien : `components/ui/roue.tsx`, voir `BLUEPRINT.md`), `SceneUtile`
-     (#utile), `SceneRelecture` (#relecture : une piste de 3,6 écrans où le contenu reste collé et où le film suit le défilement, voir `BLUEPRINT.md`, mise à jour du 2026-10-07), puis `Plongee` (`components/ui/plongee.tsx`) :
+     (#utile), `SceneRelecture` (#relecture : une piste de 3,6 écrans où le contenu reste collé et où le film suit le défilement, voir `BLUEPRINT.md`, mise à jour du 2026-10-07), `SceneLivre` (#livre, la montre 3D : l'heure du ciel y est suspendue, voir `BLUEPRINT.md`, 2026-10-19), puis `Plongee` (`components/ui/plongee.tsx`) :
      le vol jusque dans l'ordinateur (120 images verticales sur téléphone, 61 images Kling sur ordinateur) ; sur l'écran du
      portable, un bureau de Mac collé en perspective (`components/ui/ecran-mac.tsx`, coins et épaule mesurés dans
      `lib/plongee-ecran-mobile.ts` et `lib/plongee-ecran-bureau.ts`), d'où la fenêtre de discussion sort du Dock avec l'effet
@@ -43,7 +43,7 @@
      2026-10-17, soir).
 2. `Discussion` (`components/ui/discussion.tsx`) : premier message écrit tout seul, réponse
    fixe, puis relais honnête (créneau → WhatsApp pré-rempli). L'API Claude n'est PAS branchée.
-3. `SceneLivre` (prix), `Confiance`, `Julien`, `Faq`, `Appel`, pied de page.
+3. `Confiance`, `Julien`, `Faq`, `Appel`, pied de page (`SceneLivre`, le prix et la montre, est remontée dans le ciel le 2026-10-19).
 
 ## Ce qui reste à faire ou à vérifier
 

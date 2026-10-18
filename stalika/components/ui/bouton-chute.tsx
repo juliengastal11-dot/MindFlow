@@ -252,6 +252,8 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
       reglage: T.chute,
     });
     c.atterrir = fin;
+    // Pendant la chute, la page appartient au film : ce qui se charge à l'approche attend (la montre 3D de la section 04).
+    document.documentElement.dataset.film = "chute";
     c.etat = "chute";
     c.t = 0;
     c.prochain = 0;
@@ -435,6 +437,7 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
       while (c.prochain < plan.rebonds.length && plan.rebonds[c.prochain].t <= t) choc(plan.rebonds[c.prochain++]);
       if (c.t >= plan.duree) {
         gsap.ticker.remove(pas);
+        delete document.documentElement.dataset.film;
         // L'arrivée exacte, quoi que la mise en page ait pu bouger en route.
         lenis.scrollTo(c.atterrir, { immediate: true, force: true });
         c.etat = "pose";
@@ -467,6 +470,7 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     gsap.ticker.add(pas);
     return () => {
       gsap.ticker.remove(pas);
+      delete html.dataset.film;
       html.style.touchAction = gestes;
       window.removeEventListener("wheel", bloquer, { capture: true });
       window.removeEventListener("touchmove", bloquer, { capture: true });
@@ -502,9 +506,17 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
       lenis && zone
         ? gsap.delayedCall(attente, () => {
             const haut = zone.getBoundingClientRect().top + window.scrollY;
-            lenis.scrollTo(haut + fin * (zone.offsetHeight - window.innerHeight), { duration: duree, easing: pas, lock: true, force: true });
+            lenis.scrollTo(haut + fin * (zone.offsetHeight - window.innerHeight), {
+              duration: duree,
+              easing: pas,
+              lock: true,
+              force: true,
+              onComplete: () => delete document.documentElement.dataset.film,
+            });
           })
         : null;
+    // La chute enchaîne sur la plongée : la page appartient encore au film jusqu'à la fenêtre posée.
+    if (lancer) document.documentElement.dataset.film = "plongee";
     const st = zone
       ? ScrollTrigger.create({
           trigger: zone,
@@ -521,6 +533,7 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
     return () => {
       st?.kill();
       lancer?.kill();
+      delete document.documentElement.dataset.film;
       window.removeEventListener("resize", placer);
     };
   }, [etat, hote]);

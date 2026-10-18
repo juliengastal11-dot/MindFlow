@@ -356,15 +356,24 @@ export function texturesCadran(champagne: string, encre: string) {
   g.addColorStop(1, champagne);
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, L, L);
-  // un grain très léger
-  const img = ctx.getImageData(0, 0, L, L);
-  for (let i = 0; i < img.data.length; i += 4) {
-    const n = (Math.random() - 0.5) * 10;
-    img.data[i] += n;
-    img.data[i + 1] += n;
-    img.data[i + 2] += n;
+  // un grain très léger : un carreau de bruit de 256 pixels, répété (rapide à peindre)
+  const { c: cg, ctx: xg } = toile(256);
+  const bruit = xg.createImageData(256, 256);
+  for (let i = 0; i < bruit.data.length; i += 4) {
+    const v = Math.random() * 255;
+    bruit.data[i] = bruit.data[i + 1] = bruit.data[i + 2] = v;
+    bruit.data[i + 3] = 255;
   }
-  ctx.putImageData(img, 0, 0);
+  xg.putImageData(bruit, 0, 0);
+  const motif = ctx.createPattern(cg, "repeat");
+  if (motif) {
+    ctx.save();
+    ctx.globalAlpha = 0.045;
+    ctx.globalCompositeOperation = "overlay";
+    ctx.fillStyle = motif;
+    ctx.fillRect(0, 0, L, L);
+    ctx.restore();
+  }
   const f = police();
   ctx.fillStyle = encre;
   ctx.textAlign = "center";

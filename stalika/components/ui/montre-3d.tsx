@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Lightformer } from "@react-three/drei";
 import {
   COMPTEUR,
   COTE,
@@ -41,7 +40,14 @@ import type { PoseMontre } from "@/lib/pose-montre";
    (orientation, aiguilles, compteur, couronne, index allumés, retournement…).
    La scène ne se redessine que quand la pose change (`frameloop="demand"` :
    la section appelle `pose.current.redessiner`). Éclairage : un studio de
-   « softboxes » calculé sur place (drei `Lightformer`), rien à télécharger.
+   boîtes à lumière calculé sur place (`studio`), rien à télécharger.
+
+   La mise en route se fait par tranches, chacune dans un temps mort du
+   navigateur, pour ne jamais figer le défilement (2026-10-19 : d'un bloc,
+   elle figeait la page près d'une seconde) : les textures (`peindre`), les
+   formes (`construire`), puis, la scène montée, la lumière du studio,
+   l'envoi des textures à la carte graphique, la compilation des matières en
+   tâche de fond (`compileAsync`), et seulement alors la première image.
 
    Chargée seulement si le navigateur sait faire du WebGL et sans mouvement
    réduit ; la montre dessinée à plat (`Montre`) reste dessous en repli, et
@@ -50,26 +56,36 @@ import type { PoseMontre } from "@/lib/pose-montre";
 
 const rad = THREE.MathUtils.degToRad;
 
-function Studio() {
-  // un studio de photo de montre : une pièce sombre et chaude, de grandes boîtes à lumière autour (chacune regarde la
-  // montre) ; c'est ce que l'or poli et l'acier reflètent
-  return (
-    <Environment resolution={512} frames={1}>
-      <mesh scale={60}>
-        <sphereGeometry args={[1, 32, 16]} />
-        <meshBasicMaterial color="#1b1915" side={THREE.BackSide} />
-      </mesh>
-      <Lightformer form="rect" intensity={1.5} color="#fff4e2" position={[0, 3, 10]} scale={[10, 5, 1]} />
-      <Lightformer form="rect" intensity={2.4} color="#fff6e8" position={[0, 10, 2]} scale={[16, 6, 1]} />
-      <Lightformer form="rect" intensity={2.6} color="#fff1dc" position={[-9, 2, 4]} scale={[2.5, 14, 1]} />
-      <Lightformer form="rect" intensity={1.6} color="#ffe9c7" position={[9, -1, 4]} scale={[2.5, 14, 1]} />
-      <Lightformer form="rect" intensity={1.8} color="#fff6e6" position={[0, 1.5, -10]} scale={[14, 8, 1]} />
-      <Lightformer form="rect" intensity={1.4} color="#fff1dc" position={[-8, 0, -6]} scale={[2.5, 12, 1]} />
-      <Lightformer form="rect" intensity={1.2} color="#ffe9c7" position={[8, 2, -6]} scale={[2.5, 12, 1]} />
-      <Lightformer form="rect" intensity={0.6} color="#c9a46a" position={[0, -10, 0]} scale={[20, 20, 1]} />
-      <Lightformer form="ring" intensity={1.1} color="#ffffff" position={[5, 6, 8]} scale={1.4} />
-    </Environment>
-  );
+/* Un studio de photo de montre : une pièce sombre et chaude, de grandes boîtes à lumière autour (chacune regarde la
+   montre) ; c'est ce que l'or poli et l'acier reflètent. [forme, intensité, couleur, position, échelle] */
+const LUMIERES: [("rect" | "ring"), number, string, [number, number, number], [number, number, number]][] = [
+  ["rect", 1.5, "#fff4e2", [0, 3, 10], [10, 5, 1]],
+  ["rect", 2.4, "#fff6e8", [0, 10, 2], [16, 6, 1]],
+  ["rect", 2.6, "#fff1dc", [-9, 2, 4], [2.5, 14, 1]],
+  ["rect", 1.6, "#ffe9c7", [9, -1, 4], [2.5, 14, 1]],
+  ["rect", 1.8, "#fff6e6", [0, 1.5, -10], [14, 8, 1]],
+  ["rect", 1.4, "#fff1dc", [-8, 0, -6], [2.5, 12, 1]],
+  ["rect", 1.2, "#ffe9c7", [8, 2, -6], [2.5, 12, 1]],
+  ["rect", 0.6, "#c9a46a", [0, -10, 0], [20, 20, 1]],
+  ["ring", 1.1, "#ffffff", [5, 6, 8], [1.4, 1.4, 1.4]],
+];
+
+/** La scène du studio, que l'on photographie une fois tout autour (PMREM) pour en faire l'environnement de la montre. */
+function studio() {
+  const s = new THREE.Scene();
+  const fond = new THREE.Mesh(new THREE.SphereGeometry(60, 32, 16), new THREE.MeshBasicMaterial({ color: "#1b1915", side: THREE.BackSide }));
+  s.add(fond);
+  const plan = new THREE.PlaneGeometry(1, 1);
+  const anneau = new THREE.RingGeometry(0.25, 0.5, 64);
+  for (const [forme, intensite, couleur, position, echelle] of LUMIERES) {
+    const m = new THREE.MeshBasicMaterial({ color: new THREE.Color(couleur).multiplyScalar(intensite), side: THREE.DoubleSide, toneMapped: false });
+    const boite = new THREE.Mesh(forme === "ring" ? anneau : plan, m);
+    boite.position.set(...position);
+    boite.scale.set(...echelle);
+    boite.lookAt(0, 0, 0);
+    s.add(boite);
+  }
+  return s;
 }
 
 /** La caméra cadre la montre : la tête (38 mm) fait `part` de la plus petite dimension du cadre ; par défaut, 60 % de
@@ -89,8 +105,138 @@ function Cadrage({ part }: { part?: number }) {
   return null;
 }
 
-function Piece({ pose, onPret }: { pose: React.RefObject<PoseMontre>; onPret?: () => void }) {
-  const { invalidate, gl } = useThree();
+/** Une pause : le navigateur respire entre deux gros travaux (les textures se peignent sans figer le défilement). */
+const respirer = () =>
+  new Promise<void>((r) => (typeof window.requestIdleCallback === "function" ? window.requestIdleCallback(() => r(), { timeout: 120 }) : setTimeout(r, 16)));
+
+/** Les textures, peintes une à une, chacune dans un temps mort. */
+async function peindre(depuis: Element) {
+  const t = teintes(depuis);
+  await respirer();
+  const cad = texturesCadran(t.champagne, t.encre);
+  await respirer();
+  const azurage = textureAzurage(t.champagne, t.encre);
+  await respirer();
+  const cuir = texturesCuir();
+  await respirer();
+  const perlage = texturePerlage();
+  await respirer();
+  const cotes = textureCotes();
+  const gravure = textureGravure(t.ombre);
+  const inscription = textureInscription("STALIKA", "#3b3a36");
+  await respirer();
+  return { t, cad, azurage, cuir, perlage, cotes, gravure, inscription };
+}
+type Peinture = Awaited<ReturnType<typeof peindre>>;
+
+/** Les formes, construites par tranches. */
+async function construire() {
+    const cadran = new THREE.Shape();
+    cadran.absarc(0, 0, COTE.cadran, 0, Math.PI * 2, false);
+    const trou = new THREE.Path();
+    trou.absarc(COMPTEUR.x, COMPTEUR.y, COMPTEUR.rayon, 0, Math.PI * 2, true);
+    cadran.holes.push(trou);
+    const geoCadran = new THREE.ShapeGeometry(cadran, 96);
+    // les coordonnées de texture du disque : de -R..R à 0..1
+    const uv = geoCadran.attributes.uv;
+    for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) / (2 * COTE.cadran) + 0.5, uv.getY(i) / (2 * COTE.cadran) + 0.5);
+  const boite = { boitier: boitier(), fondBoitier: geoFond(), corne: corne(), couronne: geoCouronne() };
+  await respirer();
+  const cadranEtAiguilles = {
+    cadran: geoCadran,
+    compteur: new THREE.CircleGeometry(COMPTEUR.rayon, 64),
+    paroiCompteur: new THREE.CylinderGeometry(COMPTEUR.rayon, COMPTEUR.rayon, 0.14, 64, 1, true),
+    index: baton(3.6, 0.42, 0.42, 0.18),
+    heures: baton(10.2, 0.78, 0.52, 0.12, 1.4),
+    minutes: baton(14.2, 0.62, 0.4, 0.12, 1.6),
+    chrono: baton(15.0, 0.2, 0.12, 0.08, 3.6),
+    petite: baton(3.0, 0.22, 0.14, 0.06, 0.6),
+    verre: new THREE.SphereGeometry(299, 128, 12, 0, Math.PI * 2, 0, Math.asin(16.4 / 299)),
+    arc: new THREE.RingGeometry(14.5, 14.78, 360, 1, Math.PI / 2, -Math.PI * 2),
+  };
+  await respirer();
+  const bracelet = { brinHaut: brin(1, 2.5), brinBas: brin(-1, 2.9) };
+  await respirer();
+  const ponts = { ponts: MOUVEMENT_3D.ponts.map((p) => pont(p.points, 0.42, p.trous)), roues: MOUVEMENT_3D.roues.map(([, , r, n, b]) => roueDentee(r, n, b, 0.16)) };
+  await respirer();
+  const mouvement = {
+    rochet: roueDentee(MOUVEMENT_3D.rochet[2], MOUVEMENT_3D.rochet[3], 0, 0.26, 0.012),
+    roueCouronne: roueDentee(MOUVEMENT_3D.couronne[2], MOUVEMENT_3D.couronne[3], 0, 0.22, 0.02),
+    jante: new THREE.TorusGeometry(MOUVEMENT_3D.balancier[2], 0.16, 10, 72),
+    bras: new THREE.BoxGeometry(0.22, MOUVEMENT_3D.balancier[2] * 2, 0.12),
+    spiral: spiral(),
+    rubis: new THREE.CylinderGeometry(0.3, 0.3, 0.12, 20),
+    chaton: new THREE.CylinderGeometry(0.62, 0.62, 0.08, 24),
+    vis: new THREE.CylinderGeometry(0.46, 0.46, 0.14, 24),
+    fente: new THREE.BoxGeometry(0.86, 0.1, 0.1),
+    grandeVis: new THREE.CylinderGeometry(1.05, 1.05, 0.2, 32),
+    cercle: new THREE.CylinderGeometry(12.92, 12.92, 1.6, 96, 1, true),
+    fond: new THREE.CircleGeometry(12.95, 96),
+    platine: new THREE.CircleGeometry(12.6, 96),
+    gravure: new THREE.RingGeometry(13.9, 17.6, 128),
+    inscription: new THREE.PlaneGeometry(5.2, 0.65),
+  };
+  await respirer();
+  return { ...boite, ...cadranEtAiguilles, ...bracelet, ...ponts, ...mouvement };
+}
+type Formes = Awaited<ReturnType<typeof construire>>;
+
+/** La scène montée, sans encore rien dessiner : la lumière du studio, l'envoi des textures à la carte graphique, puis la
+    compilation des matières en tâche de fond (`compileAsync`), chaque étape dans un temps mort. */
+function Prechauffe({ onFini }: { onFini: () => void }) {
+  const { gl, scene, camera } = useThree();
+  useEffect(() => {
+    let vivant = true;
+    let env: THREE.WebGLRenderTarget | null = null;
+    (async () => {
+      await respirer();
+      if (!vivant) return;
+      const pmrem = new THREE.PMREMGenerator(gl);
+      const lumiere = studio();
+      env = pmrem.fromScene(lumiere, 0, 0.1, 100, { size: 512 });
+      scene.environment = env.texture;
+      pmrem.dispose();
+      lumiere.traverse((o) => {
+        if (o instanceof THREE.Mesh) {
+          o.geometry.dispose();
+          (o.material as THREE.Material).dispose();
+        }
+      });
+      const textures = new Set<THREE.Texture>();
+      scene.traverse((o) => {
+        if (!(o instanceof THREE.Mesh)) return;
+        for (const mat of [o.material].flat() as Record<string, unknown>[])
+          for (const cle of ["map", "bumpMap", "anisotropyMap"]) if (mat[cle] instanceof THREE.Texture) textures.add(mat[cle] as THREE.Texture);
+      });
+      for (const t of textures) {
+        await respirer();
+        if (!vivant) return;
+        gl.initTexture(t);
+      }
+      await respirer();
+      if (!vivant) return;
+      await gl.compileAsync(scene, camera).catch(() => undefined);
+      if (vivant) onFini();
+    })();
+    return () => {
+      vivant = false;
+      env?.dispose();
+    };
+  }, [gl, scene, camera, onFini]);
+  return null;
+}
+
+/** Une fois les matières prêtes, la première image. */
+function Reveil({ actif }: { actif: boolean }) {
+  const { invalidate } = useThree();
+  useEffect(() => {
+    if (actif) invalidate();
+  }, [actif, invalidate]);
+  return null;
+}
+
+function Piece({ pose, onPret, x, g }: { pose: React.RefObject<PoseMontre>; onPret?: () => void; x: Peinture; g: Formes }) {
+  const { invalidate } = useThree();
   const montre = useRef<THREE.Group>(null);
   const hHeures = useRef<THREE.Group>(null);
   const hMinutes = useRef<THREE.Group>(null);
@@ -103,9 +249,7 @@ function Piece({ pose, onPret }: { pose: React.RefObject<PoseMontre>; onPret?: (
   const premier = useRef(true);
 
   const m = useMemo(() => {
-    const t = teintes(gl.domElement);
-    const cad = texturesCadran(t.champagne, t.encre);
-    const cuir = texturesCuir();
+    const { t, cad, cuir } = x;
     const or = new THREE.MeshPhysicalMaterial({ color: t.metal, metalness: 1, roughness: 0.12, envMapIntensity: 1.15 });
     const orSatine = or.clone();
     orSatine.roughness = 0.34;
@@ -132,71 +276,24 @@ function Piece({ pose, onPret }: { pose: React.RefObject<PoseMontre>; onPret?: (
       orSatine,
       index,
       cadran: new THREE.MeshPhysicalMaterial({ map: cad.couleur, metalness: 0.45, roughness: 0.34, anisotropy: 0.75, anisotropyMap: cad.brossage, envMapIntensity: 0.7 }),
-      compteur: new THREE.MeshPhysicalMaterial({ map: textureAzurage(t.champagne, t.encre), metalness: 0.4, roughness: 0.4, envMapIntensity: 0.8 }),
+      compteur: new THREE.MeshPhysicalMaterial({ map: x.azurage, metalness: 0.4, roughness: 0.4, envMapIntensity: 0.8 }),
       laque: new THREE.MeshPhysicalMaterial({ color: "#0c0b09", metalness: 0.3, roughness: 0.22, clearcoat: 1, clearcoatRoughness: 0.05 }),
       verre: new THREE.MeshPhysicalMaterial({ color: "#ffffff", metalness: 0, roughness: 0.02, transparent: true, opacity: 0.12, envMapIntensity: 2.2, clearcoat: 1, depthWrite: false }),
       cuir: new THREE.MeshPhysicalMaterial({ map: cuir.couleur, bumpMap: cuir.relief, bumpScale: 1, roughness: 0.5, metalness: 0, clearcoat: 0.45, clearcoatRoughness: 0.32, sheen: 0.3, sheenColor: new THREE.Color("#3a352c") }),
       acier: new THREE.MeshPhysicalMaterial({ color: "#d3d0c8", metalness: 1, roughness: 0.24, envMapIntensity: 1.2 }),
       visAcier: new THREE.MeshPhysicalMaterial({ color: "#d8d5ce", metalness: 1, roughness: 0.36, envMapIntensity: 1.5 }),
       doublure: new THREE.MeshPhysicalMaterial({ color: "#14110d", roughness: 0.62, metalness: 0, sheen: 0.4, sheenColor: new THREE.Color("#4a4136") }),
-      ponts: new THREE.MeshPhysicalMaterial({ color: "#e2dfd8", map: textureCotes(), metalness: 1, roughness: 0.3, anisotropy: 0.6, anisotropyRotation: 0.42 + Math.PI / 2, envMapIntensity: 1.3 }),
+      ponts: new THREE.MeshPhysicalMaterial({ color: "#e2dfd8", map: x.cotes, metalness: 1, roughness: 0.3, anisotropy: 0.6, anisotropyRotation: 0.42 + Math.PI / 2, envMapIntensity: 1.3 }),
       rochet: soleil(MOUVEMENT_3D.rochet[2]),
       roueCouronne: soleil(MOUVEMENT_3D.couronne[2]),
       laiton: new THREE.MeshPhysicalMaterial({ color: "#d3a24a", metalness: 1, roughness: 0.24, envMapIntensity: 1.2 }),
-      platine: new THREE.MeshPhysicalMaterial({ map: texturePerlage(), metalness: 0.85, roughness: 0.42, envMapIntensity: 0.9 }),
+      platine: new THREE.MeshPhysicalMaterial({ map: x.perlage, metalness: 0.85, roughness: 0.42, envMapIntensity: 0.9 }),
       rubis: new THREE.MeshPhysicalMaterial({ color: "#b3123c", metalness: 0, roughness: 0.06, clearcoat: 1, emissive: new THREE.Color("#5a0a1e"), emissiveIntensity: 0.4 }),
-      gravure: new THREE.MeshBasicMaterial({ map: textureGravure(t.ombre), transparent: true, depthWrite: false, opacity: 0.85 }),
-      inscription: new THREE.MeshBasicMaterial({ map: textureInscription("STALIKA", "#3b3a36"), transparent: true, depthWrite: false, opacity: 0.8 }),
+      gravure: new THREE.MeshBasicMaterial({ map: x.gravure, transparent: true, depthWrite: false, opacity: 0.85 }),
+      inscription: new THREE.MeshBasicMaterial({ map: x.inscription, transparent: true, depthWrite: false, opacity: 0.8 }),
       cercle: new THREE.MeshStandardMaterial({ color: "#2a2620", metalness: 0.8, roughness: 0.5, side: THREE.DoubleSide }),
     };
-  }, [gl]);
-
-  const g = useMemo(() => {
-    const cadran = new THREE.Shape();
-    cadran.absarc(0, 0, COTE.cadran, 0, Math.PI * 2, false);
-    const trou = new THREE.Path();
-    trou.absarc(COMPTEUR.x, COMPTEUR.y, COMPTEUR.rayon, 0, Math.PI * 2, true);
-    cadran.holes.push(trou);
-    const geoCadran = new THREE.ShapeGeometry(cadran, 96);
-    // les coordonnées de texture du disque : de -R..R à 0..1
-    const uv = geoCadran.attributes.uv;
-    for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) / (2 * COTE.cadran) + 0.5, uv.getY(i) / (2 * COTE.cadran) + 0.5);
-    return {
-      boitier: boitier(),
-      fondBoitier: geoFond(),
-      corne: corne(),
-      couronne: geoCouronne(),
-      cadran: geoCadran,
-      compteur: new THREE.CircleGeometry(COMPTEUR.rayon, 64),
-      paroiCompteur: new THREE.CylinderGeometry(COMPTEUR.rayon, COMPTEUR.rayon, 0.14, 64, 1, true),
-      index: baton(3.6, 0.42, 0.42, 0.18),
-      heures: baton(10.2, 0.78, 0.52, 0.12, 1.4),
-      minutes: baton(14.2, 0.62, 0.4, 0.12, 1.6),
-      chrono: baton(15.0, 0.2, 0.12, 0.08, 3.6),
-      petite: baton(3.0, 0.22, 0.14, 0.06, 0.6),
-      verre: new THREE.SphereGeometry(299, 128, 12, 0, Math.PI * 2, 0, Math.asin(16.4 / 299)),
-      cercle: new THREE.CylinderGeometry(12.92, 12.92, 1.6, 96, 1, true),
-      grandeVis: new THREE.CylinderGeometry(1.05, 1.05, 0.2, 32),
-      arc: new THREE.RingGeometry(14.5, 14.78, 360, 1, Math.PI / 2, -Math.PI * 2),
-      brinHaut: brin(1, 2.5),
-      brinBas: brin(-1, 2.9),
-      fond: new THREE.CircleGeometry(12.95, 96),
-      platine: new THREE.CircleGeometry(12.6, 96),
-      ponts: MOUVEMENT_3D.ponts.map((p) => pont(p.points, 0.42, p.trous)),
-      roues: MOUVEMENT_3D.roues.map(([, , r, n, b]) => roueDentee(r, n, b, 0.16)),
-      rochet: roueDentee(MOUVEMENT_3D.rochet[2], MOUVEMENT_3D.rochet[3], 0, 0.26, 0.012),
-      roueCouronne: roueDentee(MOUVEMENT_3D.couronne[2], MOUVEMENT_3D.couronne[3], 0, 0.22, 0.02),
-      jante: new THREE.TorusGeometry(MOUVEMENT_3D.balancier[2], 0.16, 10, 72),
-      bras: new THREE.BoxGeometry(0.22, MOUVEMENT_3D.balancier[2] * 2, 0.12),
-      spiral: spiral(),
-      rubis: new THREE.CylinderGeometry(0.3, 0.3, 0.12, 20),
-      chaton: new THREE.CylinderGeometry(0.62, 0.62, 0.08, 24),
-      vis: new THREE.CylinderGeometry(0.46, 0.46, 0.14, 24),
-      fente: new THREE.BoxGeometry(0.86, 0.1, 0.1),
-      gravure: new THREE.RingGeometry(13.9, 17.6, 128),
-      inscription: new THREE.PlaneGeometry(5.2, 0.65),
-    };
-  }, []);
+  }, [x]);
 
   useEffect(() => () => void Object.values(g).forEach((x) => (Array.isArray(x) ? x.forEach((y) => y.dispose()) : x.dispose())), [g]);
 
@@ -351,44 +448,58 @@ function Piece({ pose, onPret }: { pose: React.RefObject<PoseMontre>; onPret?: (
 }
 
 export function Montre3D({ pose, onPret, part, className }: { pose: React.RefObject<PoseMontre>; onPret?: () => void; part?: number; className?: string }) {
-  const [pretes, setPretes] = useState(false);
-  // le cadran s'écrit avec la police du site : on attend qu'elle soit là
+  const boite = useRef<HTMLDivElement>(null);
+  const [prepa, setPrepa] = useState<{ x: Peinture; g: Formes } | null>(null);
+  const [chaude, setChaude] = useState(false);
+  const rechauffee = useCallback(() => setChaude(true), []);
+  // le cadran s'écrit avec la police du site : on attend qu'elle soit là, puis on peint les textures et on construit les
+  // formes sans se presser
   useEffect(() => {
     let vivant = true;
-    document.fonts.ready.then(() => vivant && setPretes(true));
+    (async () => {
+      await document.fonts.ready;
+      if (!vivant || !boite.current) return;
+      const x = await peindre(boite.current);
+      if (!vivant) return;
+      const g = await construire();
+      if (vivant) setPrepa({ x, g });
+    })();
     return () => {
       vivant = false;
     };
   }, []);
-  if (!pretes) return null;
   return (
-    <Canvas
-      className={className}
-      frameloop="demand"
-      shadows="percentage"
-      dpr={[1, 2]}
-      camera={{ fov: 24, position: [0, 0, 150] }}
-      gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-      aria-hidden="true"
-    >
-      <Cadrage part={part} />
-      <Studio />
-      <directionalLight
-        position={[-38, 34, 52]}
-        intensity={1.7}
-        castShadow
-        shadow-mapSize={[2048, 2048]}
-        shadow-bias={-0.0004}
-        shadow-normalBias={0.03}
-        shadow-radius={4}
-        shadow-camera-left={-24}
-        shadow-camera-right={24}
-        shadow-camera-top={24}
-        shadow-camera-bottom={-24}
-        shadow-camera-near={20}
-        shadow-camera-far={160}
-      />
-      <Piece pose={pose} onPret={onPret} />
-    </Canvas>
+    <div ref={boite} className={className ?? "absolute inset-0"}>
+      {prepa && (
+        <Canvas
+          frameloop={chaude ? "demand" : "never"}
+          shadows="percentage"
+          dpr={[1, 2]}
+          camera={{ fov: 24, position: [0, 0, 150] }}
+          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+          aria-hidden="true"
+        >
+          <Cadrage part={part} />
+          <directionalLight
+            position={[-38, 34, 52]}
+            intensity={1.7}
+            castShadow
+            shadow-mapSize={[2048, 2048]}
+            shadow-bias={-0.0004}
+            shadow-normalBias={0.03}
+            shadow-radius={4}
+            shadow-camera-left={-24}
+            shadow-camera-right={24}
+            shadow-camera-top={24}
+            shadow-camera-bottom={-24}
+            shadow-camera-near={20}
+            shadow-camera-far={160}
+          />
+          <Piece pose={pose} onPret={onPret} x={prepa.x} g={prepa.g} />
+          <Prechauffe onFini={rechauffee} />
+          <Reveil actif={chaude} />
+        </Canvas>
+      )}
+    </div>
   );
 }

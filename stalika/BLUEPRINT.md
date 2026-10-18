@@ -224,6 +224,31 @@ en or comme référence d'allure.
 - Vérifié : 1440 × 900 et 390 × 844 aux huit temps, mouvement réduit (montre à plat, Three.js jamais chargé), Three.js absent en
   haut de page ; aucune erreur de console ; sur ordinateur, image médiane 6 ms, la pire 18 ms. Pas encore sur l'iPhone de J.
 
+## Mise à jour du 2026-10-19 : le texte suit l'aiguille, et la montre passe avant la plongée
+
+- **Le texte** (J : « qu'il s'affiche de manière stylée, fluide, et suive le mouvement des aiguilles » ; quatre pistes montrées en
+  maquettes animées, J choisit « la lecture à l'aiguille » pour le texte et « le quantième » pour les numéros et les titres) :
+  le numéro et le titre de chaque temps tournent dans leur fenêtre comme le disque de date d'une montre (lettres coupées par
+  SplitText, chacune dans son masque ; celles du temps d'avant partent par le haut, au même endroit). Le reste paraît pâle et
+  s'allume mot à mot au rythme exact de l'aiguille du chrono (même départ, durée, courbe), avec un éclat d'or au passage
+  (`--v`, `--b` sur chaque mot). Au-dessus, une réglette de soixante minutes, le pourtour du cadran déroulé, que suit un curseur
+  (`--chrono`). Sur ordinateur, numéros et titres à hauteur fixe (38svh), pour que le quantième tourne sur place. Lettres et mots
+  sont posés à la main d'après un état par temps (entrée, sortie, lecture) : une lettre peut entrer puis sortir sans conflit.
+- **La place** (J : « qu'elle se joue au-dessus de l'écran du Mac, avant la cinématique qui mène au questionnaire ») : la section
+  est remontée dans `Ciel`, entre « La relecture » et la plongée. Pendant qu'elle se joue, l'heure du ciel est suspendue (`Ciel`,
+  prop `pauses`) : l'heure de toutes les autres scènes reste celle que J a validée. Elle passe sur le ciel sans voile (J : « pas
+  de voile sombre »), sauf derrière le texte (« un voile derrière le texte uniquement ») : une nappe de nuit aux bords fondus,
+  sans rectangle ; le texte garde l'ombre `sur-ciel`. Mouvement réduit : fond opaque, tout le texte affiché.
+- **Le bouton du hero** tombe désormais à travers la montre jusqu'à l'ordinateur. Pendant tout son film (chute puis plongée),
+  `html[data-film]` est posé et la montre 3D attend pour se mettre en route (au plus vingt secondes).
+- **La mise en route de la 3D par tranches** : d'un bloc, elle figeait la page près d'une seconde (mesuré au défilement depuis
+  « La relecture » : 0,15 s, 0,28 s, 0,38 s). Textures puis formes préparées dans les temps morts (`requestIdleCallback`), le
+  grain du cadran en carreau répété ; la scène montée sans dessiner (`frameloop="never"`), puis la lumière du studio (PMREM d'une
+  petite scène de boîtes à lumière, à la place de drei, retiré des dépendances), l'envoi des textures, `compileAsync`, et la
+  première image. Pire image après : 0,11 s en développement (l'évaluation du code), les autres sous 0,08 s.
+- **À savoir** : le `Canvas` de react-three-fiber ne se mesure qu'à l'arrêt du défilement (anti-rebond) : la montre 3D paraît au
+  premier temps d'arrêt, la montre à plat tient la place jusque-là.
+
 ## Mise à jour du 2026-10-18 : l'entrée du hero, dans l'ordre
 
 J : « que le titre, le texte du héros et le bouton Parlons projet apparaissent de manière stylée ; on garde les lettres une par une

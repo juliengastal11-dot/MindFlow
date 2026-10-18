@@ -65,6 +65,12 @@ const Montre3D = dynamic(() => import("@/components/ui/montre-3d").then((m) => m
    texte, une réglette de soixante minutes, le pourtour du cadran déroulé : un
    curseur la parcourt avec le chrono et dore les minutes passées.
 
+   Place (2026-10-19, J) : remontée dans le ciel, juste avant la plongée dans
+   l'ordinateur. Pendant qu'elle se joue, l'heure du ciel est suspendue
+   (`Ciel`, `pauses`) ; la section est transparente sur le plan, sans voile
+   (J : « pas de voile sombre »), pour que le ciel reste un seul plan du hero
+   jusqu'à la discussion ; le texte garde l'ombre `sur-ciel` des autres scènes.
+
    Mécanique : `Scene` en mode `defilement`, comme « La relecture » : une piste
    plus haute que l'écran, son contenu collé par `position: sticky`, une
    chronologie de 0 à 1 qui suit la piste. Les étapes sont une vraie liste ;
@@ -475,20 +481,31 @@ export function SceneLivre() {
   useEffect(() => {
     const el = racine.current;
     if (!el || mouvementReduit() || !webglDisponible()) return;
+    let attente = 0;
+    let essais = 0;
+    // Pendant le film du bouton du hero (sa chute jusqu'à l'ordinateur, puis la plongée dans l'écran), on attend qu'il
+    // soit fini : la mise en route de Three.js lui ferait sauter des images. Au plus vingt secondes.
+    const lancer = () => {
+      if (document.documentElement.dataset.film && essais++ < 50) attente = window.setTimeout(lancer, 400);
+      else setCharger(true);
+    };
     const obs = new IntersectionObserver(
       ([e]) => {
         if (!e.isIntersecting) return;
-        setCharger(true);
         obs.disconnect();
+        lancer();
       },
       { rootMargin: "150% 0px" },
     );
     obs.observe(el);
-    return () => obs.disconnect();
+    return () => {
+      obs.disconnect();
+      window.clearTimeout(attente);
+    };
   }, []);
 
   return (
-    <Scene id="livre" nuit defilement src="components/sections/scene-livre.tsx" aria-labelledby="livre-titre">
+    <Scene id="livre" nuit defilement src="components/sections/scene-livre.tsx" aria-labelledby="livre-titre" className="chrono-sur-ciel">
       <div ref={racine} data-piste className="chrono-piste motion-reduce:min-h-0!" style={{ minHeight: `${(1 + R.ecrans) * 100}svh` }}>
         <div className="chrono-colle">
           <div className="chrono-lumiere" aria-hidden="true" />
@@ -507,7 +524,7 @@ export function SceneLivre() {
               </Garde>
             </div>
           )}
-          <div className="chrono-texte">
+          <div className="chrono-texte sur-ciel">
             {/* le pourtour du cadran déroulé : soixante minutes, que le curseur parcourt avec le chrono */}
             <div className="chrono-reglette" aria-hidden="true">
               <div className="chrono-reglette-or" />

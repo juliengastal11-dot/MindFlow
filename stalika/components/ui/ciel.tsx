@@ -40,7 +40,9 @@ import { POSE_BOUTON, RAPPORT_CIEL as RAPPORT } from "@/lib/ciel"; // largeur / 
    cinq secondes, seulement tant que la zone est à l'écran.
 
    L'heure suit le défilement de façon linéaire, du premier repère (le hero,
-   0) au dernier (juste avant la plongée, 1). Mouvement réduit : pas de
+   0) au dernier (juste avant la plongée, 1), sauf dans les `pauses` : là,
+   le temps est suspendu (la section de la montre, depuis le 2026-10-19), et
+   leur hauteur ne compte pas. Mouvement réduit : pas de
    glissement ni de vidéo, le plan prend l'heure du repère le plus proche du
    milieu de l'écran.
 
@@ -73,6 +75,9 @@ export type CielProps = {
   jalons: readonly (readonly [number, number])[];
   /** Repères par id d'élément : le premier et le dernier bornent le défilement ; en mouvement réduit, tous comptent. */
   reperes: Record<string, number>;
+  /** Éléments (par id) pendant lesquels l'heure s'arrête : leur hauteur est retirée du défilement, l'heure des autres
+      sections ne bouge pas. */
+  pauses?: readonly string[];
   /** La vidéo du hero, jouée en haut de page par-dessus le plan. */
   video?: {
     bureau: SourcesVideo;
@@ -98,7 +103,7 @@ const chemin = (s: SerieCiel, i: number) => `${s.dossier}/${String(i + 1).padSta
 const borne = (x: number) => Math.min(1, Math.max(0, x));
 const douce = (x: number) => x * x * (3 - 2 * x);
 
-export function Ciel({ bureau, mobile, jalons, reperes, video, cometes, alt, children, className }: CielProps) {
+export function Ciel({ bureau, mobile, jalons, reperes, pauses, video, cometes, alt, children, className }: CielProps) {
   const zone = useRef<HTMLDivElement>(null);
   const cadre = useRef<HTMLDivElement>(null);
   const toile = useRef<HTMLCanvasElement>(null);
@@ -312,7 +317,17 @@ export function Ciel({ bureau, mobile, jalons, reperes, video, cometes, alt, chi
     /* Les repères : le milieu de chaque élément, en pixels depuis le haut de
        la page, avec son heure. Recalculés à chaque rafraîchissement. */
     let points: { y: number; t: number }[] = [];
+    let arrets: { a: number; b: number }[] = [];
+    // La position, temps suspendus retirés.
+    const net = (y: number) => arrets.reduce((v, z) => v - Math.min(Math.max(y - z.a, 0), z.b - z.a), y);
     const mesurer = () => {
+      arrets = (pauses ?? [])
+        .map((id) => document.getElementById(id))
+        .filter((s): s is HTMLElement => s !== null)
+        .map((s) => {
+          const b = s.getBoundingClientRect();
+          return { a: b.top + window.scrollY, b: b.bottom + window.scrollY };
+        });
       points = Object.entries(reperes)
         .map(([id, t]) => {
           const s = document.getElementById(id);
@@ -330,7 +345,7 @@ export function Ciel({ bureau, mobile, jalons, reperes, video, cometes, alt, chi
       // Un seul mouvement régulier, du premier repère au dernier.
       const p = points[0];
       const q = points[points.length - 1];
-      return p.t + (q.t - p.t) * borne((y - p.y) / (q.y - p.y));
+      return p.t + (q.t - p.t) * borne((net(y) - net(p.y)) / (net(q.y) - net(p.y)));
     };
 
     // Au doigt, le défilement a déjà sa propre inertie : le plan le suit tout de suite, sans traîner derrière
@@ -378,7 +393,7 @@ export function Ciel({ bureau, mobile, jalons, reperes, video, cometes, alt, chi
       cancelAnimationFrame(boucle);
       window.removeEventListener("resize", redessiner);
     };
-  }, [bureau, mobile, jalons, reperes, video, cometes]);
+  }, [bureau, mobile, jalons, reperes, pauses, video, cometes]);
 
   return (
     <div ref={zone} data-src="components/ui/ciel.tsx" className={cn("nuit relative bg-background", className)}>
