@@ -57,6 +57,10 @@
   J (`/phone`, puis `perf` sur la piste de `#livre`) ; si elle peine, baisser d'abord `dpr` et la carte d'ombre (2048) avant de
   toucher aux matières. Une page d'essai qui la montre seule, orientée par l'adresse, se remonte en deux fichiers
   (`app/labo-montre/`, jamais versionnée) quand on la retravaille.
+- **Deux essais de la montre qui se fabrique, à départager par J** (2026-10-19, pages non indexées) : `/essai/montre` en 3D
+  (les pièces montent d'un fil d'or au bas du texte) et `/essai/montre-photo` avec de vraies pièces en photo (ses trois images
+  ChatGPT, découpées : `outils/montre/LISEZMOI.md`). Celle qu'il garde passe sur l'accueil (`SceneLivre mode=…` dans
+  `app/page.tsx`), l'autre page d'essai et son code partent.
 - **Fait le 2026-10-17 : tout le chemin du téléphone en vertical** (J : « Tout le chemin en 9:16 c'est ok, bonne qualité et le chalet. Garde le
   côté où il s'allume la nuit »). Chalet en rondins, vidéo du hero, cinq passages du ciel et plongée générés en 1 080 × 1 912 : voir `BLUEPRINT.md`
   (mise à jour du 2026-10-17, suite) et `outils/hero/LISEZMOI.md` (tâches Higgsfield, commandes pour tout refaire). Mesuré sur l'iPhone de J (build de

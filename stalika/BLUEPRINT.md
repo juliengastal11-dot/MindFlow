@@ -282,6 +282,25 @@ la ligne est un fil d'or ; l'assemblage donne son sens au retournement final.
   décalée (`setViewOffset`) pour garder la montre à sa place (à droite, en haut au téléphone). Le fil d'or est un trait du DOM
   (`.chrono-fil`), sous la 3D.
 
+## Essai du 2026-10-19 : la montre en photo qui se fabrique (page `/essai/montre-photo`, non indexée)
+
+J : « pour avoir du réalisme, une vraie montre en vue éclatée, montée sans la reconstruire, avec les vraies pièces », puis,
+sans payer (ni modèle à 95 $, ni génération) : trois images faites par lui dans ChatGPT, d'après nos consignes (vue éclatée
+verticale ; la montre montée de face ; de dos). Rangées dans `outils/montre`, avec l'outil de découpe et son LISEZMOI.
+- **Où** : `SceneLivre mode="photo"` sur une copie de l'accueil (`app/essai/montre-photo/page.tsx`) ; l'accueil et
+  `/essai/montre` (la même idée en 3D) n'ont pas changé. Ni Three.js ni montre dessinée : 13 pièces et 2 photos en WebP
+  transparent (`public/montre`, 513 Ko en tout), chargées à l'approche de la section.
+- **La scène** (`components/ui/montre-photo.tsx`) : une platine aux dimensions de la vue éclatée (941 × 1672), que la caméra
+  déplace et agrandit ; chaque pièce à sa place d'origine, enfilée sur le fil d'or vertical. Tout se déduit de la progression
+  de la chronologie (rien n'est tweené). Ce qui entre dans le boîtier (mouvement, cadran) n'est visible qu'au-dessus du bord de
+  devant de son ouverture (`clip-path`). Une ombre de contact paraît sous la pièce qui se pose.
+- **L'ordre** (`lib/montre-photo.ts`) : 1 le mouvement descend dans la carrure ; 2 le fond la ferme par-dessous, la couronne
+  entre de côté ; 3 le cadran ; 4 les aiguilles ; 5 le verre et la lunette ; 6 les bracelets, puis la montre se redresse face à
+  nous (la photo de face, inclinée comme la vue éclatée, se relève pendant que la pile s'efface, la carrure en dernier) ; 7 elle
+  se retourne sur son fond saphir (les deux photos dos à dos, de profil dans l'ombre).
+- **La limite**, dite à J : c'est de la 2,5D. Les pièces glissent sans tourner ; les pièces de la vue éclatée ne sont pas vues
+  sous le même angle (le cadran plus de face que le boîtier) : chacune prend en glissant l'échelle qui la fait entrer.
+
 ## Mise à jour du 2026-10-18 : l'entrée du hero, dans l'ordre
 
 J : « que le titre, le texte du héros et le bouton Parlons projet apparaissent de manière stylée ; on garde les lettres une par une
