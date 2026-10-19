@@ -20,9 +20,9 @@ import { PiedDePage } from "@/components/sections/pied-de-page";
 import { Consentement } from "@/components/sections/consentement";
 import { JsonLd } from "@/components/seo/json-ld";
 
-/* L'accueil : le hero, puis le même paysage dont l'heure change sous trois
-   scènes, la montre (le temps s'y suspend), la plongée dans l'ordinateur
-   jusqu'à la discussion, puis une fin calme. Chaque scène vit dans son
+/* L'accueil : le hero, puis le même paysage dont l'heure change sous les
+   scènes (elle s'arrête pendant la relecture), la montre, la plongée dans
+   l'ordinateur jusqu'à la discussion, puis une fin calme. Chaque scène vit dans son
    fichier ; cette page ne fait qu'assembler, dans l'ordre. */
 
 export const metadata: Metadata = {
@@ -56,8 +56,9 @@ export default function Accueil() {
           // Étoiles filantes pendant la nuit, dans la bande de ciel au-dessus des nuages.
           cometes={{ de: 30, a: 82, hauteur: 0.13 }}
           reperes={{ accueil: 0, "sur-mesure": 0.3, utile: 0.5, relecture: 0.7, "ciel-fin": 1 }}
-          // Pendant la montre, le temps est suspendu : l'heure des autres scènes ne bouge pas.
-          pauses={["livre"]}
+          // Le temps est suspendu pendant « La relecture », le temps de regarder le site qu'on modifie ; il défile derrière
+          // la montre (J, 2026-10-19).
+          pauses={["relecture"]}
           video={{
             bureau: { webm: "/hero/video.webm", mp4: "/hero/video.mp4" },
             // Même plan que la série mobile du ciel : aucun saut au premier défilement. HEVC pour les iPhone, VP9 ailleurs, H.264 en repli.
@@ -76,7 +77,7 @@ export default function Accueil() {
           <SceneUtile />
           <SceneRelecture />
           {/* La montre (section 04), remontée avant la plongée le 2026-10-19 (J : « qu'elle se joue au-dessus de
-              l'écran du Mac, avant la cinématique qui mène au questionnaire »). Elle passe sur le ciel, voilée. */}
+              l'écran du Mac, avant la cinématique qui mène au questionnaire »). Elle passe sur le ciel, qui défile derrière. */}
           <SceneLivre />
           {/* Repère : la lumière dorée est revenue (dernière image du ciel, qui est
               la première de la plongée) quand ce point passe au milieu de l'écran. */}

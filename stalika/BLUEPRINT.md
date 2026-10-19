@@ -249,6 +249,22 @@ en or comme référence d'allure.
 - **À savoir** : le `Canvas` de react-three-fiber ne se mesure qu'à l'arrêt du défilement (anti-rebond) : la montre 3D paraît au
   premier temps d'arrêt, la montre à plat tient la place jusque-là.
 
+## Mise à jour du 2026-10-19 (suite) : le ciel défile derrière la montre, la montre bouge moins, un vrai mouvement
+
+- **Le ciel** (J : « que la vidéo défile derrière la section avec la montre et non pas un stop ; je préférerais qu'elle se stoppe
+  pendant la partie de la section 3 qui montre les modifications du site ») : la pause du ciel passe de `livre` à `relecture`.
+  Le ciel s'arrête au crépuscule pendant la relecture, puis, derrière la montre, la nuit étoilée tourne à l'aube et au lever du
+  soleil (la mise en ligne tombe au lever du jour). L'heure des sections d'avant a glissé en conséquence (02 au crépuscule).
+- **La montre bouge moins** (J : « juste des petits changements de vue légers ») : `POSES_3D` reste autour d'un trois quarts
+  (rx de -11 à -25°, ry de -9 à -27°), arrivée plus douce ; seul le dernier temps la retourne.
+- **Le mouvement refait d'après la photo de J** (« beaucoup plus réaliste, comme sur la photo ») : ponts en acier mat et grenu
+  (plus de côtes de Genève), séparés par des rainures, contours usinés aux angles arrondis ; roues dorées à cinq bras courbes,
+  posées par-dessus ; grand rochet en acier soleillé, à dents de scie, frappé d'une étoile à cinq branches, avec sa grande vis ;
+  roue de couronne ; balancier doré dans son creux sous un coq vissé, spiral, raquette ; roue d'échappement à moitié sous le
+  pont du haut, et l'ancre ; rubis en chatons dorés ; vis à fente ; liseré de laiton au bord ; « STALIKA » gravé sur le pont du
+  haut. Étagé en profondeur comme un vrai calibre (voir l'en-tête du mouvement dans `lib/montre-3d.ts`). Le rouage tourne au
+  retournement, chaque roue plus vite que la précédente et en sens inverse (`RAPPORTS`).
+
 ## Mise à jour du 2026-10-18 : l'entrée du hero, dans l'ordre
 
 J : « que le titre, le texte du héros et le bouton Parlons projet apparaissent de manière stylée ; on garde les lettres une par une

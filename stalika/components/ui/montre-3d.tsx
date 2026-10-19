@@ -14,14 +14,14 @@ import {
   fond as geoFond,
   couronne as geoCouronne,
   pont,
-  roueDentee,
+  roue,
   spiral,
   teintes,
   textureAzurage,
   textureGravure,
   textureInscription,
-  textureCotes,
-  texturePerlage,
+  textureEtoile,
+  textureGrain,
   texturesCadran,
   texturesCuir,
 } from "@/lib/montre-3d";
@@ -55,6 +55,8 @@ import type { PoseMontre } from "@/lib/pose-montre";
 --------------------------------------------------------------------------- */
 
 const rad = THREE.MathUtils.degToRad;
+// la vitesse de chaque roue du mouvement, rapportée au rouage : moyenne, troisième, secondes, échappement, rochet, couronne
+const RAPPORTS = [0.2, -0.6, 1.6, -4, 0.15, -0.29];
 
 /* Un studio de photo de montre : une pièce sombre et chaude, de grandes boîtes à lumière autour (chacune regarde la
    montre) ; c'est ce que l'or poli et l'acier reflètent. [forme, intensité, couleur, position, échelle] */
@@ -119,27 +121,27 @@ async function peindre(depuis: Element) {
   await respirer();
   const cuir = texturesCuir();
   await respirer();
-  const perlage = texturePerlage();
+  const grain = textureGrain();
+  const etoile = textureEtoile();
   await respirer();
-  const cotes = textureCotes();
   const gravure = textureGravure(t.ombre);
   const inscription = textureInscription("STALIKA", "#3b3a36");
   await respirer();
-  return { t, cad, azurage, cuir, perlage, cotes, gravure, inscription };
+  return { t, cad, azurage, cuir, grain, etoile, gravure, inscription };
 }
 type Peinture = Awaited<ReturnType<typeof peindre>>;
 
 /** Les formes, construites par tranches. */
 async function construire() {
-    const cadran = new THREE.Shape();
-    cadran.absarc(0, 0, COTE.cadran, 0, Math.PI * 2, false);
-    const trou = new THREE.Path();
-    trou.absarc(COMPTEUR.x, COMPTEUR.y, COMPTEUR.rayon, 0, Math.PI * 2, true);
-    cadran.holes.push(trou);
-    const geoCadran = new THREE.ShapeGeometry(cadran, 96);
-    // les coordonnées de texture du disque : de -R..R à 0..1
-    const uv = geoCadran.attributes.uv;
-    for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) / (2 * COTE.cadran) + 0.5, uv.getY(i) / (2 * COTE.cadran) + 0.5);
+  const cadran = new THREE.Shape();
+  cadran.absarc(0, 0, COTE.cadran, 0, Math.PI * 2, false);
+  const trou = new THREE.Path();
+  trou.absarc(COMPTEUR.x, COMPTEUR.y, COMPTEUR.rayon, 0, Math.PI * 2, true);
+  cadran.holes.push(trou);
+  const geoCadran = new THREE.ShapeGeometry(cadran, 96);
+  // les coordonnées de texture du disque : de -R..R à 0..1
+  const uv = geoCadran.attributes.uv;
+  for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) / (2 * COTE.cadran) + 0.5, uv.getY(i) / (2 * COTE.cadran) + 0.5);
   const boite = { boitier: boitier(), fondBoitier: geoFond(), corne: corne(), couronne: geoCouronne() };
   await respirer();
   const cadranEtAiguilles = {
@@ -157,27 +159,34 @@ async function construire() {
   await respirer();
   const bracelet = { brinHaut: brin(1, 2.5), brinBas: brin(-1, 2.9) };
   await respirer();
-  const ponts = { ponts: MOUVEMENT_3D.ponts.map((p) => pont(p.points, 0.42, p.trous)), roues: MOUVEMENT_3D.roues.map(([, , r, n, b]) => roueDentee(r, n, b, 0.16)) };
+  const M = MOUVEMENT_3D;
+  const ponts = { ponts: M.ponts.map((p) => pont(p.points, 0.5, p.trous)), coq: pont(M.coq, 0.35), raquette: pont(M.raquette, 0.05), ancre: pont(M.ancre, 0.1) };
+  await respirer();
+  const roues = {
+    roues: M.roues.map((w) => roue(w.r, { dents: w.dents, bras: w.bras, e: 0.16 })),
+    echappement: roue(M.echappement.r, { dents: M.echappement.dents, bras: 3, e: 0.12, scie: true, dent: 0.32, courbe: 0.25 }),
+    balancier: roue(M.balancier.r, { dents: 0, bras: 2, e: 0.3, jante: 0.36, moyeu: 0.42, courbe: 0 }),
+  };
   await respirer();
   const mouvement = {
-    rochet: roueDentee(MOUVEMENT_3D.rochet[2], MOUVEMENT_3D.rochet[3], 0, 0.26, 0.012),
-    roueCouronne: roueDentee(MOUVEMENT_3D.couronne[2], MOUVEMENT_3D.couronne[3], 0, 0.22, 0.02),
-    jante: new THREE.TorusGeometry(MOUVEMENT_3D.balancier[2], 0.16, 10, 72),
-    bras: new THREE.BoxGeometry(0.22, MOUVEMENT_3D.balancier[2] * 2, 0.12),
+    rochet: roue(M.rochet.r, { dents: M.rochet.dents, bras: 0, e: 0.25, scie: true, dent: 0.22 }),
+    roueCouronne: roue(M.couronne.r, { dents: M.couronne.dents, bras: 0, e: 0.2, dent: 0.15 }),
     spiral: spiral(),
-    rubis: new THREE.CylinderGeometry(0.3, 0.3, 0.12, 20),
-    chaton: new THREE.CylinderGeometry(0.62, 0.62, 0.08, 24),
-    vis: new THREE.CylinderGeometry(0.46, 0.46, 0.14, 24),
-    fente: new THREE.BoxGeometry(0.86, 0.1, 0.1),
-    grandeVis: new THREE.CylinderGeometry(1.05, 1.05, 0.2, 32),
-    cercle: new THREE.CylinderGeometry(12.92, 12.92, 1.6, 96, 1, true),
+    pignon: new THREE.CylinderGeometry(0.4, 0.4, 0.34, 16),
+    rubis: new THREE.SphereGeometry(0.26, 18, 8, 0, Math.PI * 2, 0, Math.PI / 2),
+    chaton: new THREE.CylinderGeometry(0.58, 0.58, 0.06, 28),
+    vis: new THREE.CylinderGeometry(0.52, 0.5, 0.12, 28),
+    fente: new THREE.BoxGeometry(0.98, 0.12, 0.06),
+    grandeVis: new THREE.CylinderGeometry(1.05, 1.0, 0.16, 32),
+    lisere: new THREE.RingGeometry(M.rayon, M.rayon + 0.4, 128),
+    cercle: new THREE.CylinderGeometry(12.92, 12.92, 2.1, 96, 1, true),
     fond: new THREE.CircleGeometry(12.95, 96),
-    platine: new THREE.CircleGeometry(12.6, 96),
+    platine: new THREE.CircleGeometry(M.rayon, 96),
     gravure: new THREE.RingGeometry(13.9, 17.6, 128),
     inscription: new THREE.PlaneGeometry(5.2, 0.65),
   };
   await respirer();
-  return { ...boite, ...cadranEtAiguilles, ...bracelet, ...ponts, ...mouvement };
+  return { ...boite, ...cadranEtAiguilles, ...bracelet, ...ponts, ...roues, ...mouvement };
 }
 type Formes = Awaited<ReturnType<typeof construire>>;
 
@@ -255,14 +264,20 @@ function Piece({ pose, onPret, x, g }: { pose: React.RefObject<PoseMontre>; onPr
     orSatine.roughness = 0.34;
     const orBrosse = or.clone();
     orBrosse.roughness = 0.2;
-    // le soleillage du rochet et de la roue de couronne : la carte radiale du cadran, recadrée sur chaque roue
-    const soleil = (r: number) => {
-      const x = cad.brossage.clone();
-      x.repeat.set(1 / (2 * r), 1 / (2 * r));
-      x.offset.set(0.5, 0.5);
-      x.needsUpdate = true;
-      return new THREE.MeshPhysicalMaterial({ color: "#dedbd4", metalness: 1, roughness: 0.2, anisotropy: 0.95, anisotropyMap: x, envMapIntensity: 1.3 });
+    // une texture « de disque » (de 0 à 1) recadrée sur une roue, dont les coordonnées sont ses millimètres
+    const recadre = (t: THREE.Texture, r: number) => {
+      const c = t.clone();
+      c.repeat.set(1 / (2 * r), 1 / (2 * r));
+      c.offset.set(0.5, 0.5);
+      c.needsUpdate = true;
+      return c;
     };
+    const grainPlatine = x.grain.clone();
+    grainPlatine.repeat.set((2 * MOUVEMENT_3D.rayon) / 3, (2 * MOUVEMENT_3D.rayon) / 3);
+    grainPlatine.needsUpdate = true;
+    // le soleillage de la roue de couronne : la carte radiale du cadran, recadrée
+    const soleil = (r: number) =>
+      new THREE.MeshPhysicalMaterial({ color: "#dedbd4", metalness: 1, roughness: 0.2, anisotropy: 0.95, anisotropyMap: recadre(cad.brossage, r), envMapIntensity: 1.3 });
     const index = Array.from({ length: 12 }, () => {
       const x = or.clone();
       x.emissive = new THREE.Color("#ffad3d");
@@ -283,12 +298,23 @@ function Piece({ pose, onPret, x, g }: { pose: React.RefObject<PoseMontre>; onPr
       acier: new THREE.MeshPhysicalMaterial({ color: "#d3d0c8", metalness: 1, roughness: 0.24, envMapIntensity: 1.2 }),
       visAcier: new THREE.MeshPhysicalMaterial({ color: "#d8d5ce", metalness: 1, roughness: 0.36, envMapIntensity: 1.5 }),
       doublure: new THREE.MeshPhysicalMaterial({ color: "#14110d", roughness: 0.62, metalness: 0, sheen: 0.4, sheenColor: new THREE.Color("#4a4136") }),
-      ponts: new THREE.MeshPhysicalMaterial({ color: "#e2dfd8", map: x.cotes, metalness: 1, roughness: 0.3, anisotropy: 0.6, anisotropyRotation: 0.42 + Math.PI / 2, envMapIntensity: 1.3 }),
-      rochet: soleil(MOUVEMENT_3D.rochet[2]),
-      roueCouronne: soleil(MOUVEMENT_3D.couronne[2]),
-      laiton: new THREE.MeshPhysicalMaterial({ color: "#d3a24a", metalness: 1, roughness: 0.24, envMapIntensity: 1.2 }),
-      platine: new THREE.MeshPhysicalMaterial({ map: x.perlage, metalness: 0.85, roughness: 0.42, envMapIntensity: 0.9 }),
-      rubis: new THREE.MeshPhysicalMaterial({ color: "#b3123c", metalness: 0, roughness: 0.06, clearcoat: 1, emissive: new THREE.Color("#5a0a1e"), emissiveIntensity: 0.4 }),
+      // l'acier mat et grenu des ponts et de la platine (la photo de J), plus sombre au fond
+      acierMat: new THREE.MeshPhysicalMaterial({ color: "#d2d0c9", map: x.grain, metalness: 0.85, roughness: 0.46, envMapIntensity: 1.3 }),
+      // (un disque, dont les coordonnées vont de 0 à 1 : le grain y est resserré pour garder son pas de 3 mm)
+      platine: new THREE.MeshPhysicalMaterial({ color: "#a29f98", map: grainPlatine, metalness: 0.8, roughness: 0.58, envMapIntensity: 1.0 }),
+      // le rochet : soleillé, l'étoile frappée dessus
+      rochet: new THREE.MeshPhysicalMaterial({
+        color: "#eeece6",
+        map: recadre(x.etoile, MOUVEMENT_3D.rochet.r),
+        metalness: 1,
+        roughness: 0.22,
+        anisotropy: 0.9,
+        anisotropyMap: recadre(cad.brossage, MOUVEMENT_3D.rochet.r),
+        envMapIntensity: 1.35,
+      }),
+      roueCouronne: soleil(MOUVEMENT_3D.couronne.r),
+      laiton: new THREE.MeshPhysicalMaterial({ color: "#d6a64e", metalness: 1, roughness: 0.3, envMapIntensity: 1.3 }),
+      rubis: new THREE.MeshPhysicalMaterial({ color: "#b8164a", metalness: 0, roughness: 0.05, clearcoat: 1, emissive: new THREE.Color("#5a0a24"), emissiveIntensity: 0.45 }),
       gravure: new THREE.MeshBasicMaterial({ map: x.gravure, transparent: true, depthWrite: false, opacity: 0.85 }),
       inscription: new THREE.MeshBasicMaterial({ map: x.inscription, transparent: true, depthWrite: false, opacity: 0.8 }),
       cercle: new THREE.MeshStandardMaterial({ color: "#2a2620", metalness: 0.8, roughness: 0.5, side: THREE.DoubleSide }),
@@ -316,7 +342,9 @@ function Piece({ pose, onPret, x, g }: { pose: React.RefObject<PoseMontre>; onPr
     // l'arc qui suit le chrono : la part de l'anneau dessinée
     const a = arc.current;
     if (a) a.geometry.setDrawRange(0, Math.round(((((p.chrono % 360) + 360) % 360) || (p.chrono > 0 ? 360 : 0)) * 6));
-    roues.current.forEach((r, i) => r && (r.rotation.z = rad(p.rouage) * (i % 2 ? -1.6 : 1) * (1 + i * 0.3)));
+    // le rouage : chaque roue tourne en sens inverse de la précédente, et plus vite ; le rochet et la roue de couronne, à
+    // peine (on remonte)
+    roues.current.forEach((r, i) => r && (r.rotation.z = rad(p.rouage) * RAPPORTS[i]));
     if (balancier.current) balancier.current.rotation.z = rad(p.balancier);
     if (premier.current) {
       premier.current = false;
@@ -324,7 +352,7 @@ function Piece({ pose, onPret, x, g }: { pose: React.RefObject<PoseMontre>; onPr
     }
   });
 
-  const { roues: rs, rochet, couronne: rc, balancier: bal, rubis, vis } = MOUVEMENT_3D;
+  const mv = MOUVEMENT_3D;
 
   return (
     <group ref={montre}>
@@ -392,56 +420,63 @@ function Piece({ pose, onPret, x, g }: { pose: React.RefObject<PoseMontre>; onPr
       <mesh geometry={g.brinHaut} material={[m.cuir, m.doublure]} />
       <mesh geometry={g.brinBas} material={[m.cuir, m.doublure]} />
 
-      {/* le fond : la gravure, le saphir, et le mouvement (vu par le fond, d'où le miroir en X) */}
+      {/* le fond : la gravure, le saphir, et le mouvement d'après la photo de J (vu par le fond, d'où le miroir en X),
+          étagé du rochet, tout près du saphir, jusqu'à la platine */}
       <mesh geometry={g.gravure} material={m.gravure} position={[0, 0, -0.28]} rotation={[0, Math.PI, 0]} />
       <group scale={[-1, 1, 1]}>
-        <mesh geometry={g.platine} material={m.platine} position={[0, 0, 0.95]} rotation={[0, Math.PI, 0]} />
+        <mesh geometry={g.platine} material={m.platine} position={[0, 0, 1.35]} rotation={[0, Math.PI, 0]} />
+        <mesh geometry={g.lisere} material={m.orBrosse} position={[0, 0, 0.44]} rotation={[0, Math.PI, 0]} />
         {g.ponts.map((geo, i) => (
-          <mesh key={i} geometry={geo} material={m.ponts} position={[0, 0, 0.26]} />
+          <mesh key={i} geometry={geo} material={m.acierMat} position={[0, 0, 0.42]} />
         ))}
-        {g.roues.map((geo, i) => (
-          <group key={i} position={[rs[i][0], rs[i][1], 0.74]} ref={(r) => void (roues.current[i] = r)}>
-            <mesh geometry={geo} material={m.laiton} />
+        <mesh geometry={g.coq} material={m.acierMat} position={[0, 0, 0.2]} />
+        {/* le coq est vissé au bord ; la raquette posée dessus */}
+        <mesh geometry={g.raquette} material={m.acier} position={[0, 0, 0.06]} />
+        <mesh geometry={g.ancre} material={m.acier} position={[0, 0, 0.98]} />
+        {mv.roues.map((w, i) => (
+          <group key={w.nom} position={[w.x, w.y, w.z]} ref={(r) => void (roues.current[i] = r)}>
+            <mesh geometry={g.roues[i]} material={m.laiton} />
+            <mesh geometry={g.pignon} material={m.acier} position={[0, 0, 0.1]} rotation={[Math.PI / 2, 0, 0]} />
           </group>
         ))}
-        <group position={[rochet[0], rochet[1], -0.04]} ref={(r) => void (roues.current[3] = r)}>
+        <group position={[mv.echappement.x, mv.echappement.y, mv.echappement.z]} ref={(r) => void (roues.current[3] = r)}>
+          <mesh geometry={g.echappement} material={m.laiton} />
+        </group>
+        <group position={[mv.rochet.x, mv.rochet.y, mv.rochet.z]} ref={(r) => void (roues.current[4] = r)}>
           <mesh geometry={g.rochet} material={m.rochet} />
-        </group>
-        <group position={[rochet[0], rochet[1], -0.16]} rotation={[0, 0, 0.5]}>
-          <mesh geometry={g.grandeVis} material={m.visAcier} rotation={[Math.PI / 2, 0, 0]} />
-          <mesh material={m.laque} position={[0, 0, -0.1]}>
-            <boxGeometry args={[1.8, 0.16, 0.08]} />
-          </mesh>
-        </group>
-        <group position={[rc[0], rc[1], -0.02]} ref={(r) => void (roues.current[4] = r)}>
-          <mesh geometry={g.roueCouronne} material={m.roueCouronne} />
-        </group>
-        <group position={[bal[0], bal[1], 0.5]}>
-          <group ref={balancier}>
-            <mesh geometry={g.jante} material={m.laiton} />
-            {[0, 60, 120].map((a) => (
-              <mesh key={a} geometry={g.bras} material={m.laiton} rotation={[0, 0, rad(a)]} />
-            ))}
+          <group position={[0, 0, -0.08]} rotation={[0, 0, 0.5]}>
+            <mesh geometry={g.grandeVis} material={m.visAcier} rotation={[Math.PI / 2, 0, 0]} />
+            <mesh geometry={g.fente} material={m.laque} position={[0, 0, -0.08]} scale={[1.8, 1.2, 1]} />
           </group>
-          <mesh geometry={g.spiral} material={m.acier} position={[0, 0, -0.12]} />
         </group>
-        {rubis.map(([x, y], i) => (
-          <group key={`r${i}`} position={[x, y, 0.17]} rotation={[Math.PI / 2, 0, 0]}>
-            <mesh geometry={g.chaton} material={m.acier} />
-            <mesh geometry={g.rubis} material={m.rubis} position={[0, -0.03, 0]} />
+        <group position={[mv.couronne.x, mv.couronne.y, mv.couronne.z]} ref={(r) => void (roues.current[5] = r)}>
+          <mesh geometry={g.roueCouronne} material={m.roueCouronne} />
+          <mesh geometry={g.vis} material={m.visAcier} position={[0, 0, -0.06]} rotation={[Math.PI / 2, 0, 0]} />
+          <mesh geometry={g.fente} material={m.laque} position={[0, 0, -0.12]} />
+        </group>
+        <group position={[mv.balancier.x, mv.balancier.y, mv.balancier.z]}>
+          <group ref={balancier}>
+            <mesh geometry={g.balancier} material={m.laiton} />
+          </group>
+          <mesh geometry={g.spiral} material={m.acier} position={[0, 0, -0.05]} />
+        </group>
+        {mv.rubis.map(([x, y, z], i) => (
+          <group key={`r${i}`} position={[x, y, z]}>
+            <mesh geometry={g.chaton} material={m.orBrosse} rotation={[Math.PI / 2, 0, 0]} />
+            <mesh geometry={g.rubis} material={m.rubis} position={[0, 0, -0.03]} rotation={[-Math.PI / 2, 0, 0]} />
           </group>
         ))}
-        {vis.map(([x, y], i) => (
-          <group key={`v${i}`} position={[x, y, 0.2]} rotation={[0, 0, i * 0.7]}>
+        {mv.vis.map(([x, y, z], i) => (
+          <group key={`v${i}`} position={[x, y, z]} rotation={[0, 0, i * 0.7]}>
             <mesh geometry={g.vis} material={m.visAcier} rotation={[Math.PI / 2, 0, 0]} />
-            <mesh geometry={g.fente} material={m.laque} position={[0, 0, -0.07]} />
+            <mesh geometry={g.fente} material={m.laque} position={[0, 0, -0.06]} />
           </group>
         ))}
       </group>
-      {/* ce qui n'est pas dans le miroir : l'inscription du pont (lisible par le fond), le fond du boîtier derrière la platine */}
-      <mesh geometry={g.inscription} material={m.inscription} position={[6.8, -0.6, 0.15]} rotation={[0, Math.PI, 0]} />
-      <mesh geometry={g.fond} material={m.cercle} position={[0, 0, 1.02]} rotation={[0, Math.PI, 0]} />
-      <mesh geometry={g.cercle} material={m.cercle} position={[0, 0, 0.24]} rotation={[Math.PI / 2, 0, 0]} />
+      {/* ce qui n'est pas dans le miroir : l'inscription sur le pont du haut (lisible par le fond), le fond du boîtier derrière la platine */}
+      <mesh geometry={g.inscription} material={m.inscription} position={[1.0, 8.7, 0.35]} rotation={[0, Math.PI, 0]} />
+      <mesh geometry={g.fond} material={m.cercle} position={[0, 0, 1.45]} rotation={[0, Math.PI, 0]} />
+      <mesh geometry={g.cercle} material={m.cercle} position={[0, 0, 0.47]} rotation={[Math.PI / 2, 0, 0]} />
       <mesh geometry={g.fond} material={m.verre} position={[0, 0, COTE.fenetre + 0.03]} rotation={[0, Math.PI, 0]} renderOrder={2} />
     </group>
   );

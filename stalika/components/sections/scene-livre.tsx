@@ -46,9 +46,9 @@ const Montre3D = dynamic(() => import("@/components/ui/montre-3d").then((m) => m
    La montre en volume (2026-10-18, J : « il faut que la montre soit en 3D et
    surtout qu'elle ait l'épaisseur d'une vraie montre, pareil pour le
    bracelet », « elle se montre sous tous les angles ») : `Montre3D`, en
-   Three.js, joue la même partition par sa `pose`, et se tourne à chaque étape
-   vers un autre angle (`POSES_3D`) : trois quarts, profil côté couronne,
-   face, plongée, dessous, puis le fond et son mouvement. Elle se charge quand
+   Three.js, joue la même partition par sa `pose`, et change à peine d'angle
+   à chaque étape (`POSES_3D`, adoucies le 2026-10-19), avant de se retourner
+   sur le fond et son mouvement. Elle se charge quand
    la section approche, si le navigateur sait faire du WebGL et sans mouvement
    réduit ; la montre à plat reste en place jusqu'à ce qu'elle soit prête, et
    pour toujours si le WebGL manque ou échoue.
@@ -66,8 +66,8 @@ const Montre3D = dynamic(() => import("@/components/ui/montre-3d").then((m) => m
    curseur la parcourt avec le chrono et dore les minutes passées.
 
    Place (2026-10-19, J) : remontée dans le ciel, juste avant la plongée dans
-   l'ordinateur. Pendant qu'elle se joue, l'heure du ciel est suspendue
-   (`Ciel`, `pauses`) ; la section est transparente sur le plan, sans voile
+   l'ordinateur. Le ciel défile derrière elle (il s'arrête plus haut, pendant
+   « La relecture » : `Ciel`, `pauses`) ; la section est transparente sur le plan, sans voile
    (J : « pas de voile sombre »), pour que le ciel reste un seul plan du hero
    jusqu'à la discussion ; le texte garde l'ombre `sur-ciel` des autres scènes.
 
@@ -103,16 +103,17 @@ const INCLINAISONS = [
 ] as const;
 
 /* La montre en volume à chaque étape (degrés ; `rx` négatif : vue d'au-dessus, `ry` négatif : le côté de la couronne,
-   180 : le fond). Elle ne revient jamais deux fois au même angle. */
+   180 : le fond). De légers changements de vue autour d'un trois quarts, comme une montre qu'on tient et qu'on incline à
+   peine (J, 2026-10-19 : « qu'elle bouge moins ») ; seul le dernier temps la retourne. */
 const POSES_3D = [
-  { rx: -22, ry: -22, rz: -6 }, // l'arrivée, de trois quarts
-  { rx: -14, ry: 30, rz: 5 },
-  { rx: -6, ry: -66, rz: 0 }, // de profil, côté couronne : l'épaisseur
-  { rx: -4, ry: -2, rz: 0 }, // de face, pour le compteur des 72 heures
-  { rx: -56, ry: 8, rz: 18 }, // en plongée
-  { rx: -12, ry: -40, rz: -6 },
-  { rx: -30, ry: 52, rz: -8 }, // de l'autre côté, d'au-dessus
-  { rx: -10, ry: 196, rz: 0 }, // retournée : le fond saphir, le mouvement
+  { rx: -22, ry: -20, rz: -6 }, // l'arrivée, de trois quarts
+  { rx: -18, ry: -12, rz: -4 },
+  { rx: -16, ry: -27, rz: -6 }, // un peu plus de biais : l'épaisseur, la couronne
+  { rx: -11, ry: -9, rz: -3 }, // presque de face, pour le compteur des 72 heures
+  { rx: -25, ry: -16, rz: -7 },
+  { rx: -18, ry: -24, rz: -4 },
+  { rx: -21, ry: -10, rz: -5 },
+  { rx: -12, ry: 190, rz: 0 }, // retournée : le fond saphir, le mouvement
 ] as const;
 
 /** Une erreur de la scène 3D (contexte WebGL refusé, perdu) ne casse pas la section : la montre à plat reste. */
@@ -440,13 +441,13 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
           p.allumes[i] = x;
         },
       }));
-      gsap.set(p, { rx: -40, ry: -42, rz: -14, echelle: 0.86 });
+      gsap.set(p, { rx: -30, ry: -30, rz: -10, echelle: 0.92 });
       tl.to(p, { ...POSES_3D[0], echelle: 1, duration: S * 0.8, ease: "power2.out" }, 0);
       for (let k = 1; k < N; k++) {
         const retourne = k === N - 1;
         tl.to(
           p,
-          { ...POSES_3D[k], echelle: k === 3 ? 1.06 : 1, duration: S * (retourne ? 0.5 : 0.7), ease: retourne ? "power2.inOut" : "sine.inOut" },
+          { ...POSES_3D[k], echelle: k === 3 ? 1.03 : 1, duration: S * (retourne ? 0.5 : 0.7), ease: retourne ? "power2.inOut" : "sine.inOut" },
           d(k) + (retourne ? S * 0.04 : 0),
         );
       }
