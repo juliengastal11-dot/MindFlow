@@ -1,8 +1,8 @@
 # La montre en photo de la section 04
 
-Sur la page d'essai `/essai/montre-photo`, la montre se fabrique au défilement avec de vraies pièces
-en photo : les pièces d'une vue éclatée glissent sur le fil d'or jusqu'au boîtier, étape après
-étape, puis la photo de la montre montée prend le relais, de face, et se retourne sur son fond.
+Dans la section 04 de l'accueil (depuis le 2026-10-19, à la place de la montre 3D), la montre se fabrique
+au défilement avec de vraies pièces en photo : les pièces d'une vue éclatée glissent sur le fil d'or jusqu'au boîtier, étape après
+étape, puis la photo de la montre montée, de trois quarts, prend le relais, et la montre se retourne, en volume, sur son fond.
 Le composant est `stalika/components/ui/montre-photo.tsx`, la chorégraphie `stalika/lib/montre-photo.ts`.
 
 Ce dossier n'est pas publié : la construction ne prend que `stalika/`.

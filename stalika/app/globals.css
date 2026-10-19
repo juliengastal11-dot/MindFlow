@@ -564,121 +564,17 @@ html.js [data-brouille] [data-baseline] {
   [class*="animate-[bouton-"] { animation: none; }
 }
 
-/* La montre (components/ui/montre.tsx) : une montre habillée en or jaune, dessinée en code. Toutes ses mesures suivent
-   `--montre-l`, la largeur de la tête (440 unités) : `--u` est une unité. L'or vient du doré du thème ; le cuir, l'acier
-   du mouvement, l'encre des aiguilles et les rubis sont des matières, réglées ici une fois. */
-.montre {
-  --u: calc(var(--montre-l, 440px) / 440);
-  --or-1: color-mix(in oklab, var(--color-accent) 35%, white);
-  --or-2: color-mix(in oklab, var(--color-accent) 80%, white);
-  --or-3: color-mix(in oklab, var(--color-accent) 92%, #c8a040);
-  --or-4: color-mix(in oklab, var(--color-accent) 60%, #4a3510);
-  --or-5: color-mix(in oklab, var(--color-accent) 30%, #1f1608);
-  --champagne: color-mix(in oklab, var(--color-accent) 62%, var(--color-lin));
-  --montre-cuivre: color-mix(in oklab, var(--or-4) 70%, #8a4a2a);
-  --montre-encre: #1e1a12;
-  --montre-encre-reflet: #3c3a36;
-  --montre-ombre: #3a2508;
-  --montre-cuir-0: #040404;
-  --montre-cuir-1: #0a0a09;
-  --montre-cuir-2: #121210;
-  --montre-cuir-3: #1f1e1b;
-  --montre-cuir-4: #2c2b27;
-  --montre-acier-1: #d7d0bd;
-  --montre-acier-2: #c9c1ac;
-  --montre-acier-3: #a59c88;
-  --montre-acier-4: #6f6857;
-  --montre-rubis-1: color-mix(in oklab, var(--color-destructive) 35%, white);
-  --montre-rubis-2: color-mix(in oklab, var(--color-destructive) 78%, black);
-  --montre-rubis-3: color-mix(in oklab, var(--color-destructive) 35%, black);
-  position: relative;
-  width: calc(440 * var(--u));
-  height: calc(940 * var(--u));
-  font-family: var(--font-sans);
-}
-.montre-incline, .montre-pivot, .montre-face, .montre-dos { position: absolute; inset: 0; }
-.montre { perspective: calc(2400 * var(--u)); }
-.montre-incline { transform-style: preserve-3d; will-change: transform; }
-.montre-pivot { transform-style: preserve-3d; will-change: transform; }
-.montre-face, .montre-dos { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.montre-dos { transform: rotateY(180deg); }
-
-.montre-bracelet { position: absolute; left: 50%; width: calc(228 * var(--u)); height: calc(278 * var(--u)); transform: translateX(-50%); overflow: hidden; }
-.montre-bracelet svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.montre-bracelet.haut { top: 0; border-radius: calc(26 * var(--u)) calc(26 * var(--u)) 0 0; -webkit-mask: linear-gradient(to bottom, transparent, #000 34%); mask: linear-gradient(to bottom, transparent, #000 34%); }
-.montre-bracelet.bas { bottom: 0; border-radius: 0 0 calc(26 * var(--u)) calc(26 * var(--u)); -webkit-mask: linear-gradient(to top, transparent, #000 34%); mask: linear-gradient(to top, transparent, #000 34%); }
-
-.montre-tete { position: absolute; left: 0; top: calc(250 * var(--u)); width: calc(440 * var(--u)); height: calc(440 * var(--u)); }
-.montre-dessin { position: absolute; left: calc(-60 * var(--u)); top: calc(-60 * var(--u)); width: calc(560 * var(--u)); height: calc(560 * var(--u)); overflow: visible; }
-
-/* la lunette : large, plate, polie miroir */
-.montre-lunette {
-  position: absolute; inset: 0; border-radius: 50%;
-  background:
-    radial-gradient(circle, transparent 90.6%, rgb(70 45 10 / .55) 91%, rgb(255 245 215 / .7) 91.6%, transparent 92.4%),
-    radial-gradient(circle, transparent 98.6%, rgb(255 248 225 / .8) 99.3%, transparent 100%),
-    linear-gradient(140deg, var(--or-1) 0%, var(--or-2) 18%, var(--or-3) 42%, var(--or-4) 70%, var(--or-3) 86%, var(--or-2) 100%);
-  box-shadow: 0 calc(36 * var(--u)) calc(50 * var(--u)) calc(-16 * var(--u)) rgb(0 0 0 / .85), 0 0 0 1px var(--or-5);
-}
-.montre-lunette::after {
-  content: ""; position: absolute; inset: 0; border-radius: 50%;
-  background: conic-gradient(from 200deg, transparent, rgb(255 250 230 / .28) 6%, transparent 14%, transparent 50%, rgb(255 250 230 / .16) 56%, transparent 64%);
-  -webkit-mask: radial-gradient(circle, transparent 91%, #000 91.5%); mask: radial-gradient(circle, transparent 91%, #000 91.5%);
-}
-/* le cadran champagne, brossé soleil : deux lobes de lumière, un grain très léger (pas de rayures fines : elles font une moire) */
-.montre-cadran {
-  position: absolute; inset: calc(20 * var(--u)); border-radius: 50%; overflow: hidden; isolation: isolate;
-  background:
-    radial-gradient(80% 70% at 30% 24%, rgb(255 250 235 / .35), transparent 62%),
-    radial-gradient(circle, transparent 70%, rgb(90 64 20 / .22) 100%),
-    conic-gradient(from 0deg, color-mix(in oklab, var(--champagne) 90%, var(--or-4)) 0deg, var(--champagne) 30deg, color-mix(in oklab, var(--champagne) 84%, white) 62deg, var(--champagne) 95deg, color-mix(in oklab, var(--champagne) 86%, var(--or-4)) 135deg, color-mix(in oklab, var(--champagne) 80%, var(--or-4)) 160deg, var(--champagne) 205deg, color-mix(in oklab, var(--champagne) 80%, white) 242deg, var(--champagne) 282deg, color-mix(in oklab, var(--champagne) 86%, var(--or-4)) 318deg, color-mix(in oklab, var(--champagne) 90%, var(--or-4)) 360deg);
-  box-shadow: inset 0 0 0 1px rgb(80 55 15 / .55), inset 0 calc(6 * var(--u)) calc(10 * var(--u)) rgb(70 45 10 / .35);
-}
-.montre-cadran::before {
-  content: ""; position: absolute; inset: 0; opacity: .22; mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55  0 0 0 0 .45  0 0 0 0 .3  0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-.montre-compteur {
-  position: absolute; left: calc(50% - 32 * var(--u)); top: calc(50% + 60 * var(--u)); width: calc(64 * var(--u)); height: calc(64 * var(--u)); border-radius: 50%;
-  background: repeating-radial-gradient(circle, color-mix(in oklab, var(--champagne) 94%, white) 0 calc(.8 * var(--u)), color-mix(in oklab, var(--champagne) 90%, var(--or-4)) calc(.8 * var(--u)) calc(1.7 * var(--u)));
-  box-shadow: inset 0 calc(1.5 * var(--u)) calc(3 * var(--u)) rgb(70 45 10 / .55), 0 1px 0 rgb(255 250 235 / .6);
-}
-/* le verre saphir : un reflet en haut à gauche, qui glisse quand la montre s'incline (`--reflet-x`, `--reflet-y`) */
-.montre-verre {
-  position: absolute; inset: calc(20 * var(--u)); border-radius: 50%; pointer-events: none;
-  background:
-    radial-gradient(55% 38% at calc(30% + var(--reflet-x, 0%)) calc(18% + var(--reflet-y, 0%)), rgb(255 255 255 / .22), transparent 70%),
-    linear-gradient(124deg, transparent calc(42% + var(--reflet-x, 0%)), rgb(255 255 255 / .07) calc(47% + var(--reflet-x, 0%)), transparent calc(53% + var(--reflet-x, 0%))),
-    radial-gradient(circle, transparent 95%, rgb(255 255 255 / .18) 99.5%, transparent 100%);
-}
-.montre-verre-dos { inset: calc(86 * var(--u)); }
-
-/* le dos : un anneau poli, gravé, et la fenêtre sur le mouvement */
-.montre-anneau {
-  position: absolute; inset: 0; border-radius: 50%;
-  background:
-    radial-gradient(circle, transparent 60.5%, rgb(70 45 10 / .6) 61%, rgb(255 245 215 / .6) 61.8%, transparent 62.6%),
-    linear-gradient(320deg, var(--or-1) 0%, var(--or-2) 18%, var(--or-3) 42%, var(--or-4) 70%, var(--or-3) 86%, var(--or-2) 100%);
-  box-shadow: 0 calc(36 * var(--u)) calc(50 * var(--u)) calc(-16 * var(--u)) rgb(0 0 0 / .85), 0 0 0 1px var(--or-5);
-}
-.montre-fenetre { position: absolute; inset: calc(86 * var(--u)); border-radius: 50%; overflow: hidden; background: var(--montre-cuir-1); }
-.montre-fenetre svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.montre-fenetre::after { content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; box-shadow: inset 0 0 0 1.5px var(--or-5), inset 0 calc(10 * var(--u)) calc(18 * var(--u)) rgb(0 0 0 / .7); }
-
 /* La section de la montre (components/sections/scene-livre.tsx). Par défaut (sans JavaScript, ou en mouvement réduit) :
-   la montre, recadrée sur sa tête, puis les huit temps en liste. Avec le film : la montre collée au milieu de l'écran, les
-   temps superposés, que la chronologie fait apparaître tour à tour. */
+   la montre montée, de face, recadrée sur sa tête, puis les huit temps en liste. Avec le film : la montre qui se fabrique
+   couvre l'écran, les temps superposés, que la chronologie fait apparaître tour à tour. */
 .chrono-colle { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2.5rem; padding: 4rem 1.5rem; }
 .chrono-lumiere { position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(60% 55% at 50% 38%, color-mix(in oklab, var(--color-accent) 14%, transparent), transparent 70%); }
 .chrono-montre { --montre-l: min(72vw, 340px); position: relative; width: var(--montre-l); height: calc(var(--montre-l) * 1.5); overflow: hidden; }
-.chrono-montre .montre { position: absolute; left: 0; top: calc(var(--montre-l) * .75 - var(--montre-l) * 470 / 440); }
 .chrono-texte { position: relative; width: 100%; max-width: 34rem; }
-.chrono-3d { display: none; }
 .chrono-reglette { display: none; }
-.chrono-fil { display: none; }
 .chrono-photo { display: none; }
-/* la montre en photo (essai, components/ui/montre-photo.tsx) : sans film, la montre montée, de face, recadrée sur sa tête */
+/* sans film, la montre montée, de face, recadrée sur sa tête */
 .chrono-montre-photo { position: absolute; left: 9.4%; top: calc(var(--montre-l) * .1225); width: 88.2%; max-width: none; }
 .chrono-etapes { display: grid; gap: 3rem; }
 .chrono-titre { margin-top: .75rem; font-size: 1.6rem; line-height: 1.15; }
@@ -694,8 +590,8 @@ html.js [data-brouille] [data-baseline] {
   html.js .chrono-texte { isolation: isolate; }
   html.js .chrono-texte::before { content: ""; position: absolute; z-index: -1; pointer-events: none; left: -1.5rem; right: -1.5rem; top: -7svh; bottom: -1.5rem;
     background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--color-background) 62%, transparent) 30%, color-mix(in oklab, var(--color-background) 74%, transparent)); }
-  html.js .chrono-montre { position: absolute; left: 50%; top: 0; width: 0; height: 100%; overflow: visible; --montre-l: min(76vw, 40svh); }
-  html.js .chrono-montre .montre { left: calc(var(--montre-l) / -2); top: calc(30svh - var(--montre-l) * 470 / 440); }
+  /* avec le film, la montre qui se fabrique la remplace */
+  html.js .chrono-montre { display: none; }
   html.js .chrono-texte { position: absolute; left: 1.5rem; right: 1.5rem; top: 58svh; bottom: max(1.5rem, env(safe-area-inset-bottom)); width: auto; max-width: none; }
   html.js .chrono-etapes { display: block; position: relative; height: 100%; }
   html.js .chrono-etapes > li { position: absolute; inset: 0; padding-top: 1.75rem; }
@@ -709,29 +605,15 @@ html.js [data-brouille] [data-baseline] {
     background-size: calc(100% / 12) 100%, calc(100% / 60) 45%; background-position: 0 0, 0 100%; background-repeat: repeat-x; }
   html.js .chrono-reglette-or { position: absolute; inset: 0; color: var(--color-accent); clip-path: inset(0 calc((1 - var(--chrono, 0)) * 100%) 0 0); }
   html.js .chrono-reglette-curseur { position: absolute; top: -4px; bottom: -4px; left: calc(var(--chrono, 0) * 100%); width: 1.5px; background: var(--color-foreground); }
-  /* la montre en volume (components/ui/montre-3d.tsx) : en haut de l'écran au téléphone, fondue vers le texte ; à droite
-     sur un écran large, fondue vers la colonne de texte. Elle remplace la montre à plat une fois dessinée. */
-  html.js .chrono-3d { display: block; position: absolute; left: 0; right: 0; top: 0; height: 64svh; pointer-events: none; opacity: 0; transition: opacity .8s ease;
-    -webkit-mask: linear-gradient(to bottom, #000 74%, transparent); mask: linear-gradient(to bottom, #000 74%, transparent); }
-  html.js .chrono-3d[data-prete] { opacity: 1; }
-  html.js .chrono-montre { transition: opacity .8s ease, visibility 0s; }
-  /* la montre qui se fabrique (essai) : la 3D couvre tout l'écran, derrière le texte ; le fil d'or, l'établi où reposent
-     les pièces, court au bas du texte */
-  html.js .chrono-montage .chrono-3d { inset: 0; height: auto; -webkit-mask: none; mask: none; }
-  html.js .chrono-fil { display: block; position: absolute; left: 1.5rem; right: 1.5rem; bottom: max(0.9rem, env(safe-area-inset-bottom)); height: 1px;
-    pointer-events: none; background: linear-gradient(to right, transparent, var(--color-accent) 7%, var(--color-accent) 93%, transparent);
-    box-shadow: 0 0 10px color-mix(in oklab, var(--color-accent) 45%, transparent); }
-  html.js .chrono-montre[data-cachee] { opacity: 0; visibility: hidden; transition: opacity .8s ease, visibility 0s .8s; }
-  /* la montre en photo qui se fabrique (essai) : toute la hauteur de l'écran, derrière le texte ; la caméra la cadre
-     (lib/montre-photo.ts). La montre dessinée ne se montre pas. Le fil d'or garde la même finesse à toutes les échelles
-     (`--k`, l'échelle de la platine). */
-  html.js .chrono-en-photo .chrono-montre { display: none; }
+  /* la montre en photo qui se fabrique (components/ui/montre-photo.tsx) : toute la hauteur de l'écran, derrière le texte ;
+     la caméra la cadre (lib/montre-photo.ts). Le fil d'or garde la même finesse à toutes les échelles (`--k`, l'échelle de
+     la platine). */
   html.js .chrono-photo { display: block; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .8s ease; }
   html.js .chrono-photo[data-prete] { opacity: 1; }
   .photo-scene { position: absolute; inset: 0; overflow: hidden; }
   .photo-platine { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; perspective: 1800px; perspective-origin: 462px 1057px; }
   .photo-eclate, .photo-dedans { position: absolute; inset: 0; }
-  .photo-piece, .photo-assemblee { position: absolute; max-width: none; user-select: none; -webkit-user-drag: none; }
+  .photo-piece { position: absolute; max-width: none; user-select: none; -webkit-user-drag: none; }
   .photo-piece { will-change: transform; }
   /* la montre finie, de trois quarts ; la lumière qui glisse sur elle, découpée par la photo elle-même */
   .photo-trois-quarts { position: absolute; opacity: 0; visibility: hidden; }
@@ -751,15 +633,10 @@ html.js [data-brouille] [data-baseline] {
     box-shadow: 0 0 calc(10px / var(--k, 1)) color-mix(in oklab, var(--color-accent) 55%, transparent); }
   @media (min-width: 768px) {
     html.js .chrono-lumiere { background: radial-gradient(42% 60% at 69% 50%, color-mix(in oklab, var(--color-accent) 14%, transparent), transparent 70%); }
-    html.js .chrono-3d { left: 38vw; bottom: 0; height: auto;
-      -webkit-mask: linear-gradient(to right, transparent, #000 16%); mask: linear-gradient(to right, transparent, #000 16%); }
-    html.js .chrono-montre { left: auto; right: max(3vw, calc(50vw - 600px)); width: var(--montre-l); --montre-l: min(36vw, 60svh); }
-    html.js .chrono-montre .montre { left: 0; top: calc(50svh - var(--montre-l) * 470 / 440); }
     html.js .chrono-texte { left: max(1.5rem, calc(50vw - 600px)); right: auto; top: 0; bottom: 0; width: min(30rem, 36vw); }
     /* les numéros et les titres à la même hauteur d'un temps à l'autre : le quantième tourne sur place */
     /* sous l'horizon, sur la falaise : le texte reste lisible sur le ciel sans voile */
     html.js .chrono-reglette { top: 38svh; }
-    html.js .chrono-fil { left: max(1.5rem, calc(50vw - 600px)); right: 4vw; top: 86svh; bottom: auto; }
     html.js .chrono-texte::before { left: -9rem; right: -7rem; top: 24svh; bottom: 6svh;
       background: radial-gradient(closest-side, color-mix(in oklab, var(--color-background) 72%, transparent), color-mix(in oklab, var(--color-background) 58%, transparent) 55%, transparent); }
     html.js .chrono-etapes > li { padding-top: calc(38svh + 2.25rem); }
