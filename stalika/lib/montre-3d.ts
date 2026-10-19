@@ -217,61 +217,130 @@ export function brin(sens: 1 | -1, arc = 2.6): THREE.BufferGeometry {
   return g;
 }
 
-/* ---- Le mouvement, en volume (d'après la photo d'un calibre à remontage manuel envoyée par J) ----------------
-   Vu par le fond : des ponts en acier anguleux, vissés ; des roues en laiton doré à bras ; un grand rochet en acier
-   soleillé, sa roue de couronne ; le balancier et son spiral ; des rubis. Rayon 12,6 mm. Les coordonnées sont données
-   telles qu'on les voit par le fond (x vers la droite du spectateur) : la pièce posée les retourne (x = -x). */
+/* ---- Le mouvement, en volume, d'après la photo envoyée par J (un calibre à remontage manuel, vu par le fond) ----------
+   Comme sur la photo : des ponts en acier mat, grenu, aux arêtes adoucies, séparés par de fines rainures ; par-dessus,
+   les roues du rouage en laiton doré, à bras courbes ; en bas, le grand rochet d'acier soleillé marqué d'une étoile, et sa
+   roue de couronne ; en haut à gauche, le balancier doré dans son creux, sous son coq ; la roue d'échappement à moitié
+   sous un pont ; des vis, des rubis ; un liseré de laiton au bord. Rayon 12,25 mm.
 
-/** Une roue dentée : `dents` dents au rayon `r`, `bras` bras (0 : pleine), un trou au centre. Épaisseur `e`, sur Z. */
-export function roueDentee(r: number, dents: number, bras: number, e: number, hauteurDent = 0.035): THREE.BufferGeometry {
-  const s = new THREE.Shape();
-  const h = Math.max(0.12, r * hauteurDent * 3);
-  for (let i = 0; i < dents; i++) {
-    const a = (k: number) => ((i + k) / dents) * Math.PI * 2;
-    const p = (rr: number, aa: number) => [rr * Math.cos(aa), rr * Math.sin(aa)] as const;
-    const pts = [p(r - h, a(0)), p(r, a(0.2)), p(r, a(0.45)), p(r - h, a(0.62))];
-    pts.forEach(([x, y], k) => (i === 0 && k === 0 ? s.moveTo(x, y) : s.lineTo(x, y)));
-  }
-  s.closePath();
-  const moyeu = Math.max(0.3, r * 0.2);
-  const jante = r - h - Math.max(0.25, r * 0.13);
-  if (bras > 0) {
-    // les jours entre les bras
-    for (let k = 0; k < bras; k++) {
-      const a0 = (k / bras) * Math.PI * 2 + 0.16 * (6 / bras);
-      const a1 = ((k + 1) / bras) * Math.PI * 2 - 0.16 * (6 / bras);
-      const trou = new THREE.Path();
-      trou.absarc(0, 0, jante, a0, a1, false);
-      trou.absarc(0, 0, moyeu + 0.18, a1, a0, true);
-      trou.closePath();
-      s.holes.push(trou);
-    }
-  }
-  const axe = new THREE.Path();
-  axe.absarc(0, 0, Math.max(0.12, r * 0.06), 0, Math.PI * 2, true);
-  s.holes.push(axe);
-  const g = new THREE.ExtrudeGeometry(s, { depth: e, bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.03, bevelSegments: 1, curveSegments: 10 });
-  g.computeVertexNormals();
-  return g;
+   Les coordonnées sont celles qu'on voit par le fond (x vers la droite du spectateur) : la pièce posée les retourne
+   (x = -x). Profondeur `z`, vers le cadran (le biseau d'une pièce extrudée déborde de 0,06 de chaque côté) : rochet de
+   -0,28 à 0,03 ; troisième roue et roue des secondes de -0,15 à 0,07 ; roue moyenne de 0,13 à 0,34 ; dessus des ponts à
+   0,36 ; coq de 0,14 à 0,61 ; balancier de 0,62 à 0,94 ; roue d'échappement et ancre à 1 (sous le pont) ; platine à 1,35. */
+
+const R_MVT = 12.25;
+
+/** Des points sur le bord du mouvement, de l'angle `a0` à `a1` (degrés, sens trigonométrique). */
+function bord(a0: number, a1: number, r = R_MVT - 0.02, n = 18): [number, number][] {
+  return Array.from({ length: n + 1 }, (_, i) => {
+    const a = THREE.MathUtils.degToRad(a0 + ((a1 - a0) * i) / n);
+    return [r * Math.cos(a), r * Math.sin(a)];
+  });
 }
 
-/** Un pont : un polygone anguleux, aux angles adoucis, épais de `e`, biseauté (l'anglage qui accroche la lumière). */
-export function pont(points: readonly (readonly [number, number])[], e: number, trous: readonly (readonly [number, number, number])[] = []): THREE.BufferGeometry {
+/** Un contour aux angles arrondis (rayon `r`), d'après ses sommets : l'arête usinée d'un pont. */
+function contourArrondi(points: readonly (readonly [number, number])[], r = 0.6): THREE.Shape {
   const s = new THREE.Shape();
-  points.forEach(([x, y], k) => (k === 0 ? s.moveTo(x, y) : s.lineTo(x, y)));
+  const n = points.length;
+  for (let i = 0; i < n; i++) {
+    const [x0, y0] = points[(i - 1 + n) % n];
+    const [x1, y1] = points[i];
+    const [x2, y2] = points[(i + 1) % n];
+    const d1 = Math.hypot(x0 - x1, y0 - y1) || 1;
+    const d2 = Math.hypot(x2 - x1, y2 - y1) || 1;
+    const k1 = Math.min(r, d1 / 2) / d1;
+    const k2 = Math.min(r, d2 / 2) / d2;
+    const a = [x1 + (x0 - x1) * k1, y1 + (y0 - y1) * k1] as const;
+    const b = [x1 + (x2 - x1) * k2, y1 + (y2 - y1) * k2] as const;
+    if (i === 0) s.moveTo(a[0], a[1]);
+    else s.lineTo(a[0], a[1]);
+    s.quadraticCurveTo(x1, y1, b[0], b[1]);
+  }
   s.closePath();
+  return s;
+}
+
+/** Un pont : une plaque d'acier épaisse de `e`, au contour usiné, percée de `trous`, biseautée (l'anglage). */
+export function pont(points: readonly (readonly [number, number])[], e: number, trous: readonly (readonly [number, number, number])[] = []): THREE.BufferGeometry {
+  const s = contourArrondi(points);
   for (const [x, y, r] of trous) {
     const t = new THREE.Path();
     t.absarc(x, y, r, 0, Math.PI * 2, true);
     s.holes.push(t);
   }
-  const g = new THREE.ExtrudeGeometry(s, { depth: e, bevelEnabled: true, bevelThickness: 0.08, bevelSize: 0.08, bevelSegments: 2, curveSegments: 16 });
+  const g = new THREE.ExtrudeGeometry(s, { depth: e, bevelEnabled: true, bevelThickness: 0.06, bevelSize: 0.07, bevelSegments: 3, curveSegments: 10 });
+  g.computeVertexNormals();
+  return g;
+}
+
+type Roue = {
+  /** Nombre de dents (0 : une couronne lisse, comme la jante du balancier). */
+  dents: number;
+  /** Nombre de bras (0 : pleine). */
+  bras: number;
+  /** Épaisseur, en mm. */
+  e: number;
+  /** Hauteur d'une dent, en mm. */
+  dent?: number;
+  /** Dents en scie (le rochet, la roue d'échappement) plutôt qu'en créneau. */
+  scie?: boolean;
+  /** Courbure des bras, en radians : de combien un bras tourne entre le moyeu et la jante. */
+  courbe?: number;
+  /** Largeur de la jante, en mm. */
+  jante?: number;
+  /** Rayon du moyeu, en mm. */
+  moyeu?: number;
+};
+
+/** Une roue : sa denture (en créneau ou en scie), sa jante, ses bras courbes (les « croisillons » des roues de la photo),
+    son moyeu et son trou d'axe. Épaisseur sur Z. */
+export function roue(r: number, o: Roue): THREE.BufferGeometry {
+  const { dents, bras, e, scie = false } = o;
+  const h = o.dent ?? Math.max(0.1, r * 0.045);
+  const s = new THREE.Shape();
+  const p = (rr: number, aa: number) => [rr * Math.cos(aa), rr * Math.sin(aa)] as const;
+  if (dents > 0) {
+    for (let i = 0; i < dents; i++) {
+      const a = (k: number) => ((i + k) / dents) * Math.PI * 2;
+      const pts = scie ? [p(r - h, a(0)), p(r, a(0.04)), p(r - h * 0.9, a(0.96))] : [p(r - h, a(0)), p(r, a(0.18)), p(r, a(0.42)), p(r - h, a(0.6))];
+      pts.forEach(([x, y], k) => (i === 0 && k === 0 ? s.moveTo(x, y) : s.lineTo(x, y)));
+    }
+    s.closePath();
+  } else s.absarc(0, 0, r, 0, Math.PI * 2, false);
+  const pied = dents > 0 ? r - h : r;
+  const jante = pied - (o.jante ?? Math.max(0.22, r * 0.11));
+  const moyeu = o.moyeu ?? Math.max(0.35, r * 0.15);
+  if (bras > 0 && jante > moyeu + 0.3) {
+    const c = o.courbe ?? 0.45;
+    const demi = Math.max(0.1, r * 0.035); // demi-largeur d'un bras
+    for (let k = 0; k < bras; k++) {
+      const a0 = (k / bras) * Math.PI * 2;
+      const a1 = ((k + 1) / bras) * Math.PI * 2;
+      const wh = demi / moyeu;
+      const wr = demi / jante;
+      const mi = (moyeu + jante) / 2;
+      const jour = new THREE.Path();
+      jour.moveTo(...p(moyeu, a0 + wh));
+      // le flanc du bras k, courbe, du moyeu à la jante
+      jour.quadraticCurveTo(...p(mi, a0 + c * 0.25 + (wh + wr) / 2), ...p(jante, a0 + c + wr));
+      jour.absarc(0, 0, jante, a0 + c + wr, a1 + c - wr, false);
+      // le flanc du bras k + 1, de la jante au moyeu
+      jour.quadraticCurveTo(...p(mi, a1 + c * 0.25 - (wh + wr) / 2), ...p(moyeu, a1 - wh));
+      jour.absarc(0, 0, moyeu, a1 - wh, a0 + wh, true);
+      jour.closePath();
+      s.holes.push(jour);
+    }
+  }
+  const axe = new THREE.Path();
+  axe.absarc(0, 0, Math.max(0.1, r * 0.05), 0, Math.PI * 2, true);
+  s.holes.push(axe);
+  const g = new THREE.ExtrudeGeometry(s, { depth: e, bevelEnabled: true, bevelThickness: 0.025, bevelSize: 0.025, bevelSegments: 1, curveSegments: 12 });
   g.computeVertexNormals();
   return g;
 }
 
 /** Le spiral du balancier : un fil plat enroulé, en tube très fin. */
-export function spiral(tours = 11, r0 = 0.35, r1 = 2.2): THREE.BufferGeometry {
+export function spiral(tours = 12, r0 = 0.35, r1 = 2.5): THREE.BufferGeometry {
   const pts: THREE.Vector3[] = [];
   const n = tours * 48;
   for (let i = 0; i <= n; i++) {
@@ -279,45 +348,59 @@ export function spiral(tours = 11, r0 = 0.35, r1 = 2.2): THREE.BufferGeometry {
     const r = r0 + ((r1 - r0) * i) / n;
     pts.push(new THREE.Vector3(r * Math.cos(t), r * Math.sin(t), 0));
   }
-  return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), n, 0.022, 4, false);
+  return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), n, 0.02, 4, false);
 }
 
 export const MOUVEMENT_3D = {
-  // les ponts (vus par le fond), en millimètres
+  rayon: R_MVT,
+  // les ponts d'acier : leur contour (le bord du mouvement, puis l'intérieur), leurs jours
   ponts: [
-    // le grand pont de rouage, à gauche
-    {
-      points: [[-11.6, 2.8], [-6.2, 4.6], [-2.4, 2.2], [-0.6, -1.6], [-3.4, -3.6], [-9.0, -4.4], [-11.9, -1.2]],
-      trous: [[-4.2, 1.0, 0.55], [-8.6, -1.6, 0.4]],
-    },
-    // le pont de barillet, en bas
-    {
-      points: [[-8.2, -5.4], [-3.0, -4.2], [3.4, -3.4], [7.6, -5.0], [6.4, -9.6], [0.4, -12.2], [-5.8, -10.6]],
-      trous: [],
-    },
-    // le pont de droite
-    {
-      points: [[5.0, 9.8], [9.8, 6.4], [12.0, 1.0], [11.2, -3.2], [7.8, -2.6], [4.6, 1.4], [2.8, 6.0]],
-      trous: [[7.4, 3.2, 0.45]],
-    },
-    // le coq du balancier, en haut à gauche
-    {
-      points: [[-9.2, 6.4], [-6.4, 6.0], [-3.8, 8.6], [-4.6, 10.6], [-7.6, 10.4]],
-      trous: [],
-    },
+    // le pont de barillet, en bas : le rochet et la roue de couronne sont posés dessus
+    { points: [...bord(198, 342), [7.2, -2.2], [3.6, -2.9], [-1.2, -2.7], [-5.4, -2.0], [-8.8, -0.7]], trous: [] },
+    // le pont de rouage, à droite
+    { points: [...bord(348, 426), [2.7, 7.3], [2.3, 3.2], [4.0, 0.1], [7.6, -1.6]], trous: [[9.4, -2.6, 0.38]] },
+    // le pont du haut, qui couvre à moitié la roue d'échappement
+    { points: [...bord(72, 128), [-6.4, 8.2], [-3.6, 8.0], [-0.8, 7.2], [2.1, 7.9]], trous: [[1.6, 10.3, 0.6]] },
   ],
-  // les roues en laiton : x, y, rayon, dents, bras
+  // le coq du balancier : un bras vissé au bord, qui s'avance au-dessus du balancier
+  coq: [[-12.0, 4.6], [-12.1, 1.4], [-10.2, 2.0], [-7.4, 2.45], [-6.7, 3.0], [-7.4, 3.55], [-10.2, 3.95]] as [number, number][],
+  // l'ancre, entre la roue d'échappement et le balancier : un fin levier d'acier en T
+  ancre: [[-4.3, 6.1], [-3.0, 5.7], [-3.2, 5.35], [-4.35, 5.6], [-6.3, 3.85], [-6.6, 4.15], [-4.7, 5.95], [-5.0, 6.7], [-4.6, 6.8]] as [number, number][],
+  // les roues dorées : x, y, rayon, dents, bras, z (profondeur)
   roues: [
-    [0.0, 1.2, 3.9, 80, 5],
-    [3.6, 4.4, 3.2, 72, 4],
-    [-3.4, 4.4, 2.6, 60, 5],
+    { nom: "moyenne", x: -0.3, y: -0.3, r: 4.2, dents: 80, bras: 5, z: 0.155 },
+    { nom: "troisieme", x: 5.0, y: 2.6, r: 3.5, dents: 72, bras: 5, z: -0.12 },
+    { nom: "secondes", x: -1.2, y: 5.2, r: 2.3, dents: 60, bras: 4, z: -0.12 },
   ],
-  // le rochet (acier soleillé) et la roue de couronne
-  rochet: [-1.2, -6.0, 4.6, 96],
-  couronne: [5.6, -4.4, 2.5, 52],
-  balancier: [-6.4, 6.6, 2.7],
-  rubis: [[0.0, 1.2], [3.6, 4.4], [-3.4, 4.4], [-6.4, 6.6], [-4.2, 1.0], [7.4, 3.2], [2.2, -1.0], [-8.6, -1.6]],
-  vis: [[-10.2, 1.6], [-5.4, -3.6], [-6.8, -8.4], [4.6, -8.2], [9.6, 4.4], [10.2, -1.8], [-6.0, 8.6], [3.8, 7.6]],
+  echappement: { x: -3.6, y: 6.6, r: 1.6, dents: 15, z: 1.0 },
+  rochet: { x: -0.9, y: -6.6, r: 5.0, dents: 90, z: -0.25 },
+  couronne: { x: 6.3, y: -4.2, r: 2.6, dents: 48, z: -0.02 },
+  balancier: { x: -7.4, y: 3.0, r: 3.6, z: 0.62 },
+  // la raquette, sur le coq : un fin levier d'acier
+  raquette: [[-7.4, 2.85], [-4.6, 4.2], [-4.5, 4.45], [-7.4, 3.15]] as [number, number][],
+  // les rubis en vue : sur le coq, sur les axes des roues dorées, dans les ponts ; [x, y, z]
+  rubis: [
+    [-7.4, 3.0, 0.12],
+    [5.0, 2.6, -0.17],
+    [-1.2, 5.2, -0.17],
+    [-3.6, 6.6, 0.92],
+    [8.4, 0.4, 0.34],
+    [-3.6, 9.4, 0.34],
+    [-8.6, -2.6, 0.34],
+  ] as [number, number, number][],
+  // les vis : sur les ponts, et celle du coq ; [x, y, z]
+  vis: [
+    [-9.6, -4.6, 0.3],
+    [-7.8, -8.4, 0.3],
+    [4.9, -9.7, 0.3],
+    [9.3, -6.4, 0.3],
+    [10.5, 0.7, 0.3],
+    [9.1, 6.3, 0.3],
+    [6.3, 9.6, 0.3],
+    [-5.6, 9.9, 0.3],
+    [-1.8, 10.4, 0.3],
+    [-11.1, 3.0, 0.08],
+  ] as [number, number, number][],
 } as const;
 
 /* ---- Les textures, peintes dans des canvas ---------------------------------- */
@@ -459,48 +542,67 @@ export function textureAzurage(champagne: string, encre: string) {
   return texture(c);
 }
 
-/** La platine, sous les ponts : un perlage (des cercles qui se chevauchent). */
-export function texturePerlage() {
-  const L = 1024;
-  const { c, ctx } = toile(L);
-  ctx.fillStyle = "#a59c88";
-  ctx.fillRect(0, 0, L, L);
-  for (let y = 0; y < L + 30; y += 22)
-    for (let x = (y / 22) % 2 ? 11 : 0; x < L + 30; x += 22) {
-      const g = ctx.createRadialGradient(x, y, 0, x, y, 15);
-      g.addColorStop(0, "#d4d1ca");
-      g.addColorStop(0.45, "#97948d");
-      g.addColorStop(0.8, "#c6c3bb");
-      g.addColorStop(1, "#86837c");
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(x, y, 15, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  return texture(c);
-}
-
-/** Les côtes de Genève des ponts : des bandes parallèles de 2,4 mm, chacune claire au milieu, plus sombre aux bords,
-    finement brossée. Les ponts ont pour coordonnées de texture leurs millimètres : la texture se répète. */
-export function textureCotes() {
+/** Le grain de l'acier des ponts et de la platine : un acier mat, comme sablé (la photo de J), en carreau de bruit
+    répété ; les pièces ont pour coordonnées de texture leurs millimètres (un carreau fait 3 mm). */
+export function textureGrain() {
   const L = 256;
   const { c, ctx } = toile(L);
   const img = ctx.createImageData(L, L);
-  for (let y = 0; y < L; y++) {
-    const b = 0.5 + 0.5 * Math.cos(((y + 0.5) / L) * Math.PI * 2);
-    for (let x = 0; x < L; x++) {
-      const v = 150 + 80 * b + (Math.random() - 0.5) * 18;
-      const i = (y * L + x) * 4;
-      img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
-      img.data[i + 3] = 255;
-    }
+  for (let i = 0; i < img.data.length; i += 4) {
+    const v = 205 + (Math.random() - 0.5) * 70;
+    img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+    img.data[i + 3] = 255;
   }
   ctx.putImageData(img, 0, 0);
   const t = texture(c);
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
-  t.repeat.set(1 / 2.4, 1 / 2.4);
-  t.rotation = 0.42;
+  t.repeat.set(1 / 3, 1 / 3);
   return t;
+}
+
+/** Le dessus du rochet : un soleillage, et l'étoile à cinq branches frappée dessus (la photo de J). La texture couvre le
+    disque, de -1 à 1 ; on la recadre sur la roue. */
+export function textureEtoile() {
+  const L = 512;
+  const { c, ctx } = toile(L);
+  const C = L / 2;
+  ctx.fillStyle = "#d6d4ce";
+  ctx.fillRect(0, 0, L, L);
+  // le soleillage : de fins rayons, alternés
+  for (let k = 0; k < 360; k++) {
+    const a = (k / 360) * Math.PI * 2;
+    ctx.strokeStyle = k % 2 ? "rgba(255,255,255,.18)" : "rgba(60,58,52,.10)";
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(C, C);
+    ctx.lineTo(C + C * Math.cos(a), C + C * Math.sin(a));
+    ctx.stroke();
+  }
+  // l'étoile : cinq branches fines, du centre vers le bord, frappées (un bord sombre, un bord clair)
+  for (let k = 0; k < 5; k++) {
+    const a = -Math.PI / 2 + (k / 5) * Math.PI * 2;
+    const pointe = [C + C * 0.8 * Math.cos(a), C + C * 0.8 * Math.sin(a)] as const;
+    const w = 0.07;
+    const g = [C + C * 0.16 * Math.cos(a - w * 2.4), C + C * 0.16 * Math.sin(a - w * 2.4)] as const;
+    const d = [C + C * 0.16 * Math.cos(a + w * 2.4), C + C * 0.16 * Math.sin(a + w * 2.4)] as const;
+    ctx.beginPath();
+    ctx.moveTo(C, C);
+    ctx.lineTo(...g);
+    ctx.lineTo(...pointe);
+    ctx.lineTo(...d);
+    ctx.closePath();
+    ctx.fillStyle = "rgba(246,245,240,.55)";
+    ctx.fill();
+    ctx.lineWidth = 2.2;
+    ctx.strokeStyle = "rgba(70,68,62,.65)";
+    ctx.stroke();
+  }
+  // le centre poli, autour de la vis
+  ctx.beginPath();
+  ctx.arc(C, C, C * 0.14, 0, Math.PI * 2);
+  ctx.fillStyle = "#ecebe7";
+  ctx.fill();
+  return texture(c);
 }
 
 /** Une inscription gravée, à poser en décalque sur une pièce : lettres sombres sur fond transparent. */

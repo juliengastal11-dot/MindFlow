@@ -23,12 +23,15 @@ export type PoseMontre = {
   /** Le mouvement, au dos : la rotation des roues et du balancier. */
   rouage: number;
   balancier: number;
+  /** La montre qui se fabrique (lib/assemblage.ts) : l'avancée du vol de chaque pièce, de 0 (posée sur le fil d'or) à 1
+      (à sa place). Une pièce absente est à sa place. */
+  vols: Record<string, number>;
   /** Posé par la scène 3D : la redessiner (elle ne dessine que sur demande). */
   redessiner?: () => void;
 };
 
 export function poseInitiale(): PoseMontre {
-  return { rx: -24, ry: -24, rz: -8, echelle: 1, heures: -62, minutes: 62, chrono: 0, compteur: 0, couronne: 0, allumes: Array(12).fill(0), rouage: 0, balancier: 0 };
+  return { rx: -24, ry: -24, rz: -8, echelle: 1, heures: -62, minutes: 62, chrono: 0, compteur: 0, couronne: 0, allumes: Array(12).fill(0), rouage: 0, balancier: 0, vols: {} };
 }
 
 /** Le navigateur sait-il dessiner en WebGL 2 ? */

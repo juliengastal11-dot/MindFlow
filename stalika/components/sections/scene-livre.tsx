@@ -1,6 +1,6 @@
 "use client";
 
-import { Component, useEffect, useRef, useState } from "react";
+import { Component, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -13,6 +13,9 @@ import { SplitText } from "gsap/SplitText";
 import { gsap, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
 import { poseInitiale, webglDisponible, type PoseMontre } from "@/lib/pose-montre";
+import { PLAN_MONTAGE } from "@/lib/assemblage";
+import type { Montage } from "@/components/ui/montre-3d";
+import { MontrePhoto } from "@/components/ui/montre-photo";
 
 // La montre en volume : Three.js ne se charge qu'à l'approche de la section (voir `SceneLivre`).
 const Montre3D = dynamic(() => import("@/components/ui/montre-3d").then((m) => m.Montre3D), { ssr: false });
@@ -46,9 +49,9 @@ const Montre3D = dynamic(() => import("@/components/ui/montre-3d").then((m) => m
    La montre en volume (2026-10-18, J : « il faut que la montre soit en 3D et
    surtout qu'elle ait l'épaisseur d'une vraie montre, pareil pour le
    bracelet », « elle se montre sous tous les angles ») : `Montre3D`, en
-   Three.js, joue la même partition par sa `pose`, et se tourne à chaque étape
-   vers un autre angle (`POSES_3D`) : trois quarts, profil côté couronne,
-   face, plongée, dessous, puis le fond et son mouvement. Elle se charge quand
+   Three.js, joue la même partition par sa `pose`, et change à peine d'angle
+   à chaque étape (`POSES_3D`, adoucies le 2026-10-19), avant de se retourner
+   sur le fond et son mouvement. Elle se charge quand
    la section approche, si le navigateur sait faire du WebGL et sans mouvement
    réduit ; la montre à plat reste en place jusqu'à ce qu'elle soit prête, et
    pour toujours si le WebGL manque ou échoue.
@@ -66,8 +69,8 @@ const Montre3D = dynamic(() => import("@/components/ui/montre-3d").then((m) => m
    curseur la parcourt avec le chrono et dore les minutes passées.
 
    Place (2026-10-19, J) : remontée dans le ciel, juste avant la plongée dans
-   l'ordinateur. Pendant qu'elle se joue, l'heure du ciel est suspendue
-   (`Ciel`, `pauses`) ; la section est transparente sur le plan, sans voile
+   l'ordinateur. Le ciel défile derrière elle (il s'arrête plus haut, pendant
+   « La relecture » : `Ciel`, `pauses`) ; la section est transparente sur le plan, sans voile
    (J : « pas de voile sombre »), pour que le ciel reste un seul plan du hero
    jusqu'à la discussion ; le texte garde l'ombre `sur-ciel` des autres scènes.
 
@@ -103,17 +106,36 @@ const INCLINAISONS = [
 ] as const;
 
 /* La montre en volume à chaque étape (degrés ; `rx` négatif : vue d'au-dessus, `ry` négatif : le côté de la couronne,
-   180 : le fond). Elle ne revient jamais deux fois au même angle. */
+   180 : le fond). De légers changements de vue autour d'un trois quarts, comme une montre qu'on tient et qu'on incline à
+   peine (J, 2026-10-19 : « qu'elle bouge moins ») ; seul le dernier temps la retourne. */
 const POSES_3D = [
-  { rx: -22, ry: -22, rz: -6 }, // l'arrivée, de trois quarts
-  { rx: -14, ry: 30, rz: 5 },
-  { rx: -6, ry: -66, rz: 0 }, // de profil, côté couronne : l'épaisseur
-  { rx: -4, ry: -2, rz: 0 }, // de face, pour le compteur des 72 heures
-  { rx: -56, ry: 8, rz: 18 }, // en plongée
-  { rx: -12, ry: -40, rz: -6 },
-  { rx: -30, ry: 52, rz: -8 }, // de l'autre côté, d'au-dessus
-  { rx: -10, ry: 196, rz: 0 }, // retournée : le fond saphir, le mouvement
+  { rx: -22, ry: -20, rz: -6 }, // l'arrivée, de trois quarts
+  { rx: -18, ry: -12, rz: -4 },
+  { rx: -16, ry: -27, rz: -6 }, // un peu plus de biais : l'épaisseur, la couronne
+  { rx: -11, ry: -9, rz: -3 }, // presque de face, pour le compteur des 72 heures
+  { rx: -25, ry: -16, rz: -7 },
+  { rx: -18, ry: -24, rz: -4 },
+  { rx: -21, ry: -10, rz: -5 },
+  { rx: -12, ry: 190, rz: 0 }, // retournée : le fond saphir, le mouvement
 ] as const;
+
+/* La montre qui se fabrique (essai, `mode="assemblage"`) : vue de dos pendant qu'on monte le mouvement (étapes 1 à 3),
+   tournée vers nous quand le boîtier l'a entourée (étape 4), le cadran, les aiguilles, le verre, le bracelet (5 et 6),
+   puis retournée sur le mouvement qu'on a vu naître (7). */
+const POSES_MONTAGE = [
+  { rx: -14, ry: 196, rz: 0 },
+  { rx: -14, ry: 196, rz: 0 },
+  { rx: -18, ry: 190, rz: -2 },
+  { rx: -12, ry: 202, rz: 2 },
+  { rx: -18, ry: 344, rz: -4 }, // de face (344 = -16 : on tourne dans le même sens)
+  { rx: -14, ry: 350, rz: -3 },
+  { rx: -20, ry: 338, rz: -6 },
+  { rx: -12, ry: 550, rz: 0 }, // retournée (550 = 190)
+] as const;
+
+/* `photo` (essai, 2026-10-19) : la montre en photo qui se fabrique, à partir des trois images de J (components/ui/montre-photo.tsx,
+   lib/montre-photo.ts) ; ni Three.js ni montre dessinée. */
+export type ModeLivre = "classique" | "assemblage" | "photo";
 
 /** Une erreur de la scène 3D (contexte WebGL refusé, perdu) ne casse pas la section : la montre à plat reste. */
 class Garde extends Component<{ children: React.ReactNode; onErreur: () => void }, { erreur: boolean }> {
@@ -265,7 +287,7 @@ function Etapes() {
 }
 
 /** Le film de la montre, inscrit sur la chronologie de la scène : la montre à plat, et la pose de la montre en volume. */
-function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElement | null>; pose: React.RefObject<PoseMontre> }) {
+function Mecanique({ scene: racine, pose, mode }: { scene: React.RefObject<HTMLDivElement | null>; pose: React.RefObject<PoseMontre>; mode: ModeLivre }) {
   const scene = useScene();
 
   // la montre en volume ne se redessine que quand la chronologie avance
@@ -290,7 +312,8 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
     const roues = Array.from(el.querySelectorAll<SVGGElement>("[data-montre-roue]"));
     const index = Array.from(el.querySelectorAll<SVGRectElement>("[data-montre-index]"));
     const etapes = Array.from(el.querySelectorAll<HTMLElement>("[data-etape]"));
-    if (!montre || !incline || !pivot || !heures || !minutes || !chrono || !compteur || !couronne || !rotor || !balancier) return;
+    // la montre dessinée (absente en mode photo : seul le texte joue alors ici)
+    const dessin = !!(montre && incline && pivot && heures && minutes && chrono && compteur && couronne && rotor && balancier);
 
     const arc = q<SVGCircleElement>("[data-montre-arc]");
     gsap.registerPlugin(SplitText);
@@ -300,7 +323,7 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
       /* Les rotations du dessin sont écrites à la main, sur un objet que la chronologie fait avancer : `rotate(angle cx cy)`.
          (GSAP calculait mal le centre de rotation de ces aiguilles, dans un SVG agrandi et basculé en 3D : décalées, elles
          ne passaient plus par le centre.) Les ombres des aiguilles tournent avec elles, décalées vers le bas à droite. */
-      const tourne = (el: SVGElement | null, cx: number, cy: number, depart: number, ombre?: SVGElement | null) => {
+      const tourne = (el: Element | null, cx: number, cy: number, depart: number, ombre?: SVGElement | null) => {
         const etat = { a: depart };
         const poser = () => {
           el?.setAttribute("transform", `rotate(${etat.a} ${cx} ${cy})`);
@@ -313,7 +336,7 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
       const m = tourne(minutes, 220, 220, 62, ombreM);
       const ch = { a: 0 };
       const poserChrono = () => {
-        chrono.setAttribute("transform", `rotate(${ch.a} 220 220)`);
+        chrono?.setAttribute("transform", `rotate(${ch.a} 220 220)`);
         arc?.setAttribute("stroke-dashoffset", String(360 - ch.a));
         // la réglette au-dessus du texte suit le chrono
         el.style.setProperty("--chrono", String(ch.a / 360));
@@ -323,12 +346,14 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
       const rot = tourne(rotor, 134, 134, -24);
       const bal = tourne(balancier, 0, 0, 0);
       const rs = roues.map((r) => tourne(r, 0, 0, 0));
-      gsap.set(index, { opacity: 0 });
+      if (index.length) gsap.set(index, { opacity: 0 });
 
       // L'arrivée : la montre se pose, de biais, puis se redresse.
-      gsap.set(incline, { rotationX: 22, rotationY: -18, rotationZ: -7, scale: 0.9 });
-      gsap.set(montre, { "--reflet-x": "10%", "--reflet-y": "8%" });
-      tl.to(incline, { rotationX: INCLINAISONS[0].x, rotationY: INCLINAISONS[0].y, rotationZ: 0, scale: 1, duration: S * 0.8, ease: "power2.out" }, 0);
+      if (dessin) {
+        gsap.set(incline, { rotationX: 22, rotationY: -18, rotationZ: -7, scale: 0.9 });
+        gsap.set(montre, { "--reflet-x": "10%", "--reflet-y": "8%" });
+        tl.to(incline, { rotationX: INCLINAISONS[0].x, rotationY: INCLINAISONS[0].y, rotationZ: 0, scale: 1, duration: S * 0.8, ease: "power2.out" }, 0);
+      }
 
       /* Le texte suit l'aiguille. Chaque temps a son état : l'entrée et la sortie du numéro et du titre (le quantième),
          l'apparition du corps, et la lecture (de 0 à 1, comme l'aiguille sur ses deux heures). Les lettres et les mots
@@ -398,7 +423,7 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
         }
 
         // la montre bouge dans la main, et la lumière glisse sur le verre
-        if (k > 0) {
+        if (k > 0 && dessin) {
           const { x, y } = INCLINAISONS[k];
           tl.to(incline, { rotationX: x, rotationY: y, scale: k === 3 ? 1.05 : 1, duration: S * 0.7, ease: "sine.inOut" }, d(k));
           tl.to(montre, { "--reflet-x": `${-y * 0.9}%`, "--reflet-y": `${(x - 8) * 0.9}%`, duration: S * 0.7, ease: "sine.inOut" }, d(k));
@@ -409,25 +434,31 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
       // et le temps passe, une heure par étape.
       for (let k = 1; k <= 6; k++) {
         const t = d(k) + S * 0.1;
+        // l'aiguille du chrono (et la réglette au-dessus du texte, qui la suit)
         tl.to(ch, { a: 60 * k, duration: S * 0.6, ease: "power2.inOut", onUpdate: poserChrono }, t);
+        if (!dessin) continue;
         tl.to(index[2 * k - 1], { opacity: 1, duration: S * 0.08 }, t + S * 0.26);
         tl.to(index[(2 * k) % 12], { opacity: 1, duration: S * 0.08 }, t + S * 0.52);
         tl.to(m.etat, { a: 62 + 360 * k, duration: S * 0.7, ease: "sine.inOut", onUpdate: m.poser }, d(k));
         tl.to(h.etat, { a: -62 + 30 * k, duration: S * 0.7, ease: "sine.inOut", onUpdate: h.poser }, d(k));
       }
 
-      // Étape 3 : on appuie sur la couronne, le compteur fait le tour des 72 heures.
-      tl.to(couronne, { x: -5, duration: S * 0.04, ease: "power2.in" }, d(3) + S * 0.08);
-      tl.to(couronne, { x: 0, duration: S * 0.06, ease: "power2.out" }, d(3) + S * 0.12);
-      tl.to(cpt.etat, { a: 360, duration: S * 0.6, ease: "power1.inOut", onUpdate: cpt.poser }, d(3) + S * 0.15);
+      if (dessin) {
+        // Étape 3 : on appuie sur la couronne, le compteur fait le tour des 72 heures.
+        tl.to(couronne, { x: -5, duration: S * 0.04, ease: "power2.in" }, d(3) + S * 0.08);
+        tl.to(couronne, { x: 0, duration: S * 0.06, ease: "power2.out" }, d(3) + S * 0.12);
+        tl.to(cpt.etat, { a: 360, duration: S * 0.6, ease: "power1.inOut", onUpdate: cpt.poser }, d(3) + S * 0.15);
 
-      // Étape 7 : la montre se retourne ; on voit le mouvement, le rotor tourne, le balancier bat.
-      tl.to(pivot, { rotationY: 180, duration: S * 0.45, ease: "power2.inOut" }, d(7) + S * 0.04);
-      tl.to(rot.etat, { a: 300, duration: S * 0.9, ease: "power1.inOut", onUpdate: rot.poser }, d(7) + S * 0.08);
-      rs.forEach((r, k) =>
-        tl.to(r.etat, { a: roues[k].dataset.montreRoue === "inverse" ? -220 : 140 + k * 30, duration: S * 0.9, onUpdate: r.poser }, d(7) + S * 0.08),
-      );
-      tl.to(bal.etat, { keyframes: { a: [0, 210, -40, 190, -20, 170, 0] }, duration: S * 0.9, onUpdate: bal.poser }, d(7) + S * 0.08);
+        // Étape 7 : la montre se retourne ; on voit le mouvement, le rotor tourne, le balancier bat.
+        tl.to(pivot, { rotationY: 180, duration: S * 0.45, ease: "power2.inOut" }, d(7) + S * 0.04);
+        tl.to(rot.etat, { a: 300, duration: S * 0.9, ease: "power1.inOut", onUpdate: rot.poser }, d(7) + S * 0.08);
+        rs.forEach((r, k) =>
+          tl.to(r.etat, { a: roues[k].dataset.montreRoue === "inverse" ? -220 : 140 + k * 30, duration: S * 0.9, onUpdate: r.poser }, d(7) + S * 0.08),
+        );
+        tl.to(bal.etat, { keyframes: { a: [0, 210, -40, 190, -20, 170, 0] }, duration: S * 0.9, onUpdate: bal.poser }, d(7) + S * 0.08);
+      }
+      // en mode photo, la montre se joue toute seule (components/ui/montre-photo.tsx)
+      if (mode === "photo") return;
 
       /* La montre en volume, sur la même partition : sa pose avance avec la chronologie, qu'elle soit déjà chargée ou
          non (elle prend la pose du moment en arrivant). */
@@ -440,13 +471,37 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
           p.allumes[i] = x;
         },
       }));
-      gsap.set(p, { rx: -40, ry: -42, rz: -14, echelle: 0.86 });
+      if (mode === "assemblage") {
+        /* La montre qui se fabrique : chaque pièce s'envole du fil d'or pendant sa fenêtre (lib/assemblage.ts) ; la montre
+           se tourne pour qu'on voie la pièce se poser ; le mouvement se met à battre quand il est complet ; le chrono fait
+           son premier tour quand tout est là. */
+        gsap.set(p, { ...POSES_MONTAGE[0], echelle: 1, chrono: 0 });
+        for (const piece of PLAN_MONTAGE) {
+          p.vols[piece.id] = 0;
+          tl.to(p.vols, { [piece.id]: 1, duration: S * (piece.a - piece.de) }, d(piece.etape) + S * piece.de);
+        }
+        for (let k = 1; k < N; k++) {
+          if (k === 4) tl.to(p, { ...POSES_MONTAGE[4], duration: S * 0.36, ease: "power2.inOut" }, d(4) + S * 0.36);
+          else if (k === N - 1) tl.to(p, { ...POSES_MONTAGE[k], duration: S * 0.5, ease: "power2.inOut" }, d(k) + S * 0.04);
+          else tl.to(p, { ...POSES_MONTAGE[k], duration: S * 0.6, ease: "sine.inOut" }, d(k));
+        }
+        // le mouvement complet se met à battre, et bat encore au retournement
+        tl.to(p, { rouage: 120, duration: S * 0.9, ease: "power1.inOut" }, d(3) + S * 0.8);
+        tl.to(p, { keyframes: { balancier: [0, 210, -40, 190, -20, 170, 0] }, duration: S * 0.9 }, d(3) + S * 0.8);
+        tl.to(p, { rouage: 420, duration: S * 0.9, ease: "power1.inOut" }, d(7) + S * 0.08);
+        tl.to(p, { keyframes: { balancier: [0, 210, -40, 190, -20, 170, 0] }, duration: S * 0.9 }, d(7) + S * 0.08);
+        // la mise en ligne : le chrono fait son premier tour et allume les index qu'il passe
+        tl.to(p, { chrono: 360, duration: S * 0.42, ease: "power1.inOut" }, d(6) + S * 0.52);
+        feux.forEach((f, h) => tl.to(f, { v: 1, duration: S * 0.04 }, d(6) + S * (0.52 + (0.42 * (h === 0 ? 12 : h)) / 12) - S * 0.03));
+        return;
+      }
+      gsap.set(p, { rx: -30, ry: -30, rz: -10, echelle: 0.92 });
       tl.to(p, { ...POSES_3D[0], echelle: 1, duration: S * 0.8, ease: "power2.out" }, 0);
       for (let k = 1; k < N; k++) {
         const retourne = k === N - 1;
         tl.to(
           p,
-          { ...POSES_3D[k], echelle: k === 3 ? 1.06 : 1, duration: S * (retourne ? 0.5 : 0.7), ease: retourne ? "power2.inOut" : "sine.inOut" },
+          { ...POSES_3D[k], echelle: k === 3 ? 1.03 : 1, duration: S * (retourne ? 0.5 : 0.7), ease: retourne ? "power2.inOut" : "sine.inOut" },
           d(k) + (retourne ? S * 0.04 : 0),
         );
       }
@@ -467,20 +522,44 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
       desinscrire();
       coupes.forEach((c) => c.revert());
     };
-  }, [scene, racine, pose]);
+  }, [scene, racine, pose, mode]);
 
   return null;
 }
 
-export function SceneLivre() {
+export function SceneLivre({ mode = "classique" }: { mode?: ModeLivre }) {
   const racine = useRef<HTMLDivElement>(null);
   const pose = useRef<PoseMontre>(poseInitiale());
+  const assemblage = mode === "assemblage";
+  const photo = mode === "photo";
+  /* La montre qui se fabrique couvre tout l'écran : la montre où elle était (à droite sur ordinateur, en haut au
+     téléphone), le fil d'or au bas du texte. */
+  const montage = useMemo<Montage | undefined>(
+    () =>
+      assemblage
+        ? {
+            cadre: (l, h) =>
+              window.matchMedia("(min-width: 768px)").matches
+                ? { cx: 0.69 * l, cy: 0.5 * h, tete: Math.min(0.6 * h, 0.74 * 0.62 * l) }
+                : { cx: 0.5 * l, cy: 0.32 * h, tete: Math.min(0.6 * 0.64 * h, 0.74 * l) },
+            ligne: () => {
+              const fil = racine.current?.querySelector(".chrono-fil");
+              const toile = racine.current?.querySelector(".chrono-3d");
+              if (!fil || !toile) return null;
+              const a = fil.getBoundingClientRect();
+              const b = toile.getBoundingClientRect();
+              return { x0: a.left - b.left, x1: a.right - b.left, y: a.top - b.top };
+            },
+          }
+        : undefined,
+    [assemblage],
+  );
   // la montre en volume : chargée à l'approche de la section (un écran et demi avant), affichée une fois dessinée
   const [charger, setCharger] = useState(false);
   const [prete, setPrete] = useState(false);
   useEffect(() => {
     const el = racine.current;
-    if (!el || mouvementReduit() || !webglDisponible()) return;
+    if (!el || mouvementReduit() || (!photo && !webglDisponible())) return;
     let attente = 0;
     let essais = 0;
     // Pendant le film du bouton du hero (sa chute jusqu'à l'ordinateur, puis la plongée dans l'écran), on attend qu'il
@@ -502,17 +581,30 @@ export function SceneLivre() {
       obs.disconnect();
       window.clearTimeout(attente);
     };
-  }, []);
+  }, [photo]);
 
   return (
     <Scene id="livre" nuit defilement src="components/sections/scene-livre.tsx" aria-labelledby="livre-titre" className="chrono-sur-ciel">
       <div ref={racine} data-piste className="chrono-piste motion-reduce:min-h-0!" style={{ minHeight: `${(1 + R.ecrans) * 100}svh` }}>
-        <div className="chrono-colle">
+        <div className={assemblage ? "chrono-colle chrono-montage" : photo ? "chrono-colle chrono-en-photo" : "chrono-colle"}>
           <div className="chrono-lumiere" aria-hidden="true" />
           <div className="chrono-montre" data-cachee={prete || undefined}>
-            <Montre />
+            {photo ? (
+              // sans film (mouvement réduit, ou sans JavaScript) : la montre montée, de face
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src="/montre/face.webp" alt="" className="chrono-montre-photo" />
+            ) : (
+              <Montre />
+            )}
           </div>
-          {charger && (
+          {/* l'établi : le fil d'or où reposent les pièces de la montre à fabriquer */}
+          {assemblage && <div className="chrono-fil" aria-hidden="true" />}
+          {charger && photo && (
+            <div className="chrono-photo" data-prete={prete || undefined}>
+              <MontrePhoto onPret={() => setPrete(true)} />
+            </div>
+          )}
+          {charger && !photo && (
             <div className="chrono-3d" data-prete={prete || undefined} aria-hidden="true">
               <Garde
                 onErreur={() => {
@@ -520,7 +612,7 @@ export function SceneLivre() {
                   setCharger(false);
                 }}
               >
-                <Montre3D pose={pose} onPret={() => setPrete(true)} />
+                <Montre3D pose={pose} onPret={() => setPrete(true)} montage={montage} />
               </Garde>
             </div>
           )}
@@ -533,7 +625,7 @@ export function SceneLivre() {
             <Etapes />
           </div>
         </div>
-        <Mecanique scene={racine} pose={pose} />
+        <Mecanique scene={racine} pose={pose} mode={mode} />
       </div>
     </Scene>
   );

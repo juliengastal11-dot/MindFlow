@@ -249,6 +249,62 @@ en or comme référence d'allure.
 - **À savoir** : le `Canvas` de react-three-fiber ne se mesure qu'à l'arrêt du défilement (anti-rebond) : la montre 3D paraît au
   premier temps d'arrêt, la montre à plat tient la place jusque-là.
 
+## Mise à jour du 2026-10-19 (suite) : le ciel défile derrière la montre, la montre bouge moins, un vrai mouvement
+
+- **Le ciel** (J : « que la vidéo défile derrière la section avec la montre et non pas un stop ; je préférerais qu'elle se stoppe
+  pendant la partie de la section 3 qui montre les modifications du site ») : la pause du ciel passe de `livre` à `relecture`.
+  Le ciel s'arrête au crépuscule pendant la relecture, puis, derrière la montre, la nuit étoilée tourne à l'aube et au lever du
+  soleil (la mise en ligne tombe au lever du jour). L'heure des sections d'avant a glissé en conséquence (02 au crépuscule).
+- **La montre bouge moins** (J : « juste des petits changements de vue légers ») : `POSES_3D` reste autour d'un trois quarts
+  (rx de -11 à -25°, ry de -9 à -27°), arrivée plus douce ; seul le dernier temps la retourne.
+- **Le mouvement refait d'après la photo de J** (« beaucoup plus réaliste, comme sur la photo ») : ponts en acier mat et grenu
+  (plus de côtes de Genève), séparés par des rainures, contours usinés aux angles arrondis ; roues dorées à cinq bras courbes,
+  posées par-dessus ; grand rochet en acier soleillé, à dents de scie, frappé d'une étoile à cinq branches, avec sa grande vis ;
+  roue de couronne ; balancier doré dans son creux sous un coq vissé, spiral, raquette ; roue d'échappement à moitié sous le
+  pont du haut, et l'ancre ; rubis en chatons dorés ; vis à fente ; liseré de laiton au bord ; « STALIKA » gravé sur le pont du
+  haut. Étagé en profondeur comme un vrai calibre (voir l'en-tête du mouvement dans `lib/montre-3d.ts`). Le rouage tourne au
+  retournement, chaque roue plus vite que la précédente et en sens inverse (`RAPPORTS`).
+
+## Essai du 2026-10-19 : la montre qui se fabrique (page `/essai/montre`, non indexée)
+
+J : « la montre avec toutes ses pièces posée en vrac sur une ligne au niveau du bas du texte, et au défilement les pièces
+montent et la montre se forme au fur et à mesure, en passant derrière le texte » ; l'assemblage remplace l'animation des étapes ;
+la ligne est un fil d'or ; l'assemblage donne son sens au retournement final.
+- **Où** : `SceneLivre mode="assemblage"` sur une copie de l'accueil (`app/essai/montre/page.tsx`) ; l'accueil n'a pas changé.
+  Une fois validé, l'accueil prend ce mode et la page d'essai disparaît.
+- **Le plan de montage** (`lib/assemblage.ts`) : une étape du récit par étage, dans l'ordre d'un horloger (platine ; rouage ;
+  ponts, balancier, rochet, rubis, vis qui se vissent, et le mouvement se met à battre ; boîtier puis, la montre tournée,
+  cadran et couronne ; index, aiguilles, verre ; bracelet et premier tour du chrono ; retournement).
+- **Le vol** (`components/ui/montre-3d.tsx`, `Porteur`, `coucher`, `voler`) : chaque pièce est dans un porteur dont la matrice
+  est posée à la main. Au repos, couchée sur le fil, sa vraie forme posée sur la ligne, dans un vrac reproductible, assez loin
+  derrière la montre pour que tout tienne (la perspective les rapetisse) ; en vol, une courbe qui monte jusqu'à sa place, un
+  léger tassement à l'arrivée, les vis tournent en se vissant. La 3D couvre tout l'écran, derrière le texte ; la caméra est
+  décalée (`setViewOffset`) pour garder la montre à sa place (à droite, en haut au téléphone). Le fil d'or est un trait du DOM
+  (`.chrono-fil`), sous la 3D.
+
+## Essai du 2026-10-19 : la montre en photo qui se fabrique (page `/essai/montre-photo`, non indexée)
+
+J : « pour avoir du réalisme, une vraie montre en vue éclatée, montée sans la reconstruire, avec les vraies pièces », puis,
+sans payer (ni modèle à 95 $, ni génération) : trois images faites par lui dans ChatGPT, d'après nos consignes (vue éclatée
+verticale ; la montre montée de face ; de dos). Rangées dans `outils/montre`, avec l'outil de découpe et son LISEZMOI.
+- **Où** : `SceneLivre mode="photo"` sur une copie de l'accueil (`app/essai/montre-photo/page.tsx`) ; l'accueil et
+  `/essai/montre` (la même idée en 3D) n'ont pas changé. Ni Three.js ni montre dessinée : 13 pièces et 2 photos en WebP
+  transparent (`public/montre`, 513 Ko en tout), chargées à l'approche de la section.
+- **La scène** (`components/ui/montre-photo.tsx`) : une platine aux dimensions de la vue éclatée (941 × 1672), que la caméra
+  déplace et agrandit ; chaque pièce à sa place d'origine, enfilée sur le fil d'or vertical. Tout se déduit de la progression
+  de la chronologie (rien n'est tweené). Ce qui entre dans le boîtier (mouvement, cadran) n'est visible qu'au-dessus du bord de
+  devant de son ouverture (`clip-path`). Une ombre de contact paraît sous la pièce qui se pose.
+- **L'ordre** (`lib/montre-photo.ts`) : 1 le mouvement descend dans la carrure ; 2 le fond la ferme par-dessous, la couronne
+  entre de côté ; 3 le cadran ; 4 les aiguilles ; 5 le verre et la lunette ; 6 les bracelets, puis la montre se redresse face à
+  nous (la photo de face, inclinée comme la vue éclatée, se relève pendant que la pile s'efface, la carrure en dernier) ; 7 elle
+  se retourne sur son fond saphir (les deux photos dos à dos, de profil dans l'ombre).
+- **La limite**, dite à J : c'est de la 2,5D. Les pièces glissent sans tourner ; les pièces de la vue éclatée ne sont pas vues
+  sous le même angle (le cadran plus de face que le boîtier) : chacune prend en glissant l'échelle qui la fait entrer.
+- **Retouche du même jour** (J : « la montre est toute plate dans tes vidéos ») : la montre finie se montre de trois quarts, sur
+  une quatrième image ChatGPT où l'on voit son épaisseur (elle se relève depuis l'angle de la pile, la lumière glisse sur son
+  or) ; pour se retourner, elle devient une montre en volume en CSS 3D : la photo de face et celle de dos, écartées de 58 px
+  d'éclaté, reliées par une tranche d'or de 48 bandes, chacune éclairée selon son orientation. Elle se pose de dos, inclinée.
+
 ## Mise à jour du 2026-10-18 : l'entrée du hero, dans l'ordre
 
 J : « que le titre, le texte du héros et le bouton Parlons projet apparaissent de manière stylée ; on garde les lettres une par une
