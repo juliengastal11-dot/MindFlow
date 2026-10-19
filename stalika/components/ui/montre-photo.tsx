@@ -7,12 +7,16 @@ import {
   AXE_X,
   BASCULE,
   CADRAGES,
+  CARRURE,
   ECLATE,
+  INCLINAISON,
   OUVERTURE,
   PHOTO_DOS,
   PHOTO_FACE,
+  PHOTO_TROIS_QUARTS,
   PIECES_PHOTO,
   TEMPS,
+  TRANCHE,
   debutEtape,
   finEtape,
   type Cadrage,
@@ -24,9 +28,11 @@ import {
    La montre en photo qui se fabrique (lib/montre-photo.ts) : une platine aux
    dimensions de la vue éclatée, que la caméra déplace et agrandit ; dessus, les
    pièces détourées, chacune à sa place d'origine, qui glissent sur l'axe jusqu'à
-   la carrure ; puis les deux photos de la montre assemblée, de face et de dos.
-   Tout se déduit de la progression de la chronologie de la scène : rien n'est
-   tweené, chaque image est posée d'après l'instant.
+   la carrure ; puis la photo de la montre finie, de trois quarts ; enfin la
+   montre en volume qui se retourne : les photos de face et de dos, écartées de
+   son épaisseur, reliées par une tranche d'or (CSS 3D). Tout se déduit de la
+   progression de la chronologie de la scène : rien n'est tweené, chaque image
+   est posée d'après l'instant.
 --------------------------------------------------------------------------- */
 
 const borne = (x: number) => Math.min(1, Math.max(0, x));
@@ -94,6 +100,18 @@ const EFFACEMENT: Partial<Record<IdPiece, readonly [number, number]>> = {
 };
 const EFFACEMENT_AUTRES = [0.08, 0.36] as const;
 
+/* La tranche : des bandes posées en cercle, chacune à son angle (0 en haut, dans le sens des aiguilles). */
+const BANDES = Array.from({ length: TRANCHE.bandes }, (_, i) => (2 * Math.PI * i) / TRANCHE.bandes);
+const LARGEUR_BANDE = ((2 * Math.PI * TRANCHE.rayon) / TRANCHE.bandes) * 1.06;
+/* La lumière : une lampe en haut à gauche, devant ; le demi-vecteur vers l'œil donne le reflet. */
+const unitaire = (v: number[]) => {
+  const n = Math.hypot(...v);
+  return v.map((x) => x / n);
+};
+const LAMPE = unitaire([-0.35, -0.75, 0.56]);
+const DEMI = unitaire([LAMPE[0], LAMPE[1], LAMPE[2] + 1]);
+const rad = (deg: number) => (deg * Math.PI) / 180;
+
 function Piece({ id, piece }: { id: IdPiece; piece?: PiecePhoto }) {
   const b = BOITES_PIECES[id];
   const [ox, oy] = piece ? piece.origine : [b.x + b.l / 2, b.y + b.h / 2];
@@ -125,6 +143,10 @@ export function MontrePhoto({ onPret }: { onPret?: () => void }) {
     const eclate = el.querySelector<HTMLElement>("[data-eclate]")!;
     const face = el.querySelector<HTMLElement>('[data-photo="face"]')!;
     const dos = el.querySelector<HTMLElement>('[data-photo="dos"]')!;
+    const troisQuarts = el.querySelector<HTMLElement>("[data-trois-quarts]")!;
+    const reflet = el.querySelector<HTMLElement>("[data-reflet]")!;
+    const volume = el.querySelector<HTMLElement>("[data-volume]")!;
+    const bandes = Array.from(el.querySelectorAll<HTMLElement>("[data-bande]"));
     const images = Array.from(el.querySelectorAll<HTMLImageElement>("img"));
     const pieces = new Map<IdPiece, HTMLElement>();
     el.querySelectorAll<HTMLElement>("[data-piece]").forEach((n) => pieces.set(n.dataset.piece as IdPiece, n));
@@ -183,16 +205,50 @@ export function MontrePhoto({ onPret }: { onPret?: () => void }) {
         n.style.opacity = (1 - fenetre(qb, e0, e1)).toFixed(3);
       }
 
-      const theta = BASCULE * (1 - qb);
-      const phi = 180 * qr;
-      face.style.opacity = fenetre(qb, 0, 0.3).toFixed(3);
-      face.style.transform = `perspective(1800px) rotateX(${theta.toFixed(2)}deg) rotateY(${phi.toFixed(2)}deg)`;
-      dos.style.transform = `perspective(1800px) rotateY(${(phi - 180).toFixed(2)}deg)`;
-      dos.style.opacity = qr > 0 ? "1" : "0";
-      // de profil, la montre passe dans l'ombre
-      const profil = qr > 0 && qr < 1 ? `brightness(${(1 - 0.4 * Math.sin(Math.PI * qr)).toFixed(3)})` : "";
-      face.style.filter = profil;
-      dos.style.filter = profil;
+      // la photo de trois quarts : couchée comme la pile, elle se relève jusqu'à sa vue ; puis la montre se balance à peine
+      const repos = fenetre(p, TEMPS.bascule.a, TEMPS.relais.de);
+      const balance = Math.sin(Math.PI * repos);
+      const qe = fenetre(p, TEMPS.relais.de, TEMPS.relais.a);
+      troisQuarts.style.opacity = (fenetre(qb, 0, 0.3) * (1 - qe)).toFixed(3);
+      troisQuarts.style.visibility = qb > 0 && qe < 1 ? "visible" : "hidden";
+      troisQuarts.style.transform = `perspective(1800px) rotateX(${(BASCULE * (1 - qb) + 1.2 * balance).toFixed(2)}deg) rotateY(${(-3.5 * balance).toFixed(2)}deg)`;
+      // la lumière glisse sur l'or
+      const qf = sinus(fenetre(p, TEMPS.reflet.de, TEMPS.reflet.a));
+      reflet.style.backgroundPosition = `${(125 - 150 * qf).toFixed(1)}% 0`;
+      reflet.style.opacity = qf > 0 && qf < 1 ? "1" : "0";
+
+      /* la montre en volume : elle prend le relais de la photo sous le même angle, se retourne sur son fond (autour de
+         l'axe de midi à six heures, la couronne s'en va vers le fond), se pose un peu plus à plat, se balance à peine */
+      const fin = fenetre(p, TEMPS.retournement.a, 1);
+      const theta = lerp(INCLINAISON, 28, qr);
+      const phi = 180 * qr + 5 * Math.sin(Math.PI * fin);
+      volume.style.opacity = qe.toFixed(3);
+      volume.style.visibility = qe > 0 ? "visible" : "hidden";
+      if (qe > 0) {
+        volume.style.transform = `rotateX(${theta.toFixed(2)}deg) rotateY(${phi.toFixed(2)}deg)`;
+        // de profil, les faces passent dans l'ombre
+        const profil = qr > 0 && qr < 1 ? `brightness(${(1 - 0.35 * Math.sin(Math.PI * qr)).toFixed(3)})` : "";
+        face.style.filter = profil;
+        dos.style.filter = profil;
+        // chaque bande de la tranche, éclairée selon son orientation : sa normale, tournée comme la montre
+        const ct = Math.cos(rad(theta));
+        const st = Math.sin(rad(theta));
+        const cp = Math.cos(rad(phi));
+        const sp = Math.sin(rad(phi));
+        bandes.forEach((b, i) => {
+          const sa = Math.sin(BANDES[i]);
+          const ca = Math.cos(BANDES[i]);
+          const nx = sa * cp;
+          const ny = -ca * ct + sa * sp * st;
+          const nz = -ca * st - sa * sp * ct;
+          if (nz <= 0) return;
+          const diffus = Math.max(0, nx * LAMPE[0] + ny * LAMPE[1] + nz * LAMPE[2]);
+          const brillant = Math.max(0, nx * DEMI[0] + ny * DEMI[1] + nz * DEMI[2]) ** 18;
+          // l'or poli : sombre loin de la lampe, un reflet franc et étroit face à elle
+          b.style.setProperty("--o", (0.72 * (1 - diffus) ** 1.3).toFixed(3));
+          b.style.setProperty("--h", Math.min(0.9, 1.1 * brillant).toFixed(3));
+        });
+      }
       eclate.style.visibility = qb >= 0.66 ? "hidden" : "visible";
       fil.style.opacity = (1 - fenetre(p, TEMPS.fil.de, TEMPS.fil.a)).toFixed(3);
     };
@@ -239,26 +295,73 @@ export function MontrePhoto({ onPret }: { onPret?: () => void }) {
             <Piece key={p.id} id={p.id} piece={p.piece} />
           ))}
         </div>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          data-photo="face"
-          src="/montre/face.webp"
-          alt=""
-          decoding="async"
-          draggable={false}
-          className="photo-assemblee"
-          style={{ left: PHOTO_FACE.x, top: PHOTO_FACE.y, width: PHOTO_FACE.l, height: PHOTO_FACE.h, transformOrigin: `${PHOTO_FACE.ox}px ${PHOTO_FACE.oy}px` }}
-        />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          data-photo="dos"
-          src="/montre/dos.webp"
-          alt=""
-          decoding="async"
-          draggable={false}
-          className="photo-assemblee"
-          style={{ left: PHOTO_DOS.x, top: PHOTO_DOS.y, width: PHOTO_DOS.l, height: PHOTO_DOS.h, transformOrigin: `${PHOTO_DOS.ox}px ${PHOTO_DOS.oy}px` }}
-        />
+        {/* la montre finie, de trois quarts, et la lumière qui glisse sur son or (masquée par la photo elle-même) */}
+        <div
+          data-trois-quarts
+          className="photo-trois-quarts"
+          style={{
+            left: PHOTO_TROIS_QUARTS.x,
+            top: PHOTO_TROIS_QUARTS.y,
+            width: PHOTO_TROIS_QUARTS.l,
+            height: PHOTO_TROIS_QUARTS.h,
+            transformOrigin: `${PHOTO_TROIS_QUARTS.ox}px ${PHOTO_TROIS_QUARTS.oy}px`,
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/montre/trois-quarts.webp" alt="" decoding="async" draggable={false} />
+          <div data-reflet className="photo-reflet" />
+        </div>
+        {/* la montre en volume : ses deux faces, écartées de son épaisseur, et la tranche d'or entre elles */}
+        <div data-volume className="photo-volume" style={{ left: CARRURE.cx, top: CARRURE.cy }}>
+          {BANDES.map((a, i) => (
+            <div
+              key={i}
+              data-bande
+              className="photo-bande"
+              style={{
+                width: LARGEUR_BANDE,
+                height: TRANCHE.epaisseur,
+                left: -LARGEUR_BANDE / 2,
+                top: -TRANCHE.epaisseur / 2,
+                transform: `rotateZ(${((a * 180) / Math.PI).toFixed(3)}deg) translateY(${-TRANCHE.rayon}px) rotateX(90deg)`,
+              }}
+            />
+          ))}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            data-photo="face"
+            src="/montre/face.webp"
+            alt=""
+            decoding="async"
+            draggable={false}
+            className="photo-face"
+            style={{
+              left: -PHOTO_FACE.ox,
+              top: -PHOTO_FACE.oy,
+              width: PHOTO_FACE.l,
+              height: PHOTO_FACE.h,
+              transformOrigin: `${PHOTO_FACE.ox}px ${PHOTO_FACE.oy}px`,
+              transform: `translateZ(${TRANCHE.epaisseur / 2}px)`,
+            }}
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            data-photo="dos"
+            src="/montre/dos.webp"
+            alt=""
+            decoding="async"
+            draggable={false}
+            className="photo-face"
+            style={{
+              left: -PHOTO_DOS.ox,
+              top: -PHOTO_DOS.oy,
+              width: PHOTO_DOS.l,
+              height: PHOTO_DOS.h,
+              transformOrigin: `${PHOTO_DOS.ox}px ${PHOTO_DOS.oy}px`,
+              transform: `rotateY(180deg) translateZ(${TRANCHE.epaisseur / 2}px)`,
+            }}
+          />
+        </div>
       </div>
     </div>
   );

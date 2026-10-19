@@ -67,8 +67,8 @@ export const PIECES_PHOTO: readonly PiecePhoto[] = [
 /** Où poser une image de pièce dans l'éclaté : sa boîte. */
 export const boitePiece = (id: IdPiece): Boite => BOITES_PIECES[id];
 
-/* Les deux photos de la montre assemblée, calées sur la carrure : le centre du boîtier de chaque photo (mesuré) va au
-   centre de la carrure, à l'échelle où son rayon (mesuré) devient celui de la carrure. */
+/* Les photos de la montre assemblée, calées sur la carrure : le centre du boîtier de chaque photo (mesuré) va au centre
+   de la carrure, à l'échelle où son rayon (mesuré) devient celui de la carrure. */
 const calerPhoto = (b: Boite, cx: number, cy: number, rayon: number) => {
   const s = CARRURE.a / rayon;
   return {
@@ -83,9 +83,21 @@ const calerPhoto = (b: Boite, cx: number, cy: number, rayon: number) => {
 };
 export const PHOTO_FACE = calerPhoto(BOITES_PHOTOS.face, 464, 708, 330);
 export const PHOTO_DOS = calerPhoto(BOITES_PHOTOS.dos, 469, 708, 343);
+/** La montre finie, de trois quarts (la lunette : centre 461, 652, demi-axes 342 × 232) : on y voit son épaisseur. */
+export const PHOTO_TROIS_QUARTS = calerPhoto(BOITES_PHOTOS["trois-quarts"], 461, 652, 342);
 
-/** L'inclinaison de la vue éclatée (la carrure vue de biais : b / a ≈ 0,38), d'où la photo de face se redresse. */
-export const BASCULE = (Math.acos(CARRURE.b / CARRURE.a) * 180) / Math.PI;
+const degres = (r: number) => (r * 180) / Math.PI;
+/** L'inclinaison de la photo de trois quarts (sa lunette : b / a ≈ 0,68), en degrés depuis la vue de face. */
+export const INCLINAISON = degres(Math.acos(232 / 342));
+/* La vue éclatée est plus rasante (la carrure : b / a ≈ 0,38) : la photo de trois quarts part donc couchée d'autant
+   (rotateX), puis se relève jusqu'à sa vue à elle, quand elle prend le relais de la pile. */
+export const BASCULE = degres(Math.acos(CARRURE.b / CARRURE.a / Math.cos((INCLINAISON * Math.PI) / 180)));
+
+/* La montre qui se retourne a une épaisseur (J, 2026-10-19 : « la montre est toute plate dans tes vidéos ») : les photos
+   de face et de dos en sont les deux faces, écartées de son épaisseur, et une tranche d'or les relie, faite de bandes
+   posées en cercle, chacune éclairée selon son orientation (components/ui/montre-photo.tsx). Le dégradé de la tranche
+   (`.photo-bande`, app/globals.css) est relevé sur le flanc du boîtier de la photo de trois quarts. */
+export const TRANCHE = { epaisseur: 58, rayon: 178, bandes: 48 } as const;
 
 /* Les plans de la caméra : à chaque instant (fraction de la chronologie), la hauteur d'éclaté à montrer (h), la largeur à
    faire tenir (l), le point de l'éclaté (fy, sur l'axe) qui se pose au point d'ancrage de l'écran (ax, ay, fractions).
@@ -106,8 +118,9 @@ export const CADRAGES: { bureau: Cadrage; mobile: Cadrage } = {
       { t: d(1) + S * 0.8, h: 1320, l: 560, fy: 1036, ay: 0.5 },
       // puis la caméra s'approche à peine, de pièce en pièce
       { t: d(6) + S * 0.4, h: 1140, l: 560, fy: 1046, ay: 0.5 },
-      { t: d(6) + S * 0.95, h: 660, l: 470, fy: 1057, ay: 0.5 },
-      { t: 1, h: 680, l: 470, fy: 1057, ay: 0.5 },
+      { t: d(6) + S * 0.95, h: 700, l: 470, fy: 1060, ay: 0.5 },
+      { t: d(7) + S * 0.3, h: 760, l: 500, fy: 1057, ay: 0.5 },
+      { t: 1, h: 720, l: 470, fy: 1057, ay: 0.5 },
     ],
   },
   mobile: {
@@ -118,8 +131,9 @@ export const CADRAGES: { bureau: Cadrage; mobile: Cadrage } = {
       { t: d(1) + S * 0.05, h: 1720, l: 560, fy: 834, ay: 0.5 },
       { t: d(1) + S * 0.8, h: 1320, l: 560, fy: 1057, ay: 0.37 },
       { t: d(6) + S * 0.4, h: 1200, l: 520, fy: 1057, ay: 0.37 },
-      { t: d(6) + S * 0.95, h: 700, l: 470, fy: 1057, ay: 0.3 },
-      { t: 1, h: 720, l: 470, fy: 1057, ay: 0.3 },
+      { t: d(6) + S * 0.95, h: 740, l: 470, fy: 1060, ay: 0.31 },
+      { t: d(7) + S * 0.3, h: 800, l: 500, fy: 1057, ay: 0.31 },
+      { t: 1, h: 760, l: 470, fy: 1057, ay: 0.31 },
     ],
   },
 };
@@ -128,12 +142,15 @@ export const CADRAGES: { bureau: Cadrage; mobile: Cadrage } = {
 export const TEMPS = {
   // l'arrivée : les pièces se rangent sur le fil
   arrivee: { de: 0, a: d(0) + S * 0.8 },
-  // la montre complète se redresse face à nous, la photo prend le relais
-  bascule: { de: d(6) + S * 0.44, a: d(6) + S * 0.92 },
+  // la montre complète se relève, la photo de trois quarts prend le relais de la pile
+  bascule: { de: d(6) + S * 0.44, a: d(6) + S * 0.86 },
+  // la lumière glisse sur l'or de la montre finie
+  reflet: { de: d(6) + S * 0.7, a: d(7) + S * 0.02 },
   // le fil d'or s'efface quand la montre est montée
   fil: { de: d(6) + S * 0.32, a: d(6) + S * 0.6 },
-  // elle se retourne sur son fond
-  retournement: { de: d(7) + S * 0.04, a: d(7) + S * 0.52 },
+  // elle se retourne sur son fond : la montre en volume prend le relais de la photo, se retourne, se pose
+  relais: { de: d(7) + S * 0.02, a: d(7) + S * 0.12 },
+  retournement: { de: d(7) + S * 0.04, a: d(7) + S * 0.56 },
 } as const;
 
 export const finEtape = (piece: PiecePhoto) => d(piece.etape) + S * piece.a;

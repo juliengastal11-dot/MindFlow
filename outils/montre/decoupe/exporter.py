@@ -35,6 +35,8 @@ for nom, b in photos.items():
     im = Image.open(os.path.join(SORTIE, "photos", f"{nom}.png"))
     if nom == "dos":  # le bracelet sort du cadre en haut et en bas : il s'efface à la longueur du bracelet de face
         im = fondu(im, haut=(150 - b["y"], 330 - b["y"]), bas=(1380 - b["y"], 1560 - b["y"]))
+    if nom == "trois-quarts":  # le bracelet du haut sort du cadre
+        im = fondu(im, haut=(0, 150))
     im.save(f"{PUBLIC}/{nom}.webp", quality=90, method=6)
     taille += os.path.getsize(f"{PUBLIC}/{nom}.webp")
 
@@ -47,6 +49,6 @@ for nom, b in boites.items():
     lignes.append(f'  "{nom}": {{ x: {b["x"]}, y: {b["y"]}, l: {b["l"]}, h: {b["h"]} }},')
 lignes += ["} as const satisfies Record<string, Boite>;", "", "export const BOITES_PHOTOS = {"]
 for nom, b in photos.items():
-    lignes.append(f'  {nom}: {{ x: {b["x"]}, y: {b["y"]}, l: {b["l"]}, h: {b["h"]} }},')
+    lignes.append(f'  "{nom}": {{ x: {b["x"]}, y: {b["y"]}, l: {b["l"]}, h: {b["h"]} }},')
 lignes += ["} as const satisfies Record<string, Boite>;", ""]
 open(LIB, "w", encoding="utf-8", newline="\n").write("\n".join(lignes))

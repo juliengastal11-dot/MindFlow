@@ -20,6 +20,7 @@ export const BOITES_PIECES = {
 } as const satisfies Record<string, Boite>;
 
 export const BOITES_PHOTOS = {
-  face: { x: 129, y: 190, l: 728, h: 1318 },
-  dos: { x: 53, y: 0, l: 770, h: 1672 },
+  "face": { x: 129, y: 190, l: 728, h: 1318 },
+  "dos": { x: 53, y: 0, l: 770, h: 1672 },
+  "trois-quarts": { x: 116, y: 0, l: 758, h: 1618 },
 } as const satisfies Record<string, Boite>;

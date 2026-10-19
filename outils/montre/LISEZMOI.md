@@ -9,14 +9,17 @@ Ce dossier n'est pas publié : la construction ne prend que `stalika/`.
 
 ## D'où viennent les images
 
-Trois images faites par J dans ChatGPT le 2026-10-19, gratuitement, d'après les consignes de la
+Quatre images faites par J dans ChatGPT le 2026-10-19, gratuitement, d'après les consignes de la
 conversation (vue éclatée verticale, puis la même montre assemblée, puis de dos) :
 
 - `Montre Stalika en éclaté luxueux.png` : la vue éclatée, 941 × 1672 ;
 - `Montre dorée STALIKA sur cuir noir.png` : la montre montée, de face ;
-- `Montre dorée à mouvement apparent.png` : la montre de dos, le mouvement sous la glace saphir.
+- `Montre dorée à mouvement apparent.png` : la montre de dos, le mouvement sous la glace saphir ;
+- `Montre dorée Stalika.png` (demandée ensuite, même jour) : la montre montée vue de trois quarts, d'où l'on voit son
+  épaisseur ; c'est elle qu'on voit quand la montre est finie (la photo de face et celle de dos servent aux deux faces de
+  la montre qui se retourne).
 
-Les trois sont sur un fond gris clair uni : c'est ce qui permet de détourer sans rien payer.
+Toutes sont sur un fond gris clair uni : c'est ce qui permet de détourer sans rien payer.
 
 ## Refaire la découpe
 
@@ -24,7 +27,7 @@ Python 3 avec numpy et Pillow, rien d'autre. Depuis `decoupe/`, dans l'ordre :
 
 ```
 python decouper_eclate.py    # les 13 pièces de la vue éclatée, détourées, à leur place
-python decouper_photos.py    # les deux photos de la montre montée, détourées
+python decouper_photos.py    # les trois photos de la montre montée, détourées
 python exporter.py           # les WebP dans stalika/public/montre, les boîtes dans stalika/lib/montre-photo-boites.ts
 python voir_ellipses.py      # pour vérifier les ellipses relevées à la main (ellipses.json)
 ```

@@ -300,6 +300,10 @@ verticale ; la montre montée de face ; de dos). Rangées dans `outils/montre`, 
   se retourne sur son fond saphir (les deux photos dos à dos, de profil dans l'ombre).
 - **La limite**, dite à J : c'est de la 2,5D. Les pièces glissent sans tourner ; les pièces de la vue éclatée ne sont pas vues
   sous le même angle (le cadran plus de face que le boîtier) : chacune prend en glissant l'échelle qui la fait entrer.
+- **Retouche du même jour** (J : « la montre est toute plate dans tes vidéos ») : la montre finie se montre de trois quarts, sur
+  une quatrième image ChatGPT où l'on voit son épaisseur (elle se relève depuis l'angle de la pile, la lumière glisse sur son
+  or) ; pour se retourner, elle devient une montre en volume en CSS 3D : la photo de face et celle de dos, écartées de 58 px
+  d'éclaté, reliées par une tranche d'or de 48 bandes, chacune éclairée selon son orientation. Elle se pose de dos, inclinée.
 
 ## Mise à jour du 2026-10-18 : l'entrée du hero, dans l'ordre
 

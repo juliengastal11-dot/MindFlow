@@ -9,7 +9,12 @@ from fond import modele_fond_libre
 ICI = os.path.dirname(os.path.abspath(__file__))
 SOURCES = os.path.join(ICI, "..")
 SORTIE_RACINE = os.path.join(ICI, "sortie")
-PHOTOS = {"face": "Montre dorée STALIKA sur cuir noir.png", "dos": "Montre dorée à mouvement apparent.png"}
+PHOTOS = {
+    "face": "Montre dorée STALIKA sur cuir noir.png",
+    "dos": "Montre dorée à mouvement apparent.png",
+    # la montre montée vue de trois quarts, comme le boîtier de la vue éclatée (J, 2026-10-19, deuxième demande)
+    "trois-quarts": "Montre dorée Stalika.png",
+}
 SORTIE = os.path.join(SORTIE_RACINE, "photos")
 os.makedirs(SORTIE, exist_ok=True)
 infos = {}
@@ -22,6 +27,14 @@ for nom, fichier in PHOTOS.items():
     r = C / np.maximum(B, 1)
     ombre = (C.mean(-1) > 100) & (r.max(-1) < 1.12) & (r.min(-1) > 0.55) & (r.max(-1) - r.min(-1) < 0.05) & (C.max(-1) - C.min(-1) < 19)
     m = plus_grandes((d > 16) & ~ombre, 2000, garder=1)
+    if nom == "trois-quarts":
+        # l'ombre franche sous la boucle, sur le sol : tout ce qui est sous le bas du cadre d'or de la boucle
+        chaud = (C[..., 0] - C[..., 2]) > 30
+        yy = np.arange(H)[:, None]
+        for x in range(W):
+            ys = np.nonzero(chaud[1540:, x])[0]
+            if len(ys): m[1540 + ys.max() + 2:, x] = False
+        m = plus_grandes(m, 2000, garder=1)
     m = boucher(m)
     a, col = mater(C, B, m, choke=1)
     ys, xs = np.nonzero(a > 0.004)
