@@ -265,6 +265,23 @@ en or comme référence d'allure.
   haut. Étagé en profondeur comme un vrai calibre (voir l'en-tête du mouvement dans `lib/montre-3d.ts`). Le rouage tourne au
   retournement, chaque roue plus vite que la précédente et en sens inverse (`RAPPORTS`).
 
+## Essai du 2026-10-19 : la montre qui se fabrique (page `/essai/montre`, non indexée)
+
+J : « la montre avec toutes ses pièces posée en vrac sur une ligne au niveau du bas du texte, et au défilement les pièces
+montent et la montre se forme au fur et à mesure, en passant derrière le texte » ; l'assemblage remplace l'animation des étapes ;
+la ligne est un fil d'or ; l'assemblage donne son sens au retournement final.
+- **Où** : `SceneLivre mode="assemblage"` sur une copie de l'accueil (`app/essai/montre/page.tsx`) ; l'accueil n'a pas changé.
+  Une fois validé, l'accueil prend ce mode et la page d'essai disparaît.
+- **Le plan de montage** (`lib/assemblage.ts`) : une étape du récit par étage, dans l'ordre d'un horloger (platine ; rouage ;
+  ponts, balancier, rochet, rubis, vis qui se vissent, et le mouvement se met à battre ; boîtier puis, la montre tournée,
+  cadran et couronne ; index, aiguilles, verre ; bracelet et premier tour du chrono ; retournement).
+- **Le vol** (`components/ui/montre-3d.tsx`, `Porteur`, `coucher`, `voler`) : chaque pièce est dans un porteur dont la matrice
+  est posée à la main. Au repos, couchée sur le fil, sa vraie forme posée sur la ligne, dans un vrac reproductible, assez loin
+  derrière la montre pour que tout tienne (la perspective les rapetisse) ; en vol, une courbe qui monte jusqu'à sa place, un
+  léger tassement à l'arrivée, les vis tournent en se vissant. La 3D couvre tout l'écran, derrière le texte ; la caméra est
+  décalée (`setViewOffset`) pour garder la montre à sa place (à droite, en haut au téléphone). Le fil d'or est un trait du DOM
+  (`.chrono-fil`), sous la 3D.
+
 ## Mise à jour du 2026-10-18 : l'entrée du hero, dans l'ordre
 
 J : « que le titre, le texte du héros et le bouton Parlons projet apparaissent de manière stylée ; on garde les lettres une par une

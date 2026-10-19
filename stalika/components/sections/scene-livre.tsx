@@ -1,6 +1,6 @@
 "use client";
 
-import { Component, useEffect, useRef, useState } from "react";
+import { Component, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -13,6 +13,8 @@ import { SplitText } from "gsap/SplitText";
 import { gsap, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
 import { poseInitiale, webglDisponible, type PoseMontre } from "@/lib/pose-montre";
+import { PLAN_MONTAGE } from "@/lib/assemblage";
+import type { Montage } from "@/components/ui/montre-3d";
 
 // La montre en volume : Three.js ne se charge qu'à l'approche de la section (voir `SceneLivre`).
 const Montre3D = dynamic(() => import("@/components/ui/montre-3d").then((m) => m.Montre3D), { ssr: false });
@@ -115,6 +117,22 @@ const POSES_3D = [
   { rx: -21, ry: -10, rz: -5 },
   { rx: -12, ry: 190, rz: 0 }, // retournée : le fond saphir, le mouvement
 ] as const;
+
+/* La montre qui se fabrique (essai, `mode="assemblage"`) : vue de dos pendant qu'on monte le mouvement (étapes 1 à 3),
+   tournée vers nous quand le boîtier l'a entourée (étape 4), le cadran, les aiguilles, le verre, le bracelet (5 et 6),
+   puis retournée sur le mouvement qu'on a vu naître (7). */
+const POSES_MONTAGE = [
+  { rx: -14, ry: 196, rz: 0 },
+  { rx: -14, ry: 196, rz: 0 },
+  { rx: -18, ry: 190, rz: -2 },
+  { rx: -12, ry: 202, rz: 2 },
+  { rx: -18, ry: 344, rz: -4 }, // de face (344 = -16 : on tourne dans le même sens)
+  { rx: -14, ry: 350, rz: -3 },
+  { rx: -20, ry: 338, rz: -6 },
+  { rx: -12, ry: 550, rz: 0 }, // retournée (550 = 190)
+] as const;
+
+export type ModeLivre = "classique" | "assemblage";
 
 /** Une erreur de la scène 3D (contexte WebGL refusé, perdu) ne casse pas la section : la montre à plat reste. */
 class Garde extends Component<{ children: React.ReactNode; onErreur: () => void }, { erreur: boolean }> {
@@ -266,7 +284,7 @@ function Etapes() {
 }
 
 /** Le film de la montre, inscrit sur la chronologie de la scène : la montre à plat, et la pose de la montre en volume. */
-function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElement | null>; pose: React.RefObject<PoseMontre> }) {
+function Mecanique({ scene: racine, pose, mode }: { scene: React.RefObject<HTMLDivElement | null>; pose: React.RefObject<PoseMontre>; mode: ModeLivre }) {
   const scene = useScene();
 
   // la montre en volume ne se redessine que quand la chronologie avance
@@ -441,6 +459,30 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
           p.allumes[i] = x;
         },
       }));
+      if (mode === "assemblage") {
+        /* La montre qui se fabrique : chaque pièce s'envole du fil d'or pendant sa fenêtre (lib/assemblage.ts) ; la montre
+           se tourne pour qu'on voie la pièce se poser ; le mouvement se met à battre quand il est complet ; le chrono fait
+           son premier tour quand tout est là. */
+        gsap.set(p, { ...POSES_MONTAGE[0], echelle: 1, chrono: 0 });
+        for (const piece of PLAN_MONTAGE) {
+          p.vols[piece.id] = 0;
+          tl.to(p.vols, { [piece.id]: 1, duration: S * (piece.a - piece.de) }, d(piece.etape) + S * piece.de);
+        }
+        for (let k = 1; k < N; k++) {
+          if (k === 4) tl.to(p, { ...POSES_MONTAGE[4], duration: S * 0.36, ease: "power2.inOut" }, d(4) + S * 0.36);
+          else if (k === N - 1) tl.to(p, { ...POSES_MONTAGE[k], duration: S * 0.5, ease: "power2.inOut" }, d(k) + S * 0.04);
+          else tl.to(p, { ...POSES_MONTAGE[k], duration: S * 0.6, ease: "sine.inOut" }, d(k));
+        }
+        // le mouvement complet se met à battre, et bat encore au retournement
+        tl.to(p, { rouage: 120, duration: S * 0.9, ease: "power1.inOut" }, d(3) + S * 0.8);
+        tl.to(p, { keyframes: { balancier: [0, 210, -40, 190, -20, 170, 0] }, duration: S * 0.9 }, d(3) + S * 0.8);
+        tl.to(p, { rouage: 420, duration: S * 0.9, ease: "power1.inOut" }, d(7) + S * 0.08);
+        tl.to(p, { keyframes: { balancier: [0, 210, -40, 190, -20, 170, 0] }, duration: S * 0.9 }, d(7) + S * 0.08);
+        // la mise en ligne : le chrono fait son premier tour et allume les index qu'il passe
+        tl.to(p, { chrono: 360, duration: S * 0.42, ease: "power1.inOut" }, d(6) + S * 0.52);
+        feux.forEach((f, h) => tl.to(f, { v: 1, duration: S * 0.04 }, d(6) + S * (0.52 + (0.42 * (h === 0 ? 12 : h)) / 12) - S * 0.03));
+        return;
+      }
       gsap.set(p, { rx: -30, ry: -30, rz: -10, echelle: 0.92 });
       tl.to(p, { ...POSES_3D[0], echelle: 1, duration: S * 0.8, ease: "power2.out" }, 0);
       for (let k = 1; k < N; k++) {
@@ -468,14 +510,37 @@ function Mecanique({ scene: racine, pose }: { scene: React.RefObject<HTMLDivElem
       desinscrire();
       coupes.forEach((c) => c.revert());
     };
-  }, [scene, racine, pose]);
+  }, [scene, racine, pose, mode]);
 
   return null;
 }
 
-export function SceneLivre() {
+export function SceneLivre({ mode = "classique" }: { mode?: ModeLivre }) {
   const racine = useRef<HTMLDivElement>(null);
   const pose = useRef<PoseMontre>(poseInitiale());
+  const assemblage = mode === "assemblage";
+  /* La montre qui se fabrique couvre tout l'écran : la montre où elle était (à droite sur ordinateur, en haut au
+     téléphone), le fil d'or au bas du texte. */
+  const montage = useMemo<Montage | undefined>(
+    () =>
+      assemblage
+        ? {
+            cadre: (l, h) =>
+              window.matchMedia("(min-width: 768px)").matches
+                ? { cx: 0.69 * l, cy: 0.5 * h, tete: Math.min(0.6 * h, 0.74 * 0.62 * l) }
+                : { cx: 0.5 * l, cy: 0.32 * h, tete: Math.min(0.6 * 0.64 * h, 0.74 * l) },
+            ligne: () => {
+              const fil = racine.current?.querySelector(".chrono-fil");
+              const toile = racine.current?.querySelector(".chrono-3d");
+              if (!fil || !toile) return null;
+              const a = fil.getBoundingClientRect();
+              const b = toile.getBoundingClientRect();
+              return { x0: a.left - b.left, x1: a.right - b.left, y: a.top - b.top };
+            },
+          }
+        : undefined,
+    [assemblage],
+  );
   // la montre en volume : chargée à l'approche de la section (un écran et demi avant), affichée une fois dessinée
   const [charger, setCharger] = useState(false);
   const [prete, setPrete] = useState(false);
@@ -508,11 +573,13 @@ export function SceneLivre() {
   return (
     <Scene id="livre" nuit defilement src="components/sections/scene-livre.tsx" aria-labelledby="livre-titre" className="chrono-sur-ciel">
       <div ref={racine} data-piste className="chrono-piste motion-reduce:min-h-0!" style={{ minHeight: `${(1 + R.ecrans) * 100}svh` }}>
-        <div className="chrono-colle">
+        <div className={assemblage ? "chrono-colle chrono-montage" : "chrono-colle"}>
           <div className="chrono-lumiere" aria-hidden="true" />
           <div className="chrono-montre" data-cachee={prete || undefined}>
             <Montre />
           </div>
+          {/* l'établi : le fil d'or où reposent les pièces de la montre à fabriquer */}
+          {assemblage && <div className="chrono-fil" aria-hidden="true" />}
           {charger && (
             <div className="chrono-3d" data-prete={prete || undefined} aria-hidden="true">
               <Garde
@@ -521,7 +588,7 @@ export function SceneLivre() {
                   setCharger(false);
                 }}
               >
-                <Montre3D pose={pose} onPret={() => setPrete(true)} />
+                <Montre3D pose={pose} onPret={() => setPrete(true)} montage={montage} />
               </Garde>
             </div>
           )}
@@ -534,7 +601,7 @@ export function SceneLivre() {
             <Etapes />
           </div>
         </div>
-        <Mecanique scene={racine} pose={pose} />
+        <Mecanique scene={racine} pose={pose} mode={mode} />
       </div>
     </Scene>
   );

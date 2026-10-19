@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
@@ -26,6 +26,7 @@ import {
   texturesCuir,
 } from "@/lib/montre-3d";
 import type { PoseMontre } from "@/lib/pose-montre";
+import { PLAN_MONTAGE, hasard } from "@/lib/assemblage";
 
 /* ---------------------------------------------------------------------------
    La montre de la section 04, en vraie 3D (Three.js par react-three-fiber),
@@ -57,6 +58,74 @@ import type { PoseMontre } from "@/lib/pose-montre";
 const rad = THREE.MathUtils.degToRad;
 // la vitesse de chaque roue du mouvement, rapportée au rouage : moyenne, troisième, secondes, échappement, rochet, couronne
 const RAPPORTS = [0.2, -0.6, 1.6, -4, 0.15, -0.29];
+
+/* ---- La montre qui se fabrique (lib/assemblage.ts) -----------------------------------------------------------------
+   Chaque pièce est dans un `Porteur` : un groupe dont la matrice est posée à la main. À sa place, c'est l'identité ; en
+   vol, la matrice qui l'amène du fil d'or (où elle repose, couchée, à l'arrière-plan) jusqu'à sa place dans la montre. */
+
+/** Où poser la montre et le fil d'or dans le cadre (en pixels du canvas) : le centre et la taille de la tête, la ligne. */
+export type Montage = {
+  cadre: (l: number, h: number) => { cx: number; cy: number; tete: number };
+  ligne: () => { x0: number; x1: number; y: number } | null;
+};
+
+const PorteursContexte = createContext<Map<string, THREE.Group> | null>(null);
+
+function Porteur({ id, children }: { id: string; children: React.ReactNode }) {
+  const carte = useContext(PorteursContexte);
+  return (
+    <group
+      name={id}
+      matrixAutoUpdate={false}
+      ref={(g) => {
+        if (!carte) return;
+        if (g) carte.set(id, g);
+        else carte.delete(id);
+      }}
+    >
+      {children}
+    </group>
+  );
+}
+
+/** Une pièce au repos sur le fil : le centre de son contenu (dans son porteur), et la pose de ce centre dans le monde. */
+type Repos = { c: THREE.Vector3; centre: THREE.Vector3; quat: THREE.Quaternion; echelle: THREE.Vector3 };
+
+const _m = new THREE.Matrix4();
+const _m2 = new THREE.Matrix4();
+const _v = new THREE.Vector3();
+const _v2 = new THREE.Vector3();
+const _q = new THREE.Quaternion();
+const _qs = new THREE.Quaternion();
+const _s = new THREE.Vector3();
+const _pT = new THREE.Vector3();
+const _qT = new THREE.Quaternion();
+const _sT = new THREE.Vector3();
+const _e = new THREE.Euler();
+const _boite = new THREE.Box3();
+const douce3 = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2);
+const borne01 = (x: number) => Math.min(1, Math.max(0, x));
+
+/** Les sommets du contenu d'un porteur (un sur `pas`), dans son propre repère (le porteur à l'identité), et leur boîte :
+    pour coucher la pièce juste sur le fil, par sa vraie forme (une boîte ferait flotter les pièces rondes). */
+function formeLocale(porteur: THREE.Group, boite: THREE.Box3, pas = 3) {
+  boite.makeEmpty();
+  const points: THREE.Vector3[] = [];
+  porteur.matrix.identity();
+  porteur.updateMatrixWorld(true);
+  _m2.copy(porteur.matrixWorld).invert();
+  porteur.traverse((o) => {
+    if (!(o instanceof THREE.Mesh)) return;
+    const pos = (o.geometry as THREE.BufferGeometry).attributes.position;
+    _m.multiplyMatrices(_m2, o.matrixWorld);
+    for (let i = 0; i < pos.count; i += pas) {
+      const v = new THREE.Vector3().fromBufferAttribute(pos, i).applyMatrix4(_m);
+      points.push(v);
+      boite.expandByPoint(v);
+    }
+  });
+  return points;
+}
 
 /* Un studio de photo de montre : une pièce sombre et chaude, de grandes boîtes à lumière autour (chacune regarde la
    montre) ; c'est ce que l'or poli et l'acier reflètent. [forme, intensité, couleur, position, échelle] */
@@ -91,19 +160,23 @@ function studio() {
 }
 
 /** La caméra cadre la montre : la tête (38 mm) fait `part` de la plus petite dimension du cadre ; par défaut, 60 % de
-    sa hauteur, sans dépasser 74 % de sa largeur. */
-function Cadrage({ part }: { part?: number }) {
+    sa hauteur, sans dépasser 74 % de sa largeur. Pour la montre qui se fabrique, le cadre couvre tout l'écran et `cadre`
+    dit où poser la montre : la vue est décalée pour que son centre tombe là. */
+function Cadrage({ part, cadre }: { part?: number; cadre?: Montage["cadre"] }) {
   const { camera, size, invalidate } = useThree();
   useEffect(() => {
     const c = camera as THREE.PerspectiveCamera;
-    const tete = part ? part * Math.min(size.width, size.height) : Math.min(0.6 * size.height, 0.74 * size.width); // en pixels
+    const k = cadre?.(size.width, size.height);
+    const tete = k ? k.tete : part ? part * Math.min(size.width, size.height) : Math.min(0.6 * size.height, 0.74 * size.width); // en pixels
     const hauteur = (38 * size.height) / tete; // ce que le cadre montre en hauteur, en mm
     c.position.set(0, 0, hauteur / 2 / Math.tan(rad(c.fov) / 2) + 6);
     c.near = 1;
-    c.far = 1000;
+    c.far = k ? 8000 : 1000;
+    if (k) c.setViewOffset(size.width, size.height, size.width / 2 - k.cx, size.height / 2 - k.cy, size.width, size.height);
+    else c.clearViewOffset();
     c.updateProjectionMatrix();
     invalidate();
-  }, [camera, size, part, invalidate]);
+  }, [camera, size, part, cadre, invalidate]);
   return null;
 }
 
@@ -244,8 +317,10 @@ function Reveil({ actif }: { actif: boolean }) {
   return null;
 }
 
-function Piece({ pose, onPret, x, g }: { pose: React.RefObject<PoseMontre>; onPret?: () => void; x: Peinture; g: Formes }) {
-  const { invalidate } = useThree();
+function Piece({ pose, onPret, x, g, montage }: { pose: React.RefObject<PoseMontre>; onPret?: () => void; x: Peinture; g: Formes; montage?: Montage }) {
+  const { invalidate, camera, size } = useThree();
+  const porteurs = useRef(new Map<string, THREE.Group>());
+  const repos = useRef<Map<string, Repos> | null>(null);
   const montre = useRef<THREE.Group>(null);
   const hHeures = useRef<THREE.Group>(null);
   const hMinutes = useRef<THREE.Group>(null);
@@ -328,6 +403,127 @@ function Piece({ pose, onPret, x, g }: { pose: React.RefObject<PoseMontre>; onPr
     invalidate();
   }, [pose, invalidate]);
 
+  // le vrac sur le fil se recalcule quand le cadre change
+  useEffect(() => {
+    repos.current = null;
+    invalidate();
+  }, [size, montage, invalidate]);
+
+  /** Le vrac : chaque pièce couchée sur le fil d'or, dans un ordre mêlé, assez loin derrière la montre pour que toutes
+      tiennent sur la ligne (la perspective les rapetisse ; elles grandissent en volant vers la montre). */
+  const coucher = (): Map<string, Repos> | null => {
+    const ligne = montage?.ligne();
+    if (!ligne) return null;
+    const cam = camera as THREE.PerspectiveCamera;
+    cam.updateMatrixWorld();
+    const surPlan = (px: number, py: number, z: number) => {
+      _v.set((px / size.width) * 2 - 1, -(py / size.height) * 2 + 1, 0.5).unproject(cam);
+      _v2.copy(_v).sub(cam.position).normalize();
+      const t = (z - cam.position.z) / _v2.z;
+      return cam.position.clone().addScaledVector(_v2, t);
+    };
+    const alea = hasard(19);
+    type Fiche = { id: string; c: THREE.Vector3; quat: THREE.Quaternion; echelle: THREE.Vector3; large: number; bas: number; prof: number };
+    const fiches: Fiche[] = [];
+    for (const piece of PLAN_MONTAGE) {
+      const porteur = porteurs.current.get(piece.id);
+      if (!porteur?.parent) continue;
+      const points = formeLocale(porteur, _boite);
+      const b = _boite;
+      if (b.isEmpty()) continue;
+      const c = b.getCenter(new THREE.Vector3());
+      // couchée : la face voulue vers nous, penchée en arrière, tournée au hasard dans son plan
+      const miroir = porteur.parent.matrixWorld.determinant() < 0;
+      const echelle = new THREE.Vector3(miroir ? -1 : 1, 1, 1);
+      const quat = new THREE.Quaternion().setFromEuler(_e.set(-THREE.MathUtils.degToRad(18 + alea() * 26), THREE.MathUtils.degToRad((alea() - 0.5) * 40), 0, "XYZ"));
+      if (piece.face < 0) quat.multiply(_q.setFromAxisAngle(_v.set(0, 1, 0), Math.PI));
+      quat.multiply(_q.setFromAxisAngle(_v.set(0, 0, 1), piece.couche ? Math.PI / 2 + (alea() - 0.5) * 0.3 : alea() * Math.PI * 2));
+      // son encombrement couché : ses sommets, centrés, tournés
+      let x0 = Infinity, x1 = -Infinity, y0 = Infinity;
+      for (const pt of points) {
+        _v.copy(pt).sub(c).multiply(echelle).applyQuaternion(quat);
+        x0 = Math.min(x0, _v.x);
+        x1 = Math.max(x1, _v.x);
+        y0 = Math.min(y0, _v.y);
+      }
+      fiches.push({ id: piece.id, c, quat, echelle, large: x1 - x0, bas: y0, prof: (alea() - 0.5) * 14 });
+    }
+    // le vrac : un ordre mêlé
+    for (let i = fiches.length - 1; i > 0; i--) {
+      const j = Math.floor(alea() * (i + 1));
+      [fiches[i], fiches[j]] = [fiches[j], fiches[i]];
+    }
+    const pas = (f: Fiche) => Math.max(1.5, f.large * 0.62);
+    const longueur = fiches.reduce((t, f) => t + pas(f), 0);
+    // la profondeur du fil : là où la ligne de l'écran mesure ce qu'il faut de millimètres
+    const a0 = surPlan(ligne.x0, ligne.y, 0);
+    const a1 = surPlan(ligne.x1, ligne.y, 0);
+    const l0 = a0.distanceTo(a1);
+    const camZ = cam.position.z;
+    const z = Math.min(-40, Math.max(-6000, camZ - (longueur * camZ) / Math.max(1, l0)));
+    const g0 = surPlan(ligne.x0, ligne.y, z);
+    const g1 = surPlan(ligne.x1, ligne.y, z);
+    const echelleLigne = g0.distanceTo(g1) / longueur;
+    const carte = new Map<string, Repos>();
+    let curseur = 0;
+    for (const f of fiches) {
+      const t = (curseur + pas(f) / 2) * echelleLigne;
+      curseur += pas(f);
+      const centre = new THREE.Vector3().lerpVectors(g0, g1, t / g0.distanceTo(g1));
+      centre.y -= f.bas;
+      centre.z += f.prof;
+      carte.set(f.id, { c: f.c, centre, quat: f.quat, echelle: f.echelle });
+    }
+    return carte;
+  };
+
+  /** Chaque pièce à sa place dans le vol : du fil d'or (0) à sa place (1), sur une courbe qui monte, avec un léger
+      tassement à l'arrivée ; les vis se vissent. */
+  const voler = (p: PoseMontre) => {
+    const montreG = montre.current;
+    if (!montreG) return;
+    montreG.updateMatrixWorld(true);
+    if (!repos.current) repos.current = coucher();
+    const carte = repos.current;
+    if (!carte) return;
+    for (const piece of PLAN_MONTAGE) {
+      const porteur = porteurs.current.get(piece.id);
+      const r = carte.get(piece.id);
+      const parent = porteur?.parent;
+      if (!porteur || !r || !parent) continue;
+      const v = p.vols[piece.id] ?? 1;
+      if (v >= 1) {
+        porteur.matrix.identity();
+        porteur.matrixWorldNeedsUpdate = true;
+        continue;
+      }
+      // l'arrivée : le centre du contenu, à sa place
+      parent.matrixWorld.decompose(_pT, _qT, _sT);
+      const cible = _v.copy(r.c).applyMatrix4(parent.matrixWorld);
+      const e = douce3(v);
+      // la courbe : du repos à la place, en passant au-dessus
+      const haut = Math.max(8, r.centre.distanceTo(cible) * 0.22);
+      const cx = (r.centre.x + cible.x) / 2;
+      const cy = Math.max(r.centre.y, cible.y) + haut;
+      const cz = (r.centre.z + cible.z) / 2;
+      const u = 1 - e;
+      const pos = _v2.set(u * u * r.centre.x + 2 * u * e * cx + e * e * cible.x, u * u * r.centre.y + 2 * u * e * cy + e * e * cible.y, u * u * r.centre.z + 2 * u * e * cz + e * e * cible.z);
+      // le tassement : un rien plus loin que sa place, puis il s'y pose
+      const tasse = Math.sin(Math.PI * borne01((v - 0.84) / 0.16)) * 0.35;
+      // (vers l'intérieur de la montre : -Z pour une pièce posée par le cadran, +Z pour une pièce du mouvement)
+      if (tasse > 0) pos.add(_v.set(0, 0, -1).applyQuaternion(_qT).multiplyScalar(tasse * piece.face));
+      _q.copy(r.quat).slerp(_qT, douce3(borne01(v / 0.86)));
+      if (piece.vis) {
+        const k = borne01((v - 0.6) / 0.4);
+        _q.multiply(_qs.setFromAxisAngle(_v.set(0, 0, 1), (1 - k) * Math.PI * 4));
+      }
+      _s.lerpVectors(r.echelle, _sT, e);
+      _m.compose(pos, _q, _s).multiply(_m2.makeTranslation(-r.c.x, -r.c.y, -r.c.z));
+      porteur.matrix.copy(_m2.copy(parent.matrixWorld).invert()).multiply(_m);
+      porteur.matrixWorldNeedsUpdate = true;
+    }
+  };
+
   useFrame(() => {
     const p = pose.current;
     if (!p || !montre.current) return;
@@ -346,6 +542,7 @@ function Piece({ pose, onPret, x, g }: { pose: React.RefObject<PoseMontre>; onPr
     // peine (on remonte)
     roues.current.forEach((r, i) => r && (r.rotation.z = rad(p.rouage) * RAPPORTS[i]));
     if (balancier.current) balancier.current.rotation.z = rad(p.balancier);
+    if (montage) voler(p);
     if (premier.current) {
       premier.current = false;
       requestAnimationFrame(() => onPret?.());
@@ -355,134 +552,198 @@ function Piece({ pose, onPret, x, g }: { pose: React.RefObject<PoseMontre>; onPr
   const mv = MOUVEMENT_3D;
 
   return (
-    <group ref={montre}>
-      {/* le boîtier, les cornes, la couronne */}
-      <mesh geometry={g.boitier} material={m.or} castShadow receiveShadow />
-      <mesh geometry={g.fondBoitier} material={m.orSatine} />
-      {[
-        [1, 1],
-        [-1, 1],
-        [1, -1],
-        [-1, -1],
-      ].map(([sx, sy]) => (
-        <mesh key={`${sx}${sy}`} geometry={g.corne} material={m.orBrosse} position={[sx * 11.55, 0, 0]} scale={[1, sy, 1]} castShadow />
-      ))}
-      <group ref={gCouronne}>
-        <mesh geometry={g.couronne} material={m.or} position={[19.6, 0, 3.1]} />
-        <mesh material={m.orBrosse} position={[19.2, 0, 3.1]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.85, 0.85, 1.2, 24]} />
-        </mesh>
-      </group>
-
-      {/* le cadran, le compteur des 72 heures en creux, les index */}
-      <mesh geometry={g.cadran} material={m.cadran} position={[0, 0, COTE.hauteurCadran]} receiveShadow />
-      <mesh geometry={g.compteur} material={m.compteur} position={[COMPTEUR.x, COMPTEUR.y, COTE.hauteurCadran - 0.14]} receiveShadow />
-      <mesh geometry={g.paroiCompteur} material={m.cadran} position={[COMPTEUR.x, COMPTEUR.y, COTE.hauteurCadran - 0.07]} rotation={[Math.PI / 2, 0, 0]} />
-      {Array.from({ length: 12 }, (_, h) => {
-        const a = (h / 12) * Math.PI * 2;
-        return (
-          <group key={h} rotation={[0, 0, -a]}>
-            <mesh geometry={g.index} material={m.index[h]} position={[0, 10.3, COTE.hauteurCadran]} castShadow />
+    <PorteursContexte.Provider value={porteurs.current}>
+      <group ref={montre}>
+        {/* le boîtier : la carrure, la lunette, le fond gravé et son saphir, les cornes */}
+        <Porteur id="boitier">
+          <mesh geometry={g.boitier} material={m.or} castShadow receiveShadow />
+          <mesh geometry={g.fondBoitier} material={m.orSatine} />
+          {[
+            [1, 1],
+            [-1, 1],
+            [1, -1],
+            [-1, -1],
+          ].map(([sx, sy]) => (
+            <mesh key={`${sx}${sy}`} geometry={g.corne} material={m.orBrosse} position={[sx * 11.55, 0, 0]} scale={[1, sy, 1]} castShadow />
+          ))}
+          <mesh geometry={g.gravure} material={m.gravure} position={[0, 0, -0.28]} rotation={[0, Math.PI, 0]} />
+          <mesh geometry={g.fond} material={m.cercle} position={[0, 0, 1.45]} rotation={[0, Math.PI, 0]} />
+          <mesh geometry={g.cercle} material={m.cercle} position={[0, 0, 0.47]} rotation={[Math.PI / 2, 0, 0]} />
+          <mesh geometry={g.fond} material={m.verre} position={[0, 0, COTE.fenetre + 0.03]} rotation={[0, Math.PI, 0]} renderOrder={2} />
+        </Porteur>
+        <Porteur id="couronne">
+          <group ref={gCouronne}>
+            <mesh geometry={g.couronne} material={m.or} position={[19.6, 0, 3.1]} />
+            <mesh material={m.orBrosse} position={[19.2, 0, 3.1]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[0.85, 0.85, 1.2, 24]} />
+            </mesh>
           </group>
-        );
-      })}
-      <mesh ref={arc} geometry={g.arc} position={[0, 0, COTE.hauteurCadran + 0.01]}>
-        <meshBasicMaterial color={m.t.arc} side={THREE.DoubleSide} />
-      </mesh>
+        </Porteur>
 
-      {/* les aiguilles */}
-      <group ref={hCompteur} position={[COMPTEUR.x, COMPTEUR.y, COTE.hauteurCadran - 0.1]}>
-        <mesh geometry={g.petite} material={m.or} castShadow />
-      </group>
-      <mesh material={m.or} position={[COMPTEUR.x, COMPTEUR.y, COTE.hauteurCadran - 0.02]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.22, 0.22, 0.12, 16]} />
-      </mesh>
-      <group ref={hHeures} position={[0, 0, COTE.hauteurCadran + 0.42]}>
-        <mesh geometry={g.heures} material={m.laque} castShadow />
-      </group>
-      <group ref={hMinutes} position={[0, 0, COTE.hauteurCadran + 0.68]}>
-        <mesh geometry={g.minutes} material={m.laque} castShadow />
-      </group>
-      <group ref={hChrono} position={[0, 0, COTE.hauteurCadran + 0.92]}>
-        <mesh geometry={g.chrono} material={m.laque} castShadow />
-        <mesh position={[0, -2.9, 0.04]} material={m.laque} castShadow>
-          <torusGeometry args={[0.38, 0.08, 8, 24]} />
-        </mesh>
-      </group>
-      <mesh material={m.or} position={[0, 0, COTE.hauteurCadran + 0.86]} rotation={[Math.PI / 2, 0, 0]} castShadow>
-        <cylinderGeometry args={[0.55, 0.62, 0.62, 24]} />
-      </mesh>
+        {/* le cadran, le compteur des 72 heures en creux, l'arc du chrono ; les index */}
+        <Porteur id="cadran">
+          <mesh geometry={g.cadran} material={m.cadran} position={[0, 0, COTE.hauteurCadran]} receiveShadow />
+          <mesh geometry={g.compteur} material={m.compteur} position={[COMPTEUR.x, COMPTEUR.y, COTE.hauteurCadran - 0.14]} receiveShadow />
+          <mesh geometry={g.paroiCompteur} material={m.cadran} position={[COMPTEUR.x, COMPTEUR.y, COTE.hauteurCadran - 0.07]} rotation={[Math.PI / 2, 0, 0]} />
+          <mesh ref={arc} geometry={g.arc} position={[0, 0, COTE.hauteurCadran + 0.01]}>
+            <meshBasicMaterial color={m.t.arc} side={THREE.DoubleSide} />
+          </mesh>
+          <mesh material={m.or} position={[COMPTEUR.x, COMPTEUR.y, COTE.hauteurCadran - 0.02]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.22, 0.22, 0.12, 16]} />
+          </mesh>
+        </Porteur>
+        {Array.from({ length: 12 }, (_, h) => {
+          const a = (h / 12) * Math.PI * 2;
+          return (
+            <Porteur key={h} id={`index-${h}`}>
+              <group rotation={[0, 0, -a]}>
+                <mesh geometry={g.index} material={m.index[h]} position={[0, 10.3, COTE.hauteurCadran]} castShadow />
+              </group>
+            </Porteur>
+          );
+        })}
 
-      {/* le verre bombé */}
-      <mesh geometry={g.verre} material={m.verre} position={[0, 0, COTE.verre - 299]} rotation={[Math.PI / 2, 0, 0]} renderOrder={2} />
-
-      {/* le bracelet */}
-      <mesh geometry={g.brinHaut} material={[m.cuir, m.doublure]} />
-      <mesh geometry={g.brinBas} material={[m.cuir, m.doublure]} />
-
-      {/* le fond : la gravure, le saphir, et le mouvement d'après la photo de J (vu par le fond, d'où le miroir en X),
-          étagé du rochet, tout près du saphir, jusqu'à la platine */}
-      <mesh geometry={g.gravure} material={m.gravure} position={[0, 0, -0.28]} rotation={[0, Math.PI, 0]} />
-      <group scale={[-1, 1, 1]}>
-        <mesh geometry={g.platine} material={m.platine} position={[0, 0, 1.35]} rotation={[0, Math.PI, 0]} />
-        <mesh geometry={g.lisere} material={m.orBrosse} position={[0, 0, 0.44]} rotation={[0, Math.PI, 0]} />
-        {g.ponts.map((geo, i) => (
-          <mesh key={i} geometry={geo} material={m.acierMat} position={[0, 0, 0.42]} />
-        ))}
-        <mesh geometry={g.coq} material={m.acierMat} position={[0, 0, 0.2]} />
-        {/* le coq est vissé au bord ; la raquette posée dessus */}
-        <mesh geometry={g.raquette} material={m.acier} position={[0, 0, 0.06]} />
-        <mesh geometry={g.ancre} material={m.acier} position={[0, 0, 0.98]} />
-        {mv.roues.map((w, i) => (
-          <group key={w.nom} position={[w.x, w.y, w.z]} ref={(r) => void (roues.current[i] = r)}>
-            <mesh geometry={g.roues[i]} material={m.laiton} />
-            <mesh geometry={g.pignon} material={m.acier} position={[0, 0, 0.1]} rotation={[Math.PI / 2, 0, 0]} />
+        {/* les aiguilles */}
+        <Porteur id="aiguille-petite">
+          <group ref={hCompteur} position={[COMPTEUR.x, COMPTEUR.y, COTE.hauteurCadran - 0.1]}>
+            <mesh geometry={g.petite} material={m.or} castShadow />
           </group>
-        ))}
-        <group position={[mv.echappement.x, mv.echappement.y, mv.echappement.z]} ref={(r) => void (roues.current[3] = r)}>
-          <mesh geometry={g.echappement} material={m.laiton} />
+        </Porteur>
+        <Porteur id="aiguille-heures">
+          <group ref={hHeures} position={[0, 0, COTE.hauteurCadran + 0.42]}>
+            <mesh geometry={g.heures} material={m.laque} castShadow />
+          </group>
+        </Porteur>
+        <Porteur id="aiguille-minutes">
+          <group ref={hMinutes} position={[0, 0, COTE.hauteurCadran + 0.68]}>
+            <mesh geometry={g.minutes} material={m.laque} castShadow />
+          </group>
+        </Porteur>
+        <Porteur id="aiguille-chrono">
+          <group ref={hChrono} position={[0, 0, COTE.hauteurCadran + 0.92]}>
+            <mesh geometry={g.chrono} material={m.laque} castShadow />
+            <mesh position={[0, -2.9, 0.04]} material={m.laque} castShadow>
+              <torusGeometry args={[0.38, 0.08, 8, 24]} />
+            </mesh>
+          </group>
+        </Porteur>
+        <Porteur id="chapeau">
+          <mesh material={m.or} position={[0, 0, COTE.hauteurCadran + 0.86]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+            <cylinderGeometry args={[0.55, 0.62, 0.62, 24]} />
+          </mesh>
+        </Porteur>
+
+        {/* le verre bombé */}
+        <Porteur id="verre">
+          <mesh geometry={g.verre} material={m.verre} position={[0, 0, COTE.verre - 299]} rotation={[Math.PI / 2, 0, 0]} renderOrder={2} />
+        </Porteur>
+
+        {/* le bracelet */}
+        <Porteur id="brin-haut">
+          <mesh geometry={g.brinHaut} material={[m.cuir, m.doublure]} />
+        </Porteur>
+        <Porteur id="brin-bas">
+          <mesh geometry={g.brinBas} material={[m.cuir, m.doublure]} />
+        </Porteur>
+
+        {/* le mouvement d'après la photo de J (vu par le fond, d'où le miroir en X), étagé du rochet, tout près du saphir,
+            jusqu'à la platine */}
+        <group scale={[-1, 1, 1]}>
+          <Porteur id="platine">
+            <mesh geometry={g.platine} material={m.platine} position={[0, 0, 1.35]} rotation={[0, Math.PI, 0]} />
+            <mesh geometry={g.lisere} material={m.orBrosse} position={[0, 0, 0.44]} rotation={[0, Math.PI, 0]} />
+          </Porteur>
+          {g.ponts.map((geo, i) => (
+            <Porteur key={i} id={`pont-${i}`}>
+              <mesh geometry={geo} material={m.acierMat} position={[0, 0, 0.42]} />
+              {/* l'inscription du pont du haut : remise à l'endroit (le miroir du mouvement l'aurait retournée) */}
+              {i === 2 && (
+                <group position={[-1.0, 8.7, 0.35]} scale={[-1, 1, 1]}>
+                  <mesh geometry={g.inscription} material={m.inscription} rotation={[0, Math.PI, 0]} />
+                </group>
+              )}
+            </Porteur>
+          ))}
+          {/* le coq est vissé au bord ; la raquette posée dessus */}
+          <Porteur id="coq">
+            <mesh geometry={g.coq} material={m.acierMat} position={[0, 0, 0.2]} />
+            <mesh geometry={g.raquette} material={m.acier} position={[0, 0, 0.06]} />
+          </Porteur>
+          <Porteur id="ancre">
+            <mesh geometry={g.ancre} material={m.acier} position={[0, 0, 0.98]} />
+          </Porteur>
+          {mv.roues.map((w, i) => (
+            <Porteur key={w.nom} id={`roue-${i}`}>
+              <group position={[w.x, w.y, w.z]} ref={(r) => void (roues.current[i] = r)}>
+                <mesh geometry={g.roues[i]} material={m.laiton} />
+                <mesh geometry={g.pignon} material={m.acier} position={[0, 0, 0.1]} rotation={[Math.PI / 2, 0, 0]} />
+              </group>
+            </Porteur>
+          ))}
+          <Porteur id="echappement">
+            <group position={[mv.echappement.x, mv.echappement.y, mv.echappement.z]} ref={(r) => void (roues.current[3] = r)}>
+              <mesh geometry={g.echappement} material={m.laiton} />
+            </group>
+          </Porteur>
+          <Porteur id="rochet">
+            <group position={[mv.rochet.x, mv.rochet.y, mv.rochet.z]} ref={(r) => void (roues.current[4] = r)}>
+              <mesh geometry={g.rochet} material={m.rochet} />
+              <group position={[0, 0, -0.08]} rotation={[0, 0, 0.5]}>
+                <mesh geometry={g.grandeVis} material={m.visAcier} rotation={[Math.PI / 2, 0, 0]} />
+                <mesh geometry={g.fente} material={m.laque} position={[0, 0, -0.08]} scale={[1.8, 1.2, 1]} />
+              </group>
+            </group>
+          </Porteur>
+          <Porteur id="roue-couronne">
+            <group position={[mv.couronne.x, mv.couronne.y, mv.couronne.z]} ref={(r) => void (roues.current[5] = r)}>
+              <mesh geometry={g.roueCouronne} material={m.roueCouronne} />
+              <mesh geometry={g.vis} material={m.visAcier} position={[0, 0, -0.06]} rotation={[Math.PI / 2, 0, 0]} />
+              <mesh geometry={g.fente} material={m.laque} position={[0, 0, -0.12]} />
+            </group>
+          </Porteur>
+          <Porteur id="balancier">
+            <group position={[mv.balancier.x, mv.balancier.y, mv.balancier.z]}>
+              <group ref={balancier}>
+                <mesh geometry={g.balancier} material={m.laiton} />
+              </group>
+              <mesh geometry={g.spiral} material={m.acier} position={[0, 0, -0.05]} />
+            </group>
+          </Porteur>
+          {mv.rubis.map(([x, y, z], i) => (
+            <Porteur key={`r${i}`} id={`rubis-${i}`}>
+              <group position={[x, y, z]}>
+                <mesh geometry={g.chaton} material={m.orBrosse} rotation={[Math.PI / 2, 0, 0]} />
+                <mesh geometry={g.rubis} material={m.rubis} position={[0, 0, -0.03]} rotation={[-Math.PI / 2, 0, 0]} />
+              </group>
+            </Porteur>
+          ))}
+          {mv.vis.map(([x, y, z], i) => (
+            <Porteur key={`v${i}`} id={`vis-${i}`}>
+              <group position={[x, y, z]} rotation={[0, 0, i * 0.7]}>
+                <mesh geometry={g.vis} material={m.visAcier} rotation={[Math.PI / 2, 0, 0]} />
+                <mesh geometry={g.fente} material={m.laque} position={[0, 0, -0.06]} />
+              </group>
+            </Porteur>
+          ))}
         </group>
-        <group position={[mv.rochet.x, mv.rochet.y, mv.rochet.z]} ref={(r) => void (roues.current[4] = r)}>
-          <mesh geometry={g.rochet} material={m.rochet} />
-          <group position={[0, 0, -0.08]} rotation={[0, 0, 0.5]}>
-            <mesh geometry={g.grandeVis} material={m.visAcier} rotation={[Math.PI / 2, 0, 0]} />
-            <mesh geometry={g.fente} material={m.laque} position={[0, 0, -0.08]} scale={[1.8, 1.2, 1]} />
-          </group>
-        </group>
-        <group position={[mv.couronne.x, mv.couronne.y, mv.couronne.z]} ref={(r) => void (roues.current[5] = r)}>
-          <mesh geometry={g.roueCouronne} material={m.roueCouronne} />
-          <mesh geometry={g.vis} material={m.visAcier} position={[0, 0, -0.06]} rotation={[Math.PI / 2, 0, 0]} />
-          <mesh geometry={g.fente} material={m.laque} position={[0, 0, -0.12]} />
-        </group>
-        <group position={[mv.balancier.x, mv.balancier.y, mv.balancier.z]}>
-          <group ref={balancier}>
-            <mesh geometry={g.balancier} material={m.laiton} />
-          </group>
-          <mesh geometry={g.spiral} material={m.acier} position={[0, 0, -0.05]} />
-        </group>
-        {mv.rubis.map(([x, y, z], i) => (
-          <group key={`r${i}`} position={[x, y, z]}>
-            <mesh geometry={g.chaton} material={m.orBrosse} rotation={[Math.PI / 2, 0, 0]} />
-            <mesh geometry={g.rubis} material={m.rubis} position={[0, 0, -0.03]} rotation={[-Math.PI / 2, 0, 0]} />
-          </group>
-        ))}
-        {mv.vis.map(([x, y, z], i) => (
-          <group key={`v${i}`} position={[x, y, z]} rotation={[0, 0, i * 0.7]}>
-            <mesh geometry={g.vis} material={m.visAcier} rotation={[Math.PI / 2, 0, 0]} />
-            <mesh geometry={g.fente} material={m.laque} position={[0, 0, -0.06]} />
-          </group>
-        ))}
       </group>
-      {/* ce qui n'est pas dans le miroir : l'inscription sur le pont du haut (lisible par le fond), le fond du boîtier derrière la platine */}
-      <mesh geometry={g.inscription} material={m.inscription} position={[1.0, 8.7, 0.35]} rotation={[0, Math.PI, 0]} />
-      <mesh geometry={g.fond} material={m.cercle} position={[0, 0, 1.45]} rotation={[0, Math.PI, 0]} />
-      <mesh geometry={g.cercle} material={m.cercle} position={[0, 0, 0.47]} rotation={[Math.PI / 2, 0, 0]} />
-      <mesh geometry={g.fond} material={m.verre} position={[0, 0, COTE.fenetre + 0.03]} rotation={[0, Math.PI, 0]} renderOrder={2} />
-    </group>
+    </PorteursContexte.Provider>
   );
 }
 
-export function Montre3D({ pose, onPret, part, className }: { pose: React.RefObject<PoseMontre>; onPret?: () => void; part?: number; className?: string }) {
+export function Montre3D({
+  pose,
+  onPret,
+  part,
+  className,
+  montage,
+}: {
+  pose: React.RefObject<PoseMontre>;
+  onPret?: () => void;
+  part?: number;
+  className?: string;
+  montage?: Montage;
+}) {
   const boite = useRef<HTMLDivElement>(null);
   const [prepa, setPrepa] = useState<{ x: Peinture; g: Formes } | null>(null);
   const [chaude, setChaude] = useState(false);
@@ -514,7 +775,7 @@ export function Montre3D({ pose, onPret, part, className }: { pose: React.RefObj
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           aria-hidden="true"
         >
-          <Cadrage part={part} />
+          <Cadrage part={part} cadre={montage?.cadre} />
           <directionalLight
             position={[-38, 34, 52]}
             intensity={1.7}
@@ -530,7 +791,7 @@ export function Montre3D({ pose, onPret, part, className }: { pose: React.RefObj
             shadow-camera-near={20}
             shadow-camera-far={160}
           />
-          <Piece pose={pose} onPret={onPret} x={prepa.x} g={prepa.g} />
+          <Piece pose={pose} onPret={onPret} x={prepa.x} g={prepa.g} montage={montage} />
           <Prechauffe onFini={rechauffee} />
           <Reveil actif={chaude} />
         </Canvas>
