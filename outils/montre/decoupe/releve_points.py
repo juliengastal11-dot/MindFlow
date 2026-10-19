@@ -1,8 +1,14 @@
 # Les correspondances de la relève (releve.py), de la pile (A) à la photo de trois quarts (B), en pixels d'éclaté. Chaque point est un
 # même détail dans les deux images, relevé à la loupe ou sur les profils de luminance (le flanc, la boucle).
-import math
+import math, os, sys
 import numpy as np
 from PIL import Image
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from cornes import deplacement
+
+def corne(x, y):
+    """Un point des cornes du boîtier, relevé dans la vue éclatée d'origine : où il est une fois les cornes resserrées."""
+    return x + float(deplacement(x, y)), y
 
 ZX, ZY, E = 250, 700, 2
 
@@ -80,17 +86,15 @@ def interieur():
     # les aiguilles, sur leur longueur (les plus visibles : sombres sur le cadran clair)
     p += [(420, 1065, 437.6, 1049.8), (381, 1054, 410.2, 1038.6), (340, 1046, 382, 1027),
           (493, 1065, 503.6, 1044.5), (527, 1054, 542.2, 1030), (561, 1043.5, 582, 1016.5)]
-    # les cornes : leurs coins, côté bracelet et côté dehors
-    p += [(306, 973, 361, 940), (326, 971, 378, 938), (301, 990, 354, 952), (331, 998, 377, 958),      # haut, à gauche
-          (592, 973, 551, 939), (612, 976, 565, 941), (591, 998, 551, 960), (621, 998, 575, 955),      # haut, à droite
-          (320, 1222, 340, 1256), (340, 1222, 358, 1256),                                              # bas, à gauche
-          (583, 1221, 570, 1256), (600, 1221, 586, 1256)]                                              # bas, à droite
-    # le creux entre les cornes du haut et le bracelet : vide dans la pile, refermé dans la photo (la corne touche le
-    # bracelet) ; ces points le referment en ordre, sans pli
-    p += [(348, 972, 382, 933), (348, 990, 381, 955), (360, 985, 385, 948),
-          (573, 972, 549, 934), (573, 990, 550, 955), (563, 985, 548, 948)]
-    # la face intérieure des cornes du bas
-    p += [(345, 1150, 356, 1192), (345, 1190, 347, 1232), (580, 1150, 568, 1192), (580, 1190, 574, 1232)]
+    # les cornes : leurs coins, côté bracelet et côté dehors (relevés dans la vue éclatée d'origine, puis resserrés comme
+    # le boîtier, cornes.py)
+    coins = [((306, 973), (361, 940)), ((326, 971), (378, 938)), ((301, 990), (354, 952)), ((331, 998), (377, 958)),   # haut, à gauche
+             ((592, 973), (551, 939)), ((612, 976), (565, 941)), ((591, 998), (551, 960)), ((621, 998), (575, 955)),   # haut, à droite
+             ((320, 1222), (340, 1256)), ((340, 1222), (358, 1256)),                                                   # bas, à gauche
+             ((583, 1221), (570, 1256)), ((600, 1221), (586, 1256)),                                                   # bas, à droite
+             # la face intérieure des cornes du bas
+             ((345, 1150), (356, 1192)), ((345, 1190), (347, 1232)), ((580, 1150), (568, 1192)), ((580, 1190), (574, 1232))]
+    p += [(*corne(*a), *b) for a, b in coins]
     # le flanc, entre les cornes du bas (profils de luminance) : le reflet sombre de la lunette, le bas de la lunette, le
     # flanc de la carrure (qu'on ne voit presque plus de trois quarts), le haut du bracelet
     for x in (400, 430, 462, 495, 525):

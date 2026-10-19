@@ -1,13 +1,16 @@
 # La montre qui se relève : le morphing de la pile (A, photographiée dans la page au début de la relève) à la photo de
-# trois quarts (B). Les correspondances (releve_points.py) donnent une spline de plaque mince (TPS), évaluée sur une
-# grille, dépliée là où elle se replierait, puis écrite pour la page :
+# trois quarts (B). Les correspondances donnent une spline de plaque mince (TPS), évaluée sur une grille, dépliée là où
+# elle se replierait, puis écrite pour la page :
 #   stalika/public/montre/releve.bin       les déplacements de la grille (Int16, 1/16 de pixel d'éclaté)
 #   stalika/public/montre/releve-pile.webp la pile photographiée (la texture A)
 #   stalika/lib/montre-photo-releve.ts     la zone, la grille, la place des deux textures
 # Avant : node photographier-pile.mjs (le site tourne en local), qui écrit sortie/releve-pile.png.
-#   python releve.py            l'export
+#   python releve.py points     relève les correspondances (releve_points.py) sur la pile du moment et les gèle dans
+#                               releve-points.json : la suite ne dépend plus de la pile (les bracelets en sont refaits)
+#   python releve.py            l'export, d'après les correspondances gelées
 #   python releve.py --essais   et des images d'essai dans sortie/ : l'anaglyphe (A déformé contre B) et la mi-course
-import io, math, os, struct, sys
+# L'ordre complet est dans le LISEZMOI (« La montre qui se relève »).
+import io, json, math, os, struct, sys
 import numpy as np
 from PIL import Image
 
@@ -23,16 +26,23 @@ PILE = (250, 850, 490, 630)               # la pile photographiée : sa zone dan
 NX, NY = 71, 129                          # la grille : 70 × 128 cellules
 LAMBDA = 0.002                            # le lissage de la spline (unités normalisées)
 UNITE = 100.0
+POINTS = os.path.join(ICI, "releve-points.json")
+# la photo de trois quarts publiée, et sa place dans l'éclaté : le centre de sa lunette (461, 652) sur celui de la carrure
+# (462, 1070), son rayon (342) sur celui de la carrure (182)
+PHOTO = os.path.join(STALIKA, "public", "montre", "trois-quarts.webp")
+PHOTO_ECHELLE = 182 / 342
+PHOTO_X = 462 + (116 - 461) * PHOTO_ECHELLE
+PHOTO_Y = 1070 + (0 - 652) * PHOTO_ECHELLE
 
 # --- A et B, dans le repère de la toile -------------------------------------------------------------------------------
 def preparer():
     pile = Image.open(os.path.join(SORTIE, "releve-pile.png")).convert("RGBA")
     A = Image.new("RGBA", (ZL * E, ZH * E), (0, 0, 0, 0))
     A.paste(pile, ((PILE[0] - ZX) * E, (PILE[1] - ZY) * E))
-    # B : la photo de trois quarts posée comme dans la page (lib/montre-photo.ts, PHOTO_TROIS_QUARTS)
-    tq = Image.open(os.path.join(SORTIE, "photos", "trois-quarts.png")).convert("RGBA")
-    s = 182 / 342
-    x0, y0 = 462 + (116 - 461) * s, 1070 + (0 - 652) * s
+    # B : la photo de trois quarts, telle que la page la publie, posée comme dans la page (lib/montre-photo.ts,
+    # PHOTO_TROIS_QUARTS)
+    tq = Image.open(PHOTO).convert("RGBA")
+    s, x0, y0 = PHOTO_ECHELLE, PHOTO_X, PHOTO_Y
     B = tq.transform((ZL * E, ZH * E), Image.AFFINE, (1 / (E * s), 0, (ZX - x0) / s, 0, 1 / (E * s), (ZY - y0) / s), resample=Image.BICUBIC)
     A.save(os.path.join(SORTIE, "releve-A.png"))
     B.save(os.path.join(SORTIE, "releve-B.png"))
@@ -92,9 +102,19 @@ def deplier(Q, aire_ref, seuil=0.04, tours=4000):
         Q[m2] = 0.5 * Q[m2] + 0.5 * moy[m2]
     raise SystemExit("la grille ne se déplie pas")
 
+def grille_D():
+    """Les déplacements de la grille, tels que la page les lit (releve.bin)."""
+    q = np.fromfile(os.path.join(STALIKA, "public", "montre", "releve.bin"), dtype="<i2").astype(np.float32) / 16
+    return q.reshape(NY, NX, 2)
+
 def main():
     nomA, nomB = preparer()
-    P = RP.toutes(nomA, nomB)
+    if "points" in sys.argv[1:]:
+        P = RP.toutes(nomA, nomB)
+        json.dump([[round(v, 2) for v in q] for q in P], open(POINTS, "w"), separators=(",", ":"))
+        print(len(P), "correspondances gelées dans releve-points.json")
+        return
+    P = [tuple(q) for q in json.load(open(POINTS))]
     T = tps([(a, b) for a, b, c, d in P], [(c, d) for a, b, c, d in P], LAMBDA)
     xs = np.linspace(ZX, ZX + ZL, NX)
     ys = np.linspace(ZY, ZY + ZH, NY)

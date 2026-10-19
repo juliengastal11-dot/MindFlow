@@ -27,11 +27,14 @@ Toutes sont sur un fond gris clair uni : c'est ce qui permet de détourer sans r
 Python 3 avec numpy et Pillow, rien d'autre. Depuis `decoupe/`, dans l'ordre :
 
 ```
-python decouper_eclate.py    # les 13 pièces de la vue éclatée, détourées, à leur place
+python decouper_eclate.py    # les 13 pièces de la vue éclatée, détourées, à leur place (cornes resserrées : cornes.py)
 python decouper_photos.py    # les photos de la montre montée, détourées
 python exporter.py           # les WebP dans stalika/public/montre, les boîtes dans stalika/lib/montre-photo-boites.ts
 python voir_ellipses.py      # pour vérifier les ellipses relevées à la main (ellipses.json)
 ```
+
+Après `decouper_eclate.py`, les bracelets sont ceux de la vue éclatée : refaire ensuite la relève
+au complet (plus bas), qui les remplace par ceux de la photo.
 
 Tout ce qui sert à vérifier atterrit dans `decoupe/sortie/` (non suivi) : `verif-eclate.png` montre
 toutes les pièces à leur place sur un fond de nuit, `verif-face.png` et `verif-dos.png` les deux
@@ -59,6 +62,12 @@ photos. Les WebP sortent identiques d'une fois sur l'autre.
 
 ## Les mesures à la main
 
+Les cornes du boîtier de la vue éclatée sont bien plus écartées que le bracelet (ChatGPT les a
+dessinées ainsi) ; dans la photo de la montre finie, elles le serrent. `cornes.py` les ramène, dès
+la découpe, à leur place dans la photo, par un glissement horizontal plein sur les cornes et nul sur
+le corps du boîtier : elles n'ont plus à se resserrer quand la montre se relève (J : « les 4
+branches qui se réduisent pour attraper le bracelet »).
+
 Les pièces de la vue éclatée ne sont pas vues sous le même angle (le cadran et le mouvement plus
 de face, le boîtier plus de biais). Les ellipses de chaque pièce ronde sont relevées dans
 `ellipses.json` (centre, demi-axes) : elles donnent, dans `lib/montre-photo.ts`, l'échelle que
@@ -74,13 +83,30 @@ est enfoncé : au-dessus du mouvement, on voit la paroi intérieure du boîtier 
 La pile de pièces, une fois la montre finie, se déforme jusqu'à la photo de trois quarts : un
 morphing en WebGL, où chaque détail (lunette, cadran, index, aiguilles, cornes, couronne, bracelets,
 boucle) va de sa place dans la pile à sa place dans la photo pendant que l'une passe à l'autre. Les
-mêmes détails restant aux mêmes places, on ne voit pas deux images l'une sur l'autre. Pour le
-refaire (après un changement de la pile, de la caméra ou de la photo) :
+mêmes détails restant aux mêmes places, on ne voit pas deux images l'une sur l'autre.
+
+Les bracelets de la pile sont ceux de la photo (J : « le bracelet change entre les deux vues, il faut
+le même tout le temps ») : `bracelets.py` reporte le cuir et la boucle de la photo dans la forme
+qu'ils ont dans la pile, par la déformation même de la relève. Quand la montre se relève, ils ne
+changent que de forme. Le jour entre la carrure et le cuir y devient une ombre ; le reflet clair des
+cornes du bas, dans la photo, est assombri (`exporter.py`).
+
+Pour tout refaire (après un changement des pièces, de la caméra ou de la photo), le site tournant
+en local, depuis `decoupe/` :
 
 ```
-node photographier-pile.mjs  # le site tourne en local : la pile, telle qu'à l'écran au début de la relève
-python releve.py --essais    # le morphing : la grille, la texture de la pile, et des images d'essai
+node photographier-pile.mjs  # la pile, telle qu'à l'écran au début de la relève (avec les bracelets du moment)
+python releve.py points      # les correspondances, relevées sur cette pile, gelées dans releve-points.json
+python releve.py             # la déformation : la grille (releve.bin)
+python bracelets.py          # les bracelets refaits d'après la photo, par cette déformation
+python exporter.py           # publiés
+node photographier-pile.mjs  # la pile, avec ses nouveaux bracelets
+python releve.py --essais    # la texture de la pile (la grille ne bouge plus : les points sont gelés), et les essais
 ```
+
+Si seule la caméra ou la photo change, les deux dernières lignes suffisent pour la texture ; les
+correspondances, elles, se relèvent sur une pile aux bracelets d'origine (`decouper_eclate.py`, puis
+`exporter.py`).
 
 - **Les correspondances** (`releve_points.py`) : la silhouette (les bords gauche et droit, tronçon
   par tronçon, de la pile à la photo), la lunette et le bord du cadran (ellipses), les index, le
@@ -88,8 +114,7 @@ python releve.py --essais    # le morphing : la grille, la texture de la pile, e
   boucle (lus sur des profils de luminance). Les relever à la loupe : un point faux fait un détail
   en double à mi-course.
 - **La déformation** : une spline de plaque mince sur ces points, évaluée sur une grille de 71 × 129
-  sommets, puis dépliée là où elle se replierait (au creux entre les cornes du haut et le
-  bracelet, vide dans la pile, refermé dans la photo).
+  sommets, puis dépliée là où elle se replierait (depuis que les cornes sont resserrées, nulle part).
 - **Les essais** : `sortie/releve-050.png` (la mi-course) doit montrer une seule montre ;
   `sortie/releve-anaglyphe.png` (la pile déformée en rouge, la photo en cyan) montre en franges
   colorées ce qui ne tombe pas juste.

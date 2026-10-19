@@ -5,6 +5,7 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(__file__))
 from matte import *
 from fond import modele_fond
+import cornes
 
 ICI = os.path.dirname(os.path.abspath(__file__))
 SOURCES = os.path.join(ICI, "..")
@@ -51,6 +52,10 @@ def opaque(nom, m, surface_min=400, garder=None, bouchage="tout", d_vrai_trou=No
 
 # 1. le haut du bracelet et sa barrette
 opaque("bracelet-haut", rect(330, 0, 610, 140) & dessus(330, c_bracelet) & (d > 16), garder=1)
+# coupé par le haut de l'image : il s'efface en douceur (bracelets.py le refait d'après la photo de trois quarts)
+a_b, col_b, m_b = pieces["bracelet-haut"]
+t = np.clip((np.arange(H, dtype=np.float32)[:, None] - 6) / 46, 0, 1)
+pieces["bracelet-haut"] = (a_b * t * t * (3 - 2 * t), col_b, m_b)
 opaque("barrette-haut", rect(330, 100, 610, 146) & dessous(330, c_bracelet) & (d > 12), surface_min=40, choke=0)
 
 # 2. la lunette (or) : l'anneau, son grand trou reste ouvert
@@ -82,6 +87,9 @@ opaque("mouvement", rect(280, 700, 652, 996) & ~dilater(cadran, 1) & dessus(262,
 # 6. le boîtier (son grand trou reste ouvert), la couronne et sa tige
 boitier = opaque("boitier", rect(262, 955, 664, 1245) & dessous(262, c_mvt) & dessus(262, c_fond) & (d > 16), garder=1,
                  bouchage="petits", surface_max=3000)
+# ses cornes, rapprochées du bracelet (cornes.py)
+a_b, col_b, m_b = pieces["boitier"]
+pieces["boitier"] = (*cornes.resserrer(a_b, col_b), m_b)
 opaque("couronne", rect(664, 1040, 790, 1135) & (d > 14), surface_min=30)
 
 # 7. le fond : l'anneau d'or opaque, sa glace saphir transparente
@@ -103,6 +111,9 @@ pieces["fond"] = (a, col, anneau | glace)
 opaque("barrette-bas", rect(360, 1376, 570, 1412) & dessous(360, c_barrette) & dessus(360, c_bas) & (d > 12), surface_min=30, choke=0)
 # les jours de la boucle sont de vrais trous : on y voit le fond
 opaque("bracelet-bas", rect(355, 1396, 575, H) & dessous(360, c_bas) & (d > 16), garder=1, bouchage="vrais", d_vrai_trou=18)
+# son haut, un peu plus large contre les cornes (cornes.py)
+a_b, col_b, m_b = pieces["bracelet-bas"]
+pieces["bracelet-bas"] = (*cornes.elargir_bracelet_bas(a_b, col_b), m_b)
 
 # les fichiers : chaque pièce rognée, et sa boîte dans l'image d'origine
 infos = {}

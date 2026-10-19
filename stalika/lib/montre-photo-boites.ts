@@ -4,7 +4,7 @@
 export type Boite = { x: number; y: number; l: number; h: number };
 
 export const BOITES_PIECES = {
-  "bracelet-haut": { x: 369, y: 6, l: 194, h: 130 },
+  "bracelet-haut": { x: 376, y: 12, l: 184, h: 115 },
   "barrette-haut": { x: 383, y: 123, l: 168, h: 24 },
   "lunette": { x: 307, y: 146, l: 314, h: 137 },
   "verre": { x: 299, y: 280, l: 329, h: 127 },
@@ -16,7 +16,7 @@ export const BOITES_PIECES = {
   "couronne": { x: 663, y: 1055, l: 119, h: 66 },
   "fond": { x: 294, y: 1221, l: 339, h: 167 },
   "barrette-bas": { x: 377, y: 1379, l: 176, h: 28 },
-  "bracelet-bas": { x: 369, y: 1402, l: 192, h: 257 },
+  "bracelet-bas": { x: 366, y: 1396, l: 202, h: 263 },
 } as const satisfies Record<string, Boite>;
 
 export const BOITES_PHOTOS = {

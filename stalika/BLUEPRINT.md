@@ -174,6 +174,19 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-19 (nuit) : les cornes serrent le bracelet dès le début, le bracelet ne change plus
+
+J, sur la relève : « ce qui est le plus choquant, ce sont les 4 branches qui se réduisent pour attraper le bracelet ; il les
+faudrait moins larges depuis le début », puis « le bracelet change aussi entre les deux vues au même moment, il faut le même
+tout le temps ».
+- **Les cornes** du boîtier de la vue éclatée (bien plus écartées que le bracelet, telles que ChatGPT les a dessinées) sont
+  ramenées dès la découpe à leur place dans la photo (`outils/montre/decoupe/cornes.py`) ; le haut du bracelet du bas est un
+  peu élargi contre elles. La relève n'a plus rien à resserrer (sa grille ne se replie plus nulle part).
+- **Les bracelets** de la vue éclatée sont remplacés par ceux de la photo de trois quarts, reportés dans la forme qu'ils ont
+  dans la pile par la déformation même de la relève (`bracelets.py`, pièces à 2 pixels par pixel d'éclaté) : le même cuir,
+  la même boucle du fil d'or jusqu'à la fin, seule leur forme change quand la montre se relève. Les correspondances de la
+  relève sont gelées (`releve-points.json`) pour que la grille ne bouge plus quand la pile change.
+
 ## Mise à jour du 2026-10-19 (soir) : la montre se relève, sans retournement, le mouvement en relief
 
 J, sur deux captures : « le retournement ne sert à rien finalement, on ne le fait pas, juste un léger zoom sur la montre à la

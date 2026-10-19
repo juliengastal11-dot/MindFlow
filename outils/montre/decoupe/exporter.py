@@ -21,12 +21,28 @@ def fondu(im, haut=None, bas=None):
     a[..., 3] *= f
     return Image.fromarray(a.astype(np.uint8), "RGBA")
 
+def ombre_sous_carrure(im, b):
+    """La photo de trois quarts : le reflet clair et gris des cornes du bas contre le cuir du bracelet, assombri en une
+    ombre. Le haut du bracelet du bas, refait d'après cette photo (bracelets.py), commence là : il n'y porte pas de tache
+    claire, et la photo garde le même aspect quand la montre se relève."""
+    a = np.asarray(im).astype(np.float32)
+    s = 182 / 342  # la photo dans l'éclaté (lib/montre-photo.ts, PHOTO_TROIS_QUARTS)
+    x0, y0 = 462 + (b["x"] - 461) * s, 1070 + (b["y"] - 652) * s
+    h, w = a.shape[:2]
+    vv, uu = np.mgrid[0:h, 0:w].astype(np.float32)
+    X, Y = x0 + (uu + 0.5) * s, y0 + (vv + 0.5) * s
+    # seul le reflet clair et gris des cornes contre le cuir s'éteint ; l'or de la carrure et des cornes reste
+    lum = a[..., :3].mean(-1)
+    t = np.clip((Y - 1219) / 6, 0, 1)
+    f = 0.22 + 0.78 * t * t * (3 - 2 * t)
+    zone = (Y > 1196) & (Y < 1226) & (X > 360) & (X < 565) & (lum > 95) & ((a[..., 0] - a[..., 2]) < 22)
+    a[..., :3] = np.where(zone[..., None], a[..., :3] * f[..., None], a[..., :3])
+    return Image.fromarray(a.astype(np.uint8), "RGBA")
+
 taille = 0
 boites = json.load(open(os.path.join(SORTIE, "eclate", "boites.json")))
 for nom, b in boites.items():
     im = Image.open(os.path.join(SORTIE, "eclate", f"{nom}.png"))
-    if nom == "bracelet-haut":  # coupé par le haut de l'image
-        im = fondu(im, haut=(0, 46))
     im.save(f"{PUBLIC}/pieces/{nom}.webp", quality=90, method=6)
     taille += os.path.getsize(f"{PUBLIC}/pieces/{nom}.webp")
 
@@ -39,6 +55,7 @@ for nom, b in photos.items():
         im = fondu(im, haut=(150 - b["y"], 330 - b["y"]), bas=(1380 - b["y"], 1560 - b["y"]))
     if nom == "trois-quarts":  # le bracelet du haut sort du cadre
         im = fondu(im, haut=(0, 150))
+        im = ombre_sous_carrure(im, b)
     im.save(f"{PUBLIC}/{nom}.webp", quality=90, method=6)
     taille += os.path.getsize(f"{PUBLIC}/{nom}.webp")
 
