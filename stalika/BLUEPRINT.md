@@ -174,6 +174,17 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-19 (fin de journée) : la montre en photo qui se fabrique passe sur l'accueil
+
+J : « je veux qu'on enlève le modèle 3D et qu'on mette le modèle qui se fabrique, le modèle explosé à la place ». La section 04
+joue maintenant la montre en photo (décrite plus bas, « Essai du 2026-10-19 : la montre en photo qui se fabrique ») ; ses deux
+pages d'essai sont retirées. Partis avec elles, et gardés dans l'historique jusqu'au commit `5a19643` : la montre 3D
+(`components/ui/montre-3d.tsx`, `lib/montre-3d.ts`, `lib/pose-montre.ts`, Three.js et `@react-three/fiber`), l'essai 3D où
+elle se fabriquait (`lib/assemblage.ts`), et la montre dessinée en SVG qui l'attendait (`components/ui/montre.tsx`). Sans film
+(mouvement réduit, sans JavaScript), la section montre la photo de la montre montée, de face. Le texte garde sa lecture mot à
+mot et son quantième ; la réglette au-dessus avance de deux heures à chaque étape, comme l'aiguille du chrono le faisait. Les
+sections qui suivent racontent l'histoire de la montre 3D : elles restent comme mémoire, le code n'est plus là.
+
 ## Mise à jour du 2026-10-18 (suite) : la section 04 devient une montre
 
 J : « la section 04 est trop générique ; garder l'esprit premium, mais surtout faire quelque chose de personnel et
@@ -282,7 +293,7 @@ la ligne est un fil d'or ; l'assemblage donne son sens au retournement final.
   décalée (`setViewOffset`) pour garder la montre à sa place (à droite, en haut au téléphone). Le fil d'or est un trait du DOM
   (`.chrono-fil`), sous la 3D.
 
-## Essai du 2026-10-19 : la montre en photo qui se fabrique (page `/essai/montre-photo`, non indexée)
+## Essai du 2026-10-19 : la montre en photo qui se fabrique (page `/essai/montre-photo`, passée sur l'accueil le soir même)
 
 J : « pour avoir du réalisme, une vraie montre en vue éclatée, montée sans la reconstruire, avec les vraies pièces », puis,
 sans payer (ni modèle à 95 $, ni génération) : trois images faites par lui dans ChatGPT, d'après nos consignes (vue éclatée
