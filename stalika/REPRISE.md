@@ -53,12 +53,11 @@
   le visiteur ne clique pas (voir `BLUEPRINT.md`, mise à jour du 2026-10-02). Après chaque retouche de
   section, vérifier que les `data-rebond` suivent. À tester par J sur iPhone (fluidité de la chute).
 - Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion.
-- **La montre de la section 04** (2026-10-19) : la montre en photo qui se fabrique (`components/ui/montre-photo.tsx`,
-  `lib/montre-photo.ts`, images et outil de découpe dans `outils/montre`, voir `BLUEPRINT.md`). La montre 3D et ses essais sont
-  partis (historique jusqu'au commit `5a19643`). À mesurer sur l'iPhone de J (`/phone`, puis `perf` sur la piste de `#livre`) :
-  la montre qui se relève est un morphing en WebGL (`lib/morphing.ts`), sa toile fait jusqu'à 3 pixels par pixel d'éclaté ;
-  la baisser d'abord si la relève peine. Après tout changement de la pile ou de la caméra : refaire la relève
-  (`outils/montre/LISEZMOI.md`, « La montre qui se relève »).
+- **La montre de la section 04** (2026-10-20) : une séquence d'images rendue dans Blender (`outils/montre/blender`, son
+  LISEZMOI dit comment la refaire), jouée par `components/ui/montre-film.tsx` (voir `BLUEPRINT.md`). Les versions d'avant
+  (montre 3D Three.js, pièces en photo, morphing) sont dans l'historique. À regarder par J sur son téléphone : la fluidité
+  du défilement (180 images par série, fondu entre voisines) et le poids de la série du téléphone. Pour retoucher la montre
+  (matières, lumière, chorégraphie, caméra) : `montre.py`, puis re-rendre et ré-encoder.
 - **Fait le 2026-10-17 : tout le chemin du téléphone en vertical** (J : « Tout le chemin en 9:16 c'est ok, bonne qualité et le chalet. Garde le
   côté où il s'allume la nuit »). Chalet en rondins, vidéo du hero, cinq passages du ciel et plongée générés en 1 080 × 1 912 : voir `BLUEPRINT.md`
   (mise à jour du 2026-10-17, suite) et `outils/hero/LISEZMOI.md` (tâches Higgsfield, commandes pour tout refaire). Mesuré sur l'iPhone de J (build de

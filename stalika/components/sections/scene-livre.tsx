@@ -7,7 +7,7 @@ import { Scene, useScene } from "@/components/ui/scene";
 import { Trace } from "@/components/ui/trace";
 import { Rouleaux } from "@/components/ui/rouleaux";
 import { BoutonFilet } from "@/components/ui/bouton-filet";
-import { MontrePhoto } from "@/components/ui/montre-photo";
+import { MontreFilm } from "@/components/ui/montre-film";
 import { SplitText } from "gsap/SplitText";
 import { gsap, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
@@ -19,15 +19,15 @@ import { MOUVEMENT } from "@/lib/mouvement";
    tourne et montre tout le processus de création, du début à la fin »).
 
    La montre se fabrique au défilement (2026-10-19, J : « qu'on enlève le
-   modèle 3D et qu'on mette le modèle qui se fabrique, le modèle explosé ») :
-   les pièces d'une vraie montre en photo, détourées dans la vue éclatée de J,
-   glissent sur un fil d'or jusqu'au boîtier, une étape du processus après
-   l'autre ; la montre finie se relève jusqu'à une photo de trois quarts, sans
-   fondu (un morphing), et la caméra s'en approche à peine pour finir
-   (components/ui/montre-photo.tsx, la
-   chorégraphie dans lib/montre-photo.ts, les images dans outils/montre). Le
-   modèle 3D (Three.js) et la montre dessinée qu'elle remplace sont dans
-   l'historique, jusqu'au commit 5a19643. Huit temps :
+   modèle 3D et qu'on mette le modèle qui se fabrique, le modèle explosé »,
+   puis, le 20 : « sans fondu, sans montre qui change de forme, des pièces qui
+   s'emboîtent de manière esthétique et réaliste ») : une séquence d'images
+   rendue dans Blender (outils/montre/blender), une vraie montre en volume dont
+   les pièces, enfilées sur un fil d'or, redescendent une à une sur le boîtier,
+   une étape du processus après l'autre ; la montre finie, la caméra vient la
+   voir de plus près (components/ui/montre-film.tsx, lib/montre-film.ts). Les
+   versions d'avant (la montre 3D en Three.js, la montre dessinée, les pièces en
+   photo qui se relevaient par un morphing) sont dans l'historique. Huit temps :
    0. l'arrivée : réglé comme une montre, la vue éclatée ;
    1. le premier message : le mouvement descend dans la carrure ;
    2. on en parle (l'appel, le devis, le prix) : le fond, la couronne ;
@@ -37,9 +37,9 @@ import { MOUVEMENT } from "@/lib/mouvement";
       et la lunette ;
    6. la mise en ligne (chez vous ou chez moi, le domaine à votre nom) : les
       bracelets ; la montre finie se relève ;
-   7. et après : la caméra s'approche de la montre (J, le soir même : « le
-      retournement ne sert à rien finalement ») ; le code est à vous, et le
-      bouton « Parlons de votre projet ».
+   7. et après : la caméra se relève et s'approche de la montre finie (J :
+      « le retournement ne sert à rien finalement ») ; le code est à vous, et
+      le bouton « Parlons de votre projet ».
    Les faits sont ceux que J a donnés pour l'ancienne section, la FAQ et le
    questionnaire (aucun chiffre ajouté).
 
@@ -346,14 +346,14 @@ export function SceneLivre() {
       <div ref={racine} data-piste className="chrono-piste motion-reduce:min-h-0!" style={{ minHeight: `${(1 + R.ecrans) * 100}svh` }}>
         <div className="chrono-colle">
           <div className="chrono-lumiere" aria-hidden="true" />
-          {/* sans film (mouvement réduit, ou sans JavaScript) : la montre finie, de trois quarts */}
+          {/* sans film (mouvement réduit, ou sans JavaScript) : la montre finie, la dernière image de la séquence */}
           <div className="chrono-montre">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/montre/trois-quarts.webp" alt="" className="chrono-montre-photo" />
+            <img src="/montre/film/mobile/179.webp" alt="" className="chrono-montre-photo" />
           </div>
           {charger && (
             <div className="chrono-photo" data-prete={prete || undefined}>
-              <MontrePhoto onPret={() => setPrete(true)} />
+              <MontreFilm onPret={() => setPrete(true)} />
             </div>
           )}
           <div className="chrono-texte sur-ciel">

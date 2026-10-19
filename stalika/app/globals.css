@@ -574,8 +574,9 @@ html.js [data-brouille] [data-baseline] {
 .chrono-texte { position: relative; width: 100%; max-width: 34rem; }
 .chrono-reglette { display: none; }
 .chrono-photo { display: none; }
-/* sans film, la montre finie, de trois quarts, recadrée sur sa tête */
-.chrono-montre-photo { position: absolute; left: 9.65%; top: calc(var(--montre-l) * -.0126); width: 88.66%; max-width: none; }
+/* sans film, la montre finie : la dernière image de la séquence (9:16, la tête vers le haut du tiers central) ; la boîte
+   de la montre fait 1,5 fois sa largeur, l'image y est posée pour que la tête la remplisse */
+.chrono-montre-photo { position: absolute; left: -19.3%; top: calc(var(--montre-l) * -0.44); width: 134%; max-width: none; }
 .chrono-etapes { display: grid; gap: 3rem; }
 .chrono-titre { margin-top: .75rem; font-size: 1.6rem; line-height: 1.15; }
 .chrono-texte-p { margin-top: 1rem; max-width: 30rem; color: color-mix(in oklab, var(--color-foreground) 82%, transparent); }
@@ -610,29 +611,14 @@ html.js [data-brouille] [data-baseline] {
      la platine). */
   html.js .chrono-photo { display: block; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .8s ease; }
   html.js .chrono-photo[data-prete] { opacity: 1; }
-  .photo-scene { position: absolute; inset: 0; overflow: hidden; }
-  .photo-platine { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
-  .photo-eclate, .photo-dedans { position: absolute; inset: 0; }
-  .photo-piece { position: absolute; max-width: none; user-select: none; -webkit-user-drag: none; }
-  .photo-piece { will-change: transform; }
-  /* la montre finie, de trois quarts ; la lumière qui glisse sur elle, découpée par la photo elle-même */
-  .photo-trois-quarts { position: absolute; opacity: 0; }
-  .photo-trois-quarts > img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
-  .photo-reflet { position: absolute; inset: 0; opacity: 0; mix-blend-mode: overlay; background-repeat: no-repeat; background-size: 260% 100%;
-    background-image: linear-gradient(112deg, transparent 40%, rgb(255 246 222 / .7) 50%, transparent 60%);
-    -webkit-mask: url(/montre/trois-quarts.webp) center / 100% 100% no-repeat; mask: url(/montre/trois-quarts.webp) center / 100% 100% no-repeat; }
-  /* le fond de la carrure, sombre, et l'ombre de son bord sur le mouvement (ellipses posées en ligne par le composant) */
-  .photo-interieur { position: absolute; border-radius: 50%; opacity: 0;
-    background: radial-gradient(ellipse at 50% 40%, #2b1d0c 0%, #140d06 55%, #080503 100%); }
-  .photo-ombre-fond { position: absolute; border-radius: 50%; opacity: 0; pointer-events: none;
-    background: radial-gradient(ellipse 100% 100% at 50% 64%, transparent 52%, rgb(10 6 2 / .38) 80%, rgb(10 6 2 / .72) 100%),
-      linear-gradient(to bottom, rgb(10 6 2 / .5), transparent 34%); }
-  /* la montre qui se relève : la pile photographiée (une texture, jamais affichée telle quelle) et la toile du morphing */
-  .photo-pile { display: none; }
-  .photo-releve { position: absolute; visibility: hidden; }
-  .photo-fil { position: absolute; top: -2400px; height: 6500px; width: calc(1.2px / var(--k, 1)); transform: translateX(-50%);
-    background: linear-gradient(to bottom, transparent, var(--color-accent) 36%, var(--color-accent) 64%, transparent);
-    box-shadow: 0 0 calc(10px / var(--k, 1)) color-mix(in oklab, var(--color-accent) 55%, transparent); }
+  /* le lecteur de la montre qui se fabrique (components/ui/montre-film.tsx) : au téléphone, le haut de l'écran, au-dessus du
+     texte ; sur un écran large, la colonne de droite. Le fil d'or, l'axe des pièces, est un trait derrière la toile. */
+  .film-scene { position: absolute; left: 0; right: 0; top: 0; height: 64svh; }
+  .film-toile { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .film-fil { position: absolute; top: 4%; bottom: 10%; width: 1px; transform: translateX(-50%); z-index: -1; opacity: 0;
+    background: linear-gradient(to bottom, transparent, var(--color-accent) 12%, var(--color-accent) 88%, transparent);
+    box-shadow: 0 0 8px color-mix(in oklab, var(--color-accent) 55%, transparent); }
+  html.js .chrono-photo { isolation: isolate; }
   @media (min-width: 768px) {
     html.js .chrono-lumiere { background: radial-gradient(42% 60% at 69% 50%, color-mix(in oklab, var(--color-accent) 14%, transparent), transparent 70%); }
     html.js .chrono-texte { left: max(1.5rem, calc(50vw - 600px)); right: auto; top: 0; bottom: 0; width: min(30rem, 36vw); }
@@ -642,6 +628,7 @@ html.js [data-brouille] [data-baseline] {
     html.js .chrono-texte::before { left: -9rem; right: -7rem; top: 24svh; bottom: 6svh;
       background: radial-gradient(closest-side, color-mix(in oklab, var(--color-background) 72%, transparent), color-mix(in oklab, var(--color-background) 58%, transparent) 55%, transparent); }
     html.js .chrono-etapes > li { padding-top: calc(38svh + 2.25rem); }
+    html.js .film-scene { left: 38vw; right: 2vw; height: 100svh; }
   }
 }
 

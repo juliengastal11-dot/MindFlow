@@ -174,6 +174,24 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-20 : la montre se fabrique en vraie 3D, rendue dans Blender
+
+J : « je ne suis pas satisfait du résultat ; tu as tout pour faire une montre éclatée dans le style qu'on a défini et faire
+quelque chose de super, sans fondu, sans montre qui change de forme avec un fondu, avec des pièces qui s'emboîtent de manière
+esthétique et réaliste ; carte blanche, utilise les crédits » (un compte Tripo, 200 crédits).
+- **Tripo** (studio.tripo3d.ai) : le mouvement généré depuis la photo de dos est bon (30 crédits) ; la montre entière,
+  inutilisable (bracelet refermé en boucle, cadran vide ; 40 crédits). Le compte gratuit n'exporte que des modèles H2.5.
+- **Blender 5.2 sur le PC** (`outils/montre/blender`, voir son LISEZMOI) : la montre est modélisée aux cotes de la montre 3D
+  d'avant (boîtier tourné, cornes, lunette, verre saphir, cadran peint avec la face redressée de la photo de J, aiguilles
+  dauphine, couronne cannelée, fond, bracelets balayés en alligator, boucle), le mouvement de Tripo teinté par matière, un
+  éclairage de studio produit, Cycles sur la carte graphique (3 s par image).
+- **La séquence** : 180 images 9:16 à fond transparent, en deux tailles (`public/montre/film/bureau` 810 × 1440,
+  `mobile` 540 × 960), jouées au défilement par `components/ui/montre-film.tsx` (une toile, l'image de la progression et un
+  fondu vers la suivante, chargement à l'approche, les images proches d'abord). Chaque image est un rendu complet de la même
+  montre : rien ne se fond, rien ne change de forme. Le fil d'or (l'axe) est un trait derrière la toile, qui s'efface quand les
+  bracelets sont posés.
+- **Partis** : les pièces en photo, le morphing WebGL et l'outil de découpe (historique jusqu'à `cf7e1f7`).
+
 ## Mise à jour du 2026-10-19 (nuit) : les cornes serrent le bracelet dès le début, le bracelet ne change plus
 
 J, sur la relève : « ce qui est le plus choquant, ce sont les 4 branches qui se réduisent pour attraper le bracelet ; il les
