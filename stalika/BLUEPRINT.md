@@ -174,6 +174,24 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-19 (soir) : la montre se relève, sans retournement, le mouvement en relief
+
+J, sur deux captures : « le retournement ne sert à rien finalement, on ne le fait pas, juste un léger zoom sur la montre à la
+fin ; tu peux donner du relief au mécanisme car ça fait très plat ; il y a un trou entre le cadran et le bloc devant ; le
+fondu quand on revient à la dernière photo est trop voyant, c'est vraiment la montre qui se relève, le switch vers la photo
+ne doit pas se voir en fondu ».
+- **Plus de retournement** : à l'étape 7, la caméra s'approche à peine de la montre finie (`CADRAGES`). Les photos de face et
+  de dos ne sont plus publiées.
+- **La carrure remesurée** sur le trou de son alpha : vue moins de biais qu'on ne l'avait relevé (b / a ≈ 0,46, et non 0,38) ;
+  le mouvement et le cadran s'y aplatissent donc moins. Le cadran remplit l'ouverture jusqu'au bord de devant (plus de jour
+  dessous) ; le fond de la carrure est sombre une fois le mouvement posé.
+- **Le relief du mouvement** : ce qui entre dans la carrure ne se voit que dans son trou, et d'autant plus bas qu'il est
+  enfoncé (`HAUT_TROU`, `decoupe`) : au-dessus du mouvement, la paroi intérieure du boîtier, et l'ombre de son bord sur lui.
+- **La relève sans fondu** : un morphing en WebGL (`lib/morphing.ts`) de la pile (photographiée dans la page,
+  `releve-pile.webp`) à la photo de trois quarts, sur 300 correspondances relevées à la loupe (`outils/montre/decoupe`,
+  `releve.py`). À mi-course, on voit une seule montre qui se redresse ; aux deux bouts, la toile et la page sont identiques
+  au pixel près, à l'œil (mesuré : écart moyen sous 2 sur 765). Sans WebGL : l'ancien fondu.
+
 ## Mise à jour du 2026-10-19 (fin de journée) : la montre en photo qui se fabrique passe sur l'accueil
 
 J : « je veux qu'on enlève le modèle 3D et qu'on mette le modèle qui se fabrique, le modèle explosé à la place ». La section 04

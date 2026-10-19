@@ -2,8 +2,9 @@
 
 Dans la section 04 de l'accueil (depuis le 2026-10-19, à la place de la montre 3D), la montre se fabrique
 au défilement avec de vraies pièces en photo : les pièces d'une vue éclatée glissent sur le fil d'or jusqu'au boîtier, étape après
-étape, puis la photo de la montre montée, de trois quarts, prend le relais, et la montre se retourne, en volume, sur son fond.
-Le composant est `stalika/components/ui/montre-photo.tsx`, la chorégraphie `stalika/lib/montre-photo.ts`.
+étape, puis la montre finie se relève jusqu'à la photo de trois quarts (un morphing, sans fondu visible), et la caméra s'en
+approche à peine. Le composant est `stalika/components/ui/montre-photo.tsx`, la chorégraphie `stalika/lib/montre-photo.ts`,
+le morphing `stalika/lib/morphing.ts`.
 
 Ce dossier n'est pas publié : la construction ne prend que `stalika/`.
 
@@ -13,11 +14,11 @@ Quatre images faites par J dans ChatGPT le 2026-10-19, gratuitement, d'après le
 conversation (vue éclatée verticale, puis la même montre assemblée, puis de dos) :
 
 - `Montre Stalika en éclaté luxueux.png` : la vue éclatée, 941 × 1672 ;
-- `Montre dorée STALIKA sur cuir noir.png` : la montre montée, de face ;
-- `Montre dorée à mouvement apparent.png` : la montre de dos, le mouvement sous la glace saphir ;
 - `Montre dorée Stalika.png` (demandée ensuite, même jour) : la montre montée vue de trois quarts, d'où l'on voit son
-  épaisseur ; c'est elle qu'on voit quand la montre est finie (la photo de face et celle de dos servent aux deux faces de
-  la montre qui se retourne).
+  épaisseur ; c'est elle qu'on voit quand la montre est finie ;
+- `Montre dorée STALIKA sur cuir noir.png` et `Montre dorée à mouvement apparent.png` : la montre de face et de dos. Elles
+  servaient au retournement de la fin, retiré le soir même (J : « le retournement ne sert à rien finalement ») ; on les
+  découpe encore, la page ne les publie plus.
 
 Toutes sont sur un fond gris clair uni : c'est ce qui permet de détourer sans rien payer.
 
@@ -27,7 +28,7 @@ Python 3 avec numpy et Pillow, rien d'autre. Depuis `decoupe/`, dans l'ordre :
 
 ```
 python decouper_eclate.py    # les 13 pièces de la vue éclatée, détourées, à leur place
-python decouper_photos.py    # les trois photos de la montre montée, détourées
+python decouper_photos.py    # les photos de la montre montée, détourées
 python exporter.py           # les WebP dans stalika/public/montre, les boîtes dans stalika/lib/montre-photo-boites.ts
 python voir_ellipses.py      # pour vérifier les ellipses relevées à la main (ellipses.json)
 ```
@@ -61,6 +62,34 @@ photos. Les WebP sortent identiques d'une fois sur l'autre.
 Les pièces de la vue éclatée ne sont pas vues sous le même angle (le cadran et le mouvement plus
 de face, le boîtier plus de biais). Les ellipses de chaque pièce ronde sont relevées dans
 `ellipses.json` (centre, demi-axes) : elles donnent, dans `lib/montre-photo.ts`, l'échelle que
-prend chaque pièce en glissant pour entrer dans le boîtier. Les centres et rayons des boîtiers des
-deux photos (464, 708, 330 de face ; 469, 708, 343 de dos) les calent sur le boîtier de la vue
-éclatée.
+prend chaque pièce en glissant pour entrer dans le boîtier. Le centre et le rayon de la lunette de
+la photo de trois quarts (461, 652, 342) la calent sur le boîtier de la vue éclatée.
+
+Le boîtier de la vue éclatée est vu de biais (b / a ≈ 0,46, mesuré sur le trou de son alpha). Ce
+qui entre dedans (le mouvement, le cadran) ne se voit que dans son trou, et d'autant plus bas qu'il
+est enfoncé : au-dessus du mouvement, on voit la paroi intérieure du boîtier (le relief).
+
+## La montre qui se relève
+
+La pile de pièces, une fois la montre finie, se déforme jusqu'à la photo de trois quarts : un
+morphing en WebGL, où chaque détail (lunette, cadran, index, aiguilles, cornes, couronne, bracelets,
+boucle) va de sa place dans la pile à sa place dans la photo pendant que l'une passe à l'autre. Les
+mêmes détails restant aux mêmes places, on ne voit pas deux images l'une sur l'autre. Pour le
+refaire (après un changement de la pile, de la caméra ou de la photo) :
+
+```
+node photographier-pile.mjs  # le site tourne en local : la pile, telle qu'à l'écran au début de la relève
+python releve.py --essais    # le morphing : la grille, la texture de la pile, et des images d'essai
+```
+
+- **Les correspondances** (`releve_points.py`) : la silhouette (les bords gauche et droit, tronçon
+  par tronçon, de la pile à la photo), la lunette et le bord du cadran (ellipses), les index, le
+  nom, les aiguilles sur leur longueur, la petite seconde, les coins des cornes, le flanc et la
+  boucle (lus sur des profils de luminance). Les relever à la loupe : un point faux fait un détail
+  en double à mi-course.
+- **La déformation** : une spline de plaque mince sur ces points, évaluée sur une grille de 71 × 129
+  sommets, puis dépliée là où elle se replierait (au creux entre les cornes du haut et le
+  bracelet, vide dans la pile, refermé dans la photo).
+- **Les essais** : `sortie/releve-050.png` (la mi-course) doit montrer une seule montre ;
+  `sortie/releve-anaglyphe.png` (la pile déformée en rouge, la photo en cyan) montre en franges
+  colorées ce qui ne tombe pas juste.

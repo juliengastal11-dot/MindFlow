@@ -56,7 +56,9 @@
 - **La montre de la section 04** (2026-10-19) : la montre en photo qui se fabrique (`components/ui/montre-photo.tsx`,
   `lib/montre-photo.ts`, images et outil de découpe dans `outils/montre`, voir `BLUEPRINT.md`). La montre 3D et ses essais sont
   partis (historique jusqu'au commit `5a19643`). À mesurer sur l'iPhone de J (`/phone`, puis `perf` sur la piste de `#livre`) :
-  la tranche de la montre qui se retourne est faite de 48 bandes en CSS 3D, à alléger d'abord si le retournement peine.
+  la montre qui se relève est un morphing en WebGL (`lib/morphing.ts`), sa toile fait jusqu'à 3 pixels par pixel d'éclaté ;
+  la baisser d'abord si la relève peine. Après tout changement de la pile ou de la caméra : refaire la relève
+  (`outils/montre/LISEZMOI.md`, « La montre qui se relève »).
 - **Fait le 2026-10-17 : tout le chemin du téléphone en vertical** (J : « Tout le chemin en 9:16 c'est ok, bonne qualité et le chalet. Garde le
   côté où il s'allume la nuit »). Chalet en rondins, vidéo du hero, cinq passages du ciel et plongée générés en 1 080 × 1 912 : voir `BLUEPRINT.md`
   (mise à jour du 2026-10-17, suite) et `outils/hero/LISEZMOI.md` (tâches Higgsfield, commandes pour tout refaire). Mesuré sur l'iPhone de J (build de

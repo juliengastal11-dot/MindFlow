@@ -30,7 +30,9 @@ for nom, b in boites.items():
     im.save(f"{PUBLIC}/pieces/{nom}.webp", quality=90, method=6)
     taille += os.path.getsize(f"{PUBLIC}/pieces/{nom}.webp")
 
-photos = json.load(open(os.path.join(SORTIE, "photos", "boites.json")))
+# la page ne montre plus que la montre finie, de trois quarts (la face et le dos servaient au retournement, retiré le
+# 2026-10-19 : J, « le retournement ne sert à rien finalement »)
+photos = {k: v for k, v in json.load(open(os.path.join(SORTIE, "photos", "boites.json"))).items() if k == "trois-quarts"}
 for nom, b in photos.items():
     im = Image.open(os.path.join(SORTIE, "photos", f"{nom}.png"))
     if nom == "dos":  # le bracelet sort du cadre en haut et en bas : il s'efface à la longueur du bracelet de face

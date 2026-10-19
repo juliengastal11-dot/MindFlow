@@ -22,8 +22,9 @@ import { MOUVEMENT } from "@/lib/mouvement";
    modèle 3D et qu'on mette le modèle qui se fabrique, le modèle explosé ») :
    les pièces d'une vraie montre en photo, détourées dans la vue éclatée de J,
    glissent sur un fil d'or jusqu'au boîtier, une étape du processus après
-   l'autre ; la montre finie se montre de trois quarts, puis se retourne, en
-   volume, sur son fond saphir (components/ui/montre-photo.tsx, la
+   l'autre ; la montre finie se relève jusqu'à une photo de trois quarts, sans
+   fondu (un morphing), et la caméra s'en approche à peine pour finir
+   (components/ui/montre-photo.tsx, la
    chorégraphie dans lib/montre-photo.ts, les images dans outils/montre). Le
    modèle 3D (Three.js) et la montre dessinée qu'elle remplace sont dans
    l'historique, jusqu'au commit 5a19643. Huit temps :
@@ -36,8 +37,9 @@ import { MOUVEMENT } from "@/lib/mouvement";
       et la lunette ;
    6. la mise en ligne (chez vous ou chez moi, le domaine à votre nom) : les
       bracelets ; la montre finie se relève ;
-   7. et après : elle se retourne sur le mouvement qu'on a vu poser ; le code
-      est à vous, et le bouton « Parlons de votre projet ».
+   7. et après : la caméra s'approche de la montre (J, le soir même : « le
+      retournement ne sert à rien finalement ») ; le code est à vous, et le
+      bouton « Parlons de votre projet ».
    Les faits sont ceux que J a donnés pour l'ancienne section, la FAQ et le
    questionnaire (aucun chiffre ajouté).
 
@@ -63,7 +65,7 @@ import { MOUVEMENT } from "@/lib/mouvement";
    chronologie de 0 à 1 qui suit la piste. Les étapes sont une vraie liste ;
    collées, elles se superposent et la chronologie les fait apparaître tour à
    tour (app/globals.css, « La section de la montre »). Sans JavaScript, et en
-   mouvement réduit : la montre montée, de face, immobile, puis les huit temps en liste.
+   mouvement réduit : la montre finie, de trois quarts, immobile, puis les huit temps en liste.
 --------------------------------------------------------------------------- */
 
 const R = MOUVEMENT.livre;
@@ -281,7 +283,7 @@ function Mecanique({ scene: racine }: { scene: React.RefObject<HTMLDivElement | 
           tl.to(corps, { opacity: 1, duration: S * 0.08 }, d(k) + S * 0.05);
         }
         // la lecture : pendant l'arrivée de la montre, puis pendant que la pièce de l'étape se pose (1 à 6), puis pendant
-        // que la montre se retourne
+        // que la caméra s'approche
         const lecture =
           k === 0
             ? { t: 0, duree: S * 0.7, ease: "power2.out" }
@@ -344,10 +346,10 @@ export function SceneLivre() {
       <div ref={racine} data-piste className="chrono-piste motion-reduce:min-h-0!" style={{ minHeight: `${(1 + R.ecrans) * 100}svh` }}>
         <div className="chrono-colle">
           <div className="chrono-lumiere" aria-hidden="true" />
-          {/* sans film (mouvement réduit, ou sans JavaScript) : la montre montée, de face */}
+          {/* sans film (mouvement réduit, ou sans JavaScript) : la montre finie, de trois quarts */}
           <div className="chrono-montre">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/montre/face.webp" alt="" className="chrono-montre-photo" />
+            <img src="/montre/trois-quarts.webp" alt="" className="chrono-montre-photo" />
           </div>
           {charger && (
             <div className="chrono-photo" data-prete={prete || undefined}>
