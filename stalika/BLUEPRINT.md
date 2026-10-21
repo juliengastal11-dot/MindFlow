@@ -190,6 +190,12 @@ tes consignes. Je veux vraiment un résultat ultra réaliste. »
   d'une répartition uniforme : au temps 0 la vue éclatée attend ; aux temps 1 à 6, la pièce de l'étape descend de
   6 % à 82 % du temps, pendant que son texte se lit ; au temps 7, la caméra s'approche de la montre finie. L'image
   fixe (sans mouvement) est la dernière du film (`DERNIERE_IMAGE`).
+- **Retouches du même jour** (J, sur son téléphone : « un problème avec le bracelet du haut ; je ne vois pas la jolie
+  animation qu'on avait à la fin avec le zoom, la montre est trop petite ; l'animation est trop lente, je dois trop
+  scroller, c'était mieux avant ») : les bracelets sont couchés dans le plan du cadran (vus en raccourci, celui du
+  haut ne fait plus un poteau) ; chaque pièce descend entre 6 % et 55 % de son temps, vite puis en se posant, comme
+  dans la version Blender ; la caméra s'approche pendant que les bracelets s'accrochent et cadre la montre finie en
+  grand au temps 7 ; le verre posé est plus discret (son bord ne raye plus le cadran en gros plan).
 
 ## Mise à jour du 2026-10-21 : « Parlons projet » s'écrit à la plume, un seul bouton de contact
 

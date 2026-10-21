@@ -85,7 +85,10 @@ autrement :
    (`sources/sangle_long.png`), pour qu'il puisse descendre jusqu'aux cornes.
 2. **Sept images clés** (`dispositions.py`) : les mêmes calques, posés autrement à chaque étape (rien de posé ;
    le mouvement ; le fond et la couronne ; le cadran ; les aiguilles ; le verre et la lunette ; les bracelets).
-   Ce qui est posé dans la carrure est coupé par son bord avant.
+   Ce qui est posé dans la carrure est coupé par son bord avant. Les bracelets sont couchés dans le plan du cadran
+   comme les autres pièces, donc vus en raccourci (J, 2026-10-21 : debout, celui du haut faisait un poteau) ;
+   celui du haut est rallongé en répétant un tronçon de ses écailles (`preparer.py`), pour monter jusqu'en haut
+   de l'image une fois accroché.
 3. **Six plans vidéo** (Kling 3.0 Pro sur Higgsfield, 5 s, 1080 x 1920, sans son ; `sources/plans/s1.mp4` à
    `s6.mp4`) : chacun va d'une image clé à la suivante, avec une consigne qui ne fait bouger que la pièce de
    l'étape.
@@ -96,8 +99,9 @@ autrement :
    et son calque rebouche les plages d'acier qui ont la couleur du fond. Le bord avant de la carrure repasse
    par-dessus ce qui entre dedans (le modèle faisait passer le cadran devant), la tête par-dessus les bracelets.
    Les aiguilles (trop fines), le verre (transparent) et les bracelets (leur cuir se répète trop pour être suivi)
-   sont posés d'après leur calque exact, au rythme mesuré dans la vidéo. 36 images par plan, puis 20 images où
-   la caméra s'approche : 237 images.
+   sont posés d'après leur calque exact, au rythme mesuré dans la vidéo. 36 images par plan, puis 20 images.
+   La caméra (un zoom dans l'image, `camera` dans `film.py`) reste fixe pendant le montage, s'approche pendant
+   que les bracelets s'accrochent, puis cadre la montre finie en grand (1,8 fois) : 237 images.
 
 ### Refaire le film
 

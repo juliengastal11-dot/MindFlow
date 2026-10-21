@@ -1,6 +1,6 @@
 # Prépare tout ce dont les calques ont besoin, à partir des sources (dossier sources/) :
 #   la vue éclatée de J à 1080 x 1920 (k0.png), son fond seul (plaque_K0.npy), les masques des pièces,
-#   la tête vide et la tête avec son mouvement (tete_vide.png, k1.png, par tete.py), le fond du bracelet long.
+#   la tête vide et la tête avec son mouvement (tete_vide.png, k1.png, par tete.py), le bracelet long rallongé et son fond.
 # python preparer.py   (depuis ce dossier ; Python 3 avec numpy et Pillow)
 import os, shutil, subprocess, sys
 import numpy as np
@@ -33,8 +33,21 @@ np.save("plaque_K0.npy", P)
 # 4. la tête : vide, et avec son mouvement
 subprocess.run([sys.executable, "tete.py"], check=True)
 
-# 5. le fond du bracelet long (polynôme sur ses marges)
+# 5. le bracelet long, rallongé : couché dans le plan du cadran (vu en raccourci), il doit encore monter jusqu'en haut de
+#    l'image une fois accroché. On répète deux fois un tronçon de ses écailles, raccordé là où deux rangées se ressemblent
+#    le plus ; puis son fond (polynôme sur ses marges).
 a = np.asarray(Image.open("sangle_long.png").convert("RGB")).astype(np.float32)
+z = a[:, 540:980].mean(-1)
+meilleur = None
+for Lg in range(1040, 1110):
+    for y1 in range(150, 420, 2):
+        d = np.abs(z[y1 + Lg - 6: y1 + Lg + 6] - z[y1 - 6: y1 + 6]).mean()
+        if meilleur is None or d < meilleur[0]:
+            meilleur = (d, y1, Lg)
+_, y1, Lg = meilleur
+a = np.concatenate([a[y1: y1 + Lg], a[y1: y1 + Lg], a[y1:]], 0)
+Image.fromarray(a.astype(np.uint8)).save("sangle_long_ext.png")
+open("sangle_long_ext.txt", "w").write(str(2620 + 2 * Lg - y1))   # la barrette, dans l'image rallongée
 h, w, _ = a.shape
 ys, xs = np.mgrid[0:h:8, 0:w:8]
 sel = (xs < 300) | (xs > 1220)
