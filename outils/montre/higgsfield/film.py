@@ -62,9 +62,13 @@ DEVANT = {1: alpha_tete(False) * BORD, 2: carrure_seule["a"] * (xx < 728), 3: al
 
 
 def accord(src, ref):
+    """Le recalage des couleurs de la vidéo sur l'image clé, canal par canal, sur les seuls pixels où elles montrent la
+    même chose (une pièce changée depuis, comme les bracelets, fausserait le calcul)."""
+    s4, r4 = src[::4, ::4], ref[::4, ::4]
+    pareil = np.abs(s4 - r4).max(-1) < 30
     p = []
     for c in range(3):
-        a = src[::4, ::4, c].ravel(); b = ref[::4, ::4, c].ravel()
+        a = s4[..., c][pareil]; b = r4[..., c][pareil]
         A = np.stack([a, np.ones_like(a)], 1)
         p.append(np.linalg.lstsq(A, b, rcond=None)[0])
     return np.array(p)
@@ -77,6 +81,8 @@ def applique(img, p):
 def ecart_fond(Fcc, Kimg, Ka, case=8, iters=600):
     """L'écart lisse entre le fond de la vidéo et la plaque, là où l'image clé est vide ; ailleurs, interpolé."""
     vide = ~morpho(Ka > 0.01, 5, ImageFilter.MaxFilter)
+    # là où la vidéo montre une pièce que l'image clé n'a plus (les bracelets d'avant), ce n'est pas du fond
+    vide &= ~morpho(np.abs(Fcc - Kimg).max(-1) > 30, 4, ImageFilter.MaxFilter)
     r = (Fcc - Kimg) * vide[..., None]
     h, l = H // case, L // case
     somme = r[: h * case, : l * case].reshape(h, case, l, case, 3).sum((1, 3))
