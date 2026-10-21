@@ -174,6 +174,21 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-21 : « Parlons projet » s'écrit à la plume, un seul bouton de contact
+
+J : « enlève la flèche et fais écrire le parlons projet de la même manière que le cadre s'écrit » ; « ce bouton, tu
+peux le retirer » (celui de la fin de la section 04).
+
+- **Le libellé du hero s'écrit lettre après lettre** (`components/ui/entree-dessin.tsx`) : au moment de jouer, police
+  chargée, chaque lettre du vrai texte est mesurée (`Range`, ligne de base par un repère sans hauteur) et recopiée en
+  `<text>` SVG dans le calque du bouton, exactement à sa place ; son contour d'or se trace (`stroke-dashoffset`), puis
+  l'encre la remplit, et le contour sèche quand le cadre se pose. Le vrai texte, caché pendant l'écriture, reprend la
+  place des lettres dessinées à l'identique. Valeurs : `MOUVEMENT.hero.dessin` (`ecriture`, `lettre`, `plume`). Idée :
+  « Stroke Text » de React Bits, avec le tracé du cadre déjà en place (animatedbuttons, Kinetics).
+- **Plus de flèche** dans le Filet d'or, ni sur le vrai bouton ni sur la copie qui tombe.
+- **Le bouton « Parlons de votre projet » de la section 04 est retiré** : le temps 7 se termine sur « le code est à
+  vous », le bouton du hero suffit.
+
 ## Mise à jour du 2026-10-20 : la montre se fabrique en vraie 3D, rendue dans Blender
 
 J : « je ne suis pas satisfait du résultat ; tu as tout pour faire une montre éclatée dans le style qu'on a défini et faire
@@ -387,10 +402,10 @@ pendant que le logo se composait encore (jusqu'à 3,6 s) : tout se chevauchait. 
 - **Le bouton devient un Filet d'or, qui se dessine à la main** (J : trois pistes proposées, « on part sur le Filet d'or, et au
   lieu du fil qui dépose le bouton, le bouton se dessine comme à la main »). `components/ui/bouton-filet.tsx` remplace le Cyber
   Button de 21st (gardé dans `components/ui/cyber-button.tsx`, plus utilisé) : un cadre d'un fil doré, deux coins appuyés, le
-  texte espacé comme la baseline ; au survol, l'or monte et remplit, le texte passe en noir, les coins en encre, la flèche avance.
+  texte espacé comme la baseline ; au survol, l'or monte et remplit, le texte passe en noir, les coins en encre (la flèche est retirée le 2026-10-21).
   `components/ui/entree-dessin.tsx` remplace l'entrée au bout du fil : une pointe de plume lumineuse tire les quatre côtés l'un
-  après l'autre, un peu tremblés et dépassant aux coins comme un geste, pendant que le texte s'écrit ; puis la flèche se trace,
-  les coins se posent et le trait se fond dans le cadre (environ 2,5 s, `MOUVEMENT.hero.dessin`). Idées : « Fill Up », « Arrow
+  après l'autre, un peu tremblés et dépassant aux coins comme un geste, pendant que le texte s'écrit (lettre après lettre depuis le
+  2026-10-21, voir plus haut) ; puis les coins se posent et le trait se fond dans le cadre (environ 2,5 s, `MOUVEMENT.hero.dessin`). Idées : « Fill Up », « Arrow
   Push » et « Border Draw » d'animatedbuttons, le tracé de trait de Kinetics. La copie qui tombe au clic est le même Filet d'or.
 - **Paragraphe par paragraphe** (J : « ralentir un peu pour profiter de l'effet de brume, ou paragraphe par paragraphe, encore
   mieux ») : chaque paragraphe sort de la brume en entier (flou 10 px, 1,15 s par mot, vague de 35 ms), le suivant part une

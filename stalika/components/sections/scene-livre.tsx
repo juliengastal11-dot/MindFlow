@@ -1,12 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { Scene, useScene } from "@/components/ui/scene";
 import { Trace } from "@/components/ui/trace";
 import { Rouleaux } from "@/components/ui/rouleaux";
-import { BoutonFilet } from "@/components/ui/bouton-filet";
 import { MontreFilm } from "@/components/ui/montre-film";
 import { SplitText } from "gsap/SplitText";
 import { gsap, mouvementReduit } from "@/lib/gsap";
@@ -38,8 +35,9 @@ import { MOUVEMENT } from "@/lib/mouvement";
    6. la mise en ligne (chez vous ou chez moi, le domaine à votre nom) : les
       bracelets ; la montre finie se relève ;
    7. et après : la caméra se relève et s'approche de la montre finie (J :
-      « le retournement ne sert à rien finalement ») ; le code est à vous, et
-      le bouton « Parlons de votre projet ».
+      « le retournement ne sert à rien finalement ») ; le code est à vous (le
+      bouton « Parlons de votre projet » qui finissait ce temps est retiré le
+      2026-10-21, à la demande de J : celui du hero suffit).
    Les faits sont ceux que J a donnés pour l'ancienne section, la FAQ et le
    questionnaire (aucun chiffre ajouté).
 
@@ -202,12 +200,6 @@ function Etapes() {
           <p data-lecture className="mt-1 text-sm text-foreground/70">
             Un logiciel ou une application sur mesure ? Dites-moi ce qu&apos;il vous faut.
           </p>
-          <BoutonFilet className="mt-6">
-            <Link href="/contact">
-              Parlons de votre projet
-              <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4 transition-transform duration-500 group-hover:translate-x-1.5" />
-            </Link>
-          </BoutonFilet>
         </div>
       </li>
     </ol>

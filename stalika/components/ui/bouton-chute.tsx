@@ -3,7 +3,6 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { BoutonFilet } from "@/components/ui/bouton-filet";
 import { gsap, ScrollTrigger, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
@@ -146,7 +145,6 @@ function Copie({ children, focus }: { children: React.ReactNode; focus: boolean 
     <BoutonFilet>
       <span aria-hidden="true" className={cn("cursor-pointer", focus && "ring-2 ring-ring ring-offset-2 ring-offset-background")}>
         {children}
-        <ArrowRight strokeWidth={1.5} className="size-4 transition-transform duration-500 group-hover:translate-x-1.5" />
       </span>
     </BoutonFilet>
   );
@@ -573,7 +571,6 @@ export function BoutonChute({ href, children, className }: BoutonChuteProps) {
             className="cursor-pointer"
           >
             {children}
-            <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4 transition-transform duration-500 group-hover:translate-x-1.5" />
           </Link>
         </BoutonFilet>
       </span>
