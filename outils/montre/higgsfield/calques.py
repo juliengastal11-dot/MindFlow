@@ -47,17 +47,51 @@ def _segment(p, q, r):
 
 
 PIECES = {}
-# le bracelet du haut : la version longue (générée d'après le bout de la vue éclatée), pour qu'il descende jusqu'aux cornes
-_SL = np.asarray(Image.open("sangle_long_ext.png").convert("RGB")).astype(np.float32)
+# le bracelet du haut : la version longue (générée d'après le bout de la vue éclatée), couchée dans le plan du cadran
+# puis enroulée vers l'arrière, comme sur un poignet (J, 2026-10-21 : « la taille du bracelet du haut est démesurée,
+# je veux quelque chose de réaliste ») : à plat sur S0 px depuis sa barrette, il se courbe ensuite sur un rayon R et
+# passe derrière lui-même quand il devient parallèle au regard. Vu sous l'inclinaison de la carrure (sin E = RAPPORT),
+# sa hauteur à l'écran est ∫ sin(E - θ) ds ; il fonce dans la courbe, et son bord du haut est bombé (le cuir rembourré).
+_SL = np.asarray(Image.open("sangle_long.png").convert("RGB")).astype(np.float32)
 _FL = np.load("fond_sangle.npy")
-def _calque_long(x0, y0, x1, y1, T=22.0):
-    a = np.clip((np.abs(_SL - _FL).max(-1)[y0:y1, x0:x1] - 5) / T, 0, 1)
-    rgb = _SL[y0:y1, x0:x1]; bg = _FL[y0:y1, x0:x1]
-    aa = np.maximum(a[..., None], 0.03)
-    Cc = np.where(a[..., None] > 0.03, (rgb - (1 - a[..., None]) * bg) / aa, rgb)
-    return {"rgb": np.clip(Cc, 0, 255).astype(np.float32), "a": a.astype(np.float32), "boite": (x0, y0, x1, y1)}
-BARRETTE_H = float(open("sangle_long_ext.txt").read())
-PIECES["sangle_h"] = _calque_long(470, 0, 1050, int(BARRETTE_H) + 40)
+BAS_SANGLE = 2660                 # la ligne sous la barrette, dans sangle_long.png
+S0, RAYON, BOMBE = 430.0, 420.0, 10.0
+
+
+def _sangle_couchee():
+    E = np.arcsin(RAPPORT)
+    a = np.clip((np.abs(_SL - _FL).max(-1) - 5) / 22.0, 0, 1)
+    h_plat = RAPPORT * S0
+    h_max = h_plat + RAYON * (1 - np.cos(E))
+    n = int(np.ceil(h_max)) + 2
+    y = np.arange(n, dtype=np.float32)                    # hauteur à l'écran, depuis le bas
+    s = np.where(y <= h_plat, y / RAPPORT, 0.0)
+    c = np.clip((y - h_plat) / RAYON + np.cos(E), -1, 1)
+    u = RAYON * (E - np.arccos(c))
+    s = np.where(y > h_plat, S0 + u, s)
+    ombre = np.where(y > h_plat, 1 - 0.5 * (np.clip(u / (E * RAYON), 0, 1) ** 1.6), 1.0)
+    rang = BAS_SANGLE - s                                 # la ligne de la source
+    r0 = np.clip(np.floor(rang).astype(int), 0, _SL.shape[0] - 2); f = (rang - r0)[:, None]
+    x0, x1 = 470, 1050
+    rgb = _SL[r0, x0:x1] * (1 - f[..., None]) + _SL[r0 + 1, x0:x1] * f[..., None]
+    al = a[r0, x0:x1] * (1 - f) + a[r0 + 1, x0:x1] * f
+    bg = _FL[r0, x0:x1] * (1 - f[..., None]) + _FL[r0 + 1, x0:x1] * f[..., None]
+    rgb = np.where(al[..., None] > 0.03, (rgb - (1 - al[..., None]) * bg) / np.maximum(al[..., None], 0.03), rgb)
+    rgb = rgb * ombre[:, None, None]
+    # le bord du haut, bombé : le milieu du bracelet monte un peu plus haut que ses bords
+    xs = np.arange(x0, x1)
+    cols = np.where(a[2000:2400, x0:x1].mean(0) > 0.5)[0]
+    milieu, demi = (cols.min() + cols.max()) / 2, (cols.max() - cols.min()) / 2
+    haut = h_max - BOMBE * np.clip(((xs - x0) - milieu) / demi, -1, 1) ** 2
+    al = al * np.clip(haut[None, :] - y[:, None], 0, 1)
+    # retournée : la ligne 0 en haut de l'image ; la barrette en bas
+    rgb, al = rgb[::-1], al[::-1]
+    return {"rgb": np.clip(rgb, 0, 255).astype(np.float32), "a": al.astype(np.float32), "boite": (0, 0, x1 - x0, n)}, n
+
+
+PIECES["sangle_h"], _n_sangle = _sangle_couchee()
+# la barrette (ligne 2620 de la source) dans l'image couchée : RAPPORT * 40 au-dessus du bas
+BARRETTE_H = (_n_sangle - 1) - RAPPORT * (BAS_SANGLE - 2620)
 _lun = ellipse(533, 235, 184, 68, 20)
 PIECES["lunette"] = calque(K0, D0, (335, 160, 730, 330), efface=flou((~_lun).astype(np.float32), 0.8))
 PIECES["verre"] = calque(K0, D0, (335, 322, 730, 466), T=40.0)
@@ -89,7 +123,7 @@ PIECES["couronne"] = calque(K1, D1, (842, 1188, 905, 1300))
 
 # Où chaque pièce est, dans sa source : centre de l'ellipse (ou point d'accroche), demi-axes.
 SOURCE = {
-    "sangle_h": dict(c=(760, BARRETTE_H)),                  # c : le milieu de la barrette, en bas (sangle_long_ext.png)
+    "sangle_h": dict(c=(760 - 470, BARRETTE_H)),            # c : le milieu de la barrette, en bas (le bracelet couché)
     "lunette": dict(c=(533, 235), rx=181, ry=65),
     "verre": dict(c=(532, 395), rx=184, ry=65),
     "aiguilles": dict(c=(532.5, 512.5)),                  # le canon
@@ -107,7 +141,7 @@ ECHELLE = {
     "verre": (164 / 184, 78 / 65),
     "fond": (205 / 196.5, RAPPORT * 205 / 92),
     # les bracelets sont couchés dans le plan du cadran, comme les autres pièces : vus en raccourci (RAPPORT)
-    "sangle_h": (0.6, 0.6 * RAPPORT),
+    "sangle_h": (0.6, 0.6),          # déjà couché (et enroulé) par _sangle_couchee
     "sangle_b": (285 / 223, 285 / 223 * RAPPORT),
 }
 ECHELLE["aiguilles"] = ECHELLE["cadran"]

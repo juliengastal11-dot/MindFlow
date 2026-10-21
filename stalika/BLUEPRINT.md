@@ -195,7 +195,9 @@ tes consignes. Je veux vraiment un résultat ultra réaliste. »
   scroller, c'était mieux avant ») : les bracelets sont couchés dans le plan du cadran (vus en raccourci, celui du
   haut ne fait plus un poteau) ; chaque pièce descend entre 6 % et 55 % de son temps, vite puis en se posant, comme
   dans la version Blender ; la caméra s'approche pendant que les bracelets s'accrochent et cadre la montre finie en
-  grand au temps 7 ; le verre posé est plus discret (son bord ne raye plus le cadran en gros plan).
+  grand au temps 7 ; le verre posé est plus discret (son bord ne raye plus le cadran en gros plan). Puis (J : « la
+  taille du bracelet du haut est démesurée, je veux quelque chose de réaliste ») : le bracelet du haut ne monte plus
+  jusqu'en haut de l'image, il part à plat sur quelques centimètres et s'enroule vers l'arrière, comme sur un poignet.
 
 ## Mise à jour du 2026-10-21 : « Parlons projet » s'écrit à la plume, un seul bouton de contact
 

@@ -86,9 +86,10 @@ autrement :
 2. **Sept images clés** (`dispositions.py`) : les mêmes calques, posés autrement à chaque étape (rien de posé ;
    le mouvement ; le fond et la couronne ; le cadran ; les aiguilles ; le verre et la lunette ; les bracelets).
    Ce qui est posé dans la carrure est coupé par son bord avant. Les bracelets sont couchés dans le plan du cadran
-   comme les autres pièces, donc vus en raccourci (J, 2026-10-21 : debout, celui du haut faisait un poteau) ;
-   celui du haut est rallongé en répétant un tronçon de ses écailles (`preparer.py`), pour monter jusqu'en haut
-   de l'image une fois accroché.
+   comme les autres pièces, donc vus en raccourci (J, 2026-10-21 : debout, celui du haut faisait un poteau, puis,
+   rallongé jusqu'en haut de l'image, « démesuré ») : celui du haut part à plat sur quelques centimètres puis
+   s'enroule vers l'arrière, comme sur un poignet (`_sangle_couchee` dans `calques.py` : sa hauteur à l'écran
+   suit la courbure, il fonce dans la courbe, son bord du haut est bombé).
 3. **Six plans vidéo** (Kling 3.0 Pro sur Higgsfield, 5 s, 1080 x 1920, sans son ; `sources/plans/s1.mp4` à
    `s6.mp4`) : chacun va d'une image clé à la suivante, avec une consigne qui ne fait bouger que la pièce de
    l'étape.
