@@ -165,7 +165,31 @@ class Bloc:
         return self.rgba(t)[1]
 
 
+def lisse(u):
+    u = min(1.0, max(0.0, u))
+    return u * u * (3 - 2 * u)
+
+
+def camera(n):
+    """La caméra (un zoom dans l'image) : fixe pendant que la montre se monte ; elle s'approche pendant que les bracelets
+    s'accrochent (images 181 à 216), puis cadre la montre finie en grand (217 à 236). Rend (échelle, centre de la tête
+    à l'écran) ; la tête est en (531, 1184) dans l'image d'origine."""
+    if n <= 6 * N_PLAN:
+        e = lisse((n - 5 * N_PLAN) / N_PLAN)
+        return 1 + 0.3 * e, 1184 - 150 * e
+    e = lisse((n - 6 * N_PLAN) / N_ZOOM)
+    return 1.3 + 0.5 * e, 1034 - 120 * e
+
+
 def sortie(n, c, a):
+    if n > 5 * N_PLAN:
+        s, ty = camera(n)
+        cx, cy = 531.0, 1184.0
+        inv = (1 / s, 0, cx - cx / s, 0, 1 / s, cy - ty / s)
+        p = np.dstack([c * a[..., None], a * 255]).astype(np.float32)
+        canaux = [np.asarray(Image.fromarray(p[..., q], mode="F").transform((L, H), Image.AFFINE, inv, resample=Image.BICUBIC)) for q in range(4)]
+        a = np.clip(canaux[3] / 255, 0, 1)
+        c = np.dstack(canaux[:3]) / np.maximum(a[..., None], 1e-3)
     rgba = np.dstack([np.clip(c, 0, 255), np.clip(a * 255, 0, 255)]).astype(np.uint8)
     o = Image.new("RGBA", (L, H), (0, 0, 0, 0))
     o.paste(Image.fromarray(rgba, "RGBA"), (DX_AXE, 0))
@@ -253,7 +277,7 @@ def plan(k, debut):
             c_, a_ = blocs[q].rgba(pos[j, q])
             if nom == "verre":
                 # le verre flottant est entier ; posé, il ne garde que ses reflets (comme dans l'image clé)
-                s = min(1.0, max(0.0, (pos[j, q] - 0.8) / 0.2)); op = 1 - 0.4 * s * s * (3 - 2 * s)
+                s = min(1.0, max(0.0, (pos[j, q] - 0.8) / 0.2)); op = 1 - 0.55 * s * s * (3 - 2 * s)
                 c_, a_ = c_ * op, a_ * op
             rgbp = c_ + rgbp * (1 - a_[..., None]); a = a_ + a * (1 - a_)
         if video:
@@ -279,19 +303,9 @@ def plan(k, debut):
 
 
 def zoom(debut):
-    """La caméra s'approche : la tête vient vers le milieu de l'image, un peu plus grande."""
-    cx, cy = 531.0, 1184.0
-    tx, ty = 531.0, 1000.0
-    rgbp = np.dstack([KC[6] * KA[6][..., None], KA[6] * 255]).astype(np.float32)
+    """La montre finie, que la caméra vient cadrer en grand (voir `camera`)."""
     for j in range(1, N_ZOOM + 1):
-        t = j / N_ZOOM
-        e = t * t * (3 - 2 * t)
-        s = 1 + 0.14 * e
-        ox, oy = cx + (tx - cx) * e, cy + (ty - cy) * e
-        inv = (1 / s, 0, cx - ox / s, 0, 1 / s, cy - oy / s)
-        canaux = [np.asarray(Image.fromarray(rgbp[..., q], mode="F").transform((L, H), Image.AFFINE, inv, resample=Image.BICUBIC)) for q in range(4)]
-        a = np.clip(canaux[3] / 255, 0, 1)
-        sortie(debut + j, np.dstack(canaux[:3]) / np.maximum(a[..., None], 1e-3), a)
+        sortie(debut + j, KC[6], KA[6])
     print("approche ->", debut + N_ZOOM)
 
 

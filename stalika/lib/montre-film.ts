@@ -9,8 +9,9 @@
    outils/montre/higgsfield (LISEZMOI).
 
    La séquence suit la chronologie de la section (components/ui/montre-film.tsx)
-   par une table : la pièce d'une étape descend pendant que son texte se lit,
-   puis la montre attend l'étape suivante ; à la fin, la caméra s'approche.
+   par `imageDuFilm` : la pièce d'une étape descend au début de son temps,
+   puis la montre attend l'étape suivante ; à la fin, la caméra s'approche et
+   cadre la montre finie en grand.
 --------------------------------------------------------------------------- */
 
 export type SerieFilm = {
@@ -36,27 +37,30 @@ export const FILM_MONTRE: { bureau: SerieFilm; mobile: SerieFilm } = {
 export const DERNIERE_IMAGE = NOMBRE - 1;
 
 /* Les huit temps de la section durent chacun 1/8 de la chronologie (scene-livre.tsx). Au temps 0, la vue éclatée
-   attend ; aux temps 1 à 6, la pièce de l'étape descend de 6 % à 82 % du temps ; au temps 7, la caméra s'approche. */
+   attend. Aux temps 1 à 6, la pièce de l'étape descend entre 6 % et 55 % du temps, vite au début puis en se posant
+   (comme dans la version Blender : J, 2026-10-21, « l'animation est trop lente, je dois trop scroller ») ; au temps 6,
+   la caméra commence à s'approcher. Au temps 7, elle cadre la montre finie en grand. */
 const S = 1 / 8;
-const CLES: [number, number][] = [[0, 0], [S, 0]];
-for (let k = 1; k <= 6; k++) CLES.push([k * S + 0.06 * S, (k - 1) * PLAN], [k * S + 0.82 * S, k * PLAN]);
-CLES.push([7 * S + 0.04 * S, 6 * PLAN], [1, NOMBRE - 1]);
+const PIECE = { de: 0.06, a: 0.55 };
+const APPROCHE_T = { de: 0.04, a: 0.8 };
+const borne = (x: number) => Math.min(1, Math.max(0, x));
 
 /** L'image (fractionnaire : on fond vers la suivante) pour une progression de 0 à 1. */
 export function imageDuFilm(p: number) {
-  const x = Math.min(1, Math.max(0, p));
-  for (let n = 1; n < CLES.length; n++) {
-    const [p1, f1] = CLES[n];
-    if (x <= p1) {
-      const [p0, f0] = CLES[n - 1];
-      return p1 === p0 ? f1 : f0 + ((x - p0) / (p1 - p0)) * (f1 - f0);
-    }
+  const x = borne(p) / S;
+  const k = Math.min(7, Math.floor(x));
+  const q = x - k;
+  if (k === 0) return 0;
+  if (k <= 6) {
+    const u = borne((q - PIECE.de) / (PIECE.a - PIECE.de));
+    return (k - 1) * PLAN + PLAN * (1 - (1 - u) * (1 - u));
   }
-  return NOMBRE - 1;
+  const u = borne((q - APPROCHE_T.de) / (APPROCHE_T.a - APPROCHE_T.de));
+  return 6 * PLAN + APPROCHE * (u * u * (3 - 2 * u));
 }
 
 /** Les fenêtres de la chorégraphie (fractions de la chronologie). */
 export const TEMPS_FILM = {
   // le fil d'or, l'axe sur lequel les pièces sont enfilées : il s'efface pendant que les bracelets s'accrochent
-  fil: { de: 6 * S + 0.5 * S, a: 6 * S + 0.85 * S },
+  fil: { de: 6 * S + 0.25 * S, a: 6 * S + 0.55 * S },
 } as const;

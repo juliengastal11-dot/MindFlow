@@ -48,7 +48,7 @@ def _segment(p, q, r):
 
 PIECES = {}
 # le bracelet du haut : la version longue (générée d'après le bout de la vue éclatée), pour qu'il descende jusqu'aux cornes
-_SL = np.asarray(Image.open("sangle_long.png").convert("RGB")).astype(np.float32)
+_SL = np.asarray(Image.open("sangle_long_ext.png").convert("RGB")).astype(np.float32)
 _FL = np.load("fond_sangle.npy")
 def _calque_long(x0, y0, x1, y1, T=22.0):
     a = np.clip((np.abs(_SL - _FL).max(-1)[y0:y1, x0:x1] - 5) / T, 0, 1)
@@ -56,7 +56,8 @@ def _calque_long(x0, y0, x1, y1, T=22.0):
     aa = np.maximum(a[..., None], 0.03)
     Cc = np.where(a[..., None] > 0.03, (rgb - (1 - a[..., None]) * bg) / aa, rgb)
     return {"rgb": np.clip(Cc, 0, 255).astype(np.float32), "a": a.astype(np.float32), "boite": (x0, y0, x1, y1)}
-PIECES["sangle_h"] = _calque_long(470, 0, 1050, 2660)
+BARRETTE_H = float(open("sangle_long_ext.txt").read())
+PIECES["sangle_h"] = _calque_long(470, 0, 1050, int(BARRETTE_H) + 40)
 _lun = ellipse(533, 235, 184, 68, 20)
 PIECES["lunette"] = calque(K0, D0, (335, 160, 730, 330), efface=flou((~_lun).astype(np.float32), 0.8))
 PIECES["verre"] = calque(K0, D0, (335, 322, 730, 466), T=40.0)
@@ -88,7 +89,7 @@ PIECES["couronne"] = calque(K1, D1, (842, 1188, 905, 1300))
 
 # Où chaque pièce est, dans sa source : centre de l'ellipse (ou point d'accroche), demi-axes.
 SOURCE = {
-    "sangle_h": dict(c=(760, 2620)),                       # c : le milieu de la barrette, en bas (sangle_long.png)
+    "sangle_h": dict(c=(760, BARRETTE_H)),                  # c : le milieu de la barrette, en bas (sangle_long_ext.png)
     "lunette": dict(c=(533, 235), rx=181, ry=65),
     "verre": dict(c=(532, 395), rx=184, ry=65),
     "aiguilles": dict(c=(532.5, 512.5)),                  # le canon
@@ -103,10 +104,11 @@ ECHELLE = {
     "cadran": (157 / 203, RAPPORT * 157 / 120),
     "mouvement": (155 / 193.5, RAPPORT * 155 / 121),
     "lunette": (200 / 181, RAPPORT * 200 / 65),
-    "verre": (160 / 184, 74 / 65),
+    "verre": (164 / 184, 78 / 65),
     "fond": (205 / 196.5, RAPPORT * 205 / 92),
-    "sangle_h": (0.6, 0.6),
-    "sangle_b": (285 / 223, 285 / 223),
+    # les bracelets sont couchés dans le plan du cadran, comme les autres pièces : vus en raccourci (RAPPORT)
+    "sangle_h": (0.6, 0.6 * RAPPORT),
+    "sangle_b": (285 / 223, 285 / 223 * RAPPORT),
 }
 ECHELLE["aiguilles"] = ECHELLE["cadran"]
 ECHELLE["seconde"] = ECHELLE["cadran"]

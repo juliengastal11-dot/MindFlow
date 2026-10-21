@@ -60,7 +60,7 @@ POSE = {    # posé dans la carrure : coordonnées de k0b, plus DY
     "cadran": (530.5, 1240 + DY),
     "aiguilles": (530.5, 1238 + DY),
     "seconde": (530.5, 1240 + DY + (770 - 705) * sys_),
-    "verre": (531, 1208 + DY),
+    "verre": (531, 1210 + DY),
     "lunette": (531, 1210 + DY),
     "fond": (531, 1272 + DY),
     "sangle_h": (531, 1126 + DY),
@@ -109,7 +109,7 @@ def image(k, sauf=()):
         if groupe in posees:
             p(nom, SOURCE[nom]["c"], POSE[nom], t, clip=INTERIEUR)
     if "verre" in posees:
-        p("verre", SOURCE["verre"]["c"], POSE["verre"], t, opacite=0.6)
+        p("verre", SOURCE["verre"]["c"], POSE["verre"], t, opacite=0.45)
         p("lunette", SOURCE["lunette"]["c"], POSE["lunette"], t)
     # ce qui flotte encore, du bas de la pile vers le haut (le plus haut passe devant)
     if "fond" not in posees:
