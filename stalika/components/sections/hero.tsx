@@ -100,8 +100,9 @@ export function Hero() {
             </MotsBrume>
           </div>
 
-          {/* Le bouton : un Cyber Button (21st) qui se décroche et tombe jusqu'à l'ordinateur au fil des clics.
-              Au milieu de la page (J, 2026-10-09). Il entre en dernier, en se dessinant à la main (J, 2026-10-18). */}
+          {/* Le bouton : un Filet d'or qui se décroche et tombe jusqu'à l'ordinateur au fil des clics.
+              Au milieu de la page (J, 2026-10-09). Il entre en dernier, en se dessinant à la main (J, 2026-10-18),
+              son libellé écrit à la plume, lettre après lettre (J, 2026-10-21). */}
           <EntreeDessin className="pb-2">
             <BoutonChute href="/contact" className="mx-auto">
               Parlons projet

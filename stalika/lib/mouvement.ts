@@ -43,9 +43,11 @@ export const MOUVEMENT = {
     brume: { debut: 3.2, entreMots: 0.035, duree: 1.15, flou: 10, monte: 6, chevauchement: 0.5, boutonAvantFin: 0.4 },
     /** Le bouton se dessine à la main (J, 2026-10-18, à la place du fil qui le déposait) : quatre traits de plume, un par
         côté, à `vitesse` px/s avec `coin` secondes au coin ; ils dépassent de 1,5 à `depasse` px et se creusent de `tremble`
-        px au plus ; une pointe lumineuse de rayon `pointe` suit le bout du trait ; le texte s'écrit en `ecriture` s ; le trait se fond dans le cadre en `fondu` s. Il attend la fin du texte ;
-        `secours` : il vient de toute façon à cet instant. */
-    dessin: { secours: 9, vitesse: 380, coin: 0.07, depasse: 4.5, tremble: 1.3, epaisseur: 1.2, pointe: 1.8, ecriture: 1.1, fondu: 0.45 },
+        px au plus ; une pointe lumineuse de rayon `pointe` suit le bout du trait ; le libellé s'écrit à la plume, lettre après
+        lettre, en `ecriture` s en tout (J, 2026-10-21 : « de la même manière que le cadre s'écrit ») : chaque lettre se trace
+        en `lettre` s d'un trait d'or épais de `plume` px, puis se remplit ; le trait se fond dans le cadre en `fondu` s.
+        Il attend la fin du texte ; `secours` : il vient de toute façon à cet instant. */
+    dessin: { secours: 9, vitesse: 380, coin: 0.07, depasse: 4.5, tremble: 1.3, epaisseur: 1.2, pointe: 1.8, ecriture: 1.25, lettre: 0.6, plume: 0.45, fondu: 0.45 },
   },
 
   /** Débord de la parallaxe, en fraction de la hauteur du cadre. */

@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { Scene, useScene } from "@/components/ui/scene";
 import { Trace } from "@/components/ui/trace";
 import { Rouleaux } from "@/components/ui/rouleaux";
-import { BoutonFilet } from "@/components/ui/bouton-filet";
-import { MontrePhoto } from "@/components/ui/montre-photo";
+import { MontreFilm } from "@/components/ui/montre-film";
+import { DERNIERE_IMAGE } from "@/lib/montre-film";
 import { SplitText } from "gsap/SplitText";
 import { gsap, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
@@ -19,14 +17,17 @@ import { MOUVEMENT } from "@/lib/mouvement";
    tourne et montre tout le processus de création, du début à la fin »).
 
    La montre se fabrique au défilement (2026-10-19, J : « qu'on enlève le
-   modèle 3D et qu'on mette le modèle qui se fabrique, le modèle explosé ») :
-   les pièces d'une vraie montre en photo, détourées dans la vue éclatée de J,
-   glissent sur un fil d'or jusqu'au boîtier, une étape du processus après
-   l'autre ; la montre finie se montre de trois quarts, puis se retourne, en
-   volume, sur son fond saphir (components/ui/montre-photo.tsx, la
-   chorégraphie dans lib/montre-photo.ts, les images dans outils/montre). Le
-   modèle 3D (Three.js) et la montre dessinée qu'elle remplace sont dans
-   l'historique, jusqu'au commit 5a19643. Huit temps :
+   modèle 3D et qu'on mette le modèle qui se fabrique, le modèle explosé »,
+   puis, le 20 : « sans fondu, sans montre qui change de forme, des pièces qui
+   s'emboîtent de manière esthétique et réaliste »), et le 21 : « un résultat
+   ultra réaliste », avec Higgsfield) : un film fait à partir de la vue éclatée
+   de J (outils/montre/higgsfield), dont les pièces, enfilées sur un fil d'or,
+   redescendent une à une sur le boîtier, une étape du processus après
+   l'autre ; la montre finie, la caméra vient la voir de plus près
+   (components/ui/montre-film.tsx, lib/montre-film.ts). Les versions d'avant (la
+   montre 3D en Three.js, la montre dessinée, les pièces en photo qui se
+   relevaient par un morphing, la montre rendue dans Blender) sont dans
+   l'historique. Huit temps :
    0. l'arrivée : réglé comme une montre, la vue éclatée ;
    1. le premier message : le mouvement descend dans la carrure ;
    2. on en parle (l'appel, le devis, le prix) : le fond, la couronne ;
@@ -36,8 +37,10 @@ import { MOUVEMENT } from "@/lib/mouvement";
       et la lunette ;
    6. la mise en ligne (chez vous ou chez moi, le domaine à votre nom) : les
       bracelets ; la montre finie se relève ;
-   7. et après : elle se retourne sur le mouvement qu'on a vu poser ; le code
-      est à vous, et le bouton « Parlons de votre projet ».
+   7. et après : la caméra se relève et s'approche de la montre finie (J :
+      « le retournement ne sert à rien finalement ») ; le code est à vous (le
+      bouton « Parlons de votre projet » qui finissait ce temps est retiré le
+      2026-10-21, à la demande de J : celui du hero suffit).
    Les faits sont ceux que J a donnés pour l'ancienne section, la FAQ et le
    questionnaire (aucun chiffre ajouté).
 
@@ -63,7 +66,7 @@ import { MOUVEMENT } from "@/lib/mouvement";
    chronologie de 0 à 1 qui suit la piste. Les étapes sont une vraie liste ;
    collées, elles se superposent et la chronologie les fait apparaître tour à
    tour (app/globals.css, « La section de la montre »). Sans JavaScript, et en
-   mouvement réduit : la montre montée, de face, immobile, puis les huit temps en liste.
+   mouvement réduit : la montre finie, de trois quarts, immobile, puis les huit temps en liste.
 --------------------------------------------------------------------------- */
 
 const R = MOUVEMENT.livre;
@@ -200,12 +203,6 @@ function Etapes() {
           <p data-lecture className="mt-1 text-sm text-foreground/70">
             Un logiciel ou une application sur mesure ? Dites-moi ce qu&apos;il vous faut.
           </p>
-          <BoutonFilet className="mt-6">
-            <Link href="/contact">
-              Parlons de votre projet
-              <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4 transition-transform duration-500 group-hover:translate-x-1.5" />
-            </Link>
-          </BoutonFilet>
         </div>
       </li>
     </ol>
@@ -281,7 +278,7 @@ function Mecanique({ scene: racine }: { scene: React.RefObject<HTMLDivElement | 
           tl.to(corps, { opacity: 1, duration: S * 0.08 }, d(k) + S * 0.05);
         }
         // la lecture : pendant l'arrivée de la montre, puis pendant que la pièce de l'étape se pose (1 à 6), puis pendant
-        // que la montre se retourne
+        // que la caméra s'approche
         const lecture =
           k === 0
             ? { t: 0, duree: S * 0.7, ease: "power2.out" }
@@ -344,14 +341,14 @@ export function SceneLivre() {
       <div ref={racine} data-piste className="chrono-piste motion-reduce:min-h-0!" style={{ minHeight: `${(1 + R.ecrans) * 100}svh` }}>
         <div className="chrono-colle">
           <div className="chrono-lumiere" aria-hidden="true" />
-          {/* sans film (mouvement réduit, ou sans JavaScript) : la montre montée, de face */}
+          {/* sans film (mouvement réduit, ou sans JavaScript) : la montre finie, la dernière image de la séquence */}
           <div className="chrono-montre">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/montre/face.webp" alt="" className="chrono-montre-photo" />
+            <img src={`/montre/film/mobile/${String(DERNIERE_IMAGE).padStart(3, "0")}.webp`} alt="" className="chrono-montre-photo" />
           </div>
           {charger && (
             <div className="chrono-photo" data-prete={prete || undefined}>
-              <MontrePhoto onPret={() => setPrete(true)} />
+              <MontreFilm onPret={() => setPrete(true)} />
             </div>
           )}
           <div className="chrono-texte sur-ciel">

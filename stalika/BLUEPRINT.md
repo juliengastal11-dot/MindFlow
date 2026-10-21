@@ -174,6 +174,87 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-21 (suite) : la montre devient un film Higgsfield
+
+J : « tu peux faire le visuel avec Higgsfield : je valide l'utilisation des crédits pour l'option B. Sois précis dans
+tes consignes. Je veux vraiment un résultat ultra réaliste. »
+
+- **Le film** (`public/montre/film`, 237 images, 810 x 1440 et 540 x 960, fond transparent) remplace la séquence
+  Blender. Il part de la vue éclatée de J : chaque pièce y est découpée en calque, remise à sa vraie taille par
+  rapport au boîtier (le mouvement et le cadran y étaient 1,45 fois trop grands) et à la même inclinaison ; sept
+  images clés (une par étape) ; six plans vidéo Kling 3.0 Pro (Higgsfield) qui font descendre chaque pièce d'une
+  image clé à la suivante. De la vidéo, on ne garde que la pièce qui bouge, suivie image par image ; tout le reste
+  vient des calques exacts, et le bord avant du boîtier repasse par-dessus ce qui entre dedans. Fabrication et
+  coût (75 crédits) : `outils/montre/LISEZMOI.md`, outil dans `outils/montre/higgsfield`.
+- **Le lecteur** (`components/ui/montre-film.tsx`) suit une table (`imageDuFilm`, `lib/montre-film.ts`) au lieu
+  d'une répartition uniforme : au temps 0 la vue éclatée attend ; aux temps 1 à 6, la pièce de l'étape descend de
+  6 % à 82 % du temps, pendant que son texte se lit ; au temps 7, la caméra s'approche de la montre finie. L'image
+  fixe (sans mouvement) est la dernière du film (`DERNIERE_IMAGE`).
+
+## Mise à jour du 2026-10-21 : « Parlons projet » s'écrit à la plume, un seul bouton de contact
+
+J : « enlève la flèche et fais écrire le parlons projet de la même manière que le cadre s'écrit » ; « ce bouton, tu
+peux le retirer » (celui de la fin de la section 04).
+
+- **Le libellé du hero s'écrit lettre après lettre** (`components/ui/entree-dessin.tsx`) : au moment de jouer, police
+  chargée, chaque lettre du vrai texte est mesurée (`Range`, ligne de base par un repère sans hauteur) et recopiée en
+  `<text>` SVG dans le calque du bouton, exactement à sa place ; son contour d'or se trace (`stroke-dashoffset`), puis
+  l'encre la remplit, et le contour sèche quand le cadre se pose. Le vrai texte, caché pendant l'écriture, reprend la
+  place des lettres dessinées à l'identique. Valeurs : `MOUVEMENT.hero.dessin` (`ecriture`, `lettre`, `plume`). Idée :
+  « Stroke Text » de React Bits, avec le tracé du cadre déjà en place (animatedbuttons, Kinetics).
+- **Plus de flèche** dans le Filet d'or, ni sur le vrai bouton ni sur la copie qui tombe.
+- **Le bouton « Parlons de votre projet » de la section 04 est retiré** : le temps 7 se termine sur « le code est à
+  vous », le bouton du hero suffit.
+
+## Mise à jour du 2026-10-20 : la montre se fabrique en vraie 3D, rendue dans Blender
+
+J : « je ne suis pas satisfait du résultat ; tu as tout pour faire une montre éclatée dans le style qu'on a défini et faire
+quelque chose de super, sans fondu, sans montre qui change de forme avec un fondu, avec des pièces qui s'emboîtent de manière
+esthétique et réaliste ; carte blanche, utilise les crédits » (un compte Tripo, 200 crédits).
+- **Tripo** (studio.tripo3d.ai) : le mouvement généré depuis la photo de dos est bon (30 crédits) ; la montre entière,
+  inutilisable (bracelet refermé en boucle, cadran vide ; 40 crédits). Le compte gratuit n'exporte que des modèles H2.5.
+- **Blender 5.2 sur le PC** (`outils/montre/blender`, voir son LISEZMOI) : la montre est modélisée aux cotes de la montre 3D
+  d'avant (boîtier tourné, cornes, lunette, verre saphir, cadran peint avec la face redressée de la photo de J, aiguilles
+  dauphine, couronne cannelée, fond, bracelets balayés en alligator, boucle), le mouvement de Tripo teinté par matière, un
+  éclairage de studio produit, Cycles sur la carte graphique (3 s par image).
+- **La séquence** : 180 images 9:16 à fond transparent, en deux tailles (`public/montre/film/bureau` 810 × 1440,
+  `mobile` 540 × 960), jouées au défilement par `components/ui/montre-film.tsx` (une toile, l'image de la progression et un
+  fondu vers la suivante, chargement à l'approche, les images proches d'abord). Chaque image est un rendu complet de la même
+  montre : rien ne se fond, rien ne change de forme. Le fil d'or (l'axe) est un trait derrière la toile, qui s'efface quand les
+  bracelets sont posés.
+- **Partis** : les pièces en photo, le morphing WebGL et l'outil de découpe (historique jusqu'à `cf7e1f7`).
+
+## Mise à jour du 2026-10-19 (nuit) : les cornes serrent le bracelet dès le début, le bracelet ne change plus
+
+J, sur la relève : « ce qui est le plus choquant, ce sont les 4 branches qui se réduisent pour attraper le bracelet ; il les
+faudrait moins larges depuis le début », puis « le bracelet change aussi entre les deux vues au même moment, il faut le même
+tout le temps ».
+- **Les cornes** du boîtier de la vue éclatée (bien plus écartées que le bracelet, telles que ChatGPT les a dessinées) sont
+  ramenées dès la découpe à leur place dans la photo (`outils/montre/decoupe/cornes.py`) ; le haut du bracelet du bas est un
+  peu élargi contre elles. La relève n'a plus rien à resserrer (sa grille ne se replie plus nulle part).
+- **Les bracelets** de la vue éclatée sont remplacés par ceux de la photo de trois quarts, reportés dans la forme qu'ils ont
+  dans la pile par la déformation même de la relève (`bracelets.py`, pièces à 2 pixels par pixel d'éclaté) : le même cuir,
+  la même boucle du fil d'or jusqu'à la fin, seule leur forme change quand la montre se relève. Les correspondances de la
+  relève sont gelées (`releve-points.json`) pour que la grille ne bouge plus quand la pile change.
+
+## Mise à jour du 2026-10-19 (soir) : la montre se relève, sans retournement, le mouvement en relief
+
+J, sur deux captures : « le retournement ne sert à rien finalement, on ne le fait pas, juste un léger zoom sur la montre à la
+fin ; tu peux donner du relief au mécanisme car ça fait très plat ; il y a un trou entre le cadran et le bloc devant ; le
+fondu quand on revient à la dernière photo est trop voyant, c'est vraiment la montre qui se relève, le switch vers la photo
+ne doit pas se voir en fondu ».
+- **Plus de retournement** : à l'étape 7, la caméra s'approche à peine de la montre finie (`CADRAGES`). Les photos de face et
+  de dos ne sont plus publiées.
+- **La carrure remesurée** sur le trou de son alpha : vue moins de biais qu'on ne l'avait relevé (b / a ≈ 0,46, et non 0,38) ;
+  le mouvement et le cadran s'y aplatissent donc moins. Le cadran remplit l'ouverture jusqu'au bord de devant (plus de jour
+  dessous) ; le fond de la carrure est sombre une fois le mouvement posé.
+- **Le relief du mouvement** : ce qui entre dans la carrure ne se voit que dans son trou, et d'autant plus bas qu'il est
+  enfoncé (`HAUT_TROU`, `decoupe`) : au-dessus du mouvement, la paroi intérieure du boîtier, et l'ombre de son bord sur lui.
+- **La relève sans fondu** : un morphing en WebGL (`lib/morphing.ts`) de la pile (photographiée dans la page,
+  `releve-pile.webp`) à la photo de trois quarts, sur 300 correspondances relevées à la loupe (`outils/montre/decoupe`,
+  `releve.py`). À mi-course, on voit une seule montre qui se redresse ; aux deux bouts, la toile et la page sont identiques
+  au pixel près, à l'œil (mesuré : écart moyen sous 2 sur 765). Sans WebGL : l'ancien fondu.
+
 ## Mise à jour du 2026-10-19 (fin de journée) : la montre en photo qui se fabrique passe sur l'accueil
 
 J : « je veux qu'on enlève le modèle 3D et qu'on mette le modèle qui se fabrique, le modèle explosé à la place ». La section 04
@@ -338,10 +419,10 @@ pendant que le logo se composait encore (jusqu'à 3,6 s) : tout se chevauchait. 
 - **Le bouton devient un Filet d'or, qui se dessine à la main** (J : trois pistes proposées, « on part sur le Filet d'or, et au
   lieu du fil qui dépose le bouton, le bouton se dessine comme à la main »). `components/ui/bouton-filet.tsx` remplace le Cyber
   Button de 21st (gardé dans `components/ui/cyber-button.tsx`, plus utilisé) : un cadre d'un fil doré, deux coins appuyés, le
-  texte espacé comme la baseline ; au survol, l'or monte et remplit, le texte passe en noir, les coins en encre, la flèche avance.
+  texte espacé comme la baseline ; au survol, l'or monte et remplit, le texte passe en noir, les coins en encre (la flèche est retirée le 2026-10-21).
   `components/ui/entree-dessin.tsx` remplace l'entrée au bout du fil : une pointe de plume lumineuse tire les quatre côtés l'un
-  après l'autre, un peu tremblés et dépassant aux coins comme un geste, pendant que le texte s'écrit ; puis la flèche se trace,
-  les coins se posent et le trait se fond dans le cadre (environ 2,5 s, `MOUVEMENT.hero.dessin`). Idées : « Fill Up », « Arrow
+  après l'autre, un peu tremblés et dépassant aux coins comme un geste, pendant que le texte s'écrit (lettre après lettre depuis le
+  2026-10-21, voir plus haut) ; puis les coins se posent et le trait se fond dans le cadre (environ 2,5 s, `MOUVEMENT.hero.dessin`). Idées : « Fill Up », « Arrow
   Push » et « Border Draw » d'animatedbuttons, le tracé de trait de Kinetics. La copie qui tombe au clic est le même Filet d'or.
 - **Paragraphe par paragraphe** (J : « ralentir un peu pour profiter de l'effet de brume, ou paragraphe par paragraphe, encore
   mieux ») : chaque paragraphe sort de la brume en entier (flou 10 px, 1,15 s par mot, vague de 35 ms), le suivant part une

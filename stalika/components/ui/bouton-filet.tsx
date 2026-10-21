@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
    du Cyber Button de 21st) : un cadre d'un seul fil doré, deux coins appuyés
    (haut gauche, bas droit), le texte en capitales très espacées comme la
    baseline « Digital & Conseil ». Au survol, l'or monte du bas et remplit le
-   bouton, le texte passe en noir, la flèche avance.
+   bouton, le texte passe en noir. (Sans flèche depuis le 2026-10-21, J : le
+   libellé s'écrit à la plume, comme le cadre.)
 
    Idées : « Fill Up » et « Arrow Push » d'animatedbuttons (Colorion), redits
    avec les jetons du thème. Le cadre, les coins et le texte portent des

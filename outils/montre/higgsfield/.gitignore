@@ -1,0 +1,12 @@
+# tout ce que preparer.py, dispositions.py et film.py refont (à la racine de ce dossier seulement)
+/*.npy
+/k0.png
+/k1.png
+/tete_vide.png
+/g1b.png
+/e0.png
+/sangle_long.png
+/c[0-6].png
+/film/
+/plans/
+__pycache__/
