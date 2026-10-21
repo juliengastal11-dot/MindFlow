@@ -174,6 +174,23 @@ sur le site d'AR Transfert, en deux temps voulus par J :
   changement d'heure, et la scène se termine à l'aube. (Le voile sombre qui couvrait la scène a été retiré
   le jour même : voir la mise à jour suivante.)
 
+## Mise à jour du 2026-10-21 (suite) : la montre devient un film Higgsfield
+
+J : « tu peux faire le visuel avec Higgsfield : je valide l'utilisation des crédits pour l'option B. Sois précis dans
+tes consignes. Je veux vraiment un résultat ultra réaliste. »
+
+- **Le film** (`public/montre/film`, 237 images, 810 x 1440 et 540 x 960, fond transparent) remplace la séquence
+  Blender. Il part de la vue éclatée de J : chaque pièce y est découpée en calque, remise à sa vraie taille par
+  rapport au boîtier (le mouvement et le cadran y étaient 1,45 fois trop grands) et à la même inclinaison ; sept
+  images clés (une par étape) ; six plans vidéo Kling 3.0 Pro (Higgsfield) qui font descendre chaque pièce d'une
+  image clé à la suivante. De la vidéo, on ne garde que la pièce qui bouge, suivie image par image ; tout le reste
+  vient des calques exacts, et le bord avant du boîtier repasse par-dessus ce qui entre dedans. Fabrication et
+  coût (75 crédits) : `outils/montre/LISEZMOI.md`, outil dans `outils/montre/higgsfield`.
+- **Le lecteur** (`components/ui/montre-film.tsx`) suit une table (`imageDuFilm`, `lib/montre-film.ts`) au lieu
+  d'une répartition uniforme : au temps 0 la vue éclatée attend ; aux temps 1 à 6, la pièce de l'étape descend de
+  6 % à 82 % du temps, pendant que son texte se lit ; au temps 7, la caméra s'approche de la montre finie. L'image
+  fixe (sans mouvement) est la dernière du film (`DERNIERE_IMAGE`).
+
 ## Mise à jour du 2026-10-21 : « Parlons projet » s'écrit à la plume, un seul bouton de contact
 
 J : « enlève la flèche et fais écrire le parlons projet de la même manière que le cadre s'écrit » ; « ce bouton, tu

@@ -5,6 +5,7 @@ import { Scene, useScene } from "@/components/ui/scene";
 import { Trace } from "@/components/ui/trace";
 import { Rouleaux } from "@/components/ui/rouleaux";
 import { MontreFilm } from "@/components/ui/montre-film";
+import { DERNIERE_IMAGE } from "@/lib/montre-film";
 import { SplitText } from "gsap/SplitText";
 import { gsap, mouvementReduit } from "@/lib/gsap";
 import { MOUVEMENT } from "@/lib/mouvement";
@@ -18,13 +19,15 @@ import { MOUVEMENT } from "@/lib/mouvement";
    La montre se fabrique au défilement (2026-10-19, J : « qu'on enlève le
    modèle 3D et qu'on mette le modèle qui se fabrique, le modèle explosé »,
    puis, le 20 : « sans fondu, sans montre qui change de forme, des pièces qui
-   s'emboîtent de manière esthétique et réaliste ») : une séquence d'images
-   rendue dans Blender (outils/montre/blender), une vraie montre en volume dont
-   les pièces, enfilées sur un fil d'or, redescendent une à une sur le boîtier,
-   une étape du processus après l'autre ; la montre finie, la caméra vient la
-   voir de plus près (components/ui/montre-film.tsx, lib/montre-film.ts). Les
-   versions d'avant (la montre 3D en Three.js, la montre dessinée, les pièces en
-   photo qui se relevaient par un morphing) sont dans l'historique. Huit temps :
+   s'emboîtent de manière esthétique et réaliste »), et le 21 : « un résultat
+   ultra réaliste », avec Higgsfield) : un film fait à partir de la vue éclatée
+   de J (outils/montre/higgsfield), dont les pièces, enfilées sur un fil d'or,
+   redescendent une à une sur le boîtier, une étape du processus après
+   l'autre ; la montre finie, la caméra vient la voir de plus près
+   (components/ui/montre-film.tsx, lib/montre-film.ts). Les versions d'avant (la
+   montre 3D en Three.js, la montre dessinée, les pièces en photo qui se
+   relevaient par un morphing, la montre rendue dans Blender) sont dans
+   l'historique. Huit temps :
    0. l'arrivée : réglé comme une montre, la vue éclatée ;
    1. le premier message : le mouvement descend dans la carrure ;
    2. on en parle (l'appel, le devis, le prix) : le fond, la couronne ;
@@ -341,7 +344,7 @@ export function SceneLivre() {
           {/* sans film (mouvement réduit, ou sans JavaScript) : la montre finie, la dernière image de la séquence */}
           <div className="chrono-montre">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/montre/film/mobile/179.webp" alt="" className="chrono-montre-photo" />
+            <img src={`/montre/film/mobile/${String(DERNIERE_IMAGE).padStart(3, "0")}.webp`} alt="" className="chrono-montre-photo" />
           </div>
           {charger && (
             <div className="chrono-photo" data-prete={prete || undefined}>

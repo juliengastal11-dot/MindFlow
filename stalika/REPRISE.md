@@ -53,11 +53,12 @@
   le visiteur ne clique pas (voir `BLUEPRINT.md`, mise à jour du 2026-10-02). Après chaque retouche de
   section, vérifier que les `data-rebond` suivent. À tester par J sur iPhone (fluidité de la chute).
 - Tests de J sur iPhone : fluidité du recul au premier défilement, clavier dans la discussion.
-- **La montre de la section 04** (2026-10-20) : une séquence d'images rendue dans Blender (`outils/montre/blender`, son
-  LISEZMOI dit comment la refaire), jouée par `components/ui/montre-film.tsx` (voir `BLUEPRINT.md`). Les versions d'avant
-  (montre 3D Three.js, pièces en photo, morphing) sont dans l'historique. À regarder par J sur son téléphone : la fluidité
-  du défilement (180 images par série, fondu entre voisines) et le poids de la série du téléphone. Pour retoucher la montre
-  (matières, lumière, chorégraphie, caméra) : `montre.py`, puis re-rendre et ré-encoder.
+- **La montre de la section 04** (2026-10-21) : un film fait avec Higgsfield (`outils/montre/higgsfield`, le LISEZMOI de
+  `outils/montre` dit comment le refaire et ce qu'il a coûté), joué par `components/ui/montre-film.tsx` selon la table de
+  `lib/montre-film.ts` (voir `BLUEPRINT.md`). Les versions d'avant (montre 3D Three.js, pièces en photo, morphing, rendu
+  Blender dans `outils/montre/blender`) sont dans l'historique. À regarder par J sur son téléphone : la fluidité du
+  défilement (237 images par série, fondu entre voisines) et le poids de la série du téléphone. Pour retoucher une étape :
+  son image clé (`dispositions.py`) et son seul plan Kling (8,75 crédits, à annoncer).
 - **Fait le 2026-10-17 : tout le chemin du téléphone en vertical** (J : « Tout le chemin en 9:16 c'est ok, bonne qualité et le chalet. Garde le
   côté où il s'allume la nuit »). Chalet en rondins, vidéo du hero, cinq passages du ciel et plongée générés en 1 080 × 1 912 : voir `BLUEPRINT.md`
   (mise à jour du 2026-10-17, suite) et `outils/hero/LISEZMOI.md` (tâches Higgsfield, commandes pour tout refaire). Mesuré sur l'iPhone de J (build de

@@ -2,12 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import { useScene } from "@/components/ui/scene";
-import { FILM_MONTRE, TEMPS_FILM, type SerieFilm } from "@/lib/montre-film";
+import { FILM_MONTRE, TEMPS_FILM, imageDuFilm, type SerieFilm } from "@/lib/montre-film";
 
 /* ---------------------------------------------------------------------------
    Le lecteur de la montre qui se fabrique (lib/montre-film.ts) : une toile qui
-   dessine, pour la progression de la scène, l'image de la séquence rendue dans
-   Blender, et un fondu vers la suivante entre deux images. Les images se
+   dessine, pour la progression de la scène, l'image du film (la table
+   `imageDuFilm`), et un fondu vers la suivante entre deux images. Les images se
    chargent à l'approche de la section, les plus proches de l'image en cours
    d'abord. Sur le ciel (fond transparent) : la toile n'a pas de fond.
 
@@ -41,7 +41,7 @@ export function MontreFilm({ onPret }: { onPret?: () => void }) {
     let signale = false;
 
     const dessiner = () => {
-      const f = borne(progres) * (s.nombre - 1);
+      const f = Math.min(s.nombre - 1, imageDuFilm(progres));
       let i = Math.floor(f);
       while (i > 0 && !prete(i)) i--;
       if (!prete(i)) return;
@@ -85,7 +85,7 @@ export function MontreFilm({ onPret }: { onPret?: () => void }) {
       if (charge) return;
       charge = true;
       s = serie();
-      const depart = Math.round(borne(progres) * (s.nombre - 1));
+      const depart = Math.round(Math.min(s.nombre - 1, imageDuFilm(progres)));
       const ordre = [...Array(s.nombre).keys()].sort((a, b) => Math.abs(a - depart) - Math.abs(b - depart));
       for (const n of ordre) {
         const img = new Image();
